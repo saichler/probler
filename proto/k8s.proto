@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package types;
+
+option java_multiple_files = true;
+option java_outer_classname = "Types";
+option java_package = "com.k8s.types";
+option go_package = "./types";
+
+message ReadyState {
+  int32 count = 1;
+  int32 outof = 2;
+}
+
+message RestartsState {
+  int32 count = 1;
+  string ago = 2;
+}
+
+enum PodStatus {
+  Invalid_Pod_Status = 0;
+  Running = 1;
+
+}
+
+enum NodeStatus {
+  Invalid_Node_Status = 0;
+  Ready = 1;
+}
+
+message Cluster {
+  string name = 1;
+  map<string, Node> nodes = 2;
+  map<string, Pod> pods = 3;
+}
+
+message Pod {
+  string namespace = 1;
+  string name = 2;
+  ReadyState ready = 3;
+  PodStatus status = 4;
+  RestartsState restarts = 5;
+  string age = 6;
+  string ip = 7;
+  string node = 8;
+  string nominated_node = 9;
+  string readiness_state = 10;
+}
+
+message Node {
+  string name = 1;
+  NodeStatus status = 2;
+  string roles = 3;
+  string age = 4;
+  string version = 5;
+  string internal_ip = 6;
+  string external_ip = 7;
+  string os_image = 8;
+  string kernel_version = 9;
+  string container_runtime = 10;
+}
