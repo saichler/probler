@@ -44,7 +44,7 @@ message Pod {
   string ip = 7;
   string node = 8;
   string nominated_node = 9;
-  string readiness_state = 10;
+  string readiness_gates = 10;
 }
 
 message Node {
