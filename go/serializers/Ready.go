@@ -12,10 +12,10 @@ type Ready struct{}
 func (this *Ready) Mode() interfaces.SerializerMode {
 	return interfaces.STRING
 }
-func Marshal(any interface{}, r interfaces.IRegistry) ([]byte, error) {
+func (this *Ready) Marshal(any interface{}, r interfaces.IRegistry) ([]byte, error) {
 	return nil, nil
 }
-func Unmarshal(data []byte, typ string, r interfaces.IRegistry) (interface{}, error) {
+func (this *Ready) Unmarshal(data []byte, typ string, r interfaces.IRegistry) (interface{}, error) {
 	str := string(data)
 	index := strings.Index(str, "/")
 	if index != -1 {
