@@ -2,20 +2,20 @@ package serializers
 
 import (
 	"github.com/saichler/k8s_observer/go/types"
-	"github.com/saichler/shared/go/share/interfaces"
+	"github.com/saichler/types/go/common"
 	"strconv"
 	"strings"
 )
 
 type Ready struct{}
 
-func (this *Ready) Mode() interfaces.SerializerMode {
-	return interfaces.STRING
+func (this *Ready) Mode() common.SerializerMode {
+	return common.STRING
 }
-func (this *Ready) Marshal(any interface{}, r interfaces.IRegistry) ([]byte, error) {
+func (this *Ready) Marshal(any interface{}, r common.IRegistry) ([]byte, error) {
 	return nil, nil
 }
-func (this *Ready) Unmarshal(data []byte, typ string, r interfaces.IRegistry) (interface{}, error) {
+func (this *Ready) Unmarshal(data []byte, typ string, r common.IRegistry) (interface{}, error) {
 	str := string(data)
 	index := strings.Index(str, "/")
 	if index != -1 {
