@@ -15,7 +15,7 @@ func (this *Ready) Mode() common.SerializerMode {
 func (this *Ready) Marshal(any interface{}, r common.IRegistry) ([]byte, error) {
 	return nil, nil
 }
-func (this *Ready) Unmarshal(data []byte, typ string, r common.IRegistry) (interface{}, error) {
+func (this *Ready) Unmarshal(data []byte, r common.IRegistry) (interface{}, error) {
 	str := string(data)
 	index := strings.Index(str, "/")
 	if index != -1 {
