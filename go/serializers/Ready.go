@@ -1,7 +1,7 @@
 package serializers
 
 import (
-	"github.com/saichler/k8s_observer/go/types"
+	"github.com/saichler/probler/go/types"
 	"github.com/saichler/types/go/common"
 	"strconv"
 	"strings"
