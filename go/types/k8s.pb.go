@@ -3,7 +3,7 @@
 // 	protoc-gen-go v1.32.0
 // 	protoc        v3.21.12
 // source: k8s.proto
-
+//
 package types
 
 import (
