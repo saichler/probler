@@ -1,2 +1,2 @@
-# k8s_observer
-Kubernetes Observer for managing &amp; testing Kubernetes clusters remotely.
+# Probler
+Dynamic, vertically & horizontally scale,  polling, parsing & modeling of k8s & network devices.
