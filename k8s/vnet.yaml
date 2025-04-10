@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: probler-vnet
+  labels:
+    name: probler-vnet
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: probler-vnet
+  name: probler-vnet
+  labels:
+    app: probler-vnet
+spec:
+  selector:
+    matchLabels:
+      app: probler-vnet
+  template:
+    metadata:
+      labels:
+        app: probler-vnet
+    spec:
+      hostNetwork: true
+      containers:
+        - name: probler-vnet
+          image: saichler/probler-vnet:latest
+          imagePullPolicy: Always
