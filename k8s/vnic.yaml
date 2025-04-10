@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: probler-services
+  labels:
+    name: probler-services
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler-services
+  name: probler-service
+  labels:
+    app: probler-service
+spec:
+  serviceName: probler-service
+  replicas: 12
+  selector:
+    matchLabels:
+      app: probler-service
+  template:
+    metadata:
+      labels:
+        app: probler-service
+    spec:
+      containers:
+        - name: probler-service
+          image: saichler/probler-vnic:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP

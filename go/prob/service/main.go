@@ -9,6 +9,7 @@ import (
 	"github.com/saichler/l8orm/go/orm/persist"
 	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
+	"github.com/saichler/types/go/common"
 	"os"
 	"os/signal"
 	"syscall"
@@ -27,6 +28,7 @@ func main() {
 	}
 
 	res := common2.CreateResources("vnic-" + os.Getenv("HOSTNAME"))
+	common.SetNetworkMode(common.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
 	nic.Start()
 
