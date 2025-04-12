@@ -20,10 +20,12 @@ func main() {
 	var s interface{}
 	s = &persist.OrmServicePoint{}
 	s = &convert.ConvertServicePoint{}
+
 	s = &config.ConfigServicePoint{}
 	s = &inventory.InventoryServicePoint{}
 	s = &parsing.ParsingServicePoint{}
 	s = &polling.PollServicePoint{}
+
 	if s == nil {
 	}
 
