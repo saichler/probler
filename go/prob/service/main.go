@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/saichler/collect/go/collection/config"
+	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/parsing"
-	"github.com/saichler/collect/go/collection/polling"
+	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/l8orm/go/orm/convert"
 	"github.com/saichler/l8orm/go/orm/persist"
 	"github.com/saichler/layer8/go/overlay/vnic"
@@ -21,10 +21,10 @@ func main() {
 	s = &persist.OrmServicePoint{}
 	s = &convert.ConvertServicePoint{}
 
-	s = &config.ConfigServicePoint{}
+	s = &device_config.DeviceConfigServicePoint{}
 	s = &inventory.InventoryServicePoint{}
 	s = &parsing.ParsingServicePoint{}
-	s = &polling.PollServicePoint{}
+	s = &poll_config.PollConfigServicePoint{}
 
 	if s == nil {
 	}
