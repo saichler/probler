@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/saichler/layer8/go/overlay/protocol"
 	"github.com/saichler/layer8/go/overlay/vnet"
 	common2 "github.com/saichler/probler/go/prob/common"
 	"os"
@@ -10,6 +11,7 @@ import (
 
 func main() {
 	res := common2.CreateResources("vnet-" + os.Getenv("HOSTNAME"))
+	protocol.CountMessages = true
 	net := vnet.NewVNet(res)
 	net.Start()
 
