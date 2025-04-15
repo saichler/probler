@@ -16,20 +16,14 @@ import (
 )
 
 func main() {
-	//pull all potential services
-	var s interface{}
-	s = &persist.OrmServicePoint{}
-	s = &convert.ConvertServicePoint{}
-
-	s = &device_config.DeviceConfigServicePoint{}
-	s = &inventory.InventoryServicePoint{}
-	s = &parsing.ParsingServicePoint{}
-	s = &poll_config.PollConfigServicePoint{}
-
-	if s == nil {
-	}
-
 	res := common2.CreateResources("vnic-" + os.Getenv("HOSTNAME"))
+	res.ServicePoints().AddServicePointType(&persist.OrmServicePoint{})
+	res.ServicePoints().AddServicePointType(&convert.ConvertServicePoint{})
+	res.ServicePoints().AddServicePointType(&device_config.DeviceConfigServicePoint{})
+	res.ServicePoints().AddServicePointType(&inventory.InventoryServicePoint{})
+	res.ServicePoints().AddServicePointType(&parsing.ParsingServicePoint{})
+	res.ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
+
 	common.SetNetworkMode(common.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
 	nic.Start()

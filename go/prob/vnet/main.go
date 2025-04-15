@@ -16,5 +16,5 @@ func main() {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-sigs
-	res.Logger().Info("Recevied singnal ", sig)
+	res.Logger().Info("Received signal ", sig)
 }

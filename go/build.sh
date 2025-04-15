@@ -10,5 +10,5 @@ rm -rf vendor
 # fetch dependencies
 go mod init
 GOPROXY=direct GOPRIVATE=github.com go mod tidy
-./build-security.sh
+#./build-security.sh
 go mod vendor
