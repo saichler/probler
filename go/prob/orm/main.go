@@ -13,35 +13,31 @@ import (
 	"github.com/saichler/reflect/go/reflect/introspecting"
 	"github.com/saichler/types/go/common"
 	"os"
-	"os/signal"
-	"syscall"
 )
 
 func main() {
-	res := common2.CreateResources("vnic-" + os.Getenv("HOSTNAME"))
-	res.ServicePoints().AddServicePointType(&persist.OrmServicePoint{})
-	res.ServicePoints().AddServicePointType(&convert.ConvertServicePoint{})
-
+	resources := common2.CreateResources("vnic-" + os.Getenv("HOSTNAME"))
 	common.SetNetworkMode(common.NETWORK_K8s)
-
-	inventoryNode, _ := res.Introspector().Inspect(&types.NetworkBox{})
-	introspecting.AddPrimaryKeyDecorator(inventoryNode, "Id")
-
-	k8sClusterNode, _ := res.Introspector().Inspect(&types2.Cluster{})
-	introspecting.AddPrimaryKeyDecorator(k8sClusterNode, "Name")
-
-	db := openDBConection()
-
-	p := persist.NewPostgres(db, res)
-	res.ServicePoints().Activate(persist.ServicePointType, "myPostgres", 0, res, nil, p)
-	
-	nic := vnic.NewVirtualNetworkInterface(res, nil)
+	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Start()
 
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-	sig := <-sigs
-	res.Logger().Info("Recevied singnal ", sig)
+	nic.Resources().ServicePoints().AddServicePointType(&persist.OrmServicePoint{})
+	nic.Resources().ServicePoints().AddServicePointType(&convert.ConvertServicePoint{})
+
+	//Add the inventory model and mark the Id field as key
+	inventoryNode, _ := nic.Resources().Introspector().Inspect(&types.NetworkBox{})
+	introspecting.AddPrimaryKeyDecorator(inventoryNode, "Id")
+
+	//Add the k8s cluster model and mark the Name as key
+	k8sClusterNode, _ := nic.Resources().Introspector().Inspect(&types2.Cluster{})
+	introspecting.AddPrimaryKeyDecorator(k8sClusterNode, "Name")
+
+	//init the db and register the inventory service as "myPostgres" service name
+	db := openDBConection()
+	p := persist.NewPostgres(db, nic.Resources())
+	nic.Resources().ServicePoints().Activate(persist.ServicePointType, "myPostgres", 0, nic.Resources(), nic, p)
+
+	common2.WaitForSignal(nic.Resources())
 }
 
 func openDBConection() *sql.DB {

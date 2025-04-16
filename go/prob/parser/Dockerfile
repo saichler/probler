@@ -13,13 +13,13 @@ WORKDIR /home/src/github.com/saichler/build
 RUN go mod init
 RUN GOPROXY=direct GOPRIVATE=github.com go mod tidy
 COPY ./patch/plugin.go /usr/lib/go/src/runtime/plugin.go
-RUN go build -o collector
+RUN go build -o parser
 
 FROM alpine AS final
 RUN apk add --no-cache libc6-compat
 RUN mkdir -p /home/run
 WORKDIR /home/run
 COPY --from=security /home/run/security.so /home/run/security.so
-COPY --from=build /home/src/github.com/saichler/build/collector /home/run/collector
+COPY --from=build /home/src/github.com/saichler/build/parser /home/run/parser
 
-ENTRYPOINT ["/home/run/collector"]
+ENTRYPOINT ["/home/run/parser"]
