@@ -8,6 +8,9 @@ import (
 	"github.com/saichler/shared/go/share/resources"
 	"github.com/saichler/types/go/common"
 	"github.com/saichler/types/go/types"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 const (
@@ -30,4 +33,12 @@ func CreateResources(alias string) common.IResources {
 	_servicepoints := service_points.NewServicePoints(_introspector, _config)
 	_resources := resources.NewResources(_registry, _security, _servicepoints, logger, nil, nil, _config, _introspector)
 	return _resources
+}
+
+func WaitForSignal(resources common.IResources) {
+	resources.Logger().Info("Waiting for os signal...")
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	sig := <-sigs
+	resources.Logger().Info("End signal received! ", sig)
 }

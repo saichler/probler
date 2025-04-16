@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: probler-orm
+  labels:
+    name: probler-orm
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: probler-orm
+  name: probler-orm
+  labels:
+    app: probler-orm
+spec:
+  selector:
+    matchLabels:
+      app: probler-orm
+  template:
+    metadata:
+      labels:
+        app: probler-orm
+    spec:
+      hostNetwork: true
+      containers:
+        - name: probler-orm
+          image: saichler/probler-orm:latest
+          imagePullPolicy: Always

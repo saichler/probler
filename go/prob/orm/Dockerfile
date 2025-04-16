@@ -1,0 +1,40 @@
+FROM saichler/probler-security:latest AS security
+
+FROM alpine AS build
+RUN apk update
+RUN apk upgrade
+RUN apk add git
+RUN apk add go
+RUN apk add --no-cache libc6-compat
+RUN mkdir -p /home/src/github.com/saichler/build
+COPY main.go /home/src/github.com/saichler/build/main.go
+ENV GOPATH /home
+WORKDIR /home/src/github.com/saichler/build
+RUN go mod init
+RUN GOPROXY=direct GOPRIVATE=github.com go mod tidy
+COPY ./patch/plugin.go /usr/lib/go/src/runtime/plugin.go
+RUN go build -o orm
+
+FROM alpine AS final
+
+RUN apk add postgresql
+RUN mkdir /run/postgresql
+RUN chown -R postgres:postgres /run/postgresql/
+
+USER postgres
+RUN mkdir /var/lib/postgresql/data
+RUN chmod 0700 /var/lib/postgresql/data
+RUN initdb -D /var/lib/postgresql/data
+
+#RUN apk add --no-cache libc6-compat
+USER root
+RUN mkdir -p /home/run
+COPY --from=security /home/run/security.so /home/run/security.so
+COPY --from=build /home/src/github.com/saichler/build/orm /home/run/orm
+COPY user.sql /home/run/user.sql
+COPY user.sh /home/run/user.sh
+COPY run.sh /home/run/run.sh
+WORKDIR /home/run
+
+ENTRYPOINT ["/bin/sh","/home/run/run.sh"]
+#ENTRYPOINT ["/bin/sh"]
