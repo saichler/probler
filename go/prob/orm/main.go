@@ -35,7 +35,7 @@ func main() {
 	//init the db and register the inventory service as "myPostgres" service name
 	db := openDBConection()
 	p := persist.NewPostgres(db, nic.Resources())
-	nic.Resources().ServicePoints().Activate(persist.ServicePointType, "myPostgres", 0, nic.Resources(), nic, p)
+	nic.Resources().ServicePoints().Activate(persist.ServicePointType, common2.ORM_SERVICE, 0, nic.Resources(), nic, p)
 
 	common2.WaitForSignal(nic.Resources())
 }

@@ -15,6 +15,7 @@ import (
 
 const (
 	PROBLER_VNET = 26000
+	ORM_SERVICE  = "MyPostgresOrmService"
 )
 
 func CreateResources(alias string) common.IResources {
