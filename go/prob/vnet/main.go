@@ -30,7 +30,7 @@ func startWebServer() {
 		Port:           443,
 		Authentication: false,
 		CertName:       "probler",
-		Prefix:         "/probler/",
+		Prefix:         common2.PREFIX,
 	}
 	svr, err := server.NewRestServer(serverConfig)
 	if err != nil {

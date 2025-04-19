@@ -14,18 +14,27 @@ import (
 )
 
 const (
-	PROBLER_VNET       = 26000
-	ORM_SERVICE        = "MyPostgresOrmService"
-	PARSER_SERVICE_BOX = "Parser-NetworkBox"
-	PARSER_SERVICE_K8s = "Parser-Cluster"
-	PARSER_AREA_BOX    = 0
-	PARSER_AREA_K8S    = 1
+	PROBLER_VNET          = 26000
+	ORM_SERVICE           = "MyPostgresOrmService"
+	PARSER_SERVICE_BOX    = "Parser-NetworkBox"
+	PARSER_SERVICE_K8s    = "Parser-Cluster"
+	PARSER_AREA_BOX       = 0
+	PARSER_AREA_K8S       = 1
+	INVENTORY_SERVICE_BOX = "NetworkBox"
+	INVENTORY_AREA_BOX    = 0
+	INVENTORY_SERVICE_K8S = "Cluster"
+	INVENTORY_AREA_K8S    = 1
+	PREFIX                = "/probler/"
 )
 
 func CreateResources(alias string) common.IResources {
+	return CreateResources2(alias, "/home/run")
+}
+
+func CreateResources2(alias string, path string) common.IResources {
 	logger := logger2.NewLoggerImpl(&logger2.FmtLogMethod{})
 	_registry := registry.NewRegistry()
-	_security, err := common.LoadSecurityProvider("security.so", "/home/run")
+	_security, err := common.LoadSecurityProvider("security.so", path)
 	if err != nil {
 		panic("Failed to load security provider")
 	}

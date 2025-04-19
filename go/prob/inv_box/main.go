@@ -22,7 +22,7 @@ func main() {
 	introspecting.AddPrimaryKeyDecorator(inventoryNode, "Id")
 
 	//Activate the box inventory service with the primary key & sample model instance
-	nic.Resources().ServicePoints().Activate(inventory.ServicePointType, "NetworkBox", 0, nic.Resources(),
+	nic.Resources().ServicePoints().Activate(inventory.ServicePointType, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX, nic.Resources(),
 		nic, "Id", &types.NetworkBox{}, &types.DeviceServiceInfo{ServiceName: common2.ORM_SERVICE, ServiceArea: 0})
 
 	common2.WaitForSignal(nic.Resources())

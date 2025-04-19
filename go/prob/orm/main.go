@@ -20,6 +20,7 @@ func main() {
 	common.SetNetworkMode(common.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Start()
+	nic.WaitForConnection()
 
 	nic.Resources().ServicePoints().AddServicePointType(&persist.OrmServicePoint{})
 	nic.Resources().ServicePoints().AddServicePointType(&convert.ConvertServicePoint{})

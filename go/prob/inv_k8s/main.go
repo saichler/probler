@@ -23,7 +23,7 @@ func main() {
 	introspecting.AddPrimaryKeyDecorator(k8sClusterNode, "Name")
 
 	//Activate the k8s inventory service with the primary key & sample model instance
-	nic.Resources().ServicePoints().Activate(inventory.ServicePointType, "Cluster", 1, nic.Resources(),
+	nic.Resources().ServicePoints().Activate(inventory.ServicePointType, common2.INVENTORY_SERVICE_K8S, common2.INVENTORY_AREA_K8S, nic.Resources(),
 		nic, "Name", &types2.Cluster{}, &types.DeviceServiceInfo{ServiceName: common2.ORM_SERVICE, ServiceArea: 0})
 
 	common2.WaitForSignal(nic.Resources())
