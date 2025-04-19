@@ -23,8 +23,12 @@ spec:
       labels:
         app: probler-orm
     spec:
-      hostNetwork: true
       containers:
         - name: probler-orm
           image: saichler/probler-orm:latest
           imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP

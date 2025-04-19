@@ -14,8 +14,12 @@ import (
 )
 
 const (
-	PROBLER_VNET = 26000
-	ORM_SERVICE  = "MyPostgresOrmService"
+	PROBLER_VNET       = 26000
+	ORM_SERVICE        = "MyPostgresOrmService"
+	PARSER_SERVICE_BOX = "Parser-NetworkBox"
+	PARSER_SERVICE_K8s = "Parser-Cluster"
+	PARSER_AREA_BOX    = 0
+	PARSER_AREA_K8S    = 1
 )
 
 func CreateResources(alias string) common.IResources {
