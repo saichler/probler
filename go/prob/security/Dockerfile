@@ -1,14 +1,6 @@
-FROM alpine AS build
-RUN apk update
-RUN apk upgrade
-RUN apk add git
-RUN apk add go
-RUN apk add --no-cache libc6-compat
-RUN mkdir -p /home/src/github.com/saichler/build
-ENV GOPATH /home
-WORKDIR /home/src/github.com/saichler/build
-RUN git clone https://github.com/saichler/shared
+FROM saichler/probler-builder:latest AS build
 
+RUN git clone https://github.com/saichler/shared
 RUN go mod init
 RUN GOPROXY=direct GOPRIVATE=github.com go mod tidy
 WORKDIR /home/src/github.com/saichler/build/shared/go/share/shallow_security
