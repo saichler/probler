@@ -16,6 +16,7 @@ func main() {
 	common.SetNetworkMode(common.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Start()
+	nic.WaitForConnection()
 
 	//Add the inventory model and mark the Id field as key
 	inventoryNode, _ := nic.Resources().Introspector().Inspect(&types.NetworkBox{})
