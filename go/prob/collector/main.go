@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	res := common2.CreateResources("vnic-" + os.Getenv("HOSTNAME"))
+	res := common2.CreateResources("collector-" + os.Getenv("HOSTNAME"))
 	common.SetNetworkMode(common.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
 	nic.Start()
@@ -24,7 +24,8 @@ func main() {
 	nic.Resources().ServicePoints().Activate(device_config.ServicePointType, device_config.ServiceName, 0, nic.Resources(), nic)
 
 	//The polling config, e.g. what to poll per protocol, is also agnostic to the model, hence always on service are 0
-	nic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, nic.Resources(), nic)
+	nic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName,
+		poll_config.ServiceArea, nic.Resources(), nic)
 
 	common2.WaitForSignal(res)
 }

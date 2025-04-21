@@ -11,7 +11,6 @@ import (
 )
 
 func AddPollConfigs(rc *client.RestClient, resources common2.IResources) {
-	defer time.Sleep(time.Second)
 	polls := boot.CreateSNMPBootPolls()
 	for _, poll := range polls {
 		resp, err := rc.POST(strconv.Itoa(int(poll_config.ServiceArea))+"/"+poll_config.ServiceName,
@@ -24,6 +23,7 @@ func AddPollConfigs(rc *client.RestClient, resources common2.IResources) {
 		if ok {
 			resources.Logger().Info("Added ", poll.Name, " Successfully")
 		}
+		time.Sleep(time.Second)
 	}
 	polls = boot.CreateK8sBootPolls()
 	for _, poll := range polls {
@@ -37,5 +37,6 @@ func AddPollConfigs(rc *client.RestClient, resources common2.IResources) {
 		if ok {
 			resources.Logger().Info("Added ", poll.Name, " Successfully")
 		}
+		time.Sleep(time.Second)
 	}
 }

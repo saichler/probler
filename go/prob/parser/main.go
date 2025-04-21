@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	resources := common2.CreateResources("vnic-" + os.Getenv("HOSTNAME"))
+	resources := common2.CreateResources("parser-" + os.Getenv("HOSTNAME"))
 	common.SetNetworkMode(common.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Start()
@@ -31,7 +31,8 @@ func main() {
 		common2.PARSER_AREA_K8S, nic.Resources(), nic, &types2.Cluster{}, "Name")
 
 	//The polling config, e.g. what to poll per protocol, is also agnostic to the model, hence always on service are 0
-	nic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, nic.Resources(), nic)
+	nic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName,
+		poll_config.ServiceArea, nic.Resources(), nic)
 
 	common2.WaitForSignal(resources)
 }

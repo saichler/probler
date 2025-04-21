@@ -10,6 +10,7 @@ import (
 	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
+	"github.com/saichler/types/go/common"
 	"net/http"
 	"os"
 	"time"
@@ -17,6 +18,7 @@ import (
 
 func main() {
 	resources := common2.CreateResources("vnet-" + os.Getenv("HOSTNAME"))
+	resources.Logger().SetLogLevel(common.Info_Level)
 	net := vnet.NewVNet(resources)
 	net.Start()
 	resources.Logger().Info("vnet started!")
@@ -37,10 +39,11 @@ func startWebServer() {
 		panic(err)
 	}
 
-	resources := common2.CreateResources("vnic-" + os.Getenv("HOSTNAME"))
+	resources := common2.CreateResources("web-" + os.Getenv("HOSTNAME"))
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Resources().SysConfig().KeepAliveIntervalSeconds = 60
 	nic.Start()
+	nic.WaitForConnection()
 
 	pollConfigEndpoint := server.NewServicePointHandler(poll_config.ServiceName, poll_config.ServiceArea, nic)
 	pollConfigEndpoint.AddMethodType(http.MethodPost, &types.PollConfig{})

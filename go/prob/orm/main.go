@@ -16,11 +16,13 @@ import (
 )
 
 func main() {
-	resources := common2.CreateResources("vnic-" + os.Getenv("HOSTNAME"))
+	res := common2.CreateResources("orm-" + os.Getenv("HOSTNAME"))
+	res.Logger().Info("Starting ORM")
 	common.SetNetworkMode(common.NETWORK_K8s)
-	nic := vnic.NewVirtualNetworkInterface(resources, nil)
+	nic := vnic.NewVirtualNetworkInterface(res, nil)
 	nic.Start()
 	nic.WaitForConnection()
+	res.Logger().Info("Registering ORM ServicePoints")
 
 	nic.Resources().ServicePoints().AddServicePointType(&persist.OrmServicePoint{})
 	nic.Resources().ServicePoints().AddServicePointType(&convert.ConvertServicePoint{})
@@ -36,8 +38,11 @@ func main() {
 	//init the db and register the inventory service as "myPostgres" service name
 	db := openDBConection()
 	p := persist.NewPostgres(db, nic.Resources())
-	nic.Resources().ServicePoints().Activate(persist.ServicePointType, common2.ORM_SERVICE, 0, nic.Resources(), nic, p)
-
+	_, err := nic.Resources().ServicePoints().Activate(persist.ServicePointType, common2.ORM_SERVICE, 0,
+		nic.Resources(), nic, p)
+	if err != nil {
+		res.Logger().Error(err.Error())
+	}
 	common2.WaitForSignal(nic.Resources())
 }
 
