@@ -5,12 +5,14 @@ import (
 	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/l8web/go/web/server"
+	"github.com/saichler/layer8/go/overlay/health"
 	"github.com/saichler/layer8/go/overlay/protocol"
 	"github.com/saichler/layer8/go/overlay/vnet"
 	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
 	"github.com/saichler/types/go/common"
+	types3 "github.com/saichler/types/go/types"
 	"net/http"
 	"os"
 	"time"
@@ -45,6 +47,9 @@ func startWebServer() {
 	nic.Start()
 	nic.WaitForConnection()
 
+	topEndPoint := server.NewServicePointHandler(health.ServiceName, 0, nic)
+	topEndPoint.AddMethodType(http.MethodGet, &types3.Top{})
+
 	pollConfigEndpoint := server.NewServicePointHandler(poll_config.ServiceName, poll_config.ServiceArea, nic)
 	pollConfigEndpoint.AddMethodType(http.MethodPost, &types.PollConfig{})
 	pollConfigEndpoint.AddMethodType(http.MethodGet, &types.PollConfig{})
@@ -65,6 +70,7 @@ func startWebServer() {
 	svr.AddServicePointHandler(deviceConfigEndpoint)
 	svr.AddServicePointHandler(boxEndpoint)
 	svr.AddServicePointHandler(k8sEndpoint)
+	svr.AddServicePointHandler(topEndPoint)
 	nic.Resources().Logger().Info("Web Server Started!")
 
 	svr.Start()

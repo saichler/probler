@@ -6,6 +6,7 @@ import (
 	"github.com/saichler/l8web/go/web/client"
 	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/prob/prctl/commands"
+	types2 "github.com/saichler/types/go/types"
 	"os"
 )
 
@@ -37,6 +38,9 @@ func main() {
 	resources := common.CreateResources2("client", "./")
 	resources.Introspector().Inspect(&types.PollConfig{})
 	resources.Introspector().Inspect(&types.DeviceConfig{})
+	resources.Introspector().Inspect(&types2.HealthPoint{})
+	resources.Introspector().Inspect(&types2.Top{})
+	
 	rc, err := client.NewRestClient(clientConfig, resources)
 	if err != nil {
 		panic(err)
@@ -50,6 +54,9 @@ func main() {
 			commands.AddDevice(cmd3, rc, resources)
 			return
 		}
+	} else if cmd1 == "top" {
+		commands.Top(rc, resources)
+		return
 	}
 	fmt.Println("Nothing to do!")
 }
