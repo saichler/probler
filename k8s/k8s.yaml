@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: probler-k8s
+  labels:
+    name: probler-k8s
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: probler-k8s
+  name: probler-k8s
+  labels:
+    app: probler-k8s
+spec:
+  selector:
+    matchLabels:
+      app: probler-k8s
+  template:
+    metadata:
+      labels:
+        app: probler-k8s
+    spec:
+      containers:
+        - name: probler-k8s
+          image: saichler/probler-inv-k8s:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP

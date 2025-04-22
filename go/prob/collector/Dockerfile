@@ -10,6 +10,7 @@ FROM alpine AS final
 RUN apk add --no-cache libc6-compat
 RUN mkdir -p /home/run
 RUN apk add kubectl
+RUN apk add bash
 WORKDIR /home/run
 COPY --from=security /home/run/security.so /home/run/security.so
 COPY --from=build /home/src/github.com/saichler/build/collector /home/run/collector
