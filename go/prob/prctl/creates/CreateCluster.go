@@ -1,8 +1,10 @@
 package creates
 
 import (
+	"encoding/base64"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/probler/go/prob/common"
+	"os"
 )
 
 func CreateCluster(kubeconfig, context string, serviceArea int32) *types.DeviceConfig {
@@ -20,7 +22,13 @@ func CreateCluster(kubeconfig, context string, serviceArea int32) *types.DeviceC
 	device.Hosts[device.DeviceId] = host
 
 	k8sConfig := &types.ConnectionConfig{}
-	k8sConfig.KubeConfig = kubeconfig
+
+	data, err := os.ReadFile(kubeconfig)
+	if err != nil {
+		panic(err)
+	}
+	k8sConfig.KubeConfig = base64.StdEncoding.EncodeToString(data)
+
 	k8sConfig.KukeContext = context
 	k8sConfig.Protocol = types.Protocol_K8s
 

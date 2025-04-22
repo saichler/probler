@@ -15,6 +15,7 @@ func main() {
 	var cmd1 string
 	var cmd2 string
 	var cmd3 string
+	var cmd4 string
 
 	if len(os.Args) > 1 {
 		host = os.Args[1]
@@ -28,7 +29,9 @@ func main() {
 	if len(os.Args) > 4 {
 		cmd3 = os.Args[4]
 	}
-
+	if len(os.Args) > 5 {
+		cmd4 = os.Args[5]
+	}
 	clientConfig := &client.RestClientConfig{
 		Host:   host,
 		Port:   443,
@@ -40,7 +43,7 @@ func main() {
 	resources.Introspector().Inspect(&types.DeviceConfig{})
 	resources.Introspector().Inspect(&types2.HealthPoint{})
 	resources.Introspector().Inspect(&types2.Top{})
-	
+
 	rc, err := client.NewRestClient(clientConfig, resources)
 	if err != nil {
 		panic(err)
@@ -52,6 +55,9 @@ func main() {
 			return
 		} else if cmd2 == "device" {
 			commands.AddDevice(cmd3, rc, resources)
+			return
+		} else if cmd2 == "cluster" {
+			commands.AddCluster(cmd3, cmd4, rc, resources)
 			return
 		}
 	} else if cmd1 == "top" {

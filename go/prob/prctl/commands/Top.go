@@ -1,11 +1,16 @@
 package commands
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/saichler/l8web/go/web/client"
 	"github.com/saichler/layer8/go/overlay/health"
 	common2 "github.com/saichler/types/go/common"
 	types2 "github.com/saichler/types/go/types"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+	"sort"
+	"strconv"
 	"time"
 )
 
@@ -20,20 +25,167 @@ func Top(rc *client.RestClient, resources common2.IResources) {
 	}
 	top, ok := resp.(*types2.Top)
 	if ok {
-		printTop(top)
+		fmt.Println(buildTop(top))
 	}
 }
 
-func printTop(top *types2.Top) {
-	for _, v := range top.HealthPoints {
-		printHealthPoint(v)
+func buildTop(top *types2.Top) string {
+
+	points := make([]*types2.HealthPoint, 0)
+	for _, hp := range top.HealthPoints {
+		points = append(points, hp)
+	}
+
+	sort.Slice(points, func(i, j int) bool {
+		if points[i].Stats == nil {
+			return false
+		} else if points[j].Stats == nil {
+			return true
+		}
+		return points[i].Stats.MemoryUsage > points[j].Stats.MemoryUsage
+	})
+
+	alias := colOf("Alias")
+	tx := colOf("Tx Messages")
+	rx := colOf("Rx Messages")
+	mem := colOf("Memory Usage")
+
+	for _, v := range points {
+		row := &Row{hp: v}
+		alias.SetLen(row.Name())
+		tx.SetLen(row.Tx())
+		rx.SetLen(row.Rx())
+		mem.SetLen(row.Mem())
+	}
+
+	buff := &bytes.Buffer{}
+	buff.WriteString(" ")
+	alias.writeString(alias.name, buff)
+	tx.writeString(tx.name, buff)
+	rx.writeString(rx.name, buff)
+	buff.WriteString("\n")
+
+	for _, v := range points {
+		row := &Row{hp: v}
+		buff.WriteString(" ")
+		alias.writeString(row.Name(), buff)
+		tx.writeNumber(row.Tx(), buff)
+		rx.writeNumber(row.Rx(), buff)
+		mem.writeNumber(row.Mem(), buff)
+		buff.WriteString("\n")
+	}
+	return buff.String()
+}
+
+func colOf(name string) *Column {
+	c := &Column{name: name, l: len(name)}
+	return c
+}
+
+type Column struct {
+	name string
+	l    int
+}
+
+func (this *Column) SetLen(str string) {
+	if this.l < len(str) {
+		this.l = len(str)
 	}
 }
 
-func printHealthPoint(hp *types2.HealthPoint) {
-	fmt.Print(hp.Alias, " ")
-	if hp.Stats != nil {
-		fmt.Print(hp.Stats.RxMsgCount, " ", hp.Stats.TxMsgCount)
+func (this *Column) writeString(str string, buff *bytes.Buffer) {
+	buff.WriteString(str)
+	for i := 0; i < this.l-len(str); i++ {
+		buff.WriteString(" ")
 	}
-	fmt.Println()
+	buff.WriteString(" ")
+}
+
+func (this *Column) writeNumber(str string, buff *bytes.Buffer) {
+	for i := 0; i < this.l-len(str); i++ {
+		buff.WriteString(" ")
+	}
+	buff.WriteString(str)
+	buff.WriteString(" ")
+}
+
+type Row struct {
+	hp *types2.HealthPoint
+}
+
+func (this *Row) Name() string {
+	return this.hp.Alias
+}
+
+func (this *Row) Tx() string {
+	if this.hp.Stats != nil {
+		return toNumber(this.hp.Stats.TxMsgCount)
+	}
+	return ""
+}
+
+func (this *Row) Rx() string {
+	if this.hp.Stats != nil {
+		return toNumber(this.hp.Stats.RxMsgCount)
+	}
+	return ""
+}
+
+func (this *Row) Mem() string {
+	if this.hp.Stats != nil {
+		return toMemory(this.hp.Stats.MemoryUsage)
+	}
+	return ""
+}
+
+func toNumber(num int64) string {
+	p := message.NewPrinter(language.English)
+	return p.Sprintf("%v", num)
+}
+
+func toMemory(num uint64) string {
+	g := toG(num)
+	if g != "" {
+		return g
+	}
+	m := toM(num)
+	if m != "" {
+		return m
+	}
+	k := toK(num)
+	if k != "" {
+		return k
+	}
+	return app(num, "b")
+}
+
+func app(num uint64, s string) string {
+	buff := bytes.Buffer{}
+	buff.WriteString(strconv.Itoa(int(num)))
+	buff.WriteString(s)
+	return buff.String()
+}
+
+func toK(num uint64) string {
+	num = num / 1024
+	if num == 0 {
+		return ""
+	}
+	return app(num, "kb")
+}
+
+func toM(num uint64) string {
+	num = num / (1024 * 1024)
+	if num == 0 {
+		return ""
+	}
+	return app(num, "mb")
+}
+
+func toG(num uint64) string {
+	num = num / (1024 * 1024 * 1024)
+	if num == 0 {
+		return ""
+	}
+	return app(num, "gb")
 }
