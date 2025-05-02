@@ -6,6 +6,7 @@ import (
 	"github.com/saichler/l8web/go/web/client"
 	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/prob/prctl/commands"
+	types3 "github.com/saichler/probler/go/types"
 	types2 "github.com/saichler/types/go/types"
 	"os"
 )
@@ -43,12 +44,22 @@ func main() {
 	resources.Introspector().Inspect(&types.DeviceConfig{})
 	resources.Introspector().Inspect(&types2.HealthPoint{})
 	resources.Introspector().Inspect(&types2.Top{})
+	resources.Introspector().Inspect(&types3.Cluster{})
+	resources.Introspector().Inspect(&types.NetworkBox{})
 
 	rc, err := client.NewRestClient(clientConfig, resources)
 	if err != nil {
 		panic(err)
 	}
-
+	if cmd1 == "get" {
+		if cmd2 == "cluster" {
+			commands.GetCluster(rc, resources, cmd3)
+			return
+		} else if cmd2 == "device" {
+			commands.GetDevice(rc, resources, cmd3)
+			return
+		}
+	}
 	if cmd1 == "add" {
 		if cmd2 == "polls" {
 			commands.AddPollConfigs(rc, resources)

@@ -11,6 +11,7 @@ import (
 	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
+	"github.com/saichler/reflect/go/reflect/introspecting"
 	"github.com/saichler/types/go/common"
 	types3 "github.com/saichler/types/go/types"
 	"net/http"
@@ -42,6 +43,12 @@ func startWebServer() {
 	}
 
 	resources := common2.CreateResources("web-" + os.Getenv("HOSTNAME"))
+
+	node, _ := resources.Introspector().Inspect(&types.NetworkBox{})
+	introspecting.AddPrimaryKeyDecorator(node, "Id")
+	node, _ = resources.Introspector().Inspect(&types2.Cluster{})
+	introspecting.AddPrimaryKeyDecorator(node, "Name")
+
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Resources().SysConfig().KeepAliveIntervalSeconds = 60
 	nic.Start()
@@ -66,11 +73,20 @@ func startWebServer() {
 	k8sEndpoint.AddMethodType(http.MethodPost, &types2.Cluster{})
 	k8sEndpoint.AddMethodType(http.MethodGet, &types2.Cluster{})
 
+	orm1Endpoint := server.NewServicePointHandler(common2.ORM_SERVICE, 0, nic)
+	orm1Endpoint.AddMethodType(http.MethodGet, &types3.Query{})
+
+	orm2Endpoint := server.NewServicePointHandler(common2.ORM_SERVICE, 1, nic)
+	orm2Endpoint.AddMethodType(http.MethodGet, &types3.Query{})
+
 	svr.AddServicePointHandler(pollConfigEndpoint)
 	svr.AddServicePointHandler(deviceConfigEndpoint)
 	svr.AddServicePointHandler(boxEndpoint)
 	svr.AddServicePointHandler(k8sEndpoint)
 	svr.AddServicePointHandler(topEndPoint)
+	svr.AddServicePointHandler(orm1Endpoint)
+	svr.AddServicePointHandler(orm2Endpoint)
+
 	nic.Resources().Logger().Info("Web Server Started!")
 
 	svr.Start()

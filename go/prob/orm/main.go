@@ -43,6 +43,12 @@ func main() {
 	if err != nil {
 		res.Logger().Error(err.Error())
 	}
+
+	_, err = nic.Resources().ServicePoints().Activate(persist.ServicePointType, common2.ORM_SERVICE, 1,
+		nic.Resources(), nic, p)
+	if err != nil {
+		res.Logger().Error(err.Error())
+	}
 	common2.WaitForSignal(nic.Resources())
 }
 

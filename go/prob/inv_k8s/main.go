@@ -27,7 +27,7 @@ func main() {
 	//Activate the box inventory service with the primary key & sample model instance
 	res.ServicePoints().AddServicePointType(&inventory.InventoryServicePoint{})
 	_, err := nic.Resources().ServicePoints().Activate(inventory.ServicePointType, common2.INVENTORY_SERVICE_K8S, common2.INVENTORY_AREA_K8S, nic.Resources(),
-		nic, "Name", &types2.Cluster{}, &types.DeviceServiceInfo{ServiceName: common2.ORM_SERVICE, ServiceArea: 0})
+		nic, "Name", &types2.Cluster{}, &types.DeviceServiceInfo{ServiceName: common2.ORM_SERVICE, ServiceArea: 1})
 
 	if err != nil {
 		res.Logger().Error(err)
