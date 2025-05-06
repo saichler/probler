@@ -34,7 +34,7 @@ func CreateResources(alias string) common.IResources {
 func CreateResources2(alias string, path string) common.IResources {
 	logger := logger2.NewLoggerImpl(&logger2.FmtLogMethod{})
 	_registry := registry.NewRegistry()
-	_security, err := common.LoadSecurityProvider("security.so", path)
+	_security, err := common.LoadSecurityProvider()
 	if err != nil {
 		panic("Failed to load security provider")
 	}
