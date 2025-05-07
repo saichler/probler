@@ -31,7 +31,7 @@ makes **full coherence unachievable**.
 ![alt text](https://github.com/saichler/layer8/blob/main/problem-1.png)
 ![alt text](https://github.com/saichler/layer8/blob/main/problem-2.png)
 
-## **The result?** Massive costs in both time and money—and even greater long-term expenses when it comes to maintainability.
+## **The result?**<span style="color:red"> Massive costs in both time and money—and even greater long-term expenses when it comes to maintainability.</span>
 
 ## The Journey
 Over the years, I’ve closely observed the recurring challenges faced by the 
