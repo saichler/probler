@@ -43,7 +43,8 @@ every domain—but I’ve always been clear about what I want to achieve.
 ### For the infrastructure, my vision was:
 * To free developers from worrying about **Security & AAA** (Authentication, Authorization,
 Accounting) during app development, **without compromising on their importance**.
-* To enable **seamless, secure** platform- and machine-agnostic communication between Microservices.
+* To enable **seamless, secure** platform- and machine-agnostic communication between 
+Microservices, omitting the need for **Micro Segmentation**
 * To support OS-, Kubernetes-, and Docker-**agnostic deployments**.
 * To provide built-in support for both **Request/Reply** and **Publish/Subscribe** 
 messaging paradigms.
