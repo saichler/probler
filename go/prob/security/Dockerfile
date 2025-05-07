@@ -8,6 +8,7 @@ RUN go build -buildmode=plugin -o loader.so Loader.go Provider.go
 RUN mv loader.so ../../../../.
 
 FROM alpine AS final
+RUN apk add --no-cache libc6-compat
 RUN mkdir -p /home/run
 WORKDIR /home/run
 COPY --from=build /home/src/github.com/saichler/build/loader.so /home/run/loader.so
