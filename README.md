@@ -46,6 +46,7 @@ Accounting) during app development, **without compromising on their importance**
 * To enable **seamless, secure** platform- and machine-agnostic communication between 
 Microservices, omitting the need for **Micro Segmentation**
 * To support OS-, Kubernetes-, and Docker-**agnostic deployments**.
+* To support seamless **Horizontally & Vertically** scale.
 * To provide built-in support for both **Request/Reply** and **Publish/Subscribe** 
 messaging paradigms.
 * To include a **Service Directory** for service discovery and lookup.
