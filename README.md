@@ -29,20 +29,72 @@ to failure, as the sheer number of moving parts and lack of alignment across tea
 makes **full coherence unachievable**.
 
 ![alt text](https://github.com/saichler/layer8/blob/main/problem-1.png)
+![alt text](https://github.com/saichler/layer8/blob/main/problem-2.png)
 
-**The result?** Massive costs in both time and money—and even greater long-term 
+## **The result?** Massive costs in both time and money—and even greater long-term 
 expenses when it comes to maintainability.
 
+## The Journey
+Over the years, I’ve closely observed the recurring challenges faced by the 
+organizations I’ve been part of—particularly the pain points, inconsistencies, 
+and design missteps in building Microservices architectures. I started from a 
+humble place: I didn’t claim to know everything, and I’m certainly no expert in 
+every domain—but I’ve always been clear about what I want to achieve.
+
+### For the infrastructure, my vision was:
+* To free developers from worrying about **Security & AAA** (Authentication, Authorization,
+Accounting) during app development, **without compromising on their importance**.
+* To enable **seamless, secure** platform- and machine-agnostic communication between Microservices.
+* To support OS-, Kubernetes-, and Docker-**agnostic deployments**.
+* To provide built-in support for both **Request/Reply** and **Publish/Subscribe** 
+messaging paradigms.
+* To include a **Service Directory** for service discovery and lookup.
+* To embed **Health Monitoring** capabilities.
+* To support **Leader/Follower** election mechanisms for stateful services.
+* To define **common API exposure** standards across all Microservices.
+* To allow **flexible API invocation** patterns tailored to different use cases.
+* To introduce a **common API querying language**, enabling Microservices to query 
+each other effectively.
+* To support **transactional API invocations** in Active/Active service setups.
+* To handle **sharded, transactional API** invocations across multiple service instances (e.g., Active/Active with 3+ shards).
+* To implement a **distributed, model-agnostic stateful cache**.
+* To enable seamless **delta notifications** for attribute changes between services.
+* To support seamless **delta updates** on the cache itself.
+* To offer an **ORM-as-a-Service** that requires little to no annotations in the data models.
+* To make the **ORM agnostic** to the model design.
+* To achieve **100% testability** for the application on **any laptop**, 
+regardless of the installed operating system.
+* To be compatible with running on mobile phone??!
+
+### For Probler, I envisioned:
+* A collection Microservice that is both **horizontally and vertically** scalable.
+* A parsing Microservice that is **entirely model-agnostic**.
+* A **metadata-driven instrumentation service** capable of populating the model 
+with parsed data—without writing proprietary code.
+* An inventory Microservice that **does not depend** on any specific model.
+* A persistence service that is similarly **model-agnostic**.
+
+
 ## Base Projects
-https://github.com/saichler/types
-https://github.com/saichler/shared
-https://github.com/saichler/layer8
-https://github.com/saichler/servicepoints
-https://github.com/saichler/serializer
-https://github.com/saichler/reflect
-https://github.com/saichler/gsql
-https://github.com/saichler/l8orm
-https://github.com/saichler/l8web
-https://github.com/saichler/collect
-https://github.com/saichler/l8test
+* https://github.com/saichler/types
+
+* https://github.com/saichler/shared
+
+* https://github.com/saichler/layer8
+
+* https://github.com/saichler/servicepoints
+
+* https://github.com/saichler/serializer
+
+* https://github.com/saichler/reflect
+
+* https://github.com/saichler/gsql
+
+* https://github.com/saichler/l8orm
+
+* https://github.com/saichler/l8web
+
+* https://github.com/saichler/collect
+
+* https://github.com/saichler/l8test
 
