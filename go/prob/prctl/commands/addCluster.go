@@ -5,7 +5,7 @@ import (
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/l8web/go/web/client"
 	"github.com/saichler/probler/go/prob/prctl/creates"
-	common2 "github.com/saichler/types/go/common"
+	common2 "github.com/saichler/l8types/go/ifs"
 	"time"
 )
 

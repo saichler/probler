@@ -12,8 +12,8 @@ import (
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
 	"github.com/saichler/reflect/go/reflect/introspecting"
-	"github.com/saichler/types/go/common"
-	types3 "github.com/saichler/types/go/types"
+	"github.com/saichler/l8types/go/ifs"
+	types3 "github.com/saichler/l8types/go/types"
 	"net/http"
 	"os"
 	"time"
@@ -21,7 +21,7 @@ import (
 
 func main() {
 	resources := common2.CreateResources("vnet-" + os.Getenv("HOSTNAME"))
-	resources.Logger().SetLogLevel(common.Info_Level)
+	resources.Logger().SetLogLevel(ifs.Info_Level)
 	net := vnet.NewVNet(resources)
 	net.Start()
 	resources.Logger().Info("vnet started!")

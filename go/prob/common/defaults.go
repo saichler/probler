@@ -2,12 +2,12 @@ package common
 
 import (
 	"github.com/saichler/reflect/go/reflect/introspecting"
-	"github.com/saichler/servicepoints/go/points/service_points"
-	logger2 "github.com/saichler/shared/go/share/logger"
-	"github.com/saichler/shared/go/share/registry"
-	"github.com/saichler/shared/go/share/resources"
-	"github.com/saichler/types/go/common"
-	"github.com/saichler/types/go/types"
+	"github.com/saichler/l8services/go/services/manager"
+	logger2 "github.com/saichler/l8utils/go/utils/logger"
+	"github.com/saichler/l8utils/go/utils/registry"
+	"github.com/saichler/l8utils/go/utils/resources"
+	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/types"
 	"os"
 	"os/signal"
 	"syscall"
@@ -27,14 +27,14 @@ const (
 	PREFIX                = "/probler/"
 )
 
-func CreateResources(alias string) common.IResources {
+func CreateResources(alias string) ifs.IResources {
 	return CreateResources2(alias, "/home/run")
 }
 
-func CreateResources2(alias string, path string) common.IResources {
+func CreateResources2(alias string, path string) ifs.IResources {
 	logger := logger2.NewLoggerImpl(&logger2.FmtLogMethod{})
 	_registry := registry.NewRegistry()
-	_security, err := common.LoadSecurityProvider()
+	_security, err := ifs.LoadSecurityProvider()
 	if err != nil {
 		panic("Failed to load security provider")
 	}
@@ -50,7 +50,7 @@ func CreateResources2(alias string, path string) common.IResources {
 	return _resources
 }
 
-func WaitForSignal(resources common.IResources) {
+func WaitForSignal(resources ifs.IResources) {
 	resources.Logger().Info("Waiting for os signal...")
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)

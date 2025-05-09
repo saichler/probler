@@ -2,20 +2,20 @@ package serializers
 
 import (
 	"github.com/saichler/probler/go/types"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"strconv"
 	"strings"
 )
 
 type Ready struct{}
 
-func (this *Ready) Mode() common.SerializerMode {
-	return common.STRING
+func (this *Ready) Mode() ifs.SerializerMode {
+	return ifs.STRING
 }
-func (this *Ready) Marshal(any interface{}, r common.IRegistry) ([]byte, error) {
+func (this *Ready) Marshal(any interface{}, r ifs.IRegistry) ([]byte, error) {
 	return nil, nil
 }
-func (this *Ready) Unmarshal(data []byte, r common.IRegistry) (interface{}, error) {
+func (this *Ready) Unmarshal(data []byte, r ifs.IRegistry) (interface{}, error) {
 	str := string(data)
 	index := strings.Index(str, "/")
 	if index != -1 {

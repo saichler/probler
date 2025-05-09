@@ -11,21 +11,21 @@ import (
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
 	"github.com/saichler/reflect/go/reflect/introspecting"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"os"
 )
 
 func main() {
 	res := common2.CreateResources("orm-" + os.Getenv("HOSTNAME"))
 	res.Logger().Info("Starting ORM")
-	common.SetNetworkMode(common.NETWORK_K8s)
+	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
 	nic.Start()
 	nic.WaitForConnection()
 	res.Logger().Info("Registering ORM ServicePoints")
 
-	nic.Resources().ServicePoints().AddServicePointType(&persist.OrmServicePoint{})
-	nic.Resources().ServicePoints().AddServicePointType(&convert.ConvertServicePoint{})
+	nic.Resources().Services().RegisterServiceHandlerType(&persist.OrmServicePoint{})
+	nic.Resources().Services().RegisterServiceHandlerType(&convert.ConvertServicePoint{})
 
 	//Add the inventory model and mark the Id field as key
 	inventoryNode, _ := nic.Resources().Introspector().Inspect(&types.NetworkBox{})
@@ -38,13 +38,13 @@ func main() {
 	//init the db and register the inventory service as "myPostgres" service name
 	db := openDBConection()
 	p := persist.NewPostgres(db, nic.Resources())
-	_, err := nic.Resources().ServicePoints().Activate(persist.ServicePointType, common2.ORM_SERVICE, 0,
+	_, err := nic.Resources().Services().Activate(persist.ServicePointType, common2.ORM_SERVICE, 0,
 		nic.Resources(), nic, p)
 	if err != nil {
 		res.Logger().Error(err.Error())
 	}
 
-	_, err = nic.Resources().ServicePoints().Activate(persist.ServicePointType, common2.ORM_SERVICE, 1,
+	_, err = nic.Resources().Services().Activate(persist.ServicePointType, common2.ORM_SERVICE, 1,
 		nic.Resources(), nic, p)
 	if err != nil {
 		res.Logger().Error(err.Error())

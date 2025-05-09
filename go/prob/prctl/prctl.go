@@ -7,7 +7,7 @@ import (
 	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/prob/prctl/commands"
 	types3 "github.com/saichler/probler/go/types"
-	types2 "github.com/saichler/types/go/types"
+	types2 "github.com/saichler/l8types/go/types"
 	"os"
 )
 
@@ -37,9 +37,9 @@ func main() {
 		Host:   host,
 		Port:   443,
 		Https:  true,
-		Prefix: common.PREFIX,
+		Prefix: ifs.PREFIX,
 	}
-	resources := common.CreateResources2("client", "./")
+	resources := ifs.CreateResources2("client", "./")
 	resources.Introspector().Inspect(&types.PollConfig{})
 	resources.Introspector().Inspect(&types.DeviceConfig{})
 	resources.Introspector().Inspect(&types2.HealthPoint{})

@@ -8,14 +8,14 @@ import (
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
 	"github.com/saichler/reflect/go/reflect/introspecting"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"os"
 )
 
 func main() {
 	res := common2.CreateResources("k8s-" + os.Getenv("HOSTNAME"))
 	res.Logger().Info("Starting k8s")
-	common.SetNetworkMode(common.NETWORK_K8s)
+	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
 	nic.Start()
 	nic.WaitForConnection()
@@ -25,8 +25,8 @@ func main() {
 	introspecting.AddPrimaryKeyDecorator(clusterNode, "Name")
 
 	//Activate the box inventory service with the primary key & sample model instance
-	res.ServicePoints().AddServicePointType(&inventory.InventoryServicePoint{})
-	_, err := nic.Resources().ServicePoints().Activate(inventory.ServicePointType, common2.INVENTORY_SERVICE_K8S, common2.INVENTORY_AREA_K8S, nic.Resources(),
+	res.Services().RegisterServiceHandlerType(&inventory.InventoryServicePoint{})
+	_, err := nic.Resources().Services().Activate(inventory.ServicePointType, common2.INVENTORY_SERVICE_K8S, common2.INVENTORY_AREA_K8S, nic.Resources(),
 		nic, "Name", &types2.Cluster{}, &types.DeviceServiceInfo{ServiceName: common2.ORM_SERVICE, ServiceArea: 1})
 
 	if err != nil {
