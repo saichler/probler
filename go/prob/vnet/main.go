@@ -92,7 +92,7 @@ func startWebServer() {
 	*/
 
 	//Activate the webpoints service
-	nic.Resources().Services().RegisterServiceHandlerType(&server.WebEndsService{})
+	nic.Resources().Services().RegisterServiceHandlerType(&server.WebEndPointsService{})
 	_, err = nic.Resources().Services().Activate(server.ServiceTypeName, server.ServiceName,
 		0, nic.Resources(), nic, svr)
 
