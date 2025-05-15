@@ -1,13 +1,13 @@
 package common
 
 import (
-	"github.com/saichler/reflect/go/reflect/introspecting"
 	"github.com/saichler/l8services/go/services/manager"
+	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/types"
 	logger2 "github.com/saichler/l8utils/go/utils/logger"
 	"github.com/saichler/l8utils/go/utils/registry"
 	"github.com/saichler/l8utils/go/utils/resources"
-	"github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/l8types/go/types"
+	"github.com/saichler/reflect/go/reflect/introspecting"
 	"os"
 	"os/signal"
 	"syscall"
@@ -45,7 +45,7 @@ func CreateResources2(alias string, path string) ifs.IResources {
 		VnetPort:                 uint32(PROBLER_VNET),
 		KeepAliveIntervalSeconds: 30}
 	_introspector := introspecting.NewIntrospect(_registry)
-	_servicepoints := service_points.NewServicePoints(_introspector, _config)
+	_servicepoints := manager.NewServices(_introspector, _config)
 	_resources := resources.NewResources(_registry, _security, _servicepoints, logger, nil, nil, _config, _introspector)
 	return _resources
 }

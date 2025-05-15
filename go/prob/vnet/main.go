@@ -1,20 +1,16 @@
 package main
 
 import (
-	"github.com/saichler/collect/go/collection/device_config"
-	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
+	"github.com/saichler/l8types/go/ifs"
+	types3 "github.com/saichler/l8types/go/types"
 	"github.com/saichler/l8web/go/web/server"
-	"github.com/saichler/layer8/go/overlay/health"
 	"github.com/saichler/layer8/go/overlay/protocol"
 	"github.com/saichler/layer8/go/overlay/vnet"
 	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
 	"github.com/saichler/reflect/go/reflect/introspecting"
-	"github.com/saichler/l8types/go/ifs"
-	types3 "github.com/saichler/l8types/go/types"
-	"net/http"
 	"os"
 	"time"
 )
@@ -54,38 +50,51 @@ func startWebServer() {
 	nic.Start()
 	nic.WaitForConnection()
 
-	topEndPoint := server.NewServicePointHandler(health.ServiceName, 0, nic)
-	topEndPoint.AddMethodType(http.MethodGet, &types3.Top{})
+	nic.Resources().Registry().Register(&types.PollConfig{})
+	nic.Resources().Registry().Register(&types.DeviceConfig{})
+	nic.Resources().Registry().Register(&types.NetworkBox{})
+	nic.Resources().Registry().Register(&types2.Cluster{})
+	nic.Resources().Registry().Register(&types3.Query{})
 
-	pollConfigEndpoint := server.NewServicePointHandler(poll_config.ServiceName, poll_config.ServiceArea, nic)
-	pollConfigEndpoint.AddMethodType(http.MethodPost, &types.PollConfig{})
-	pollConfigEndpoint.AddMethodType(http.MethodGet, &types.PollConfig{})
+	/*
+		topEndPoint := server.NewServicePointHandler(health.ServiceName, 0, nic)
+		topEndPoint.AddMethodType(http.MethodGet, &types3.Top{})
 
-	deviceConfigEndpoint := server.NewServicePointHandler(device_config.ServiceName, 0, nic)
-	deviceConfigEndpoint.AddMethodType(http.MethodPost, &types.DeviceConfig{})
-	deviceConfigEndpoint.AddMethodType(http.MethodGet, &types.DeviceConfig{})
+		pollConfigEndpoint := server.NewServicePointHandler(poll_config.ServiceName, poll_config.ServiceArea, nic)
+		pollConfigEndpoint.AddMethodType(http.MethodPost, &types.PollConfig{})
+		pollConfigEndpoint.AddMethodType(http.MethodGet, &types.PollConfig{})
 
-	boxEndpoint := server.NewServicePointHandler("NetworkBox", 0, nic)
-	boxEndpoint.AddMethodType(http.MethodPost, &types.NetworkBox{})
-	boxEndpoint.AddMethodType(http.MethodGet, &types.NetworkBox{})
+		deviceConfigEndpoint := server.NewServicePointHandler(device_config.ServiceName, 0, nic)
+		deviceConfigEndpoint.AddMethodType(http.MethodPost, &types.DeviceConfig{})
+		deviceConfigEndpoint.AddMethodType(http.MethodGet, &types.DeviceConfig{})
 
-	k8sEndpoint := server.NewServicePointHandler("Cluster", 1, nic)
-	k8sEndpoint.AddMethodType(http.MethodPost, &types2.Cluster{})
-	k8sEndpoint.AddMethodType(http.MethodGet, &types2.Cluster{})
+		boxEndpoint := server.NewServicePointHandler("NetworkBox", 0, nic)
+		boxEndpoint.AddMethodType(http.MethodPost, &types.NetworkBox{})
+		boxEndpoint.AddMethodType(http.MethodGet, &types.NetworkBox{})
 
-	orm1Endpoint := server.NewServicePointHandler(common2.ORM_SERVICE, 0, nic)
-	orm1Endpoint.AddMethodType(http.MethodGet, &types3.Query{})
+		k8sEndpoint := server.NewServicePointHandler("Cluster", 1, nic)
+		k8sEndpoint.AddMethodType(http.MethodPost, &types2.Cluster{})
+		k8sEndpoint.AddMethodType(http.MethodGet, &types2.Cluster{})
 
-	orm2Endpoint := server.NewServicePointHandler(common2.ORM_SERVICE, 1, nic)
-	orm2Endpoint.AddMethodType(http.MethodGet, &types3.Query{})
+		orm1Endpoint := server.NewServicePointHandler(common2.ORM_SERVICE, 0, nic)
+		orm1Endpoint.AddMethodType(http.MethodGet, &types3.Query{})
 
-	svr.AddServicePointHandler(pollConfigEndpoint)
-	svr.AddServicePointHandler(deviceConfigEndpoint)
-	svr.AddServicePointHandler(boxEndpoint)
-	svr.AddServicePointHandler(k8sEndpoint)
-	svr.AddServicePointHandler(topEndPoint)
-	svr.AddServicePointHandler(orm1Endpoint)
-	svr.AddServicePointHandler(orm2Endpoint)
+		orm2Endpoint := server.NewServicePointHandler(common2.ORM_SERVICE, 1, nic)
+		orm2Endpoint.AddMethodType(http.MethodGet, &types3.Query{})
+
+		svr.AddServicePointHandler(pollConfigEndpoint)
+		svr.AddServicePointHandler(deviceConfigEndpoint)
+		svr.AddServicePointHandler(boxEndpoint)
+		svr.AddServicePointHandler(k8sEndpoint)
+		svr.AddServicePointHandler(topEndPoint)
+		svr.AddServicePointHandler(orm1Endpoint)
+		svr.AddServicePointHandler(orm2Endpoint)
+	*/
+
+	//Activate the webpoints service
+	nic.Resources().Services().RegisterServiceHandlerType(&server.WebEndPointsService{})
+	_, err = nic.Resources().Services().Activate(server.ServiceTypeName, server.ServiceName,
+		0, nic.Resources(), nic, svr)
 
 	nic.Resources().Logger().Info("Web Server Started!")
 
