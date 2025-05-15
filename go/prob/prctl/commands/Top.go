@@ -16,9 +16,9 @@ import (
 
 func Top(rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
-	healthPoint := &types2.HealthPoint{}
+	health := &types2.Health{}
 	resp, err := rc.GET("0/"+health.ServiceName, "Top",
-		"", "", healthPoint)
+		"", "", health)
 	if err != nil {
 		resources.Logger().Error(err.Error())
 		return
@@ -31,8 +31,8 @@ func Top(rc *client.RestClient, resources common2.IResources) {
 
 func buildTop(top *types2.Top) string {
 
-	points := make([]*types2.HealthPoint, 0)
-	for _, hp := range top.HealthPoints {
+	points := make([]*types2.Health, 0)
+	for _, hp := range top.Healths {
 		points = append(points, hp)
 	}
 
@@ -110,7 +110,7 @@ func (this *Column) writeNumber(str string, buff *bytes.Buffer) {
 }
 
 type Row struct {
-	hp *types2.HealthPoint
+	hp *types2.Health
 }
 
 func (this *Row) Name() string {

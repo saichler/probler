@@ -22,7 +22,7 @@ func main() {
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
 	nic.Start()
 	nic.WaitForConnection()
-	res.Logger().Info("Registering ORM ServicePoints")
+	res.Logger().Info("Registering ORM Services")
 
 	nic.Resources().Services().RegisterServiceHandlerType(&persist.OrmService{})
 	nic.Resources().Services().RegisterServiceHandlerType(&convert.ConvertService{})

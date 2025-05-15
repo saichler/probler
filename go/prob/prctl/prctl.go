@@ -42,7 +42,7 @@ func main() {
 	resources := ifs.CreateResources2("client", "./")
 	resources.Introspector().Inspect(&types.PollConfig{})
 	resources.Introspector().Inspect(&types.DeviceConfig{})
-	resources.Introspector().Inspect(&types2.HealthPoint{})
+	resources.Introspector().Inspect(&types2.Health{})
 	resources.Introspector().Inspect(&types2.Top{})
 	resources.Introspector().Inspect(&types3.Cluster{})
 	resources.Introspector().Inspect(&types.NetworkBox{})

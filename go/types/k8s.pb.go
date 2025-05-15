@@ -125,7 +125,7 @@ func (x *ReadyState) Reset() {
 	*x = ReadyState{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_k8s_proto_msgTypes[0]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpl.X.MessageStateOf(protoimpl.er(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
@@ -139,7 +139,7 @@ func (*ReadyState) ProtoMessage() {}
 func (x *ReadyState) ProtoReflect() protoreflect.Message {
 	mi := &file_k8s_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpl.X.MessageStateOf(protoimpl.er(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -180,7 +180,7 @@ func (x *RestartsState) Reset() {
 	*x = RestartsState{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_k8s_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpl.X.MessageStateOf(protoimpl.er(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
@@ -194,7 +194,7 @@ func (*RestartsState) ProtoMessage() {}
 func (x *RestartsState) ProtoReflect() protoreflect.Message {
 	mi := &file_k8s_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpl.X.MessageStateOf(protoimpl.er(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -236,7 +236,7 @@ func (x *Cluster) Reset() {
 	*x = Cluster{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_k8s_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpl.X.MessageStateOf(protoimpl.er(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
@@ -250,7 +250,7 @@ func (*Cluster) ProtoMessage() {}
 func (x *Cluster) ProtoReflect() protoreflect.Message {
 	mi := &file_k8s_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpl.X.MessageStateOf(protoimpl.er(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -306,7 +306,7 @@ func (x *Pod) Reset() {
 	*x = Pod{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_k8s_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpl.X.MessageStateOf(protoimpl.er(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
@@ -320,7 +320,7 @@ func (*Pod) ProtoMessage() {}
 func (x *Pod) ProtoReflect() protoreflect.Message {
 	mi := &file_k8s_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpl.X.MessageStateOf(protoimpl.er(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -425,7 +425,7 @@ func (x *Node) Reset() {
 	*x = Node{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_k8s_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpl.X.MessageStateOf(protoimpl.er(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
@@ -439,7 +439,7 @@ func (*Node) ProtoMessage() {}
 func (x *Node) ProtoReflect() protoreflect.Message {
 	mi := &file_k8s_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpl.X.MessageStateOf(protoimpl.er(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
