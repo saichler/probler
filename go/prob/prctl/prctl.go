@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/saichler/collect/go/types"
+	types2 "github.com/saichler/l8types/go/types"
 	"github.com/saichler/l8web/go/web/client"
 	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/prob/prctl/commands"
 	types3 "github.com/saichler/probler/go/types"
-	types2 "github.com/saichler/l8types/go/types"
 	"os"
 )
 
@@ -37,9 +37,9 @@ func main() {
 		Host:   host,
 		Port:   443,
 		Https:  true,
-		Prefix: ifs.PREFIX,
+		Prefix: common.PREFIX,
 	}
-	resources := ifs.CreateResources2("client", "./")
+	resources := common.CreateResources2("client", "./")
 	resources.Introspector().Inspect(&types.PollConfig{})
 	resources.Introspector().Inspect(&types.DeviceConfig{})
 	resources.Introspector().Inspect(&types2.Health{})

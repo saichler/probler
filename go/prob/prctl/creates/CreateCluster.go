@@ -10,10 +10,10 @@ import (
 func CreateCluster(kubeconfig, context string, serviceArea int32) *types.DeviceConfig {
 	device := &types.DeviceConfig{}
 	device.DeviceId = context
-	device.InventoryService = &types.DeviceServiceInfo{ServiceName: ifs.INVENTORY_SERVICE_K8S,
-		ServiceArea: ifs.INVENTORY_AREA_K8S}
-	device.ParsingService = &types.DeviceServiceInfo{ServiceName: ifs.PARSER_SERVICE_K8s,
-		ServiceArea: ifs.PARSER_AREA_K8S}
+	device.InventoryService = &types.DeviceServiceInfo{ServiceName: common.INVENTORY_SERVICE_K8S,
+		ServiceArea: common.INVENTORY_AREA_K8S}
+	device.ParsingService = &types.DeviceServiceInfo{ServiceName: common.PARSER_SERVICE_K8s,
+		ServiceArea: common.PARSER_AREA_K8S}
 	device.Hosts = make(map[string]*types.HostConfig)
 	host := &types.HostConfig{}
 	host.DeviceId = device.DeviceId

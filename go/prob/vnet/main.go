@@ -5,6 +5,7 @@ import (
 	"github.com/saichler/l8types/go/ifs"
 	types3 "github.com/saichler/l8types/go/types"
 	"github.com/saichler/l8web/go/web/server"
+	"github.com/saichler/layer8/go/overlay/health"
 	"github.com/saichler/layer8/go/overlay/protocol"
 	"github.com/saichler/layer8/go/overlay/vnet"
 	"github.com/saichler/layer8/go/overlay/vnic"
@@ -55,7 +56,13 @@ func startWebServer() {
 	nic.Resources().Registry().Register(&types.NetworkBox{})
 	nic.Resources().Registry().Register(&types2.Cluster{})
 	nic.Resources().Registry().Register(&types3.Query{})
+	nic.Resources().Registry().Register(&types3.Top{})
 
+	hs, ok := nic.Resources().Services().ServiceHandler(health.ServiceName, 0)
+	if ok {
+		ws := hs.WebService()
+		svr.RegisterWebService(ws, nic)
+	}
 	/*
 		topEnd := server.NewServiceHandler(health.ServiceName, 0, nic)
 		topEnd.AddMethodType(http.MethodGet, &types3.Top{})

@@ -3,10 +3,10 @@ package commands
 import (
 	"bytes"
 	"fmt"
-	"github.com/saichler/l8web/go/web/client"
-	"github.com/saichler/layer8/go/overlay/health"
 	common2 "github.com/saichler/l8types/go/ifs"
 	types2 "github.com/saichler/l8types/go/types"
+	"github.com/saichler/l8web/go/web/client"
+	health2 "github.com/saichler/layer8/go/overlay/health"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 	"sort"
@@ -17,7 +17,7 @@ import (
 func Top(rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
 	health := &types2.Health{}
-	resp, err := rc.GET("0/"+health.ServiceName, "Top",
+	resp, err := rc.GET("0/"+health2.ServiceName, "Top",
 		"", "", health)
 	if err != nil {
 		resources.Logger().Error(err.Error())

@@ -2,10 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"github.com/saichler/l8web/go/web/client"
-	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/l8srlz/go/serialize/object"
 	common2 "github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8web/go/web/client"
+	"github.com/saichler/probler/go/prob/common"
 	"time"
 )
 
@@ -18,7 +18,7 @@ func GetCluster(rc *client.RestClient, resources common2.IResources, name string
 		fmt.Println("Error: ", e.Error())
 		return
 	}
-	resp, err := rc.GET("1/"+ifs.ORM_SERVICE, "Cluster",
+	resp, err := rc.GET("1/"+common.ORM_SERVICE, "Cluster",
 		"", "", pq)
 	if err != nil {
 		resources.Logger().Error("Get Error:", err.Error())

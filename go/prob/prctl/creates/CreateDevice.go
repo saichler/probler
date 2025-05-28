@@ -8,10 +8,10 @@ import (
 func CreateDevice(ip string) *types.DeviceConfig {
 	device := &types.DeviceConfig{}
 	device.DeviceId = ip
-	device.InventoryService = &types.DeviceServiceInfo{ServiceName: ifs.INVENTORY_SERVICE_BOX,
-		ServiceArea: ifs.INVENTORY_AREA_BOX}
-	device.ParsingService = &types.DeviceServiceInfo{ServiceName: ifs.PARSER_SERVICE_BOX,
-		ServiceArea: ifs.PARSER_AREA_BOX}
+	device.InventoryService = &types.DeviceServiceInfo{ServiceName: common.INVENTORY_SERVICE_BOX,
+		ServiceArea: common.INVENTORY_AREA_BOX}
+	device.ParsingService = &types.DeviceServiceInfo{ServiceName: common.PARSER_SERVICE_BOX,
+		ServiceArea: common.PARSER_AREA_BOX}
 	device.Hosts = make(map[string]*types.HostConfig)
 	host := &types.HostConfig{}
 	host.DeviceId = device.DeviceId
