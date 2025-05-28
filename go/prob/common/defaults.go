@@ -4,7 +4,7 @@ import (
 	"github.com/saichler/l8services/go/services/manager"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types"
-	logger2 "github.com/saichler/l8utils/go/utils/logger"
+	"github.com/saichler/l8utils/go/utils/logger"
 	"github.com/saichler/l8utils/go/utils/registry"
 	"github.com/saichler/l8utils/go/utils/resources"
 	"github.com/saichler/reflect/go/reflect/introspecting"
@@ -32,22 +32,29 @@ func CreateResources(alias string) ifs.IResources {
 }
 
 func CreateResources2(alias string, path string) ifs.IResources {
-	logger := logger2.NewLoggerImpl(&logger2.FmtLogMethod{})
-	_registry := registry.NewRegistry()
-	_security, err := ifs.LoadSecurityProvider()
+	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
+	res := resources.NewResources(log)
+
+	res.Set(registry.NewRegistry())
+
+	sec, err := ifs.LoadSecurityProvider()
 	if err != nil {
 		panic("Failed to load security provider")
 	}
-	_config := &types.SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
+	res.Set(sec)
+
+	conf := &types.SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize:              resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize:              resources.DEFAULT_QUEUE_SIZE,
 		LocalAlias:               alias,
 		VnetPort:                 uint32(PROBLER_VNET),
 		KeepAliveIntervalSeconds: 30}
-	_introspector := introspecting.NewIntrospect(_registry)
-	_servicepoints := manager.NewServices(_introspector, _config)
-	_resources := resources.NewResources(_registry, _security, _servicepoints, logger, nil, nil, _config, _introspector)
-	return _resources
+	res.Set(conf)
+
+	res.Set(introspecting.NewIntrospect(res.Registry()))
+	res.Set(manager.NewServices(res))
+
+	return res
 }
 
 func WaitForSignal(resources ifs.IResources) {
