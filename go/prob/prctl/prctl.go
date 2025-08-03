@@ -46,6 +46,7 @@ func main() {
 	resources.Introspector().Inspect(&types2.Top{})
 	resources.Introspector().Inspect(&types3.Cluster{})
 	resources.Introspector().Inspect(&types.NetworkBox{})
+	resources.Introspector().Inspect(&types2.Empty{})
 
 	rc, err := client.NewRestClient(clientConfig, resources)
 	if err != nil {
