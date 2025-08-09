@@ -11,120 +11,6 @@
             box-sizing: border-box;
         }
 
-        // Toggle devices section visibility
-        function toggleDevicesSection() {
-            const devicesSection = document.getElementById('devicesSection');
-            const toggleIcon = document.getElementById('devicesToggleIcon');
-            
-            isDevicesVisible = !isDevicesVisible;
-            
-            if (isDevicesVisible) {
-                devicesSection.className = 'section visible';
-                toggleIcon.textContent = '−';
-            } else {
-                devicesSection.className = 'section collapsed';
-                toggleIcon.textContent = '+';
-            }
-            
-            // Save preference
-            saveSectionPreference('devicesVisible', isDevicesVisible);
-        }
-
-        // Toggle alarms section visibility
-        function toggleAlarmsSection() {
-            const alarmsSection = document.getElementById('alarmsSection');
-            const toggleIcon = document.getElementById('alarmsToggleIcon');
-            
-            isAlarmsVisible = !isAlarmsVisible;
-            
-            if (isAlarmsVisible) {
-                alarmsSection.className = 'section visible';
-                toggleIcon.textContent = '−';
-            } else {
-                alarmsSection.className = 'section collapsed';
-                toggleIcon.textContent = '+';
-            }
-            
-            // Save preference
-            saveSectionPreference('alarmsVisible', isAlarmsVisible);
-        }
-
-        // Load dashboard visibility preference
-        function loadDashboardPreference() {
-            try {
-                if (typeof Storage !== 'undefined') {
-                    const saved = sessionStorage.getItem('dashboardVisible');
-                    if (saved !== null) {
-                        isDashboardVisible = saved === 'true';
-                        const dashboardSection = document.getElementById('dashboardSection');
-                        const toggleText = document.getElementById('dashboardToggleText');
-                        
-                        if (isDashboardVisible) {
-                            dashboardSection.className = 'dashboard visible';
-                            toggleText.innerHTML = '📊 Hide Dashboard';
-                        } else {
-                            dashboardSection.className = 'dashboard hidden';
-                            toggleText.innerHTML = '📊 Show Dashboard';
-                        }
-                    }
-                }
-            } catch (e) {
-                // Storage not available, use default (visible)
-            }
-        }
-
-        // Load section visibility preferences
-        function loadSectionPreferences() {
-            try {
-                if (typeof Storage !== 'undefined') {
-                    // Load devices preference
-                    const devicesVisible = sessionStorage.getItem('devicesVisible');
-                    if (devicesVisible !== null) {
-                        isDevicesVisible = devicesVisible === 'true';
-                        const devicesSection = document.getElementById('devicesSection');
-                        const devicesToggleIcon = document.getElementById('devicesToggleIcon');
-                        
-                        if (isDevicesVisible) {
-                            devicesSection.className = 'section visible';
-                            devicesToggleIcon.textContent = '−';
-                        } else {
-                            devicesSection.className = 'section collapsed';
-                            devicesToggleIcon.textContent = '+';
-                        }
-                    }
-                    
-                    // Load alarms preference
-                    const alarmsVisible = sessionStorage.getItem('alarmsVisible');
-                    if (alarmsVisible !== null) {
-                        isAlarmsVisible = alarmsVisible === 'true';
-                        const alarmsSection = document.getElementById('alarmsSection');
-                        const alarmsToggleIcon = document.getElementById('alarmsToggleIcon');
-                        
-                        if (isAlarmsVisible) {
-                            alarmsSection.className = 'section visible';
-                            alarmsToggleIcon.textContent = '−';
-                        } else {
-                            alarmsSection.className = 'section collapsed';
-                            alarmsToggleIcon.textContent = '+';
-                        }
-                    }
-                }
-            } catch (e) {
-                // Storage not available, use defaults (visible)
-            }
-        }
-
-        // Save section preference
-        function saveSectionPreference(key, value) {
-            try {
-                if (typeof Storage !== 'undefined') {
-                    sessionStorage.setItem(key, value);
-                }
-            } catch (e) {
-                // Storage not available, continue without saving
-            }
-        }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #f5f3f0 0%, #e8e6e1 50%, #ddd9d3 100%);
@@ -134,9 +20,125 @@
         }
 
         .container {
-            max-width: 1120px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 14px;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 110px;
+            gap: 21px;
+        }
+
+        .main-content {
+            min-width: 0;
+        }
+
+        .toolbar {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 0;
+            padding: 12px;
+            margin-top: 85px;
+        }
+
+        .app-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 6px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #2c2c2c;
+            font-size: 0.9rem;
+        }
+
+        .app-button:hover {
+            background: rgba(107, 91, 115, 0.1);
+            border-color: rgba(107, 91, 115, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-button:active {
+            transform: translateY(0);
+        }
+
+        .app-content {
+            display: none;
+        }
+
+        .app-content.active {
+            display: block;
+        }
+
+        .app-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 21px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .app-logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b5b73;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 3px 12px rgba(107, 91, 115, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid rgba(107, 91, 115, 0.2);
+        }
+
+        .app-logo:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(107, 91, 115, 0.4);
+        }
+
+        .app-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6b5b73, #8b7355);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .app-subtitle {
+            color: #6b6b6b;
+            margin-top: 8px;
+            font-size: 1rem;
+        }
+
+        .app-icon {
+            font-size: 1.3rem;
         }
 
         /* Header */
@@ -148,6 +150,18 @@
             margin-bottom: 21px;
             border: 1px solid rgba(0, 0, 0, 0.1);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .header-left {
+            flex: 1;
         }
 
         .header h1 {
@@ -158,6 +172,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-align: center;
+            margin: 0;
         }
 
         .header .subtitle {
@@ -165,6 +180,75 @@
             color: #6b6b6b;
             margin-top: 3px;
             font-size: 0.8rem;
+        }
+
+        .header-logo {
+            flex-shrink: 0;
+            margin-left: 20px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b5b73;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(107, 91, 115, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(107, 91, 115, 0.2);
+        }
+
+        .logo:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(107, 91, 115, 0.4);
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .logo:hover::before {
+            opacity: 1;
+            animation: shine 0.6s ease;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        /* Alternative logo styles - you can uncomment the one you prefer */
+        
+        /* Network icon style */
+        .logo-network {
+            background: linear-gradient(135deg, #1e88e5, #1565c0);
+        }
+
+        /* Gear/settings icon style */
+        .logo-gear {
+            background: linear-gradient(135deg, #43a047, #2e7d32);
+        }
+
+        /* Shield/security icon style */
+        .logo-shield {
+            background: linear-gradient(135deg, #e53935, #c62828);
         }
 
         .header-controls {
@@ -302,7 +386,7 @@
             align-items: center;
         }
 
-        .header-controls {
+        .section-header-controls {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -445,12 +529,52 @@
             justify-content: space-between;
             align-items: center;
             border-radius: 14px 14px 0 0;
+            position: relative;
         }
 
         .modal-title {
             font-size: 1.26rem;
             font-weight: 600;
             color: #6b5b73;
+            flex: 1;
+        }
+
+        .device-status-badge {
+            position: absolute;
+            top: 17px;
+            right: 60px;
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .device-status-badge .status-indicator {
+            margin-right: 8px;
+        }
+
+        .device-status-badge.status-online {
+            background: rgba(90, 127, 90, 0.15);
+            color: #5a7f5a;
+            border: 1px solid rgba(90, 127, 90, 0.3);
+        }
+
+        .device-status-badge.status-offline {
+            background: rgba(168, 90, 90, 0.15);
+            color: #a85a5a;
+            border: 1px solid rgba(168, 90, 90, 0.3);
+        }
+
+        .device-status-badge.status-warning {
+            background: rgba(184, 134, 11, 0.15);
+            color: #b8860b;
+            border: 1px solid rgba(184, 134, 11, 0.3);
         }
 
         .close {
@@ -466,27 +590,224 @@
         }
 
         .modal-body {
+            padding: 0;
+            display: flex;
+            min-height: 400px;
+        }
+
+        .device-tabs {
+            display: flex;
+            width: 100%;
+        }
+
+        .tab-nav {
+            background: rgba(245, 243, 240, 0.6);
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            width: 180px;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .tab-button {
+            display: block;
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            background: transparent;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #6b6b6b;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+            color: #6b5b73;
+        }
+
+        .tab-button.active {
+            background: rgba(255, 255, 255, 0.8);
+            color: #6b5b73;
+            font-weight: 600;
+            border-right: 3px solid #6b5b73;
+        }
+
+        .tab-button.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(135deg, #6b5b73, #8b7355);
+        }
+
+        .tab-content {
+            flex: 1;
             padding: 21px;
+            background: rgba(255, 255, 255, 0.4);
         }
 
-        .device-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 14px;
+        .tab-pane {
+            display: none;
         }
 
-        .detail-section {
+        .tab-pane.active {
+            display: block;
+            animation: fadeInTab 0.3s ease;
+        }
+
+        @keyframes fadeInTab {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-section {
             background: rgba(255, 255, 255, 0.6);
             border-radius: 8px;
-            padding: 14px;
+            padding: 16px;
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .detail-section h3 {
+        .tab-section h3 {
             color: #6b5b73;
-            margin-bottom: 10px;
-            font-size: 0.84rem;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            font-weight: 600;
         }
+
+        /* Tree View Styles */
+        .tree-view {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .tree-node {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .tree-item {
+            position: relative;
+            margin: 2px 0;
+        }
+
+        .tree-toggle {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            color: #6b5b73;
+            font-weight: bold;
+            font-size: 0.8rem;
+            line-height: 20px;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+            margin-right: 5px;
+            vertical-align: top;
+        }
+
+        .tree-toggle:hover {
+            background: rgba(107, 91, 115, 0.1);
+        }
+
+        .tree-toggle.collapsed::before {
+            content: '+';
+        }
+
+        .tree-toggle.expanded::before {
+            content: '−';
+        }
+
+        .tree-toggle.no-children {
+            visibility: hidden;
+        }
+
+        .tree-content {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            max-width: calc(100% - 30px);
+            word-wrap: break-word;
+        }
+
+        .tree-content:hover {
+            background: rgba(107, 91, 115, 0.1);
+        }
+
+        .tree-content.selected {
+            background: rgba(107, 91, 115, 0.2);
+            color: #6b5b73;
+            font-weight: 600;
+        }
+
+        .tree-icon {
+            margin-right: 6px;
+            font-size: 0.9rem;
+        }
+
+        .tree-label {
+            font-weight: 500;
+        }
+
+        .tree-details {
+            color: #6b6b6b;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+        .tree-children {
+            margin-left: 20px;
+            border-left: 1px dashed rgba(107, 91, 115, 0.3);
+            padding-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .tree-children.collapsed {
+            display: none;
+        }
+
+        .tree-children.expanded {
+            display: block;
+            animation: expandTree 0.3s ease;
+        }
+
+        @keyframes expandTree {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 1000px;
+            }
+        }
+
+        /* Component Status Colors */
+        .status-ok { color: #5a7f5a; }
+        .status-error { color: #a85a5a; }
+        .status-warning { color: #b8860b; }
+        .status-unknown { color: #6b6b6b; }
+
+        /* Component Type Icons */
+        .icon-chassis::before { content: '🏢'; }
+        .icon-module::before { content: '📦'; }
+        .icon-port::before { content: '🔌'; }
+        .icon-fan::before { content: '💨'; }
+        .icon-power::before { content: '⚡'; }
+        .icon-cpu::before { content: '🔲'; }
+        .icon-memory::before { content: '💾'; }
+        .icon-sensor::before { content: '🌡️'; }
+        .icon-cable::before { content: '🔗'; }
 
         .detail-item {
             display: flex;
@@ -581,13 +902,67 @@
                 padding: 10px;
             }
             
+            .layout-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .toolbar-content {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 8px;
+            }
+            
+            .app-button {
+                margin-bottom: 0;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header-logo {
+                margin-left: 0;
+            }
+            
+            .logo {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
             .modal-content {
                 width: 95%;
                 margin: 10% auto;
             }
             
-            .device-details {
-                grid-template-columns: 1fr;
+            .device-tabs {
+                flex-direction: column;
+            }
+            
+            .tab-nav {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                display: flex;
+                overflow-x: auto;
+            }
+            
+            .tab-button {
+                flex-shrink: 0;
+                min-width: 120px;
+                border-bottom: none;
+                border-right: 1px solid rgba(0, 0, 0, 0.1);
+            }
+            
+            .tab-button.active {
+                border-right: 1px solid rgba(0, 0, 0, 0.1);
+                border-bottom: 3px solid #6b5b73;
+            }
+            
+            .tab-button.active::before {
+                display: none;
             }
             
             th, td {
@@ -601,8 +976,17 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Open Network Automation</h1>
-            <div class="subtitle">Network Operations Center - Real-time Monitoring & Management</div>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>Open Network Automation</h1>
+                    <div class="subtitle">Network Operations Center - Real-time Monitoring & Management</div>
+                </div>
+                <div class="header-logo">
+                    <div class="logo" onclick="showAbout()" title="Open Network Automation">
+                        🕸️
+                    </div>
+                </div>
+            </div>
             <div class="header-controls">
                 <button class="toggle-dashboard-btn" onclick="toggleDashboard()">
                     <span id="dashboardToggleText">📊 Hide Dashboard</span>
@@ -610,114 +994,210 @@
             </div>
         </div>
 
-        <!-- Dashboard Stats -->
-        <div class="dashboard visible" id="dashboardSection">
-            <div class="stat-card" onclick="filterDevices('all')">
-                <div class="stat-icon">🌐</div>
-                <div class="stat-value" id="totalDevices">0</div>
-                <div class="stat-label">Total Devices</div>
-                <div class="stat-trend">↗️ +3 this week</div>
-            </div>
-            <div class="stat-card" onclick="filterDevices('online')">
-                <div class="stat-icon status-online">✅</div>
-                <div class="stat-value status-online" id="onlineDevices">0</div>
-                <div class="stat-label">Online Devices</div>
-                <div class="stat-trend">98.5% uptime</div>
-            </div>
-            <div class="stat-card" onclick="filterDevices('offline')">
-                <div class="stat-icon status-offline">❌</div>
-                <div class="stat-value status-offline" id="offlineDevices">0</div>
-                <div class="stat-label">Offline Devices</div>
-                <div class="stat-trend">-2 from yesterday</div>
-            </div>
-            <div class="stat-card" onclick="showCriticalAlarms()">
-                <div class="stat-icon status-critical">🚨</div>
-                <div class="stat-value status-critical" id="criticalAlarms">0</div>
-                <div class="stat-label">Critical Alarms</div>
-                <div class="stat-trend">Immediate attention</div>
-            </div>
-            <div class="stat-card" onclick="showAllAlarms()">
-                <div class="stat-icon status-warning">⚠️</div>
-                <div class="stat-value status-warning" id="totalAlarms">0</div>
-                <div class="stat-label">Total Alarms</div>
-                <div class="stat-trend">Last updated: now</div>
-            </div>
-        </div>
+        <div class="layout-grid">
+            <div class="main-content">
+                <!-- Dashboard Application Content -->
+                <div class="app-content active" id="dashboard-app">
+                    <div class="app-header">
+                        <h1 class="app-title">📊 Dashboard</h1>
+                        <p class="app-subtitle">Network Operations Center - Real-time monitoring and management</p>
+                    </div>
+                    
+                    <!-- Dashboard Stats -->
+                    <div class="dashboard visible" id="dashboardSection">
+                        <div class="stat-card" onclick="filterDevices('all')">
+                            <div class="stat-icon">🕸️</div>
+                            <div class="stat-value" id="totalDevices">0</div>
+                            <div class="stat-label">Total Devices</div>
+                            <div class="stat-trend">↗️ +3 this week</div>
+                        </div>
+                        <div class="stat-card" onclick="filterDevices('online')">
+                            <div class="stat-icon status-online">✅</div>
+                            <div class="stat-value status-online" id="onlineDevices">0</div>
+                            <div class="stat-label">Online Devices</div>
+                            <div class="stat-trend">98.5% uptime</div>
+                        </div>
+                        <div class="stat-card" onclick="filterDevices('offline')">
+                            <div class="stat-icon status-offline">❌</div>
+                            <div class="stat-value status-offline" id="offlineDevices">0</div>
+                            <div class="stat-label">Offline Devices</div>
+                            <div class="stat-trend">-2 from yesterday</div>
+                        </div>
+                        <div class="stat-card" onclick="showCriticalAlarms()">
+                            <div class="stat-icon status-critical">🚨</div>
+                            <div class="stat-value status-critical" id="criticalAlarms">0</div>
+                            <div class="stat-label">Critical Alarms</div>
+                            <div class="stat-trend">Immediate attention</div>
+                        </div>
+                        <div class="stat-card" onclick="showAllAlarms()">
+                            <div class="stat-icon status-warning">⚠️</div>
+                            <div class="stat-value status-warning" id="totalAlarms">0</div>
+                            <div class="stat-label">Total Alarms</div>
+                            <div class="stat-trend">Last updated: now</div>
+                        </div>
+                    </div>
 
-        <!-- Content Grid -->
-        <div class="content-grid">
-            <!-- Network Devices Table -->
-            <div class="section visible" id="devicesSection">
-                <div class="section-header">
-                    <h2 class="section-title">Network Devices</h2>
-                    <div class="header-controls">
-                        <button class="refresh-btn" onclick="refreshDevices()">🔄 Refresh</button>
-                        <button class="collapse-btn" onclick="toggleDevicesSection()">
-                            <span id="devicesToggleIcon">−</span>
-                        </button>
+                    <!-- Content Grid -->
+                    <div class="content-grid">
+                        <!-- Network Devices Table -->
+                        <div class="section visible" id="devicesSection">
+                            <div class="section-header">
+                                <h2 class="section-title">Network Devices</h2>
+                                <div class="section-header-controls">
+                                    <button class="refresh-btn" onclick="refreshDevices()">🔄 Refresh</button>
+                                    <button class="collapse-btn" onclick="toggleDevicesSection()">
+                                        <span id="devicesToggleIcon">−</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="section-content" id="devicesContent">
+                                <div class="loading" id="devicesLoading">
+                                    <div class="spinner"></div>
+                                    <div>Loading devices...</div>
+                                </div>
+                                <div class="table-container">
+                                    <table id="devicesTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Status</th>
+                                                <th>Device Name</th>
+                                                <th>IP Address</th>
+                                                <th>Type</th>
+                                                <th>Location</th>
+                                                <th>CPU Usage</th>
+                                                <th>Memory Usage</th>
+                                                <th>Uptime</th>
+                                                <th>Last Seen</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="devicesTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alarms & Faults Table -->
+                        <div class="section visible" id="alarmsSection">
+                            <div class="section-header">
+                                <h2 class="section-title">Alarms & Faults</h2>
+                                <div class="section-header-controls">
+                                    <button class="refresh-btn" onclick="refreshAlarms()">🔄 Refresh</button>
+                                    <button class="collapse-btn" onclick="toggleAlarmsSection()">
+                                        <span id="alarmsToggleIcon">−</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="section-content" id="alarmsContent">
+                                <div class="loading" id="alarmsLoading">
+                                    <div class="spinner"></div>
+                                    <div>Loading alarms...</div>
+                                </div>
+                                <div class="table-container">
+                                    <table id="alarmsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Severity</th>
+                                                <th>Timestamp</th>
+                                                <th>Device</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                                <th>Status</th>
+                                                <th>Duration</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="alarmsTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="section-content" id="devicesContent">
-                    <div class="loading" id="devicesLoading">
-                        <div class="spinner"></div>
-                        <div>Loading devices...</div>
+
+                <!-- Network Topology Application -->
+                <div class="app-content" id="topology-app">
+                    <div class="app-header">
+                        <h1 class="app-title">🗺️ Network Topology</h1>
+                        <p class="app-subtitle">Interactive network topology visualization and mapping</p>
                     </div>
-                    <div class="table-container">
-                        <table id="devicesTable">
-                            <thead>
-                                <tr>
-                                    <th>Status</th>
-                                    <th>Device Name</th>
-                                    <th>IP Address</th>
-                                    <th>Type</th>
-                                    <th>Location</th>
-                                    <th>CPU Usage</th>
-                                    <th>Memory Usage</th>
-                                    <th>Uptime</th>
-                                    <th>Last Seen</th>
-                                </tr>
-                            </thead>
-                            <tbody id="devicesTableBody">
-                            </tbody>
-                        </table>
+                </div>
+
+                <!-- Bandwidth Monitor Application -->
+                <div class="app-content" id="bandwidth-app">
+                    <div class="app-header">
+                        <h1 class="app-title">📈 Bandwidth Monitor</h1>
+                        <p class="app-subtitle">Real-time bandwidth monitoring and traffic analysis</p>
+                    </div>
+                </div>
+
+                <!-- Config Manager Application -->
+                <div class="app-content" id="config-app">
+                    <div class="app-header">
+                        <h1 class="app-title">⚙️ Configuration Manager</h1>
+                        <p class="app-subtitle">Device configuration management and version control</p>
+                    </div>
+                </div>
+
+                <!-- Security Center Application -->
+                <div class="app-content" id="security-app">
+                    <div class="app-header">
+                        <h1 class="app-title">🛡️ Security Center</h1>
+                        <p class="app-subtitle">Network security monitoring and threat detection</p>
+                    </div>
+                </div>
+
+                <!-- Reports Application -->
+                <div class="app-content" id="reports-app">
+                    <div class="app-header">
+                        <h1 class="app-title">📋 Reports</h1>
+                        <p class="app-subtitle">Comprehensive reporting and analytics dashboard</p>
+                    </div>
+                </div>
+
+                <!-- Network Tools Application -->
+                <div class="app-content" id="tools-app">
+                    <div class="app-header">
+                        <h1 class="app-title">🔧 Network Tools</h1>
+                        <p class="app-subtitle">Diagnostic tools and network utilities suite</p>
+                    </div>
+                </div>
+
+                <!-- Automation Hub Application -->
+                <div class="app-content" id="automation-app">
+                    <div class="app-header">
+                        <h1 class="app-title">🤖 Automation Hub</h1>
+                        <p class="app-subtitle">Network automation workflows and scripting platform</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Alarms & Faults Table -->
-            <div class="section visible" id="alarmsSection">
-                <div class="section-header">
-                    <h2 class="section-title">Alarms & Faults</h2>
-                    <div class="header-controls">
-                        <button class="refresh-btn" onclick="refreshAlarms()">🔄 Refresh</button>
-                        <button class="collapse-btn" onclick="toggleAlarmsSection()">
-                            <span id="alarmsToggleIcon">−</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="section-content" id="alarmsContent">
-                    <div class="loading" id="alarmsLoading">
-                        <div class="spinner"></div>
-                        <div>Loading alarms...</div>
-                    </div>
-                    <div class="table-container">
-                        <table id="alarmsTable">
-                            <thead>
-                                <tr>
-                                    <th>Severity</th>
-                                    <th>Timestamp</th>
-                                    <th>Device</th>
-                                    <th>Type</th>
-                                    <th>Description</th>
-                                    <th>Status</th>
-                                    <th>Duration</th>
-                                </tr>
-                            </thead>
-                            <tbody id="alarmsTableBody">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <!-- Network Applications Toolbar -->
+            <div class="toolbar">
+                <button class="app-button active" onclick="switchApp('dashboard')" title="Dashboard">
+                    <span class="app-icon">📊</span>
+                </button>
+                <button class="app-button" onclick="switchApp('topology')" title="Network Topology">
+                    <span class="app-icon">🗺️</span>
+                </button>
+                <button class="app-button" onclick="switchApp('bandwidth')" title="Bandwidth Monitor">
+                    <span class="app-icon">📈</span>
+                </button>
+                <button class="app-button" onclick="switchApp('config')" title="Config Manager">
+                    <span class="app-icon">⚙️</span>
+                </button>
+                <button class="app-button" onclick="switchApp('security')" title="Security Center">
+                    <span class="app-icon">🛡️</span>
+                </button>
+                <button class="app-button" onclick="switchApp('reports')" title="Reports">
+                    <span class="app-icon">📋</span>
+                </button>
+                <button class="app-button" onclick="switchApp('tools')" title="Network Tools">
+                    <span class="app-icon">🔧</span>
+                </button>
+                <button class="app-button" onclick="switchApp('automation')" title="Automation Hub">
+                    <span class="app-icon">🤖</span>
+                </button>
             </div>
         </div>
     </div>
@@ -730,8 +1210,47 @@
                 <span class="close" onclick="closeModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <div class="device-details" id="deviceDetailsContent">
-                    <!-- Dynamic content will be inserted here -->
+                <div class="device-tabs">
+                    <div class="tab-nav">
+                        <button class="tab-button active" onclick="switchTab(event, 'basic-info')">📋 Basic Info</button>
+                        <button class="tab-button" onclick="switchTab(event, 'hardware')">🔧 Hardware</button>
+                        <button class="tab-button" onclick="switchTab(event, 'performance')">📊 Performance</button>
+                        <button class="tab-button" onclick="switchTab(event, 'inventory')">🏗️ Physical</button>
+                    </div>
+                    <div class="tab-content">
+                        <div id="basic-info" class="tab-pane active">
+                            <div class="tab-section">
+                                <h3>Basic Information</h3>
+                                <div class="device-details" id="basicInfoContent">
+                                    <!-- Dynamic content will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                        <div id="hardware" class="tab-pane">
+                            <div class="tab-section">
+                                <h3>Hardware Information</h3>
+                                <div class="device-details" id="hardwareContent">
+                                    <!-- Dynamic content will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                        <div id="performance" class="tab-pane">
+                            <div class="tab-section">
+                                <h3>Performance Metrics</h3>
+                                <div class="device-details" id="performanceContent">
+                                    <!-- Dynamic content will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                        <div id="inventory" class="tab-pane">
+                            <div class="tab-section">
+                                <h3>Physical Inventory</h3>
+                                <div class="tree-view" id="inventoryContent">
+                                    <!-- Dynamic tree content will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -749,6 +1268,11 @@
         let isDashboardVisible = true;
         let isDevicesVisible = true;
         let isAlarmsVisible = true;
+
+        // Show about/logo info
+        function showAbout() {
+            showNotification('Open Network Automation v1.0 - Network Operations Center', 'info');
+        }
 
         // Toggle dashboard visibility
         function toggleDashboard() {
@@ -928,66 +1452,6 @@
                 }
             } catch (e) {
                 // Storage not available, use defaults (visible)
-            }
-        }
-
-        // Save section preference
-        function saveSectionPreference(key, value) {
-            try {
-                if (typeof Storage !== 'undefined') {
-                    sessionStorage.setItem(key, value);
-                }
-            } catch (e) {
-                // Storage not available, continue without saving
-            }
-        }
-
-        // Toggle dashboard visibility
-        function toggleDashboard() {
-            const dashboardSection = document.getElementById('dashboardSection');
-            const toggleText = document.getElementById('dashboardToggleText');
-            
-            isDashboardVisible = !isDashboardVisible;
-            
-            if (isDashboardVisible) {
-                dashboardSection.className = 'dashboard visible';
-                toggleText.innerHTML = '📊 Hide Dashboard';
-            } else {
-                dashboardSection.className = 'dashboard hidden';
-                toggleText.innerHTML = '📊 Show Dashboard';
-            }
-            
-            // Save preference to localStorage (if available)
-            try {
-                if (typeof Storage !== 'undefined') {
-                    sessionStorage.setItem('dashboardVisible', isDashboardVisible);
-                }
-            } catch (e) {
-                // Storage not available, continue without saving preference
-            }
-        }
-
-        // Load dashboard visibility preference
-        function loadDashboardPreference() {
-            try {
-                if (typeof Storage !== 'undefined') {
-                    const saved = sessionStorage.getItem('dashboardVisible');
-                    if (saved !== null) {
-                        isDashboardVisible = saved === 'true';
-                        const dashboardSection = document.getElementById('dashboardSection');
-                        const toggleText = document.getElementById('dashboardToggleText');
-                        
-                        if (isDashboardVisible) {
-                            dashboardSection.className = 'dashboard visible';
-                            toggleText.innerHTML = '📊 Hide Dashboard';
-                        } else {
-                            dashboardSection.className = 'dashboard hidden';
-                            toggleText.innerHTML = '📊 Show Dashboard';
-                        }
-                    }
-                }
-            } catch (e) {
-                // Storage not available, use default (visible)
             }
         }
 
@@ -1234,87 +1698,429 @@
             });
         }
 
+        // Switch between applications
+        function switchApp(appName) {
+            // Hide all app content
+            const allApps = document.querySelectorAll('.app-content');
+            allApps.forEach(app => app.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const allButtons = document.querySelectorAll('.app-button');
+            allButtons.forEach(button => button.classList.remove('active'));
+            
+            // Show selected app content
+            const selectedApp = document.getElementById(`${appName}-app`);
+            if (selectedApp) {
+                selectedApp.classList.add('active');
+            }
+            
+            // Add active class to clicked button
+            event.target.closest('.app-button').classList.add('active');
+            
+            // Show notification for non-dashboard apps
+            if (appName !== 'dashboard') {
+                const appMap = {
+                    'topology': 'Network Topology Viewer',
+                    'bandwidth': 'Bandwidth Monitor',
+                    'config': 'Configuration Manager',
+                    'security': 'Security Center',
+                    'reports': 'Reports Dashboard',
+                    'tools': 'Network Tools Suite',
+                    'automation': 'Automation Hub'
+                };
+                
+                const appDisplayName = appMap[appName] || appName;
+                showNotification(`Switched to ${appDisplayName}`, 'info');
+            }
+        }
+
+        // Launch network application (legacy function kept for compatibility)
+        function launchApp(appName) {
+            switchApp(appName);
+        }
+        function toggleTreeNode(element) {
+            const toggle = element.querySelector('.tree-toggle');
+            const children = element.querySelector('.tree-children');
+            
+            if (!children) return;
+            
+            if (children.classList.contains('collapsed')) {
+                children.classList.remove('collapsed');
+                children.classList.add('expanded');
+                toggle.classList.remove('collapsed');
+                toggle.classList.add('expanded');
+            } else {
+                children.classList.remove('expanded');
+                children.classList.add('collapsed');
+                toggle.classList.remove('expanded');
+                toggle.classList.add('collapsed');
+            }
+        }
+
+        function selectTreeNode(element) {
+            // Remove selection from all nodes
+            document.querySelectorAll('.tree-content').forEach(content => {
+                content.classList.remove('selected');
+            });
+            
+            // Add selection to clicked node
+            element.classList.add('selected');
+        }
+
+        function createTreeNode(item, level = 0) {
+            const hasChildren = item.children && item.children.length > 0;
+            const nodeId = `node-${Math.random().toString(36).substr(2, 9)}`;
+            
+            let html = `
+                <li class="tree-item" data-level="${level}">
+                    <div class="tree-node-header" onclick="toggleTreeNode(this.parentElement)">
+                        <span class="tree-toggle ${hasChildren ? 'expanded' : 'no-children'}"></span>
+                        <div class="tree-content" onclick="event.stopPropagation(); selectTreeNode(this)">
+                            <span class="tree-icon icon-${item.type}"></span>
+                            <span class="tree-label">${item.name}</span>
+                            ${item.details ? `<span class="tree-details">${item.details}</span>` : ''}
+                            ${item.status ? `<span class="status-${item.status}"> ● ${item.status.toUpperCase()}</span>` : ''}
+                        </div>
+                    </div>
+            `;
+            
+            if (hasChildren) {
+                html += `<ul class="tree-children expanded">`;
+                item.children.forEach(child => {
+                    html += createTreeNode(child, level + 1);
+                });
+                html += `</ul>`;
+            }
+            
+            html += `</li>`;
+            return html;
+        }
+
+        function generateInventoryData(device) {
+            // Generate sample inventory data based on device type
+            const baseInventory = {
+                name: device.name,
+                type: 'chassis',
+                details: `${device.model} - ${device.serialNumber}`,
+                status: device.status === 'online' ? 'ok' : 'error',
+                children: []
+            };
+
+            if (device.type === 'Switch') {
+                baseInventory.children = [
+                    {
+                        name: 'Supervisor Module',
+                        type: 'module',
+                        details: 'C9500-SUP-1',
+                        status: 'ok',
+                        children: [
+                            {
+                                name: 'CPU',
+                                type: 'cpu',
+                                details: 'ARM Cortex A9 1.6GHz',
+                                status: 'ok'
+                            },
+                            {
+                                name: 'Memory',
+                                type: 'memory',
+                                details: '8GB DDR4',
+                                status: 'ok'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Line Card Slot 1',
+                        type: 'module',
+                        details: '48-Port GigE',
+                        status: 'ok',
+                        children: Array.from({length: 48}, (_, i) => ({
+                            name: `Port ${i + 1}`,
+                            type: 'port',
+                            details: `Gi1/0/${i + 1}`,
+                            status: i < 24 ? 'ok' : 'unknown'
+                        }))
+                    },
+                    {
+                        name: 'Power Supply 1',
+                        type: 'power',
+                        details: '1100W AC',
+                        status: 'ok'
+                    },
+                    {
+                        name: 'Power Supply 2',
+                        type: 'power',
+                        details: '1100W AC',
+                        status: 'ok'
+                    },
+                    {
+                        name: 'Cooling System',
+                        type: 'fan',
+                        details: 'Variable Speed Fans',
+                        status: 'ok',
+                        children: [
+                            {
+                                name: 'Fan Tray 1',
+                                type: 'fan',
+                                details: '3500 RPM',
+                                status: 'ok'
+                            },
+                            {
+                                name: 'Fan Tray 2',
+                                type: 'fan',
+                                details: '3500 RPM',
+                                status: 'ok'
+                            }
+                        ]
+                    }
+                ];
+            } else if (device.type === 'Router') {
+                baseInventory.children = [
+                    {
+                        name: 'Route Processor',
+                        type: 'module',
+                        details: 'MX-RE-S-8G',
+                        status: 'ok',
+                        children: [
+                            {
+                                name: 'CPU',
+                                type: 'cpu',
+                                details: 'Intel Atom C2558 2.4GHz',
+                                status: 'ok'
+                            },
+                            {
+                                name: 'Memory',
+                                type: 'memory',
+                                details: '8GB DDR3',
+                                status: 'ok'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Packet Forwarding Engine',
+                        type: 'module',
+                        details: 'MX-PFE-1',
+                        status: 'ok'
+                    },
+                    {
+                        name: 'Interface Card Slot 0',
+                        type: 'module',
+                        details: '24-Port 10GbE',
+                        status: 'ok',
+                        children: Array.from({length: 24}, (_, i) => ({
+                            name: `Port ${i}`,
+                            type: 'port',
+                            details: `xe-0/0/${i}`,
+                            status: i < 12 ? 'ok' : 'unknown'
+                        }))
+                    },
+                    {
+                        name: 'Power Supply',
+                        type: 'power',
+                        details: '2500W DC',
+                        status: 'ok'
+                    }
+                ];
+            } else if (device.type === 'Firewall') {
+                baseInventory.children = [
+                    {
+                        name: 'Management Module',
+                        type: 'module',
+                        details: 'PA-3220-MGMT',
+                        status: 'ok',
+                        children: [
+                            {
+                                name: 'CPU',
+                                type: 'cpu',
+                                details: 'Intel Atom C3558 2.2GHz',
+                                status: 'warning'
+                            },
+                            {
+                                name: 'Memory',
+                                type: 'memory',
+                                details: '4GB DDR4',
+                                status: 'warning'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Network Interfaces',
+                        type: 'module',
+                        details: '16 Ports',
+                        status: 'ok',
+                        children: Array.from({length: 16}, (_, i) => ({
+                            name: `ethernet1/${i + 1}`,
+                            type: 'port',
+                            details: i < 8 ? '1000Base-T' : '10GBase-T',
+                            status: i < 8 ? 'ok' : 'unknown'
+                        }))
+                    },
+                    {
+                        name: 'Temperature Sensors',
+                        type: 'sensor',
+                        details: 'Environmental Monitoring',
+                        status: 'warning',
+                        children: [
+                            {
+                                name: 'CPU Temperature',
+                                type: 'sensor',
+                                details: '55°C',
+                                status: 'warning'
+                            },
+                            {
+                                name: 'Inlet Temperature',
+                                type: 'sensor',
+                                details: '28°C',
+                                status: 'ok'
+                            }
+                        ]
+                    }
+                ];
+            } else if (device.type === 'Wireless AP') {
+                baseInventory.children = [
+                    {
+                        name: 'Radio Module 1',
+                        type: 'module',
+                        details: '2.4GHz 802.11n',
+                        status: device.status === 'offline' ? 'error' : 'ok'
+                    },
+                    {
+                        name: 'Radio Module 2',
+                        type: 'module',
+                        details: '5GHz 802.11ac',
+                        status: device.status === 'offline' ? 'error' : 'ok'
+                    },
+                    {
+                        name: 'Ethernet Interface',
+                        type: 'port',
+                        details: 'GigE PoE+',
+                        status: device.status === 'offline' ? 'error' : 'ok'
+                    },
+                    {
+                        name: 'Power System',
+                        type: 'power',
+                        details: 'PoE+ 25.5W',
+                        status: device.status === 'offline' ? 'error' : 'ok'
+                    }
+                ];
+            }
+
+            return baseInventory;
+        }
+        function switchTab(event, tabName) {
+            // Hide all tab panes
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            tabPanes.forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab pane
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
         // Show device details modal
         function showDeviceDetails(device) {
             document.getElementById('modalDeviceName').textContent = device.name;
             
-            const detailsContent = document.getElementById('deviceDetailsContent');
-            detailsContent.innerHTML = `
-                <div class="detail-section">
-                    <h3>Basic Information</h3>
-                    <div class="detail-item">
-                        <span class="detail-label">Device Name:</span>
-                        <span class="detail-value">${device.name}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">IP Address:</span>
-                        <span class="detail-value">${device.ipAddress}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Type:</span>
-                        <span class="detail-value">${device.type}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Location:</span>
-                        <span class="detail-value">${device.location}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Status:</span>
-                        <span class="detail-value status-${device.status}">${device.status.toUpperCase()}</span>
-                    </div>
+            // Update modal header with status badge
+            const modalHeader = document.querySelector('.modal-header');
+            const existingBadge = modalHeader.querySelector('.device-status-badge');
+            if (existingBadge) {
+                existingBadge.remove();
+            }
+            
+            const statusBadge = document.createElement('div');
+            statusBadge.className = `device-status-badge status-${device.status}`;
+            statusBadge.innerHTML = `
+                <span class="status-indicator"></span>
+                ${device.status.toUpperCase()}
+            `;
+            modalHeader.insertBefore(statusBadge, modalHeader.querySelector('.close'));
+            
+            // Populate Basic Info tab
+            document.getElementById('basicInfoContent').innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Device Name:</span>
+                    <span class="detail-value">${device.name}</span>
                 </div>
-                
-                <div class="detail-section">
-                    <h3>Hardware Information</h3>
-                    <div class="detail-item">
-                        <span class="detail-label">Model:</span>
-                        <span class="detail-value">${device.model}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Serial Number:</span>
-                        <span class="detail-value">${device.serialNumber}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Firmware:</span>
-                        <span class="detail-value">${device.firmware}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Interfaces:</span>
-                        <span class="detail-value">${device.interfaces}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Temperature:</span>
-                        <span class="detail-value">${device.temperature}°C</span>
-                    </div>
+                <div class="detail-item">
+                    <span class="detail-label">IP Address:</span>
+                    <span class="detail-value">${device.ipAddress}</span>
                 </div>
-                
-                <div class="detail-section">
-                    <h3>Performance Metrics</h3>
-                    <div class="detail-item">
-                        <span class="detail-label">CPU Usage:</span>
-                        <span class="detail-value">${device.cpuUsage}%</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Memory Usage:</span>
-                        <span class="detail-value">${device.memoryUsage}%</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Uptime:</span>
-                        <span class="detail-value">${device.uptime}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Last Seen:</span>
-                        <span class="detail-value">${device.lastSeen}</span>
-                    </div>
+                <div class="detail-item">
+                    <span class="detail-label">Type:</span>
+                    <span class="detail-value">${device.type}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Location:</span>
+                    <span class="detail-value">${device.location}</span>
                 </div>
             `;
             
+            // Populate Hardware tab
+            document.getElementById('hardwareContent').innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Model:</span>
+                    <span class="detail-value">${device.model}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Serial Number:</span>
+                    <span class="detail-value">${device.serialNumber}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Firmware:</span>
+                    <span class="detail-value">${device.firmware}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Interfaces:</span>
+                    <span class="detail-value">${device.interfaces}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Temperature:</span>
+                    <span class="detail-value">${device.temperature}°C</span>
+                </div>
+            `;
+            
+            // Populate Performance tab
+            document.getElementById('performanceContent').innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">CPU Usage:</span>
+                    <span class="detail-value">${device.cpuUsage}%</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Memory Usage:</span>
+                    <span class="detail-value">${device.memoryUsage}%</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Uptime:</span>
+                    <span class="detail-value">${device.uptime}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Last Seen:</span>
+                    <span class="detail-value">${device.lastSeen}</span>
+                </div>
+            `;
+            
+            // Populate Inventory tab
+            const inventoryData = generateInventoryData(device);
+            const treeHtml = `<ul class="tree-node">${createTreeNode(inventoryData)}</ul>`;
+            document.getElementById('inventoryContent').innerHTML = treeHtml;
+            
+            // Reset to first tab
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            document.getElementById('basic-info').classList.add('active');
+            document.querySelector('.tab-button').classList.add('active');
+            
             document.getElementById('deviceModal').style.display = 'block';
-        }
-
-        // Close modal
-        function closeModal() {
-            document.getElementById('deviceModal').style.display = 'none';
         }
 
         // Close modal when clicking outside
@@ -1323,23 +2129,6 @@
             if (event.target === modal) {
                 modal.style.display = 'none';
             }
-        }
-
-        // Utility functions
-        function showLoading(elementId) {
-            document.getElementById(elementId).style.display = 'block';
-        }
-
-        function hideLoading(elementId) {
-            document.getElementById(elementId).style.display = 'none';
-        }
-
-        function refreshDevices() {
-            loadDevices();
-        }
-
-        function refreshAlarms() {
-            loadAlarms();
         }
 
         // Filter functions for dashboard cards
@@ -1401,109 +2190,6 @@
             document.getElementById('alarmsTable').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Search functionality
-        function searchDevices(searchTerm) {
-            const tbody = document.getElementById('devicesTableBody');
-            const rows = tbody.querySelectorAll('tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm.toLowerCase())) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-
-        // API Integration functions
-        async function apiCall(endpoint, method = 'GET', data = null) {
-            try {
-                const options = {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.getItem('apiToken') // If using auth
-                    }
-                };
-                
-                if (data && method !== 'GET') {
-                    options.body = JSON.stringify(data);
-                }
-                
-                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                return await response.json();
-            } catch (error) {
-                console.error('API call failed:', error);
-                throw error;
-            }
-        }
-
-        // Real API integration functions (uncomment when ready to use with real API)
-        /*
-        async function loadDashboardStats() {
-            try {
-                const stats = await apiCall('/dashboard/stats');
-                updateDashboardStats(stats);
-            } catch (error) {
-                console.error('Error loading dashboard stats:', error);
-                // Show error notification to user
-                showNotification('Failed to load dashboard statistics', 'error');
-            }
-        }
-
-        async function loadDevices() {
-            showLoading('devicesLoading');
-            try {
-                devicesData = await apiCall('/devices');
-                renderDevicesTable();
-            } catch (error) {
-                console.error('Error loading devices:', error);
-                showNotification('Failed to load devices', 'error');
-            } finally {
-                hideLoading('devicesLoading');
-            }
-        }
-
-        async function loadAlarms() {
-            showLoading('alarmsLoading');
-            try {
-                alarmsData = await apiCall('/alarms');
-                renderAlarmsTable();
-            } catch (error) {
-                console.error('Error loading alarms:', error);
-                showNotification('Failed to load alarms', 'error');
-            } finally {
-                hideLoading('alarmsLoading');
-            }
-        }
-
-        async function getDeviceDetails(deviceId) {
-            try {
-                return await apiCall(`/devices/${deviceId}`);
-            } catch (error) {
-                console.error('Error loading device details:', error);
-                throw error;
-            }
-        }
-
-        async function acknowledgeAlarm(alarmId) {
-            try {
-                await apiCall(`/alarms/${alarmId}/acknowledge`, 'POST');
-                loadAlarms(); // Refresh alarms table
-                showNotification('Alarm acknowledged successfully', 'success');
-            } catch (error) {
-                console.error('Error acknowledging alarm:', error);
-                showNotification('Failed to acknowledge alarm', 'error');
-            }
-        }
-        */
-
         // Notification system
         function showNotification(message, type = 'info') {
             // Create notification element
@@ -1523,47 +2209,6 @@
                     notification.remove();
                 }
             }, 5000);
-        }
-
-        // Export functionality
-        function exportDevicesData() {
-            const csv = convertToCSV(devicesData);
-            downloadCSV(csv, 'network_devices.csv');
-        }
-
-        function exportAlarmsData() {
-            const csv = convertToCSV(alarmsData);
-            downloadCSV(csv, 'network_alarms.csv');
-        }
-
-        function convertToCSV(data) {
-            if (!data || data.length === 0) return '';
-            
-            const headers = Object.keys(data[0]);
-            const csvContent = [
-                headers.join(','),
-                ...data.map(row => headers.map(header => {
-                    const value = row[header];
-                    return typeof value === 'string' && value.includes(',') 
-                        ? `"${value}"` 
-                        : value;
-                }).join(','))
-            ].join('\n');
-            
-            return csvContent;
-        }
-
-        function downloadCSV(csv, filename) {
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('hidden', '');
-            a.setAttribute('href', url);
-            a.setAttribute('download', filename);
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
         }
 
         // Keyboard shortcuts
@@ -1598,57 +2243,7 @@
                 event.preventDefault();
                 toggleAlarmsSection();
             }
-            
-            // Ctrl/Cmd + F: Focus search (if implemented)
-            if ((event.ctrlKey || event.metaKey) && event.key === 'f') {
-                event.preventDefault();
-                // Focus search input if exists
-            }
         });
-
-        // WebSocket connection for real-time updates (if needed)
-        /*
-        function initializeWebSocket() {
-            const ws = new WebSocket('wss://your-websocket-endpoint');
-            
-            ws.onopen = function(event) {
-                console.log('WebSocket connected');
-                showNotification('Real-time updates enabled', 'success');
-            };
-            
-            ws.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-                handleRealtimeUpdate(data);
-            };
-            
-            ws.onclose = function(event) {
-                console.log('WebSocket disconnected');
-                showNotification('Real-time updates disabled', 'warning');
-                // Attempt to reconnect after 5 seconds
-                setTimeout(initializeWebSocket, 5000);
-            };
-            
-            ws.onerror = function(error) {
-                console.error('WebSocket error:', error);
-            };
-        }
-
-        function handleRealtimeUpdate(data) {
-            switch(data.type) {
-                case 'device_status_change':
-                    updateDeviceStatus(data.deviceId, data.status);
-                    break;
-                case 'new_alarm':
-                    addNewAlarm(data.alarm);
-                    break;
-                case 'alarm_cleared':
-                    removeAlarm(data.alarmId);
-                    break;
-                default:
-                    console.log('Unknown update type:', data.type);
-            }
-        }
-        */
     </script>
 </body>
 </html>
