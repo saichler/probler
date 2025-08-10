@@ -23,16 +23,19 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 14px;
+            padding-left: 90px;
+            padding-right: 0;
+            padding-top: 148px;
         }
 
         .layout-grid {
-            display: grid;
-            grid-template-columns: 110px 1fr;
-            gap: 21px;
+            display: block;
+            position: relative;
         }
 
         .main-content {
             min-width: 0;
+            margin-left: 0;
         }
 
         .toolbar {
@@ -42,10 +45,12 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 4px 20px rgba(0, 129, 194, 0.3);
             height: fit-content;
-            position: sticky;
-            top: 0;
+            position: fixed;
+            top: 148px;
+            left: 10px;
             padding: 12px;
-            margin-top: 85px;
+            width: 110px;
+            z-index: 100;
         }
 
         .app-button {
@@ -113,7 +118,8 @@
             backdrop-filter: blur(20px);
             border-radius: 12px;
             padding: 20px;
-            margin-bottom: 21px;
+            margin-bottom: 17px;
+            margin-top: 0;
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 4px 20px rgba(0, 129, 194, 0.3);
             text-align: center;
@@ -173,7 +179,10 @@
             margin-bottom: 21px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 4px 20px rgba(0, 129, 194, 0.3);
-            position: relative;
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            top: 14px;
         }
 
         .header-content {
@@ -280,7 +289,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
             gap: 14px;
-            margin-bottom: 21px;
+            margin-bottom: 17px;
             transition: all 0.5s ease;
             overflow: hidden;
         }
@@ -295,7 +304,7 @@
         .dashboard.visible {
             max-height: 500px;
             opacity: 1;
-            margin-bottom: 21px;
+            margin-bottom: 17px;
             transform: translateY(0);
         }
 
@@ -354,7 +363,7 @@
         .content-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 21px;
+            gap: 17px;
         }
 
         .section {
