@@ -1534,6 +1534,35 @@
             box-shadow: 0 4px 12px rgba(0, 129, 194, 0.4);
         }
 
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 5px 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .zoom-btn {
+            padding: 6px 12px !important;
+            font-size: 0.85rem !important;
+            min-width: 40px;
+        }
+
+        .zoom-level {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #0081c2;
+            min-width: 45px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 129, 194, 0.3);
+        }
+
         .topology-legend {
             display: flex;
             gap: 20px;
@@ -1631,6 +1660,8 @@
         .world-map {
             width: 100%;
             height: 100%;
+            transition: transform 0.3s ease;
+            transform-origin: center center;
         }
 
         .continent {
@@ -1745,9 +1776,32 @@
                 gap: 15px;
             }
 
+            .control-group {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .zoom-controls {
+                order: -1;
+                justify-content: center;
+            }
+
+            .zoom-btn {
+                padding: 8px 10px !important;
+                font-size: 0.8rem !important;
+                min-width: 35px;
+            }
+
+            .zoom-level {
+                font-size: 0.8rem;
+                min-width: 40px;
+                padding: 6px;
+            }
+
             .topology-legend {
                 flex-wrap: wrap;
                 gap: 10px;
+                justify-content: center;
             }
 
             .topology-info {
@@ -1997,6 +2051,12 @@
                             <button class="topology-btn" onclick="toggleLinks()">🔗 Toggle Links</button>
                             <button class="topology-btn" onclick="centerMap()">🌍 Center Map</button>
                         </div>
+                        <div class="zoom-controls">
+                            <button class="topology-btn zoom-btn" onclick="zoomIn()" title="Zoom In">🔍+</button>
+                            <span class="zoom-level" id="zoomLevel">100%</span>
+                            <button class="topology-btn zoom-btn" onclick="zoomOut()" title="Zoom Out">🔍-</button>
+                            <button class="topology-btn zoom-btn" onclick="resetZoom()" title="Reset Zoom">⚡</button>
+                        </div>
                         <div class="topology-legend">
                             <div class="legend-item">
                                 <div class="device-icon router"></div>
@@ -2049,114 +2109,12 @@
                                     </filter>
                                 </defs>
                                 
-                                <!-- Google Maps Style World Map Background -->
-                                <defs>
-                                    <style>
-                                        .world-map-style {
-                                            fill: #f5f5f5;
-                                            stroke: #e0e0e0;
-                                            stroke-width: 0.5;
-                                        }
-                                        .ocean-style {
-                                            fill: #aadaff;
-                                        }
-                                        .land-style {
-                                            fill: #f0f8f0;
-                                            stroke: #d0d0d0;
-                                            stroke-width: 0.3;
-                                        }
-                                        .country-border {
-                                            fill: none;
-                                            stroke: #c0c0c0;
-                                            stroke-width: 0.2;
-                                        }
-                                    </style>
-                                </defs>
-                                
-                                <!-- Google Maps Style Background -->
-                                <rect width="1000" height="500" class="ocean-style"/>
-                                
-                                <!-- World Map with Google Maps styling -->
-                                <g class="world-continents">
-                                    <!-- North America -->
-                                    <g id="north-america">
-                                        <!-- Canada -->
-                                        <path d="M160 70 C120 70 100 90 110 130 C120 170 140 190 170 200 C200 210 240 200 270 190 C300 180 330 160 340 130 C350 100 330 80 300 85 C270 90 240 95 210 100 C180 85 160 75 160 70" class="land-style"/>
-                                        <!-- United States -->
-                                        <path d="M150 140 C130 140 120 150 125 170 C130 190 145 200 165 205 C185 210 205 205 225 200 C245 195 265 185 275 170 C285 155 275 145 260 142 C245 145 230 148 215 150 C200 145 175 142 150 140" class="land-style"/>
-                                        <!-- Mexico -->
-                                        <path d="M160 210 C150 210 145 215 148 225 C151 235 160 240 170 242 C180 244 190 242 200 238 C210 234 215 228 212 220 C209 212 200 210 190 211 C180 212 170 211 160 210" class="land-style"/>
-                                        <!-- Greenland -->
-                                        <path d="M330 50 C320 45 310 50 312 65 C314 80 325 90 340 92 C355 94 365 85 362 70 C359 55 350 50 340 52 C335 51 332 50 330 50" class="land-style"/>
-                                    </g>
-                                    
-                                    <!-- South America -->
-                                    <g id="south-america">
-                                        <!-- Brazil -->
-                                        <path d="M240 230 C225 225 210 235 215 255 C220 275 235 295 250 315 C265 335 280 350 295 360 C310 370 320 365 318 350 C316 335 310 320 302 305 C294 290 284 275 272 260 C260 245 250 235 240 230" class="land-style"/>
-                                        <!-- Argentina -->
-                                        <path d="M250 340 C240 335 235 345 240 365 C245 385 255 405 270 415 C285 425 295 420 292 405 C289 390 283 375 275 360 C267 350 258 345 250 340" class="land-style"/>
-                                        <!-- Chile -->
-                                        <path d="M235 300 C230 295 225 300 227 315 C229 330 235 345 242 360 C249 375 252 385 248 395 C244 385 240 370 236 355 C232 340 230 325 232 310 C234 305 234 302 235 300" class="land-style"/>
-                                    </g>
-                                    
-                                    <!-- Europe -->
-                                    <g id="europe">
-                                        <!-- Western Europe -->
-                                        <path d="M450 95 C435 90 420 95 425 110 C430 125 445 135 465 140 C485 145 505 140 520 135 C535 130 545 120 540 105 C535 90 520 88 505 92 C490 96 475 98 460 96 C455 95 452 95 450 95" class="land-style"/>
-                                        <!-- Scandinavia -->
-                                        <path d="M470 60 C460 55 450 60 455 75 C460 90 470 100 485 105 C500 110 510 105 507 90 C504 75 495 65 485 62 C480 61 475 60 470 60" class="land-style"/>
-                                        <!-- UK and Ireland -->
-                                        <path d="M410 85 C405 80 395 82 398 92 C401 102 410 107 420 105 C430 103 435 95 432 87 C429 82 424 81 419 82 C414 83 412 84 410 85" class="land-style"/>
-                                        <path d="M395 88 C390 85 385 88 387 95 C389 102 395 105 402 103 C409 101 412 95 409 90 C406 87 402 86 398 87 C396 87 395 87 395 88" class="land-style"/>
-                                    </g>
-                                    
-                                    <!-- Africa -->
-                                    <g id="africa">
-                                        <path d="M480 160 C465 155 450 160 455 180 C460 200 470 220 485 240 C500 260 510 280 520 300 C530 320 545 335 565 340 C585 345 600 335 595 315 C590 295 580 275 568 255 C556 235 542 215 526 195 C510 175 495 165 480 160" class="land-style"/>
-                                        <!-- Madagascar -->
-                                        <path d="M570 295 C565 290 560 295 562 305 C564 315 570 320 578 318 C586 316 590 308 587 300 C584 295 580 293 576 294 C573 294 571 294 570 295" class="land-style"/>
-                                    </g>
-                                    
-                                    <!-- Asia -->
-                                    <g id="asia">
-                                        <!-- Russia -->
-                                        <path d="M550 65 C580 60 620 65 660 75 C700 85 740 95 780 105 C820 115 860 125 890 135 C920 145 930 155 925 170 C920 185 905 195 885 200 C865 205 840 200 815 195 C790 190 765 180 740 175 C715 170 690 165 665 160 C640 155 615 150 590 145 C565 140 550 135 545 125 C540 115 542 105 547 95 C552 85 555 75 555 70 C553 67 551 65 550 65" class="land-style"/>
-                                        <!-- China -->
-                                        <path d="M650 120 C630 115 610 120 615 140 C620 160 635 175 655 185 C675 195 695 190 710 180 C725 170 730 155 725 140 C720 125 705 120 690 123 C675 126 665 125 655 122 C652 121 651 120 650 120" class="land-style"/>
-                                        <!-- India -->
-                                        <path d="M600 180 C590 175 580 180 585 195 C590 210 600 220 615 225 C630 230 640 225 637 210 C634 195 628 185 620 182 C615 180 610 180 605 181 C602 181 601 180 600 180" class="land-style"/>
-                                        <!-- Japan -->
-                                        <path d="M770 135 C765 130 760 135 762 145 C764 155 770 160 778 158 C786 156 790 148 787 140 C784 135 780 133 776 134 C773 134 771 134 770 135" class="land-style"/>
-                                        <path d="M775 145 C770 140 765 145 767 155 C769 165 775 170 783 168 C791 166 795 158 792 150 C789 145 785 143 781 144 C778 144 776 144 775 145" class="land-style"/>
-                                    </g>
-                                    
-                                    <!-- Australia and Oceania -->
-                                    <g id="oceania">
-                                        <!-- Australia -->
-                                        <path d="M720 330 C705 325 690 330 695 350 C700 370 715 385 735 390 C755 395 775 390 785 375 C795 360 790 345 775 342 C760 345 745 348 730 345 C725 342 722 340 720 330" class="land-style"/>
-                                        <!-- New Zealand -->
-                                        <path d="M820 375 C815 370 810 375 812 385 C814 395 820 400 828 398 C836 396 840 388 837 380 C834 375 830 373 826 374 C823 374 821 374 820 375" class="land-style"/>
-                                        <path d="M815 385 C810 380 805 385 807 395 C809 405 815 410 823 408 C831 406 835 398 832 390 C829 385 825 383 821 384 C818 384 816 384 815 385" class="land-style"/>
-                                    </g>
-                                    
-                                    <!-- Southeast Asia -->
-                                    <g id="southeast-asia">
-                                        <!-- Indonesia -->
-                                        <path d="M670 225 C665 220 660 225 662 235 C664 245 670 250 678 248 C686 246 690 238 687 230 C684 225 680 223 676 224 C673 224 671 224 670 225" class="land-style"/>
-                                        <path d="M685 235 C680 230 675 235 677 245 C679 255 685 260 693 258 C701 256 705 248 702 240 C699 235 695 233 691 234 C688 234 686 234 685 235" class="land-style"/>
-                                        <path d="M700 240 C695 235 690 240 692 250 C694 260 700 265 708 263 C716 261 720 253 717 245 C714 240 710 238 706 239 C703 239 701 239 700 240" class="land-style"/>
-                                    </g>
-                                    
-                                    <!-- Country borders (subtle lines) -->
-                                    <g class="country-borders">
-                                        <!-- Major country border lines -->
-                                        <path d="M200 180 L240 175" class="country-border"/>
-                                        <path d="M460 120 L500 118" class="country-border"/>
-                                        <path d="M500 180 L540 178" class="country-border"/>
-                                        <path d="M620 160 L680 155" class="country-border"/>
-                                    </g>
-                                </g>
+                                <!-- World Map using your world.svg -->
+                                <image x="0" y="0" width="1000" height="500" 
+                                       href="world.svg"
+                                       preserveAspectRatio="xMidYMid slice" 
+                                       opacity="0.8"
+                                       class="world-map-image"/>
                                 
                                 <!-- Network Links Layer -->
                                 <g id="networkLinks" class="network-links"></g>
@@ -3057,40 +3015,43 @@
         let networkDevicesData = [];
         let networkLinksData = [];
         let topologyLinksVisible = true;
+        let currentZoom = 1;
+        let panX = 0;
+        let panY = 0;
 
         // Initialize topology data
         function initializeTopology() {
             // Sample network devices with global coordinates
             networkDevicesData = [
-                // North America
-                { id: 'ny-core-01', name: 'NY-CORE-01', type: 'router', x: 240, y: 120, status: 'online', location: 'New York, USA' },
-                { id: 'la-core-02', name: 'LA-CORE-02', type: 'router', x: 180, y: 160, status: 'online', location: 'Los Angeles, USA' },
-                { id: 'chicago-sw-01', name: 'CHI-SW-01', type: 'switch', x: 210, y: 140, status: 'online', location: 'Chicago, USA' },
-                { id: 'toronto-fw-01', name: 'TOR-FW-01', type: 'firewall', x: 250, y: 110, status: 'warning', location: 'Toronto, Canada' },
+                // North America (adjusted for standard world map projection)
+                { id: 'ny-core-01', name: 'NY-CORE-01', type: 'router', x: 260, y: 180, status: 'online', location: 'New York, USA' },
+                { id: 'la-core-02', name: 'LA-CORE-02', type: 'router', x: 160, y: 200, status: 'online', location: 'Los Angeles, USA' },
+                { id: 'chicago-sw-01', name: 'CHI-SW-01', type: 'switch', x: 220, y: 190, status: 'online', location: 'Chicago, USA' },
+                { id: 'toronto-fw-01', name: 'TOR-FW-01', type: 'firewall', x: 250, y: 160, status: 'warning', location: 'Toronto, Canada' },
                 
-                // Europe
-                { id: 'london-core-01', name: 'LON-CORE-01', type: 'router', x: 480, y: 100, status: 'online', location: 'London, UK' },
-                { id: 'paris-sw-01', name: 'PAR-SW-01', type: 'switch', x: 460, y: 110, status: 'online', location: 'Paris, France' },
-                { id: 'frankfurt-core-02', name: 'FRA-CORE-02', type: 'router', x: 500, y: 95, status: 'online', location: 'Frankfurt, Germany' },
-                { id: 'amsterdam-srv-01', name: 'AMS-SRV-01', type: 'server', x: 485, y: 85, status: 'online', location: 'Amsterdam, Netherlands' },
+                // Europe (repositioned to European landmass)
+                { id: 'london-core-01', name: 'LON-CORE-01', type: 'router', x: 490, y: 150, status: 'online', location: 'London, UK' },
+                { id: 'paris-sw-01', name: 'PAR-SW-01', type: 'switch', x: 510, y: 170, status: 'online', location: 'Paris, France' },
+                { id: 'frankfurt-core-02', name: 'FRA-CORE-02', type: 'router', x: 530, y: 160, status: 'online', location: 'Frankfurt, Germany' },
+                { id: 'amsterdam-srv-01', name: 'AMS-SRV-01', type: 'server', x: 515, y: 145, status: 'online', location: 'Amsterdam, Netherlands' },
                 
-                // Asia
-                { id: 'tokyo-core-01', name: 'TYO-CORE-01', type: 'router', x: 720, y: 130, status: 'online', location: 'Tokyo, Japan' },
-                { id: 'singapore-sw-01', name: 'SIN-SW-01', type: 'switch', x: 680, y: 180, status: 'online', location: 'Singapore' },
-                { id: 'mumbai-fw-01', name: 'MUM-FW-01', type: 'firewall', x: 600, y: 160, status: 'offline', location: 'Mumbai, India' },
-                { id: 'seoul-srv-01', name: 'SEO-SRV-01', type: 'server', x: 740, y: 120, status: 'warning', location: 'Seoul, South Korea' },
+                // Asia (repositioned to Asian landmass)
+                { id: 'tokyo-core-01', name: 'TYO-CORE-01', type: 'router', x: 810, y: 190, status: 'online', location: 'Tokyo, Japan' },
+                { id: 'singapore-sw-01', name: 'SIN-SW-01', type: 'switch', x: 730, y: 270, status: 'online', location: 'Singapore' },
+                { id: 'mumbai-fw-01', name: 'MUM-FW-01', type: 'firewall', x: 650, y: 230, status: 'offline', location: 'Mumbai, India' },
+                { id: 'seoul-srv-01', name: 'SEO-SRV-01', type: 'server', x: 795, y: 180, status: 'warning', location: 'Seoul, South Korea' },
                 
-                // Australia
-                { id: 'sydney-core-01', name: 'SYD-CORE-01', type: 'router', x: 760, y: 340, status: 'online', location: 'Sydney, Australia' },
-                { id: 'melbourne-sw-01', name: 'MEL-SW-01', type: 'switch', x: 740, y: 350, status: 'online', location: 'Melbourne, Australia' },
+                // Australia (positioned on Australian continent)
+                { id: 'sydney-core-01', name: 'SYD-CORE-01', type: 'router', x: 850, y: 380, status: 'online', location: 'Sydney, Australia' },
+                { id: 'melbourne-sw-01', name: 'MEL-SW-01', type: 'switch', x: 835, y: 390, status: 'online', location: 'Melbourne, Australia' },
                 
-                // South America  
-                { id: 'saopaulo-core-01', name: 'SAO-CORE-01', type: 'router', x: 250, y: 300, status: 'online', location: 'São Paulo, Brazil' },
-                { id: 'bogota-fw-01', name: 'BOG-FW-01', type: 'firewall', x: 230, y: 260, status: 'warning', location: 'Bogotá, Colombia' },
+                // South America (positioned on South American continent)
+                { id: 'saopaulo-core-01', name: 'SAO-CORE-01', type: 'router', x: 300, y: 350, status: 'online', location: 'São Paulo, Brazil' },
+                { id: 'bogota-fw-01', name: 'BOG-FW-01', type: 'firewall', x: 280, y: 310, status: 'warning', location: 'Bogotá, Colombia' },
                 
-                // Africa
-                { id: 'cairo-sw-01', name: 'CAI-SW-01', type: 'switch', x: 520, y: 180, status: 'online', location: 'Cairo, Egypt' },
-                { id: 'capetown-srv-01', name: 'CPT-SRV-01', type: 'server', x: 490, y: 290, status: 'online', location: 'Cape Town, South Africa' }
+                // Africa (positioned on African continent)
+                { id: 'cairo-sw-01', name: 'CAI-SW-01', type: 'switch', x: 560, y: 220, status: 'online', location: 'Cairo, Egypt' },
+                { id: 'capetown-srv-01', name: 'CPT-SRV-01', type: 'server', x: 540, y: 380, status: 'online', location: 'Cape Town, South Africa' }
             ];
 
             // Network links between devices
@@ -3299,8 +3260,101 @@
         }
 
         function centerMap() {
-            // Simulate map centering
+            resetZoom();
             showNotification('🌍 Map centered', 'info');
+        }
+
+        // Zoom control functions
+        function zoomIn() {
+            if (currentZoom < 3) { // Max zoom 300%
+                currentZoom += 0.25;
+                applyZoom();
+                showNotification(`🔍 Zoomed to ${Math.round(currentZoom * 100)}%`, 'info');
+            }
+        }
+
+        function zoomOut() {
+            if (currentZoom > 0.5) { // Min zoom 50%
+                currentZoom -= 0.25;
+                applyZoom();
+                showNotification(`🔍 Zoomed to ${Math.round(currentZoom * 100)}%`, 'info');
+            }
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            panX = 0;
+            panY = 0;
+            applyZoom();
+            showNotification('⚡ Zoom reset to 100%', 'info');
+        }
+
+        function applyZoom() {
+            const worldMap = document.getElementById('worldMap');
+            if (worldMap) {
+                const transform = `scale(${currentZoom}) translate(${panX}px, ${panY}px)`;
+                worldMap.style.transform = transform;
+            }
+            
+            // Update zoom level display
+            const zoomLevel = document.getElementById('zoomLevel');
+            if (zoomLevel) {
+                zoomLevel.textContent = `${Math.round(currentZoom * 100)}%`;
+            }
+        }
+
+        // Add mouse wheel zoom support
+        function initializeZoomControls() {
+            const mapContainer = document.querySelector('.world-map-container');
+            if (mapContainer) {
+                // Mouse wheel zoom
+                mapContainer.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    if (e.deltaY < 0) {
+                        zoomIn();
+                    } else {
+                        zoomOut();
+                    }
+                });
+
+                // Add visual feedback for zoom capability
+                mapContainer.style.cursor = 'grab';
+                
+                // Simple drag support
+                let isDragging = false;
+                let startX = 0;
+                let startY = 0;
+                let startPanX = 0;
+                let startPanY = 0;
+
+                mapContainer.addEventListener('mousedown', (e) => {
+                    if (currentZoom > 1) {
+                        isDragging = true;
+                        startX = e.clientX;
+                        startY = e.clientY;
+                        startPanX = panX;
+                        startPanY = panY;
+                        mapContainer.style.cursor = 'grabbing';
+                    }
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging) {
+                        const deltaX = (e.clientX - startX) / currentZoom;
+                        const deltaY = (e.clientY - startY) / currentZoom;
+                        panX = startPanX + deltaX;
+                        panY = startPanY + deltaY;
+                        applyZoom();
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        mapContainer.style.cursor = currentZoom > 1 ? 'grab' : 'default';
+                    }
+                });
+            }
         }
 
         // Switch between applications
@@ -3325,6 +3379,10 @@
             // Initialize specific apps when opened
             if (appName === 'topology') {
                 initializeTopology();
+                // Initialize zoom controls after a short delay to ensure DOM is ready
+                setTimeout(() => {
+                    initializeZoomControls();
+                }, 100);
             }
             
             // Show notification for non-dashboard apps
