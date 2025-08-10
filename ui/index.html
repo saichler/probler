@@ -382,6 +382,17 @@
             padding: 0;
         }
 
+        .section.collapsed.devices-section .section-content {
+            max-height: 120px;
+            opacity: 1;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .section.collapsed.devices-section .table-container {
+            max-height: 120px;
+        }
+
         .section.visible .section-content {
             max-height: 1000px;
             opacity: 1;
@@ -487,6 +498,99 @@
         .device-row:hover {
             background: rgba(0, 129, 194, 0.05);
             cursor: pointer;
+        }
+
+        .alarm-row:hover {
+            background: rgba(0, 129, 194, 0.05);
+            cursor: pointer;
+        }
+
+        /* Alarm Modal Styles */
+        .alarm-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px;
+        }
+
+        /* Custom scrollbar for alarm modal */
+        .alarm-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .alarm-content::-webkit-scrollbar-track {
+            background: rgba(0, 129, 194, 0.1);
+            border-radius: 4px;
+        }
+
+        .alarm-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 129, 194, 0.3);
+            border-radius: 4px;
+        }
+
+        .alarm-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 129, 194, 0.5);
+        }
+
+        .alarm-info-section {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid rgba(0, 129, 194, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 129, 194, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .alarm-info-section .alarm-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .alarm-info-section .detail-item {
+            margin-bottom: 4px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(0, 129, 194, 0.1);
+            font-size: 0.85rem;
+        }
+
+        .alarm-info-section .detail-label {
+            font-weight: bold;
+            color: #0081c2;
+            font-size: 0.8rem;
+        }
+
+        .alarm-info-section .detail-value {
+            color: #212529;
+            font-size: 0.85rem;
+        }
+
+        .alarm-info-section h3 {
+            color: #0081c2;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(0, 129, 194, 0.2);
+            padding-bottom: 6px;
+        }
+
+        .alarm-aggregation-section {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid rgba(0, 129, 194, 0.1);
+            flex: 1;
+        }
+
+        .alarm-aggregation-section h3 {
+            color: #0081c2;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(0, 129, 194, 0.2);
+            padding-bottom: 8px;
         }
 
         .status-indicator {
@@ -1099,13 +1203,13 @@
                     <!-- Content Grid -->
                     <div class="content-grid">
                         <!-- Network Devices Table -->
-                        <div class="section visible" id="devicesSection">
+                        <div class="section collapsed devices-section" id="devicesSection">
                             <div class="section-header">
                                 <h2 class="section-title">Network Devices</h2>
                                 <div class="section-header-controls">
                                     <button class="refresh-btn" onclick="refreshDevices()">🔄 Refresh</button>
                                     <button class="collapse-btn" onclick="toggleDevicesSection()">
-                                        <span id="devicesToggleIcon">−</span>
+                                        <span id="devicesToggleIcon">+</span>
                                     </button>
                                 </div>
                             </div>
@@ -1233,6 +1337,32 @@
         </div>
     </div>
 
+    <!-- Alarm Details Modal -->
+    <div id="alarmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalAlarmTitle">Alarm Details</h2>
+                <span class="close" onclick="closeAlarmModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="alarm-content">
+                    <div class="alarm-info-section">
+                        <h3>Alarm Information</h3>
+                        <div class="alarm-details" id="alarmInfoContent">
+                            <!-- Dynamic content will be inserted here -->
+                        </div>
+                    </div>
+                    <div class="alarm-aggregation-section">
+                        <h3>Aggregated Alarms & Events</h3>
+                        <div class="tree-view" id="alarmAggregationContent">
+                            <!-- Dynamic tree content will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Device Details Modal -->
     <div id="deviceModal" class="modal">
         <div class="modal-content">
@@ -1297,7 +1427,7 @@
 
         // Dashboard visibility state
         let isDashboardVisible = true;
-        let isDevicesVisible = true;
+        let isDevicesVisible = false;
         let isAlarmsVisible = true;
 
         // Toggle dashboard visibility
@@ -1332,10 +1462,10 @@
             isDevicesVisible = !isDevicesVisible;
             
             if (isDevicesVisible) {
-                devicesSection.className = 'section visible';
+                devicesSection.className = 'section visible devices-section';
                 toggleIcon.textContent = '−';
             } else {
-                devicesSection.className = 'section collapsed';
+                devicesSection.className = 'section collapsed devices-section';
                 toggleIcon.textContent = '+';
             }
             
@@ -1451,10 +1581,10 @@
                         const devicesToggleIcon = document.getElementById('devicesToggleIcon');
                         
                         if (isDevicesVisible) {
-                            devicesSection.className = 'section visible';
+                            devicesSection.className = 'section visible devices-section';
                             devicesToggleIcon.textContent = '−';
                         } else {
-                            devicesSection.className = 'section collapsed';
+                            devicesSection.className = 'section collapsed devices-section';
                             devicesToggleIcon.textContent = '+';
                         }
                     }
@@ -1708,6 +1838,9 @@
             alarmsData.forEach(alarm => {
                 const row = document.createElement('tr');
                 const severityClass = `severity-${alarm.severity.toLowerCase()}`;
+                row.className = 'alarm-row';
+                row.style.cursor = 'pointer';
+                row.onclick = () => showAlarmDetails(alarm);
 
                 row.innerHTML = `
                     <td class="${severityClass}">${alarm.severity}</td>
@@ -1721,6 +1854,171 @@
 
                 tbody.appendChild(row);
             });
+        }
+
+        // Close alarm modal
+        function closeAlarmModal() {
+            document.getElementById('alarmModal').style.display = 'none';
+        }
+
+
+        // Generate aggregated alarm data
+        function generateAlarmAggregation(alarm) {
+            // Generate sample aggregated data based on alarm
+            const aggregation = {
+                name: `${alarm.type} Alarm on ${alarm.device}`,
+                type: 'root-alarm',
+                severity: alarm.severity,
+                details: `Root cause alarm - ${alarm.description}`,
+                status: alarm.status,
+                children: []
+            };
+
+            // Generate related alarms
+            if (alarm.severity === 'Critical') {
+                aggregation.children = [
+                    {
+                        name: 'Interface Connectivity Issues',
+                        type: 'related-alarm',
+                        severity: 'Major',
+                        details: 'Secondary alarm triggered by main issue',
+                        status: 'Active',
+                        children: [
+                            {
+                                name: 'Link Down Event - Interface Gi1/0/24',
+                                type: 'event',
+                                severity: 'Warning',
+                                details: 'Interface state changed to down',
+                                status: 'Acknowledged',
+                                timestamp: '2025-08-03 14:25:15'
+                            },
+                            {
+                                name: 'SNMP Timeout Event',
+                                type: 'event',
+                                severity: 'Minor',
+                                details: 'SNMP polling timeout detected',
+                                status: 'Active',
+                                timestamp: '2025-08-03 14:25:30'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Performance Degradation',
+                        type: 'related-alarm',
+                        severity: 'Minor',
+                        details: 'System performance impact detected',
+                        status: 'Active',
+                        children: [
+                            {
+                                name: 'Memory Usage Spike Event',
+                                type: 'event',
+                                severity: 'Warning',
+                                details: 'Memory usage exceeded 85% threshold',
+                                status: 'Active',
+                                timestamp: '2025-08-03 14:26:00'
+                            },
+                            {
+                                name: 'Response Time Degradation Event',
+                                type: 'event',
+                                severity: 'Minor',
+                                details: 'Average response time increased by 200ms',
+                                status: 'Active',
+                                timestamp: '2025-08-03 14:26:30'
+                            }
+                        ]
+                    }
+                ];
+            } else if (alarm.severity === 'Major') {
+                aggregation.children = [
+                    {
+                        name: 'Resource Threshold Violations',
+                        type: 'related-alarm',
+                        severity: 'Minor',
+                        details: 'Resource utilization approaching limits',
+                        status: 'Active',
+                        children: [
+                            {
+                                name: 'Memory Threshold Event',
+                                type: 'event',
+                                severity: 'Warning',
+                                details: 'Memory usage above 75% for 5 minutes',
+                                status: 'Active',
+                                timestamp: '2025-08-03 13:45:20'
+                            }
+                        ]
+                    }
+                ];
+            } else {
+                aggregation.children = [
+                    {
+                        name: 'Supporting Events',
+                        type: 'event-group',
+                        severity: 'Info',
+                        details: 'Related system events',
+                        status: 'Informational',
+                        children: [
+                            {
+                                name: 'Configuration Change Event',
+                                type: 'event',
+                                severity: 'Info',
+                                details: 'System configuration was modified',
+                                status: 'Closed',
+                                timestamp: '2025-08-03 14:20:10'
+                            }
+                        ]
+                    }
+                ];
+            }
+
+            return aggregation;
+        }
+
+        // Show alarm details modal
+        function showAlarmDetails(alarm) {
+            document.getElementById('modalAlarmTitle').textContent = `${alarm.severity} Alarm - ${alarm.device}`;
+            
+            // Populate Alarm Info section
+            document.getElementById('alarmInfoContent').innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Severity:</span>
+                    <span class="detail-value severity-${alarm.severity.toLowerCase()}">${alarm.severity}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Timestamp:</span>
+                    <span class="detail-value">${alarm.timestamp}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Device:</span>
+                    <span class="detail-value">${alarm.device}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Type:</span>
+                    <span class="detail-value">${alarm.type}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Description:</span>
+                    <span class="detail-value">${alarm.description}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value">${alarm.status}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Duration:</span>
+                    <span class="detail-value">${alarm.duration}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Alarm ID:</span>
+                    <span class="detail-value">${alarm.id}</span>
+                </div>
+            `;
+            
+            // Populate Aggregation section
+            const aggregationData = generateAlarmAggregation(alarm);
+            const treeHtml = `<ul class="tree-node">${createTreeNode(aggregationData)}</ul>`;
+            document.getElementById('alarmAggregationContent').innerHTML = treeHtml;
+            
+            document.getElementById('alarmModal').style.display = 'block';
         }
 
         // Switch between applications
@@ -2150,9 +2448,14 @@
 
         // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('deviceModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
+            const deviceModal = document.getElementById('deviceModal');
+            const alarmModal = document.getElementById('alarmModal');
+            
+            if (event.target === deviceModal) {
+                deviceModal.style.display = 'none';
+            }
+            if (event.target === alarmModal) {
+                alarmModal.style.display = 'none';
             }
         }
 
