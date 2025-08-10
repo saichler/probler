@@ -217,6 +217,9 @@
         .header-logo {
             flex-shrink: 0;
             margin-left: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .logo {
@@ -264,6 +267,49 @@
         @keyframes shine {
             0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
             100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .logout-btn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+            background: linear-gradient(135deg, #e35460, #dc3545);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 129, 194, 0.2);
+        }
+
+        .username {
+            color: #0081c2;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
         }
 
         /* Alternative logo styles - you can uncomment the one you prefer */
@@ -1191,6 +1237,12 @@
                     <div class="subtitle">Network Operations Center - Real-time Monitoring & Management</div>
                 </div>
                 <div class="header-logo">
+                    <div class="user-info">
+                        <span class="username" id="currentUsername">admin</span>
+                        <div class="logout-btn" onclick="logout()" title="Logout">
+                            🚪
+                        </div>
+                    </div>
                     <div class="logo" onclick="toggleDashboard()" title="Toggle Dashboard">
                         🕸️
                     </div>
@@ -1488,6 +1540,11 @@
     </div>
 
     <script>
+        // Check authentication - redirect to login if not authenticated
+        if (sessionStorage.getItem('authenticated') !== 'true') {
+            window.location.href = 'login.html';
+        }
+        
         // API Base URL - Replace with your actual API endpoint
         const API_BASE_URL = 'https://api.yournetworkautomation.com/v1';
 
@@ -1522,6 +1579,27 @@
             } catch (e) {
                 // Storage not available, continue without saving preference
             }
+        }
+
+        // Logout function
+        function logout() {
+            // Clear session storage
+            sessionStorage.removeItem('authenticated');
+            sessionStorage.removeItem('username');
+            
+            // Show logout notification
+            showNotification('🚪 Logging out...', 'info');
+            
+            // Redirect to login page after a short delay
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
+        }
+
+        // Load and display username
+        function loadUsername() {
+            const username = sessionStorage.getItem('username') || 'admin';
+            document.getElementById('currentUsername').textContent = username;
         }
 
         // Toggle devices section visibility
@@ -1601,6 +1679,7 @@
         });
 
         function initializeApp() {
+            loadUsername(); // Load and display current username
             loadDashboardPreference(); // Load saved preference first
             loadSectionPreferences(); // Load section preferences
             loadDashboardStats();
