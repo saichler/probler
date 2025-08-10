@@ -539,8 +539,25 @@
             background: rgba(255, 255, 255, 0.8);
             border-radius: 8px;
             padding: 12px;
-            border: 1px solid rgba(0, 129, 194, 0.2);
-            box-shadow: 0 6px 20px rgba(0, 129, 194, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(0, 129, 194, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 129, 194, 0.2), 0 2px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin-top: 12px;
+        }
+
+        .alarm-info-section::before {
+            content: 'Alarm Information';
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--alarm-severity-color, #0081c2);
+            padding: 4px 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 4px;
+            border: 1px solid var(--alarm-severity-color, rgba(0, 129, 194, 0.3));
+            box-shadow: 0 2px 8px var(--alarm-severity-color, rgba(0, 129, 194, 0.2));
         }
 
         .alarm-info-section .alarm-details {
@@ -556,6 +573,14 @@
             font-size: 0.85rem;
         }
 
+        .alarm-info-section .detail-item:first-child {
+            margin-top: 5px;
+        }
+
+        .alarm-info-section .detail-item:nth-child(2) {
+            margin-top: 5px;
+        }
+
         .alarm-info-section .detail-label {
             font-weight: bold;
             color: #0081c2;
@@ -567,31 +592,33 @@
             font-size: 0.85rem;
         }
 
-        .alarm-info-section h3 {
-            color: #0081c2;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            border-bottom: 1px solid rgba(0, 129, 194, 0.2);
-            padding-bottom: 6px;
-        }
 
         .alarm-aggregation-section {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.8);
             border-radius: 8px;
             padding: 16px;
-            border: 1px solid rgba(0, 129, 194, 0.1);
+            border: 2px solid rgba(0, 129, 194, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 129, 194, 0.2), 0 2px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin-top: 12px;
             flex: 1;
         }
 
-        .alarm-aggregation-section h3 {
+        .alarm-aggregation-section::before {
+            content: 'Aggregated Alarms & Events';
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.95);
             color: #0081c2;
-            margin-bottom: 15px;
-            font-size: 1rem;
+            padding: 4px 12px;
+            font-size: 0.9rem;
             font-weight: 600;
-            border-bottom: 1px solid rgba(0, 129, 194, 0.2);
-            padding-bottom: 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 129, 194, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 129, 194, 0.2);
         }
+
 
         .status-indicator {
             display: inline-block;
@@ -890,6 +917,51 @@
         .tree-icon {
             margin-right: 6px;
             font-size: 0.9rem;
+        }
+
+        /* Severity-based tree node dots */
+        .tree-severity-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            margin-left: 2px;
+        }
+
+        .tree-severity-dot.severity-critical {
+            background-color: #dc3545;
+            box-shadow: 0 0 4px rgba(220, 53, 69, 0.5);
+        }
+
+        .tree-severity-dot.severity-major {
+            background-color: #fd7e14;
+            box-shadow: 0 0 4px rgba(253, 126, 20, 0.5);
+        }
+
+        .tree-severity-dot.severity-minor {
+            background-color: #ffc107;
+            box-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+        }
+
+        .tree-severity-dot.severity-warning {
+            background-color: #ffc107;
+            box-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+        }
+
+        .tree-severity-dot.severity-info {
+            background-color: #28a745;
+            box-shadow: 0 0 4px rgba(40, 167, 69, 0.5);
+        }
+
+        .tree-severity-dot.severity-ok {
+            background-color: #28a745;
+            box-shadow: 0 0 4px rgba(40, 167, 69, 0.5);
+        }
+
+        .tree-severity-dot.severity-unknown {
+            background-color: #6c757d;
+            box-shadow: 0 0 4px rgba(108, 117, 125, 0.5);
         }
 
         .tree-label {
@@ -1347,13 +1419,11 @@
             <div class="modal-body">
                 <div class="alarm-content">
                     <div class="alarm-info-section">
-                        <h3>Alarm Information</h3>
                         <div class="alarm-details" id="alarmInfoContent">
                             <!-- Dynamic content will be inserted here -->
                         </div>
                     </div>
                     <div class="alarm-aggregation-section">
-                        <h3>Aggregated Alarms & Events</h3>
                         <div class="tree-view" id="alarmAggregationContent">
                             <!-- Dynamic tree content will be inserted here -->
                         </div>
@@ -1977,6 +2047,27 @@
         function showAlarmDetails(alarm) {
             document.getElementById('modalAlarmTitle').textContent = `${alarm.severity} Alarm - ${alarm.device}`;
             
+            // Set severity color for the floating title
+            const alarmInfoSection = document.querySelector('.alarm-info-section');
+            let severityColor;
+            switch(alarm.severity.toLowerCase()) {
+                case 'critical':
+                    severityColor = '#dc3545';
+                    break;
+                case 'major':
+                    severityColor = '#fd7e14';
+                    break;
+                case 'minor':
+                    severityColor = '#ffc107';
+                    break;
+                case 'warning':
+                    severityColor = '#ffc107';
+                    break;
+                default:
+                    severityColor = '#0081c2';
+            }
+            alarmInfoSection.style.setProperty('--alarm-severity-color', severityColor);
+            
             // Populate Alarm Info section
             document.getElementById('alarmInfoContent').innerHTML = `
                 <div class="detail-item">
@@ -2093,16 +2184,18 @@
         function createTreeNode(item, level = 0) {
             const hasChildren = item.children && item.children.length > 0;
             const nodeId = `node-${Math.random().toString(36).substr(2, 9)}`;
+            const severityClass = item.severity ? `severity-${item.severity.toLowerCase()}` : 'severity-unknown';
             
             let html = `
                 <li class="tree-item" data-level="${level}">
                     <div class="tree-node-header" onclick="toggleTreeNode(this.parentElement)">
                         <span class="tree-toggle ${hasChildren ? 'expanded' : 'no-children'}"></span>
                         <div class="tree-content" onclick="event.stopPropagation(); selectTreeNode(this)">
-                            <span class="tree-icon icon-${item.type}"></span>
+                            <span class="tree-severity-dot ${severityClass}"></span>
                             <span class="tree-label">${item.name}</span>
                             ${item.details ? `<span class="tree-details">${item.details}</span>` : ''}
-                            ${item.status ? `<span class="status-${item.status}"> ● ${item.status.toUpperCase()}</span>` : ''}
+                            ${item.status ? `<span class="status-${item.status}"> ${item.status.toUpperCase()}</span>` : ''}
+                            ${item.timestamp ? `<span class="tree-details"> - ${item.timestamp}</span>` : ''}
                         </div>
                     </div>
             `;
