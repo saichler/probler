@@ -1497,6 +1497,268 @@
             10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
             20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
+
+        /* Network Topology Styles */
+        .topology-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .topology-btn {
+            background: linear-gradient(135deg, #0081c2, #005a87);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 129, 194, 0.3);
+        }
+
+        .topology-btn:hover {
+            background: linear-gradient(135deg, #005a87, #003d5c);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 129, 194, 0.4);
+        }
+
+        .topology-legend {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #333;
+        }
+
+        .device-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid;
+        }
+
+        .device-icon.router {
+            background: #28a745;
+            border-color: #1e7e34;
+        }
+
+        .device-icon.switch {
+            background: #007bff;
+            border-color: #0056b3;
+        }
+
+        .device-icon.server {
+            background: #6f42c1;
+            border-color: #59339d;
+        }
+
+        .device-icon.firewall {
+            background: #dc3545;
+            border-color: #bd2130;
+        }
+
+        .topology-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 129, 194, 0.1);
+            overflow: hidden;
+        }
+
+        .topology-info {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(0, 129, 194, 0.05), rgba(0, 90, 135, 0.1));
+            border-bottom: 1px solid rgba(0, 129, 194, 0.2);
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            display: block;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #0081c2;
+        }
+
+        .info-value.health-good {
+            color: #28a745;
+        }
+
+        .info-value.health-warning {
+            color: #ffc107;
+        }
+
+        .info-value.health-critical {
+            color: #dc3545;
+        }
+
+        .world-map-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            overflow: hidden;
+        }
+
+        .world-map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .continent {
+            transition: all 0.3s ease;
+        }
+
+        .continent:hover {
+            fill: rgba(0, 129, 194, 0.2);
+        }
+
+        .ocean {
+            animation: oceanWave 10s ease-in-out infinite;
+        }
+
+        @keyframes oceanWave {
+            0%, 100% { fill: url(#oceanPattern); }
+            50% { fill: rgba(0, 129, 194, 0.05); }
+        }
+
+        /* Network Device Styles */
+        .network-device {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .network-device:hover {
+            filter: url(#glow);
+            stroke-width: 4;
+        }
+
+        .device-router {
+            fill: #28a745;
+            stroke: #1e7e34;
+            stroke-width: 2;
+        }
+
+        .device-switch {
+            fill: #007bff;
+            stroke: #0056b3;
+            stroke-width: 2;
+        }
+
+        .device-server {
+            fill: #6f42c1;
+            stroke: #59339d;
+            stroke-width: 2;
+        }
+
+        .device-firewall {
+            fill: #dc3545;
+            stroke: #bd2130;
+            stroke-width: 2;
+        }
+
+        .device-status-online {
+            filter: brightness(1.2);
+        }
+
+        .device-status-offline {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        .device-status-warning {
+            fill: #ffc107;
+            stroke: #e0a800;
+        }
+
+        /* Network Link Styles */
+        .network-link {
+            stroke-width: 2;
+            fill: none;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .network-link.active {
+            stroke: #28a745;
+            animation: dataFlow 2s linear infinite;
+        }
+
+        .network-link.inactive {
+            stroke: #dc3545;
+            stroke-dasharray: 5,5;
+        }
+
+        .network-link.warning {
+            stroke: #ffc107;
+            stroke-dasharray: 3,3;
+        }
+
+        @keyframes dataFlow {
+            0% { stroke-dasharray: 0,20; }
+            100% { stroke-dasharray: 20,0; }
+        }
+
+        .network-link:hover {
+            stroke-width: 3;
+            opacity: 1;
+        }
+
+        /* Hover Info Styles */
+        .hover-info text {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 11px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .topology-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .topology-legend {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .topology-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .world-map-container {
+                height: 300px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1727,6 +1989,188 @@
                     <div class="app-header">
                         <h1 class="app-title">🗺️ Network Topology</h1>
                         <p class="app-subtitle">Interactive network topology visualization and mapping</p>
+                    </div>
+                    
+                    <div class="topology-controls">
+                        <div class="control-group">
+                            <button class="topology-btn" onclick="refreshTopology()">🔄 Refresh</button>
+                            <button class="topology-btn" onclick="toggleLinks()">🔗 Toggle Links</button>
+                            <button class="topology-btn" onclick="centerMap()">🌍 Center Map</button>
+                        </div>
+                        <div class="topology-legend">
+                            <div class="legend-item">
+                                <div class="device-icon router"></div>
+                                <span>Router</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="device-icon switch"></div>
+                                <span>Switch</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="device-icon server"></div>
+                                <span>Server</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="device-icon firewall"></div>
+                                <span>Firewall</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="topology-container">
+                        <div class="topology-info">
+                            <div class="info-item">
+                                <span class="info-label">Total Devices:</span>
+                                <span class="info-value" id="totalDevices">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Active Links:</span>
+                                <span class="info-value" id="activeLinks">0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Network Health:</span>
+                                <span class="info-value health-good" id="networkHealth">Optimal</span>
+                            </div>
+                        </div>
+                        
+                        <div class="world-map-container">
+                            <svg id="worldMap" viewBox="0 0 1000 500" class="world-map">
+                                <!-- World Map Outline -->
+                                <defs>
+                                    <pattern id="oceanPattern" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+                                        <circle cx="2" cy="2" r="0.5" fill="rgba(0,129,194,0.1)"/>
+                                    </pattern>
+                                    <filter id="glow">
+                                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                        <feMerge> 
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/> 
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                
+                                <!-- Google Maps Style World Map Background -->
+                                <defs>
+                                    <style>
+                                        .world-map-style {
+                                            fill: #f5f5f5;
+                                            stroke: #e0e0e0;
+                                            stroke-width: 0.5;
+                                        }
+                                        .ocean-style {
+                                            fill: #aadaff;
+                                        }
+                                        .land-style {
+                                            fill: #f0f8f0;
+                                            stroke: #d0d0d0;
+                                            stroke-width: 0.3;
+                                        }
+                                        .country-border {
+                                            fill: none;
+                                            stroke: #c0c0c0;
+                                            stroke-width: 0.2;
+                                        }
+                                    </style>
+                                </defs>
+                                
+                                <!-- Google Maps Style Background -->
+                                <rect width="1000" height="500" class="ocean-style"/>
+                                
+                                <!-- World Map with Google Maps styling -->
+                                <g class="world-continents">
+                                    <!-- North America -->
+                                    <g id="north-america">
+                                        <!-- Canada -->
+                                        <path d="M160 70 C120 70 100 90 110 130 C120 170 140 190 170 200 C200 210 240 200 270 190 C300 180 330 160 340 130 C350 100 330 80 300 85 C270 90 240 95 210 100 C180 85 160 75 160 70" class="land-style"/>
+                                        <!-- United States -->
+                                        <path d="M150 140 C130 140 120 150 125 170 C130 190 145 200 165 205 C185 210 205 205 225 200 C245 195 265 185 275 170 C285 155 275 145 260 142 C245 145 230 148 215 150 C200 145 175 142 150 140" class="land-style"/>
+                                        <!-- Mexico -->
+                                        <path d="M160 210 C150 210 145 215 148 225 C151 235 160 240 170 242 C180 244 190 242 200 238 C210 234 215 228 212 220 C209 212 200 210 190 211 C180 212 170 211 160 210" class="land-style"/>
+                                        <!-- Greenland -->
+                                        <path d="M330 50 C320 45 310 50 312 65 C314 80 325 90 340 92 C355 94 365 85 362 70 C359 55 350 50 340 52 C335 51 332 50 330 50" class="land-style"/>
+                                    </g>
+                                    
+                                    <!-- South America -->
+                                    <g id="south-america">
+                                        <!-- Brazil -->
+                                        <path d="M240 230 C225 225 210 235 215 255 C220 275 235 295 250 315 C265 335 280 350 295 360 C310 370 320 365 318 350 C316 335 310 320 302 305 C294 290 284 275 272 260 C260 245 250 235 240 230" class="land-style"/>
+                                        <!-- Argentina -->
+                                        <path d="M250 340 C240 335 235 345 240 365 C245 385 255 405 270 415 C285 425 295 420 292 405 C289 390 283 375 275 360 C267 350 258 345 250 340" class="land-style"/>
+                                        <!-- Chile -->
+                                        <path d="M235 300 C230 295 225 300 227 315 C229 330 235 345 242 360 C249 375 252 385 248 395 C244 385 240 370 236 355 C232 340 230 325 232 310 C234 305 234 302 235 300" class="land-style"/>
+                                    </g>
+                                    
+                                    <!-- Europe -->
+                                    <g id="europe">
+                                        <!-- Western Europe -->
+                                        <path d="M450 95 C435 90 420 95 425 110 C430 125 445 135 465 140 C485 145 505 140 520 135 C535 130 545 120 540 105 C535 90 520 88 505 92 C490 96 475 98 460 96 C455 95 452 95 450 95" class="land-style"/>
+                                        <!-- Scandinavia -->
+                                        <path d="M470 60 C460 55 450 60 455 75 C460 90 470 100 485 105 C500 110 510 105 507 90 C504 75 495 65 485 62 C480 61 475 60 470 60" class="land-style"/>
+                                        <!-- UK and Ireland -->
+                                        <path d="M410 85 C405 80 395 82 398 92 C401 102 410 107 420 105 C430 103 435 95 432 87 C429 82 424 81 419 82 C414 83 412 84 410 85" class="land-style"/>
+                                        <path d="M395 88 C390 85 385 88 387 95 C389 102 395 105 402 103 C409 101 412 95 409 90 C406 87 402 86 398 87 C396 87 395 87 395 88" class="land-style"/>
+                                    </g>
+                                    
+                                    <!-- Africa -->
+                                    <g id="africa">
+                                        <path d="M480 160 C465 155 450 160 455 180 C460 200 470 220 485 240 C500 260 510 280 520 300 C530 320 545 335 565 340 C585 345 600 335 595 315 C590 295 580 275 568 255 C556 235 542 215 526 195 C510 175 495 165 480 160" class="land-style"/>
+                                        <!-- Madagascar -->
+                                        <path d="M570 295 C565 290 560 295 562 305 C564 315 570 320 578 318 C586 316 590 308 587 300 C584 295 580 293 576 294 C573 294 571 294 570 295" class="land-style"/>
+                                    </g>
+                                    
+                                    <!-- Asia -->
+                                    <g id="asia">
+                                        <!-- Russia -->
+                                        <path d="M550 65 C580 60 620 65 660 75 C700 85 740 95 780 105 C820 115 860 125 890 135 C920 145 930 155 925 170 C920 185 905 195 885 200 C865 205 840 200 815 195 C790 190 765 180 740 175 C715 170 690 165 665 160 C640 155 615 150 590 145 C565 140 550 135 545 125 C540 115 542 105 547 95 C552 85 555 75 555 70 C553 67 551 65 550 65" class="land-style"/>
+                                        <!-- China -->
+                                        <path d="M650 120 C630 115 610 120 615 140 C620 160 635 175 655 185 C675 195 695 190 710 180 C725 170 730 155 725 140 C720 125 705 120 690 123 C675 126 665 125 655 122 C652 121 651 120 650 120" class="land-style"/>
+                                        <!-- India -->
+                                        <path d="M600 180 C590 175 580 180 585 195 C590 210 600 220 615 225 C630 230 640 225 637 210 C634 195 628 185 620 182 C615 180 610 180 605 181 C602 181 601 180 600 180" class="land-style"/>
+                                        <!-- Japan -->
+                                        <path d="M770 135 C765 130 760 135 762 145 C764 155 770 160 778 158 C786 156 790 148 787 140 C784 135 780 133 776 134 C773 134 771 134 770 135" class="land-style"/>
+                                        <path d="M775 145 C770 140 765 145 767 155 C769 165 775 170 783 168 C791 166 795 158 792 150 C789 145 785 143 781 144 C778 144 776 144 775 145" class="land-style"/>
+                                    </g>
+                                    
+                                    <!-- Australia and Oceania -->
+                                    <g id="oceania">
+                                        <!-- Australia -->
+                                        <path d="M720 330 C705 325 690 330 695 350 C700 370 715 385 735 390 C755 395 775 390 785 375 C795 360 790 345 775 342 C760 345 745 348 730 345 C725 342 722 340 720 330" class="land-style"/>
+                                        <!-- New Zealand -->
+                                        <path d="M820 375 C815 370 810 375 812 385 C814 395 820 400 828 398 C836 396 840 388 837 380 C834 375 830 373 826 374 C823 374 821 374 820 375" class="land-style"/>
+                                        <path d="M815 385 C810 380 805 385 807 395 C809 405 815 410 823 408 C831 406 835 398 832 390 C829 385 825 383 821 384 C818 384 816 384 815 385" class="land-style"/>
+                                    </g>
+                                    
+                                    <!-- Southeast Asia -->
+                                    <g id="southeast-asia">
+                                        <!-- Indonesia -->
+                                        <path d="M670 225 C665 220 660 225 662 235 C664 245 670 250 678 248 C686 246 690 238 687 230 C684 225 680 223 676 224 C673 224 671 224 670 225" class="land-style"/>
+                                        <path d="M685 235 C680 230 675 235 677 245 C679 255 685 260 693 258 C701 256 705 248 702 240 C699 235 695 233 691 234 C688 234 686 234 685 235" class="land-style"/>
+                                        <path d="M700 240 C695 235 690 240 692 250 C694 260 700 265 708 263 C716 261 720 253 717 245 C714 240 710 238 706 239 C703 239 701 239 700 240" class="land-style"/>
+                                    </g>
+                                    
+                                    <!-- Country borders (subtle lines) -->
+                                    <g class="country-borders">
+                                        <!-- Major country border lines -->
+                                        <path d="M200 180 L240 175" class="country-border"/>
+                                        <path d="M460 120 L500 118" class="country-border"/>
+                                        <path d="M500 180 L540 178" class="country-border"/>
+                                        <path d="M620 160 L680 155" class="country-border"/>
+                                    </g>
+                                </g>
+                                
+                                <!-- Network Links Layer -->
+                                <g id="networkLinks" class="network-links"></g>
+                                
+                                <!-- Network Devices Layer -->
+                                <g id="networkDevices" class="network-devices"></g>
+                                
+                                <!-- Hover Information -->
+                                <g id="hoverInfo" class="hover-info" style="display:none;">
+                                    <rect x="0" y="0" width="200" height="100" rx="5" fill="rgba(0,0,0,0.8)" stroke="rgba(0,129,194,0.5)"/>
+                                    <text id="hoverText" x="10" y="20" fill="white" font-size="12"></text>
+                                </g>
+                            </svg>
+                        </div>
                     </div>
                 </div>
 
@@ -2609,6 +3053,256 @@
             document.getElementById('alarmModal').style.display = 'block';
         }
 
+        // Network Topology Functions
+        let networkDevicesData = [];
+        let networkLinksData = [];
+        let topologyLinksVisible = true;
+
+        // Initialize topology data
+        function initializeTopology() {
+            // Sample network devices with global coordinates
+            networkDevicesData = [
+                // North America
+                { id: 'ny-core-01', name: 'NY-CORE-01', type: 'router', x: 240, y: 120, status: 'online', location: 'New York, USA' },
+                { id: 'la-core-02', name: 'LA-CORE-02', type: 'router', x: 180, y: 160, status: 'online', location: 'Los Angeles, USA' },
+                { id: 'chicago-sw-01', name: 'CHI-SW-01', type: 'switch', x: 210, y: 140, status: 'online', location: 'Chicago, USA' },
+                { id: 'toronto-fw-01', name: 'TOR-FW-01', type: 'firewall', x: 250, y: 110, status: 'warning', location: 'Toronto, Canada' },
+                
+                // Europe
+                { id: 'london-core-01', name: 'LON-CORE-01', type: 'router', x: 480, y: 100, status: 'online', location: 'London, UK' },
+                { id: 'paris-sw-01', name: 'PAR-SW-01', type: 'switch', x: 460, y: 110, status: 'online', location: 'Paris, France' },
+                { id: 'frankfurt-core-02', name: 'FRA-CORE-02', type: 'router', x: 500, y: 95, status: 'online', location: 'Frankfurt, Germany' },
+                { id: 'amsterdam-srv-01', name: 'AMS-SRV-01', type: 'server', x: 485, y: 85, status: 'online', location: 'Amsterdam, Netherlands' },
+                
+                // Asia
+                { id: 'tokyo-core-01', name: 'TYO-CORE-01', type: 'router', x: 720, y: 130, status: 'online', location: 'Tokyo, Japan' },
+                { id: 'singapore-sw-01', name: 'SIN-SW-01', type: 'switch', x: 680, y: 180, status: 'online', location: 'Singapore' },
+                { id: 'mumbai-fw-01', name: 'MUM-FW-01', type: 'firewall', x: 600, y: 160, status: 'offline', location: 'Mumbai, India' },
+                { id: 'seoul-srv-01', name: 'SEO-SRV-01', type: 'server', x: 740, y: 120, status: 'warning', location: 'Seoul, South Korea' },
+                
+                // Australia
+                { id: 'sydney-core-01', name: 'SYD-CORE-01', type: 'router', x: 760, y: 340, status: 'online', location: 'Sydney, Australia' },
+                { id: 'melbourne-sw-01', name: 'MEL-SW-01', type: 'switch', x: 740, y: 350, status: 'online', location: 'Melbourne, Australia' },
+                
+                // South America  
+                { id: 'saopaulo-core-01', name: 'SAO-CORE-01', type: 'router', x: 250, y: 300, status: 'online', location: 'São Paulo, Brazil' },
+                { id: 'bogota-fw-01', name: 'BOG-FW-01', type: 'firewall', x: 230, y: 260, status: 'warning', location: 'Bogotá, Colombia' },
+                
+                // Africa
+                { id: 'cairo-sw-01', name: 'CAI-SW-01', type: 'switch', x: 520, y: 180, status: 'online', location: 'Cairo, Egypt' },
+                { id: 'capetown-srv-01', name: 'CPT-SRV-01', type: 'server', x: 490, y: 290, status: 'online', location: 'Cape Town, South Africa' }
+            ];
+
+            // Network links between devices
+            networkLinksData = [
+                // Trans-Atlantic
+                { from: 'ny-core-01', to: 'london-core-01', status: 'active', bandwidth: '100Gbps' },
+                { from: 'ny-core-01', to: 'frankfurt-core-02', status: 'active', bandwidth: '100Gbps' },
+                
+                // Trans-Pacific
+                { from: 'la-core-02', to: 'tokyo-core-01', status: 'active', bandwidth: '100Gbps' },
+                { from: 'la-core-02', to: 'sydney-core-01', status: 'active', bandwidth: '40Gbps' },
+                
+                // European backbone
+                { from: 'london-core-01', to: 'frankfurt-core-02', status: 'active', bandwidth: '100Gbps' },
+                { from: 'london-core-01', to: 'paris-sw-01', status: 'active', bandwidth: '40Gbps' },
+                { from: 'frankfurt-core-02', to: 'amsterdam-srv-01', status: 'active', bandwidth: '40Gbps' },
+                
+                // Asian routes
+                { from: 'tokyo-core-01', to: 'singapore-sw-01', status: 'active', bandwidth: '40Gbps' },
+                { from: 'tokyo-core-01', to: 'seoul-srv-01', status: 'warning', bandwidth: '10Gbps' },
+                { from: 'singapore-sw-01', to: 'mumbai-fw-01', status: 'inactive', bandwidth: '10Gbps' },
+                
+                // North American backbone  
+                { from: 'ny-core-01', to: 'chicago-sw-01', status: 'active', bandwidth: '40Gbps' },
+                { from: 'chicago-sw-01', to: 'la-core-02', status: 'active', bandwidth: '40Gbps' },
+                { from: 'toronto-fw-01', to: 'ny-core-01', status: 'warning', bandwidth: '10Gbps' },
+                
+                // Regional connections
+                { from: 'sydney-core-01', to: 'melbourne-sw-01', status: 'active', bandwidth: '40Gbps' },
+                { from: 'saopaulo-core-01', to: 'bogota-fw-01', status: 'warning', bandwidth: '10Gbps' },
+                { from: 'cairo-sw-01', to: 'london-core-01', status: 'active', bandwidth: '10Gbps' },
+                { from: 'capetown-srv-01', to: 'cairo-sw-01', status: 'active', bandwidth: '10Gbps' },
+                
+                // Cross-continental
+                { from: 'singapore-sw-01', to: 'sydney-core-01', status: 'active', bandwidth: '40Gbps' },
+                { from: 'frankfurt-core-02', to: 'cairo-sw-01', status: 'active', bandwidth: '10Gbps' }
+            ];
+
+            renderTopology();
+        }
+
+        function renderTopology() {
+            renderNetworkDevices();
+            renderNetworkLinks();
+            updateTopologyStats();
+        }
+
+        function renderNetworkDevices() {
+            const devicesContainer = document.getElementById('networkDevices');
+            if (!devicesContainer) return;
+            
+            devicesContainer.innerHTML = '';
+
+            networkDevicesData.forEach(device => {
+                const deviceElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                deviceElement.setAttribute('cx', device.x);
+                deviceElement.setAttribute('cy', device.y);
+                deviceElement.setAttribute('r', 8);
+                deviceElement.setAttribute('class', `network-device device-${device.type} device-status-${device.status}`);
+                deviceElement.setAttribute('data-device-id', device.id);
+
+                // Add hover and click events
+                deviceElement.addEventListener('mouseenter', (e) => showDeviceHover(e, device));
+                deviceElement.addEventListener('mouseleave', hideDeviceHover);
+                deviceElement.addEventListener('click', (e) => showDeviceDetails(device));
+
+                devicesContainer.appendChild(deviceElement);
+            });
+        }
+
+        function renderNetworkLinks() {
+            const linksContainer = document.getElementById('networkLinks');
+            if (!linksContainer) return;
+            
+            linksContainer.innerHTML = '';
+
+            if (!topologyLinksVisible) return;
+
+            networkLinksData.forEach(link => {
+                const fromDevice = networkDevicesData.find(d => d.id === link.from);
+                const toDevice = networkDevicesData.find(d => d.id === link.to);
+
+                if (fromDevice && toDevice) {
+                    const linkElement = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    linkElement.setAttribute('x1', fromDevice.x);
+                    linkElement.setAttribute('y1', fromDevice.y);
+                    linkElement.setAttribute('x2', toDevice.x);
+                    linkElement.setAttribute('y2', toDevice.y);
+                    linkElement.setAttribute('class', `network-link ${link.status}`);
+                    linkElement.setAttribute('data-from', link.from);
+                    linkElement.setAttribute('data-to', link.to);
+
+                    // Add hover event
+                    linkElement.addEventListener('mouseenter', (e) => showLinkHover(e, link, fromDevice, toDevice));
+                    linkElement.addEventListener('mouseleave', hideDeviceHover);
+
+                    linksContainer.appendChild(linkElement);
+                }
+            });
+        }
+
+        function showDeviceHover(event, device) {
+            const hoverInfo = document.getElementById('hoverInfo');
+            const hoverText = document.getElementById('hoverText');
+            
+            if (hoverInfo && hoverText) {
+                hoverText.innerHTML = `
+                    <tspan x="10" y="20" font-weight="bold">${device.name}</tspan>
+                    <tspan x="10" y="35">Type: ${device.type.toUpperCase()}</tspan>
+                    <tspan x="10" y="50">Status: ${device.status.toUpperCase()}</tspan>
+                    <tspan x="10" y="65">Location: ${device.location}</tspan>
+                `;
+                
+                hoverInfo.setAttribute('transform', `translate(${event.target.getAttribute('cx') - 100}, ${event.target.getAttribute('cy') - 120})`);
+                hoverInfo.style.display = 'block';
+            }
+        }
+
+        function showLinkHover(event, link, fromDevice, toDevice) {
+            const hoverInfo = document.getElementById('hoverInfo');
+            const hoverText = document.getElementById('hoverText');
+            
+            if (hoverInfo && hoverText) {
+                hoverText.innerHTML = `
+                    <tspan x="10" y="20" font-weight="bold">Network Link</tspan>
+                    <tspan x="10" y="35">From: ${fromDevice.name}</tspan>
+                    <tspan x="10" y="50">To: ${toDevice.name}</tspan>
+                    <tspan x="10" y="65">Bandwidth: ${link.bandwidth}</tspan>
+                    <tspan x="10" y="80">Status: ${link.status.toUpperCase()}</tspan>
+                `;
+                
+                const x = (parseFloat(event.target.getAttribute('x1')) + parseFloat(event.target.getAttribute('x2'))) / 2;
+                const y = (parseFloat(event.target.getAttribute('y1')) + parseFloat(event.target.getAttribute('y2'))) / 2;
+                
+                hoverInfo.setAttribute('transform', `translate(${x - 100}, ${y - 120})`);
+                hoverInfo.style.display = 'block';
+            }
+        }
+
+        function hideDeviceHover() {
+            const hoverInfo = document.getElementById('hoverInfo');
+            if (hoverInfo) {
+                hoverInfo.style.display = 'none';
+            }
+        }
+
+        function showDeviceDetails(device) {
+            const details = `
+                Device: ${device.name}
+                Type: ${device.type.toUpperCase()}
+                Location: ${device.location}
+                Status: ${device.status.toUpperCase()}
+                
+                Click OK to view detailed configuration.
+            `;
+            
+            if (confirm(details)) {
+                showNotification(`Opening ${device.name} configuration...`, 'info');
+            }
+        }
+
+        function updateTopologyStats() {
+            const totalDevicesEl = document.getElementById('totalDevices');
+            const activeLinksEl = document.getElementById('activeLinks');
+            const networkHealthEl = document.getElementById('networkHealth');
+
+            if (totalDevicesEl) totalDevicesEl.textContent = networkDevicesData.length;
+            
+            if (activeLinksEl) {
+                const activeLinks = networkLinksData.filter(link => link.status === 'active').length;
+                activeLinksEl.textContent = activeLinks;
+            }
+
+            if (networkHealthEl) {
+                const offlineDevices = networkDevicesData.filter(d => d.status === 'offline').length;
+                const warningDevices = networkDevicesData.filter(d => d.status === 'warning').length;
+                const inactiveLinks = networkLinksData.filter(l => l.status === 'inactive').length;
+
+                if (offlineDevices > 0 || inactiveLinks > 0) {
+                    networkHealthEl.textContent = 'Critical';
+                    networkHealthEl.className = 'info-value health-critical';
+                } else if (warningDevices > 0) {
+                    networkHealthEl.textContent = 'Warning';
+                    networkHealthEl.className = 'info-value health-warning';
+                } else {
+                    networkHealthEl.textContent = 'Optimal';
+                    networkHealthEl.className = 'info-value health-good';
+                }
+            }
+        }
+
+        // Topology control functions
+        function refreshTopology() {
+            showNotification('🔄 Refreshing topology data...', 'info');
+            // Simulate data refresh
+            setTimeout(() => {
+                renderTopology();
+                showNotification('✓ Topology data refreshed', 'success');
+            }, 1500);
+        }
+
+        function toggleLinks() {
+            topologyLinksVisible = !topologyLinksVisible;
+            renderNetworkLinks();
+            showNotification(topologyLinksVisible ? '🔗 Links shown' : '🔗 Links hidden', 'info');
+        }
+
+        function centerMap() {
+            // Simulate map centering
+            showNotification('🌍 Map centered', 'info');
+        }
+
         // Switch between applications
         function switchApp(appName) {
             // Hide all app content
@@ -2627,6 +3321,11 @@
             
             // Add active class to clicked button
             event.target.closest('.app-button').classList.add('active');
+            
+            // Initialize specific apps when opened
+            if (appName === 'topology') {
+                initializeTopology();
+            }
             
             // Show notification for non-dashboard apps
             if (appName !== 'dashboard') {
