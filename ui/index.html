@@ -146,7 +146,7 @@
         }
 
         .app-title {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: white;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -157,7 +157,7 @@
             color: rgba(255, 255, 255, 0.9);
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
             margin-top: 8px;
-            font-size: 1rem;
+            font-size: 0.8rem;
         }
 
         .app-icon {
@@ -169,7 +169,7 @@
             background: linear-gradient(135deg, rgba(0, 129, 194, 0.8) 0%, rgba(0, 90, 135, 0.9) 50%, rgba(0, 129, 194, 0.8) 100%);
             backdrop-filter: blur(20px);
             border-radius: 12px;
-            padding: 14px 21px;
+            padding: 20px;
             margin-bottom: 21px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 4px 20px rgba(0, 129, 194, 0.3);
@@ -180,15 +180,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 0;
         }
 
         .header-left {
             flex: 1;
+            position: relative;
         }
 
         .header h1 {
-            font-size: 1.75rem;
+            font-size: 2rem;
             font-weight: 700;
             color: white;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -200,8 +201,8 @@
             text-align: center;
             color: rgba(255, 255, 255, 0.9);
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            margin-top: 3px;
-            font-size: 0.8rem;
+            margin-top: 8px;
+            font-size: 1rem;
         }
 
         .header-logo {
@@ -210,15 +211,15 @@
         }
 
         .logo {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: white;
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #0081c2;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0, 129, 194, 0.3);
             transition: all 0.3s ease;
@@ -273,31 +274,6 @@
             background: linear-gradient(135deg, #e53935, #c62828);
         }
 
-        .header-controls {
-            display: flex;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .toggle-dashboard-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .toggle-dashboard-btn:hover {
-            transform: translateY(-1px);
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
-        }
 
         /* Dashboard Stats */
         .dashboard {
@@ -1030,15 +1006,10 @@
                     <div class="subtitle">Network Operations Center - Real-time Monitoring & Management</div>
                 </div>
                 <div class="header-logo">
-                    <div class="logo" onclick="showAbout()" title="Open Network Automation">
+                    <div class="logo" onclick="toggleDashboard()" title="Toggle Dashboard">
                         🕸️
                     </div>
                 </div>
-            </div>
-            <div class="header-controls">
-                <button class="toggle-dashboard-btn" onclick="toggleDashboard()">
-                    <span id="dashboardToggleText">📊 Hide Dashboard</span>
-                </button>
             </div>
         </div>
 
@@ -1320,24 +1291,18 @@
         let isDevicesVisible = true;
         let isAlarmsVisible = true;
 
-        // Show about/logo info
-        function showAbout() {
-            showNotification('Open Network Automation v1.0 - Network Operations Center', 'info');
-        }
-
         // Toggle dashboard visibility
         function toggleDashboard() {
             const dashboardSection = document.getElementById('dashboardSection');
-            const toggleText = document.getElementById('dashboardToggleText');
             
             isDashboardVisible = !isDashboardVisible;
             
             if (isDashboardVisible) {
                 dashboardSection.className = 'dashboard visible';
-                toggleText.innerHTML = '📊 Hide Dashboard';
+                showNotification('📊 Dashboard shown', 'info');
             } else {
                 dashboardSection.className = 'dashboard hidden';
-                toggleText.innerHTML = '📊 Show Dashboard';
+                showNotification('📊 Dashboard hidden', 'info');
             }
             
             // Save preference to localStorage (if available)
