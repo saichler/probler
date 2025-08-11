@@ -1,0 +1,552 @@
+/* =============================================================================
+   MODALS - Modal, popup, and overlay styles
+   ============================================================================= */
+
+/* Base Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+/* Modal Content */
+.modal-content {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 14px;
+    width: 85%;
+    max-width: 728px;
+    border: 1px solid rgba(0, 129, 194, 0.15);
+    box-shadow: 0 14px 42px rgba(0, 129, 194, 0.2);
+    animation: modalSlideIn 0.3s ease;
+}
+
+/* Modal Header */
+.modal-header {
+    background: rgba(248, 249, 250, 0.95);
+    padding: 17px 21px;
+    border-bottom: 1px solid rgba(0, 129, 194, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 14px 14px 0 0;
+    position: relative;
+}
+
+.modal-title {
+    font-size: 1.26rem;
+    font-weight: 600;
+    color: #0081c2;
+    flex: 1;
+}
+
+/* Modal Close Button */
+.close {
+    color: #2c2c2c;
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #0081c2;
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 0;
+    display: flex;
+    min-height: 400px;
+}
+
+/* Device Status Badge in Modal */
+.device-status-badge {
+    position: absolute;
+    top: 17px;
+    right: 60px;
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+}
+
+.device-status-badge .status-indicator {
+    margin-right: 8px;
+}
+
+.device-status-badge.status-online {
+    background: rgba(40, 167, 69, 0.15);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.device-status-badge.status-offline {
+    background: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.device-status-badge.status-warning {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+/* Alarm Modal Specific Styles */
+.alarm-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+}
+
+/* Custom scrollbar for alarm modal */
+.alarm-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.alarm-content::-webkit-scrollbar-track {
+    background: rgba(0, 129, 194, 0.1);
+    border-radius: 4px;
+}
+
+.alarm-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 129, 194, 0.3);
+    border-radius: 4px;
+}
+
+.alarm-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 129, 194, 0.5);
+}
+
+/* Alarm Info Section */
+.alarm-info-section {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    padding: 12px;
+    border: 2px solid rgba(0, 129, 194, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 129, 194, 0.2), 0 2px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin-top: 12px;
+}
+
+.alarm-info-section::before {
+    content: 'Alarm Information';
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--alarm-severity-color, #0081c2);
+    padding: 4px 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    border: 1px solid var(--alarm-severity-color, rgba(0, 129, 194, 0.3));
+    box-shadow: 0 2px 8px var(--alarm-severity-color, rgba(0, 129, 194, 0.2));
+}
+
+.alarm-info-section .alarm-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.alarm-info-section .detail-item {
+    margin-bottom: 4px;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(0, 129, 194, 0.1);
+    font-size: 0.85rem;
+}
+
+.alarm-info-section .detail-item:first-child {
+    margin-top: 10px;
+}
+
+.alarm-info-section .detail-item:nth-child(2) {
+    margin-top: 10px;
+}
+
+.alarm-info-section .detail-label {
+    font-weight: bold;
+    color: #0081c2;
+    font-size: 0.8rem;
+}
+
+.alarm-info-section .detail-value {
+    color: #212529;
+    font-size: 0.85rem;
+}
+
+/* Alarm Aggregation Section */
+.alarm-aggregation-section {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    padding: 16px;
+    border: 2px solid rgba(0, 129, 194, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 129, 194, 0.2), 0 2px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin-top: 12px;
+    flex: 1;
+}
+
+.alarm-aggregation-section::before {
+    content: 'Aggregated Alarms & Events';
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #0081c2;
+    padding: 4px 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 129, 194, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 129, 194, 0.2);
+}
+
+/* Tree View Styles (for modals) */
+.tree-view {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.9rem;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+}
+
+/* Custom scrollbar for tree view */
+.tree-view::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tree-view::-webkit-scrollbar-track {
+    background: rgba(0, 129, 194, 0.1);
+    border-radius: 4px;
+}
+
+.tree-view::-webkit-scrollbar-thumb {
+    background: rgba(0, 129, 194, 0.3);
+    border-radius: 4px;
+}
+
+.tree-view::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 129, 194, 0.5);
+}
+
+.tree-node {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tree-item {
+    position: relative;
+    margin: 2px 0;
+}
+
+.tree-toggle {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    color: #0081c2;
+    font-weight: bold;
+    font-size: 0.8rem;
+    line-height: 20px;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+    margin-right: 5px;
+    vertical-align: top;
+}
+
+.tree-toggle:hover {
+    background: rgba(0, 129, 194, 0.1);
+}
+
+.tree-toggle.collapsed::before {
+    content: '+';
+}
+
+.tree-toggle.expanded::before {
+    content: '−';
+}
+
+.tree-toggle.no-children {
+    visibility: hidden;
+}
+
+.tree-content {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    max-width: calc(100% - 30px);
+    word-wrap: break-word;
+}
+
+.tree-content:hover {
+    background: rgba(0, 129, 194, 0.1);
+}
+
+.tree-content.selected {
+    background: rgba(0, 129, 194, 0.2);
+    color: #0081c2;
+    font-weight: 600;
+}
+
+.tree-icon {
+    margin-right: 6px;
+    font-size: 0.9rem;
+}
+
+/* Severity-based tree node dots */
+.tree-severity-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    margin-left: 2px;
+}
+
+.tree-severity-dot.severity-critical {
+    background-color: #dc3545;
+    box-shadow: 0 0 4px rgba(220, 53, 69, 0.5);
+}
+
+.tree-severity-dot.severity-major {
+    background-color: #fd7e14;
+    box-shadow: 0 0 4px rgba(253, 126, 20, 0.5);
+}
+
+.tree-severity-dot.severity-minor {
+    background-color: #ffc107;
+    box-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+}
+
+.tree-severity-dot.severity-warning {
+    background-color: #ffc107;
+    box-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+}
+
+.tree-severity-dot.severity-info {
+    background-color: #28a745;
+    box-shadow: 0 0 4px rgba(40, 167, 69, 0.5);
+}
+
+.tree-severity-dot.severity-ok {
+    background-color: #28a745;
+    box-shadow: 0 0 4px rgba(40, 167, 69, 0.5);
+}
+
+.tree-severity-dot.severity-unknown {
+    background-color: #6c757d;
+    box-shadow: 0 0 4px rgba(108, 117, 125, 0.5);
+}
+
+.tree-label {
+    font-weight: 500;
+}
+
+.tree-details {
+    color: #495057;
+    font-size: 0.8rem;
+    margin-left: 5px;
+}
+
+.tree-children {
+    margin-left: 20px;
+    border-left: 1px dashed rgba(0, 129, 194, 0.3);
+    padding-left: 10px;
+    transition: all 0.3s ease;
+}
+
+.tree-children.collapsed {
+    display: none;
+}
+
+.tree-children.expanded {
+    display: block;
+    animation: expandTree 0.3s ease;
+}
+
+/* Login Screen Modal-like Styles */
+.login-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0081c2 0%, #005a87 50%, #003d5c 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.login-screen.hidden {
+    display: none;
+}
+
+/* Animated background elements */
+.login-screen::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    animation: float 20s ease-in-out infinite;
+    z-index: 1;
+}
+
+.login-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    z-index: 10;
+    position: relative;
+    animation: slideUp 0.8s ease;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.login-footer {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 0.85rem;
+    opacity: 0.7;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.version-info {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+/* Notification Styles (modal-like) */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 129, 194, 0.1);
+    border-radius: 10px;
+    padding: 15px 20px;
+    color: #212529;
+    z-index: 2000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 300px;
+    animation: slideInRight 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 129, 194, 0.15);
+}
+
+.notification-success { 
+    border-left: 4px solid #28a745; 
+}
+
+.notification-error { 
+    border-left: 4px solid #dc3545; 
+}
+
+.notification-warning { 
+    border-left: 4px solid #ffc107; 
+}
+
+.notification-info { 
+    border-left: 4px solid #0081c2; 
+}
+
+.notification button {
+    background: none;
+    border: none;
+    color: #212529;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* Network themed decorative elements */
+.network-decoration {
+    position: absolute;
+    opacity: 0.1;
+    font-size: 1.5rem;
+    animation: pulse 4s ease-in-out infinite;
+}
+
+.network-decoration:nth-child(1) {
+    top: 15%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.network-decoration:nth-child(2) {
+    top: 25%;
+    right: 15%;
+    animation-delay: 1s;
+}
+
+.network-decoration:nth-child(3) {
+    bottom: 20%;
+    left: 15%;
+    animation-delay: 2s;
+}
+
+.network-decoration:nth-child(4) {
+    bottom: 30%;
+    right: 10%;
+    animation-delay: 3s;
+}
+
+/* Responsive Modal Design */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+}

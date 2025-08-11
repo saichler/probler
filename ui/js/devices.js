@@ -1,0 +1,604 @@
+// Device Management Functions
+
+// Sample data for demonstration (replace with API calls)
+let devicesData = [];
+
+async function loadDevices() {
+    showLoading('devicesLoading');
+    
+    try {
+        // Replace with actual API call
+        // const response = await fetch(`${API_BASE_URL}/devices`);
+        // devicesData = await response.json();
+        
+        // Sample data - All devices from topology map plus original local devices
+        devicesData = [
+            // Original local devices (updated with consistent naming)
+            {
+                id: 1,
+                name: 'Core-Switch-01',
+                ipAddress: '192.168.1.10',
+                type: 'Switch',
+                location: 'Data Center A',
+                latitude: 37.7749,
+                longitude: -122.4194,
+                status: 'online',
+                cpuUsage: 25,
+                memoryUsage: 45,
+                uptime: '45d 12h 30m',
+                lastSeen: '2025-08-03 14:30:00',
+                model: 'Cisco Catalyst 9500',
+                serialNumber: 'CAT9500-001',
+                firmware: '16.12.04',
+                interfaces: 48,
+                temperature: 42
+            },
+            {
+                id: 2,
+                name: 'NY-CORE-01',
+                ipAddress: '192.168.1.1',
+                type: 'Router',
+                location: 'New York, USA',
+                latitude: 40.7128,
+                longitude: -74.0060,
+                status: 'online',
+                cpuUsage: 67,
+                memoryUsage: 78,
+                uptime: '23d 8h 15m',
+                lastSeen: '2025-08-03 14:29:45',
+                model: 'Juniper MX240',
+                serialNumber: 'JNP-MX240-002',
+                firmware: '20.4R3.8',
+                interfaces: 24,
+                temperature: 38
+            },
+            {
+                id: 3,
+                name: 'LA-CORE-02',
+                ipAddress: '192.168.50.15',
+                type: 'Router',
+                location: 'Los Angeles, USA',
+                latitude: 34.0522,
+                longitude: -118.2426,
+                status: 'online',
+                cpuUsage: 15,
+                memoryUsage: 32,
+                uptime: '89d 14h 22m',
+                lastSeen: '2025-08-03 14:31:00',
+                model: 'Cisco ASR 9000',
+                serialNumber: 'ASR9000-001',
+                firmware: '7.3.2',
+                interfaces: 36,
+                temperature: 35
+            },
+            {
+                id: 4,
+                name: 'CHI-SW-01',
+                ipAddress: '10.0.0.1',
+                type: 'Switch',
+                location: 'Chicago, USA',
+                latitude: 41.8781,
+                longitude: -87.6298,
+                status: 'online',
+                cpuUsage: 89,
+                memoryUsage: 92,
+                uptime: '127d 3h 45m',
+                lastSeen: '2025-08-03 14:30:00',
+                model: 'Palo Alto PA-3220',
+                serialNumber: 'PA3220-001',
+                firmware: '10.1.6',
+                interfaces: 16,
+                temperature: 55
+            },
+            // Additional topology devices
+            {
+                id: 5,
+                name: 'TOR-FW-01',
+                ipAddress: '192.168.2.1',
+                type: 'Firewall',
+                location: 'Toronto, Canada',
+                latitude: 43.6532,
+                longitude: -79.3832,
+                status: 'warning',
+                cpuUsage: 76,
+                memoryUsage: 83,
+                uptime: '45d 18h 12m',
+                lastSeen: '2025-08-03 14:25:30',
+                model: 'Fortinet FortiGate 600E',
+                serialNumber: 'FGT600E-001',
+                firmware: '7.2.4',
+                interfaces: 20,
+                temperature: 48
+            },
+            {
+                id: 6,
+                name: 'LON-CORE-01',
+                ipAddress: '192.168.100.1',
+                type: 'Router',
+                location: 'London, UK',
+                latitude: 51.5074,
+                longitude: -0.1278,
+                status: 'online',
+                cpuUsage: 34,
+                memoryUsage: 56,
+                uptime: '156d 7h 33m',
+                lastSeen: '2025-08-03 14:32:15',
+                model: 'Juniper MX960',
+                serialNumber: 'JNP-MX960-001',
+                firmware: '21.4R1.12',
+                interfaces: 80,
+                temperature: 41
+            },
+            {
+                id: 7,
+                name: 'PAR-SW-01',
+                ipAddress: '192.168.101.1',
+                type: 'Switch',
+                location: 'Paris, France',
+                latitude: 48.8566,
+                longitude: 2.3522,
+                status: 'online',
+                cpuUsage: 28,
+                memoryUsage: 44,
+                uptime: '98d 23h 45m',
+                lastSeen: '2025-08-03 14:31:45',
+                model: 'Cisco Nexus 9500',
+                serialNumber: 'N9K-9500-001',
+                firmware: '9.3.8',
+                interfaces: 64,
+                temperature: 39
+            },
+            {
+                id: 8,
+                name: 'FRA-CORE-02',
+                ipAddress: '192.168.102.1',
+                type: 'Router',
+                location: 'Frankfurt, Germany',
+                latitude: 50.1109,
+                longitude: 8.6821,
+                status: 'online',
+                cpuUsage: 42,
+                memoryUsage: 67,
+                uptime: '203d 11h 18m',
+                lastSeen: '2025-08-03 14:33:00',
+                model: 'Huawei NE8000 X16',
+                serialNumber: 'NE8000-001',
+                firmware: '8.20.10',
+                interfaces: 96,
+                temperature: 43
+            },
+            {
+                id: 9,
+                name: 'AMS-SRV-01',
+                ipAddress: '192.168.103.1',
+                type: 'Server',
+                location: 'Amsterdam, Netherlands',
+                latitude: 52.3676,
+                longitude: 4.9041,
+                status: 'online',
+                cpuUsage: 18,
+                memoryUsage: 35,
+                uptime: '87d 14h 56m',
+                lastSeen: '2025-08-03 14:32:30',
+                model: 'Dell PowerEdge R750',
+                serialNumber: 'PE-R750-001',
+                firmware: '2.8.2',
+                interfaces: 4,
+                temperature: 32
+            },
+            {
+                id: 10,
+                name: 'TYO-CORE-01',
+                ipAddress: '192.168.200.1',
+                type: 'Router',
+                location: 'Tokyo, Japan',
+                latitude: 35.6762,
+                longitude: 139.6503,
+                status: 'online',
+                cpuUsage: 52,
+                memoryUsage: 74,
+                uptime: '145d 9h 27m',
+                lastSeen: '2025-08-03 14:34:00',
+                model: 'NEC IX3315',
+                serialNumber: 'IX3315-001',
+                firmware: '10.7.22',
+                interfaces: 48,
+                temperature: 46
+            },
+            {
+                id: 11,
+                name: 'SIN-SW-01',
+                ipAddress: '192.168.201.1',
+                type: 'Switch',
+                location: 'Singapore',
+                latitude: 1.3521,
+                longitude: 103.8198,
+                status: 'online',
+                cpuUsage: 31,
+                memoryUsage: 48,
+                uptime: '76d 19h 41m',
+                lastSeen: '2025-08-03 14:33:45',
+                model: 'Arista 7280R3',
+                serialNumber: 'AR-7280R3-001',
+                firmware: '4.29.2F',
+                interfaces: 32,
+                temperature: 38
+            },
+            {
+                id: 12,
+                name: 'MUM-FW-01',
+                ipAddress: '192.168.202.1',
+                type: 'Firewall',
+                location: 'Mumbai, India',
+                latitude: 19.0760,
+                longitude: 72.8777,
+                status: 'offline',
+                cpuUsage: 0,
+                memoryUsage: 0,
+                uptime: '0m',
+                lastSeen: '2025-08-03 11:15:22',
+                model: 'Check Point 15600',
+                serialNumber: 'CP-15600-001',
+                firmware: 'R81.20',
+                interfaces: 24,
+                temperature: 0
+            },
+            {
+                id: 13,
+                name: 'SEO-SRV-01',
+                ipAddress: '192.168.203.1',
+                type: 'Server',
+                location: 'Seoul, South Korea',
+                latitude: 37.5665,
+                longitude: 126.9780,
+                status: 'warning',
+                cpuUsage: 78,
+                memoryUsage: 91,
+                uptime: '34d 6h 15m',
+                lastSeen: '2025-08-03 14:28:15',
+                model: 'HPE ProLiant DL380 Gen10',
+                serialNumber: 'HP-DL380-001',
+                firmware: '2.65',
+                interfaces: 4,
+                temperature: 51
+            },
+            {
+                id: 14,
+                name: 'SYD-CORE-01',
+                ipAddress: '192.168.300.1',
+                type: 'Router',
+                location: 'Sydney, Australia',
+                latitude: -33.8688,
+                longitude: 151.2093,
+                status: 'online',
+                cpuUsage: 39,
+                memoryUsage: 62,
+                uptime: '167d 22h 8m',
+                lastSeen: '2025-08-03 14:35:00',
+                model: 'Cisco CRS-X',
+                serialNumber: 'CRS-X-001',
+                firmware: '6.7.3',
+                interfaces: 144,
+                temperature: 44
+            },
+            {
+                id: 15,
+                name: 'MEL-SW-01',
+                ipAddress: '192.168.301.1',
+                type: 'Switch',
+                location: 'Melbourne, Australia',
+                latitude: -37.8136,
+                longitude: 144.9631,
+                status: 'online',
+                cpuUsage: 22,
+                memoryUsage: 38,
+                uptime: '124d 16h 52m',
+                lastSeen: '2025-08-03 14:34:30',
+                model: 'Extreme Networks VSP 4450',
+                serialNumber: 'EX-VSP4450-001',
+                firmware: '8.10.1',
+                interfaces: 48,
+                temperature: 36
+            },
+            {
+                id: 16,
+                name: 'SAO-CORE-01',
+                ipAddress: '192.168.400.1',
+                type: 'Router',
+                location: 'São Paulo, Brazil',
+                latitude: -23.5505,
+                longitude: -46.6333,
+                status: 'online',
+                cpuUsage: 45,
+                memoryUsage: 69,
+                uptime: '89d 4h 33m',
+                lastSeen: '2025-08-03 14:31:15',
+                model: 'Nokia 7750 SR-12',
+                serialNumber: 'NK-7750-001',
+                firmware: '20.10.R5',
+                interfaces: 72,
+                temperature: 47
+            },
+            {
+                id: 17,
+                name: 'BOG-FW-01',
+                ipAddress: '192.168.401.1',
+                type: 'Firewall',
+                location: 'Bogotá, Colombia',
+                latitude: 4.7110,
+                longitude: -74.0721,
+                status: 'warning',
+                cpuUsage: 68,
+                memoryUsage: 82,
+                uptime: '56d 12h 19m',
+                lastSeen: '2025-08-03 14:29:00',
+                model: 'SonicWall NSa 6700',
+                serialNumber: 'SW-NSa6700-001',
+                firmware: '7.0.1-5050',
+                interfaces: 16,
+                temperature: 49
+            },
+            {
+                id: 18,
+                name: 'CAI-SW-01',
+                ipAddress: '192.168.500.1',
+                type: 'Switch',
+                location: 'Cairo, Egypt',
+                latitude: 30.0444,
+                longitude: 31.2357,
+                status: 'online',
+                cpuUsage: 33,
+                memoryUsage: 51,
+                uptime: '78d 8h 44m',
+                lastSeen: '2025-08-03 14:32:45',
+                model: 'D-Link DGS-3630-52TC',
+                serialNumber: 'DL-DGS3630-001',
+                firmware: '3.00.B012',
+                interfaces: 52,
+                temperature: 41
+            },
+            {
+                id: 19,
+                name: 'CPT-SRV-01',
+                ipAddress: '192.168.501.1',
+                type: 'Server',
+                location: 'Cape Town, South Africa',
+                latitude: -33.9249,
+                longitude: 18.4241,
+                status: 'online',
+                cpuUsage: 26,
+                memoryUsage: 43,
+                uptime: '145d 17h 26m',
+                lastSeen: '2025-08-03 14:33:15',
+                model: 'IBM Power System S922',
+                serialNumber: 'IBM-S922-001',
+                firmware: 'FW940.21',
+                interfaces: 4,
+                temperature: 38
+            }
+        ];
+
+        renderDevicesTable();
+    } catch (error) {
+        console.error('Error loading devices:', error);
+    } finally {
+        hideLoading('devicesLoading');
+    }
+}
+
+function renderDevicesTable() {
+    const tbody = document.getElementById('devicesTableBody');
+    tbody.innerHTML = '';
+
+    devicesData.forEach(device => {
+        const row = document.createElement('tr');
+        row.className = 'device-row';
+        row.onclick = () => showDeviceDetails(device);
+
+        const statusClass = device.status === 'online' ? 'status-online' : 
+                          device.status === 'offline' ? 'status-offline' : 'status-warning';
+
+        row.innerHTML = `
+            <td class="${statusClass}">
+                <span class="status-indicator"></span>
+                ${device.status.toUpperCase()}
+            </td>
+            <td>${device.name}</td>
+            <td>${device.ipAddress}</td>
+            <td>${device.type}</td>
+            <td>${device.location}</td>
+            <td>${device.cpuUsage}%</td>
+            <td>${device.memoryUsage}%</td>
+            <td>${device.uptime}</td>
+            <td>${device.lastSeen}</td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+function showDeviceDetails(device) {
+    document.getElementById('modalDeviceName').textContent = device.name;
+    
+    // Update modal header with status badge
+    const modalHeader = document.querySelector('#deviceModal .modal-header');
+    const existingBadge = modalHeader.querySelector('.device-status-badge');
+    if (existingBadge) {
+        existingBadge.remove();
+    }
+    
+    const statusBadge = document.createElement('div');
+    statusBadge.className = `device-status-badge status-${device.status}`;
+    statusBadge.innerHTML = `
+        <span class="status-indicator"></span>
+        ${device.status.toUpperCase()}
+    `;
+    modalHeader.insertBefore(statusBadge, modalHeader.querySelector('.close'));
+    
+    // Populate Basic Info tab with essential device information
+    document.getElementById('basicInfoContent').innerHTML = `
+        <div class="detail-item">
+            <span class="detail-label">Device Name:</span>
+            <span class="detail-value">${device.name}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">IP Address:</span>
+            <span class="detail-value">${device.ipAddress}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Device Type:</span>
+            <span class="detail-value">${device.type}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Location:</span>
+            <span class="detail-value">${device.location}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Coordinates:</span>
+            <span class="detail-value">${device.latitude}°, ${device.longitude}°</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Last Seen:</span>
+            <span class="detail-value">${device.lastSeen}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Uptime:</span>
+            <span class="detail-value">${device.uptime}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Model:</span>
+            <span class="detail-value">${device.model}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Serial Number:</span>
+            <span class="detail-value">${device.serialNumber}</span>
+        </div>
+    `;
+    
+    // Populate Hardware tab
+    document.getElementById('hardwareContent').innerHTML = `
+        <div class="detail-item">
+            <span class="detail-label">Manufacturer:</span>
+            <span class="detail-value">${device.model.split(' ')[0]}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Product Line:</span>
+            <span class="detail-value">${device.model}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Hardware Serial:</span>
+            <span class="detail-value">${device.serialNumber}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Operating System:</span>
+            <span class="detail-value">${device.firmware}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Total Interfaces:</span>
+            <span class="detail-value">${device.interfaces} ports</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Operating Temperature:</span>
+            <span class="detail-value">${device.temperature}°C</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Hardware Type:</span>
+            <span class="detail-value">${device.type}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Power Status:</span>
+            <span class="detail-value">${device.status === 'online' ? 'Powered On' : 'Powered Off'}</span>
+        </div>
+    `;
+    
+    // Populate Performance tab
+    const performanceContent = document.getElementById('performanceContent');
+    performanceContent.innerHTML = `
+        <div class="performance-metrics">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <h4>CPU Usage</h4>
+                    <span class="metric-value ${device.cpuUsage > 80 ? 'critical' : device.cpuUsage > 60 ? 'warning' : 'normal'}">${device.cpuUsage}%</span>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: ${device.cpuUsage}%; background-color: ${device.cpuUsage > 80 ? '#dc3545' : device.cpuUsage > 60 ? '#ffc107' : '#28a745'}"></div>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-header">
+                    <h4>Memory Usage</h4>
+                    <span class="metric-value ${device.memoryUsage > 80 ? 'critical' : device.memoryUsage > 60 ? 'warning' : 'normal'}">${device.memoryUsage}%</span>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: ${device.memoryUsage}%; background-color: ${device.memoryUsage > 80 ? '#dc3545' : device.memoryUsage > 60 ? '#ffc107' : '#28a745'}"></div>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-header">
+                    <h4>Temperature</h4>
+                    <span class="metric-value ${device.temperature > 50 ? 'critical' : device.temperature > 40 ? 'warning' : 'normal'}">${device.temperature}°C</span>
+                </div>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: ${Math.min(device.temperature, 100)}%; background-color: ${device.temperature > 50 ? '#dc3545' : device.temperature > 40 ? '#ffc107' : '#28a745'}"></div>
+                </div>
+            </div>
+            
+            <div class="performance-details">
+                <div class="detail-item">
+                    <span class="detail-label">Current Status:</span>
+                    <span class="detail-value status-${device.status}">${device.status.toUpperCase()}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Uptime:</span>
+                    <span class="detail-value">${device.uptime}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Last Performance Check:</span>
+                    <span class="detail-value">${device.lastSeen}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Interface Count:</span>
+                    <span class="detail-value">${device.interfaces} interfaces</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Populate Physical Inventory tab using the existing generateInventoryData function
+    const inventoryData = generateInventoryData(device);
+    const treeHtml = `<ul class="tree-node">${createTreeNode(inventoryData)}</ul>`;
+    document.getElementById('inventoryContent').innerHTML = treeHtml;
+    
+    document.getElementById('deviceModal').style.display = 'block';
+}
+
+function filterDevices(status) {
+    const tbody = document.getElementById('devicesTableBody');
+    const rows = tbody.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+        if (status === 'all') {
+            row.style.display = '';
+        } else {
+            const statusCell = row.querySelector('td').textContent.toLowerCase();
+            if (statusCell.includes(status)) {
+                row.style.display = '';
+                row.style.backgroundColor = 'rgba(100, 181, 246, 0.1)';
+                setTimeout(() => {
+                    row.style.backgroundColor = '';
+                }, 2000);
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+    
+    // Scroll to devices table
+    document.getElementById('devicesTable').scrollIntoView({ behavior: 'smooth' });
+}
+
+function refreshDevices() {
+    loadDevices();
+}

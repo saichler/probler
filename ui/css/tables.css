@@ -1,0 +1,95 @@
+/* =============================================================================
+   TABLES - All table-related styles
+   ============================================================================= */
+
+/* Table Container */
+.table-container {
+    overflow-x: auto;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+/* Base Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 0.85rem;
+}
+
+th {
+    background: rgba(248, 249, 250, 0.95);
+    font-weight: 600;
+    color: #0081c2;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+tr {
+    transition: all 0.2s ease;
+}
+
+/* Row Hover Effects */
+.device-row:hover {
+    background: rgba(0, 129, 194, 0.05);
+    cursor: pointer;
+}
+
+.alarm-row:hover {
+    background: rgba(0, 129, 194, 0.05);
+    cursor: pointer;
+}
+
+/* Status Indicators in Tables */
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-online .status-indicator { 
+    background: #28a745; 
+}
+
+.status-offline .status-indicator { 
+    background: #dc3545; 
+}
+
+.status-warning .status-indicator { 
+    background: #ffc107; 
+}
+
+/* Detail Items (used in table-like structures) */
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 0.8rem;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.detail-value {
+    color: #212529;
+}
+
+/* Responsive Table Design */
+@media (max-width: 768px) {
+    th, td {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}

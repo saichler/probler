@@ -1,0 +1,460 @@
+/* =============================================================================
+   UTILITIES - Status colors, loading states, animations, keyframes
+   ============================================================================= */
+
+/* Status Colors */
+.status-online { 
+    color: #28a745; 
+}
+
+.status-offline { 
+    color: #dc3545; 
+}
+
+.status-warning { 
+    color: #ffc107; 
+}
+
+.status-critical { 
+    color: #dc3545; 
+}
+
+.status-info { 
+    color: #0081c2; 
+}
+
+.status-ok { 
+    color: #28a745; 
+}
+
+.status-error { 
+    color: #dc3545; 
+}
+
+.status-unknown { 
+    color: #6c757d; 
+}
+
+/* Alarm Severity Colors */
+.severity-critical { 
+    color: #dc3545; 
+    font-weight: bold; 
+}
+
+.severity-major { 
+    color: #fd7e14; 
+    font-weight: bold; 
+}
+
+.severity-minor { 
+    color: #ffc107; 
+}
+
+.severity-warning { 
+    color: #ffc107; 
+}
+
+.severity-info { 
+    color: #28a745; 
+}
+
+/* Loading States */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 40px;
+    color: #0081c2;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 129, 194, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid #0081c2;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+/* Component Type Icons */
+.icon-chassis::before { content: '🏢'; }
+.icon-module::before { content: '📦'; }
+.icon-port::before { content: '🔌'; }
+.icon-fan::before { content: '💨'; }
+.icon-power::before { content: '⚡'; }
+.icon-cpu::before { content: '🔲'; }
+.icon-memory::before { content: '💾'; }
+.icon-sensor::before { content: '🌡️'; }
+.icon-cable::before { content: '🔗'; }
+
+/* Topology Controls */
+.topology-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.control-group {
+    display: flex;
+    gap: 10px;
+}
+
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 5px 10px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.zoom-level {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0081c2;
+    min-width: 45px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 129, 194, 0.3);
+}
+
+.topology-legend {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+.device-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid;
+}
+
+.device-icon.router {
+    background: #28a745;
+    border-color: #1e7e34;
+}
+
+.device-icon.switch {
+    background: #007bff;
+    border-color: #0056b3;
+}
+
+.device-icon.server {
+    background: #6f42c1;
+    border-color: #59339d;
+}
+
+.device-icon.firewall {
+    background: #dc3545;
+    border-color: #bd2130;
+}
+
+/* Topology Container */
+.topology-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 129, 194, 0.1);
+    overflow: hidden;
+}
+
+.topology-info {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(0, 129, 194, 0.05), rgba(0, 90, 135, 0.1));
+    border-bottom: 1px solid rgba(0, 129, 194, 0.2);
+}
+
+.info-item {
+    text-align: center;
+}
+
+.info-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #0081c2;
+}
+
+.info-value.health-good {
+    color: #28a745;
+}
+
+.info-value.health-warning {
+    color: #ffc107;
+}
+
+.info-value.health-critical {
+    color: #dc3545;
+}
+
+/* World Map Styles */
+.world-map-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    overflow: hidden;
+}
+
+.world-map {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease;
+    transform-origin: center center;
+}
+
+.continent {
+    transition: all 0.3s ease;
+}
+
+.continent:hover {
+    fill: rgba(0, 129, 194, 0.2);
+}
+
+.ocean {
+    animation: oceanWave 10s ease-in-out infinite;
+}
+
+/* Network Device Styles */
+.network-device {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.network-device:hover {
+    filter: url(#glow);
+    stroke-width: 4;
+}
+
+.device-router {
+    fill: #28a745;
+    stroke: #1e7e34;
+    stroke-width: 2;
+}
+
+.device-switch {
+    fill: #007bff;
+    stroke: #0056b3;
+    stroke-width: 2;
+}
+
+.device-server {
+    fill: #6f42c1;
+    stroke: #59339d;
+    stroke-width: 2;
+}
+
+.device-firewall {
+    fill: #dc3545;
+    stroke: #bd2130;
+    stroke-width: 2;
+}
+
+.device-status-online {
+    filter: brightness(1.2);
+}
+
+.device-status-offline {
+    opacity: 0.5;
+    filter: grayscale(1);
+}
+
+.device-status-warning {
+    fill: #ffc107;
+    stroke: #e0a800;
+}
+
+/* Network Link Styles */
+.network-link {
+    stroke-width: 2;
+    fill: none;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.network-link.active {
+    stroke: #28a745;
+    animation: dataFlow 2s linear infinite;
+}
+
+.network-link.inactive {
+    stroke: #dc3545;
+    stroke-dasharray: 5,5;
+}
+
+.network-link.warning {
+    stroke: #ffc107;
+    stroke-dasharray: 3,3;
+}
+
+.network-link:hover {
+    stroke-width: 3;
+    opacity: 1;
+}
+
+/* Hover Info Styles */
+.hover-info text {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 11px;
+}
+
+/* KEYFRAME ANIMATIONS */
+
+/* Spin Animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Shine Animation */
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+/* Modal Slide In */
+@keyframes modalSlideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Tab Fade In */
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tree Expand Animation */
+@keyframes expandTree {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 1000px;
+    }
+}
+
+/* Float Animation (Login Background) */
+@keyframes float {
+    0%, 100% { transform: translateX(0px) translateY(0px); }
+    33% { transform: translateX(20px) translateY(-20px); }
+    66% { transform: translateX(-10px) translateY(10px); }
+}
+
+/* Slide Up Animation (Login Container) */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide In Right Animation (Notifications) */
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Pulse Animation (Network Decorations) */
+@keyframes pulse {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.2; transform: scale(1.1); }
+}
+
+/* Shake Animation (Error) */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Ocean Wave Animation */
+@keyframes oceanWave {
+    0%, 100% { fill: url(#oceanPattern); }
+    50% { fill: rgba(0, 129, 194, 0.05); }
+}
+
+/* Data Flow Animation */
+@keyframes dataFlow {
+    0% { stroke-dasharray: 0,20; }
+    100% { stroke-dasharray: 20,0; }
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+    .topology-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .control-group {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .zoom-controls {
+        order: -1;
+        justify-content: center;
+    }
+
+    .zoom-btn {
+        padding: 8px 10px !important;
+        font-size: 0.8rem !important;
+        min-width: 35px;
+    }
+
+    .zoom-level {
+        font-size: 0.8rem;
+        min-width: 40px;
+        padding: 6px;
+    }
+
+    .topology-legend {
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .topology-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .world-map-container {
+        height: 300px;
+    }
+}
