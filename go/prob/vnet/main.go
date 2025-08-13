@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/saichler/collect/go/types"
+	"github.com/saichler/l8inventory/go/types"
+	types4 "github.com/saichler/l8pollaris/go/types"
 	"github.com/saichler/l8types/go/ifs"
 	types3 "github.com/saichler/l8types/go/types"
 	"github.com/saichler/l8web/go/web/server"
@@ -39,8 +40,9 @@ func startWebServer() {
 
 	resources := common2.CreateResources("web-" + os.Getenv("HOSTNAME"))
 
-	node, _ := resources.Introspector().Inspect(&types.NetworkBox{})
+	node, _ := resources.Introspector().Inspect(&types.NetworkDevice{})
 	introspecting.AddPrimaryKeyDecorator(node, "Id")
+
 	node, _ = resources.Introspector().Inspect(&types2.Cluster{})
 	introspecting.AddPrimaryKeyDecorator(node, "Name")
 
@@ -49,9 +51,9 @@ func startWebServer() {
 	nic.Start()
 	nic.WaitForConnection()
 
-	nic.Resources().Registry().Register(&types.PollConfig{})
-	nic.Resources().Registry().Register(&types.DeviceConfig{})
-	nic.Resources().Registry().Register(&types.NetworkBox{})
+	nic.Resources().Registry().Register(&types4.Pollaris{})
+	nic.Resources().Registry().Register(&types4.Device{})
+	nic.Resources().Registry().Register(&types.NetworkDevice{})
 	nic.Resources().Registry().Register(&types2.Cluster{})
 	nic.Resources().Registry().Register(&types3.Query{})
 	nic.Resources().Registry().Register(&types3.Top{})
@@ -64,8 +66,8 @@ func startWebServer() {
 	}
 
 	//Activate the webpoints service
-	nic.Resources().Services().RegisterServiceHandlerType(&server.WebEndPointsService{})
-	_, err = nic.Resources().Services().Activate(server.ServiceTypeName, server.ServiceName,
+	nic.Resources().Services().RegisterServiceHandlerType(&server.WebService{})
+	_, err = nic.Resources().Services().Activate(server.ServiceTypeName, ifs.WebService,
 		0, nic.Resources(), nic, svr)
 
 	nic.Resources().Logger().Info("Web Server Started!")
