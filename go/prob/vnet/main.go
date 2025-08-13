@@ -43,7 +43,7 @@ func startWebServer() {
 	node, _ := resources.Introspector().Inspect(&types.NetworkDevice{})
 	introspecting.AddPrimaryKeyDecorator(node, "Id")
 
-	node, _ = resources.Introspector().Inspect(&types2.Cluster{})
+	node, _ = resources.Introspector().Inspect(&types2.K8SCluster{})
 	introspecting.AddPrimaryKeyDecorator(node, "Name")
 
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
@@ -54,7 +54,7 @@ func startWebServer() {
 	nic.Resources().Registry().Register(&types4.Pollaris{})
 	nic.Resources().Registry().Register(&types4.Device{})
 	nic.Resources().Registry().Register(&types.NetworkDevice{})
-	nic.Resources().Registry().Register(&types2.Cluster{})
+	nic.Resources().Registry().Register(&types2.K8SCluster{})
 	nic.Resources().Registry().Register(&types3.Query{})
 	nic.Resources().Registry().Register(&types3.Top{})
 	nic.Resources().Registry().Register(&types3.Empty{})
