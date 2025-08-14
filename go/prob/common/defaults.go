@@ -1,6 +1,7 @@
 package common
 
 import (
+	"github.com/saichler/l8collector/go/collector/common"
 	"github.com/saichler/l8services/go/services/manager"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types"
@@ -16,13 +17,13 @@ import (
 const (
 	PROBLER_VNET          = 26000
 	ORM_SERVICE           = "MyPostgresOrmService"
-	PARSER_SERVICE_BOX    = "Parser-NetworkBox"
-	PARSER_SERVICE_K8s    = "Parser-Cluster"
+	PARSER_SERVICE_BOX    = common.ParserServicePrefix + INVENTORY_SERVICE_BOX
+	PARSER_SERVICE_K8s    = common.ParserServicePrefix + INVENTORY_SERVICE_K8S
 	PARSER_AREA_BOX       = 0
 	PARSER_AREA_K8S       = 1
-	INVENTORY_SERVICE_BOX = "NetworkBox"
+	INVENTORY_SERVICE_BOX = "NetDev"
 	INVENTORY_AREA_BOX    = 0
-	INVENTORY_SERVICE_K8S = "Cluster"
+	INVENTORY_SERVICE_K8S = "K8sClr"
 	INVENTORY_AREA_K8S    = 1
 	PREFIX                = "/probler/"
 )

@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/saichler/collect/go/types"
+	types5 "github.com/saichler/l8inventory/go/types"
+	"github.com/saichler/l8pollaris/go/types"
 	types2 "github.com/saichler/l8types/go/types"
 	"github.com/saichler/l8web/go/web/client"
 	"github.com/saichler/probler/go/prob/common"
@@ -40,12 +41,12 @@ func main() {
 		Prefix: common.PREFIX,
 	}
 	resources := common.CreateResources2("client", "./")
-	resources.Introspector().Inspect(&types.PollConfig{})
-	resources.Introspector().Inspect(&types.DeviceConfig{})
+	resources.Introspector().Inspect(&types.Pollaris{})
+	resources.Introspector().Inspect(&types.Device{})
 	resources.Introspector().Inspect(&types2.Health{})
 	resources.Introspector().Inspect(&types2.Top{})
-	resources.Introspector().Inspect(&types3.Cluster{})
-	resources.Introspector().Inspect(&types.NetworkBox{})
+	resources.Introspector().Inspect(&types3.K8SCluster{})
+	resources.Introspector().Inspect(&types5.NetworkDevice{})
 	resources.Introspector().Inspect(&types2.Empty{})
 
 	rc, err := client.NewRestClient(clientConfig, resources)

@@ -1,42 +1,27 @@
 package commands
 
 import (
-	"github.com/saichler/collect/go/collection/poll_config"
-	"github.com/saichler/collect/go/collection/poll_config/boot"
-	"github.com/saichler/collect/go/types"
-	"github.com/saichler/l8web/go/web/client"
+	boot "github.com/saichler/l8parser/go/parser/boot"
+	"github.com/saichler/l8pollaris/go/pollaris"
+	"github.com/saichler/l8pollaris/go/types"
 	common2 "github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8web/go/web/client"
 	"strconv"
 	"time"
 )
 
 func AddPollConfigs(rc *client.RestClient, resources common2.IResources) {
-	polls := boot.CreateSNMPBootPolls()
-	for _, poll := range polls {
-		resp, err := rc.POST(strconv.Itoa(int(poll_config.ServiceArea))+"/"+poll_config.ServiceName,
-			"PollConfig", "", "", poll)
-		if err != nil {
-			resources.Logger().Error(err.Error())
-			return
-		}
-		_, ok := resp.(*types.PollConfig)
-		if ok {
-			resources.Logger().Info("Added ", poll.Name, " Successfully")
-		}
-		time.Sleep(time.Second)
+	snmpPollaris := boot.CreateSNMPBootPolls()
+	resp, err := rc.POST(strconv.Itoa(int(pollaris.ServiceArea))+"/"+pollaris.ServiceName,
+		"Pollaris", "", "", snmpPollaris)
+
+	if err != nil {
+		resources.Logger().Error(err.Error())
+		return
 	}
-	polls = boot.CreateK8sBootPolls()
-	for _, poll := range polls {
-		resp, err := rc.POST(strconv.Itoa(int(poll_config.ServiceArea))+"/"+poll_config.ServiceName,
-			"PollConfig", "", "", poll)
-		if err != nil {
-			resources.Logger().Error(err.Error())
-			return
-		}
-		_, ok := resp.(*types.PollConfig)
-		if ok {
-			resources.Logger().Info("Added ", poll.Name, " Successfully")
-		}
-		time.Sleep(time.Second)
+	_, ok := resp.(*types.Pollaris)
+	if ok {
+		resources.Logger().Info("Added ", snmpPollaris.Name, " Successfully")
 	}
+	time.Sleep(time.Second)
 }
