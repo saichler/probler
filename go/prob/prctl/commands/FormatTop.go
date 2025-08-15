@@ -47,6 +47,11 @@ func FormatTop(top *types.Top) string {
 		mem     float64
 		time    string
 		command string
+		rxCount int64
+		rxDataCount int64
+		txCount int64
+		txDataCount int64
+		lastPulse string
 	}
 
 	var processes []processInfo
@@ -61,6 +66,7 @@ func FormatTop(top *types.Top) string {
 		}
 
 		var virt, res, shr uint64
+		var rxCount, rxDataCount, txCount, txDataCount int64
 		var cpu, mem float64
 		if health.Stats != nil {
 			virt = health.Stats.MemoryUsage
@@ -68,6 +74,10 @@ func FormatTop(top *types.Top) string {
 			shr = health.Stats.MemoryUsage / 4
 			cpu = health.Stats.CpuUsage
 			mem = cpu / 10
+			rxCount = health.Stats.RxMsgCount
+			rxDataCount = health.Stats.RxDataCont
+			txCount = health.Stats.TxMsgCount
+			txDataCount = health.Stats.TxDataCount
 		}
 
 		var status string
@@ -92,22 +102,39 @@ func FormatTop(top *types.Top) string {
 			timeStr = "00:00:00"
 		}
 
+		var lastPulseStr string
+		if health.Stats != nil && health.Stats.LastMsgTime > 0 {
+			lastMsgTime := time.Unix(0, health.Stats.LastMsgTime*int64(time.Millisecond))
+			lastPulseDuration := time.Since(lastMsgTime)
+			hours := int(lastPulseDuration.Hours())
+			minutes := int(lastPulseDuration.Minutes()) % 60
+			seconds := int(lastPulseDuration.Seconds()) % 60
+			lastPulseStr = fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
+		} else {
+			lastPulseStr = "00:00:00"
+		}
+
 		command := health.Alias
 		if command == "" {
 			command = "unknown"
 		}
 
 		processes = append(processes, processInfo{
-			pid:     pid,
-			user:    user,
-			virt:    virt,
-			res:     res,
-			shr:     shr,
-			status:  status,
-			cpu:     cpu,
-			mem:     mem,
-			time:    timeStr,
-			command: command,
+			pid:         pid,
+			user:        user,
+			virt:        virt,
+			res:         res,
+			shr:         shr,
+			status:      status,
+			cpu:         cpu,
+			mem:         mem,
+			time:        timeStr,
+			command:     command,
+			rxCount:     rxCount,
+			rxDataCount: rxDataCount,
+			txCount:     txCount,
+			txDataCount: txDataCount,
+			lastPulse:   lastPulseStr,
 		})
 	}
 
@@ -139,25 +166,52 @@ func FormatTop(top *types.Top) string {
 
 	// Calculate column widths
 	maxCommandWidth := len("COMMAND")
-	maxVirtWidth := len("VIRT")
-	maxResWidth := len("RES")
-	maxShrWidth := len("SHR")
+	maxRxWidth := len("RX")
+	maxRxDataWidth := len("RX DATA")
+	maxTxWidth := len("TX")
+	maxTxDataWidth := len("TX DATA")
+	maxMemoryWidth := len("MEMORY")
+	maxStatusWidth := len("S")
+	maxCpuWidth := len("%CPU")
+	maxUpTimeWidth := len("UP TIME")
+	maxLastPulseWidth := len("LAST PULSE")
 
 	for _, proc := range processes {
 		if len(proc.command) > maxCommandWidth {
 			maxCommandWidth = len(proc.command)
 		}
-		virtStr := formatMemory(proc.virt)
-		if len(virtStr) > maxVirtWidth {
-			maxVirtWidth = len(virtStr)
+		rxStr := fmt.Sprintf("%d", proc.rxCount)
+		if len(rxStr) > maxRxWidth {
+			maxRxWidth = len(rxStr)
 		}
-		resStr := formatMemory(proc.res)
-		if len(resStr) > maxResWidth {
-			maxResWidth = len(resStr)
+		rxDataStr := formatMemory(uint64(proc.rxDataCount))
+		if len(rxDataStr) > maxRxDataWidth {
+			maxRxDataWidth = len(rxDataStr)
 		}
-		shrStr := formatMemory(proc.shr)
-		if len(shrStr) > maxShrWidth {
-			maxShrWidth = len(shrStr)
+		txStr := fmt.Sprintf("%d", proc.txCount)
+		if len(txStr) > maxTxWidth {
+			maxTxWidth = len(txStr)
+		}
+		txDataStr := formatMemory(uint64(proc.txDataCount))
+		if len(txDataStr) > maxTxDataWidth {
+			maxTxDataWidth = len(txDataStr)
+		}
+		memoryStr := formatMemory(proc.virt)
+		if len(memoryStr) > maxMemoryWidth {
+			maxMemoryWidth = len(memoryStr)
+		}
+		if len(proc.status) > maxStatusWidth {
+			maxStatusWidth = len(proc.status)
+		}
+		cpuStr := fmt.Sprintf("%.1f", proc.cpu)
+		if len(cpuStr) > maxCpuWidth {
+			maxCpuWidth = len(cpuStr)
+		}
+		if len(proc.time) > maxUpTimeWidth {
+			maxUpTimeWidth = len(proc.time)
+		}
+		if len(proc.lastPulse) > maxLastPulseWidth {
+			maxLastPulseWidth = len(proc.lastPulse)
 		}
 	}
 
@@ -177,49 +231,52 @@ func FormatTop(top *types.Top) string {
 	sb.WriteString("\n")
 
 	// Print header with dynamic widths (centered when smaller than column width)
-	headerFormat := fmt.Sprintf("%%-%ds  %%2s  %%2s  %%%ds  %%%ds  %%%ds  %%s  %%5s  %%5s  %%8s\n", 
-		maxCommandWidth, maxVirtWidth, maxResWidth, maxShrWidth)
+	headerFormat := fmt.Sprintf("%%-%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds\n", 
+		maxCommandWidth, maxRxWidth, maxRxDataWidth, maxTxWidth, maxTxDataWidth, maxMemoryWidth, maxStatusWidth, maxCpuWidth, maxUpTimeWidth, maxLastPulseWidth)
 	sb.WriteString(fmt.Sprintf(headerFormat, 
 		centerString("COMMAND", maxCommandWidth),
-		centerString("PR", 2),
-		centerString("NI", 2),
-		centerString("VIRT", maxVirtWidth),
-		centerString("RES", maxResWidth),
-		centerString("SHR", maxShrWidth),
-		"S",
-		centerString("%CPU", 5),
-		centerString("%MEM", 5),
-		centerString("UP TIME", 8)))
+		centerString("RX", maxRxWidth),
+		centerString("RX DATA", maxRxDataWidth),
+		centerString("TX", maxTxWidth),
+		centerString("TX DATA", maxTxDataWidth),
+		centerString("MEMORY", maxMemoryWidth),
+		centerString("S", maxStatusWidth),
+		centerString("%CPU", maxCpuWidth),
+		centerString("UP TIME", maxUpTimeWidth),
+		centerString("LAST PULSE", maxLastPulseWidth)))
 
 	// Print separator line
-	separatorFormat := fmt.Sprintf("%%-%ds  %%2s  %%2s  %%%ds  %%%ds  %%%ds  %%s  %%5s  %%5s  %%8s\n", 
-		maxCommandWidth, maxVirtWidth, maxResWidth, maxShrWidth)
+	separatorFormat := fmt.Sprintf("%%-%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds\n", 
+		maxCommandWidth, maxRxWidth, maxRxDataWidth, maxTxWidth, maxTxDataWidth, maxMemoryWidth, maxStatusWidth, maxCpuWidth, maxUpTimeWidth, maxLastPulseWidth)
 	sb.WriteString(fmt.Sprintf(separatorFormat, 
 		strings.Repeat("-", maxCommandWidth), 
-		"--", 
-		"--", 
-		strings.Repeat("-", maxVirtWidth), 
-		strings.Repeat("-", maxResWidth), 
-		strings.Repeat("-", maxShrWidth), 
-		"-", 
-		"-----", 
-		"-----", 
-		"--------"))
+		strings.Repeat("-", maxRxWidth), 
+		strings.Repeat("-", maxRxDataWidth), 
+		strings.Repeat("-", maxTxWidth), 
+		strings.Repeat("-", maxTxDataWidth), 
+		strings.Repeat("-", maxMemoryWidth), 
+		strings.Repeat("-", maxStatusWidth), 
+		strings.Repeat("-", maxCpuWidth), 
+		strings.Repeat("-", maxUpTimeWidth), 
+		strings.Repeat("-", maxLastPulseWidth)))
 
 	// Print data with dynamic widths
-	dataFormat := fmt.Sprintf("%%-%ds  20   0  %%%ds  %%%ds  %%%ds  %%s  %%5.1f  %%5.1f  %%8s\n", 
-		maxCommandWidth, maxVirtWidth, maxResWidth, maxShrWidth)
+	cpuFormatStr := fmt.Sprintf("%%%d.1f", maxCpuWidth)
+	dataFormat := fmt.Sprintf("%%-%ds  %%%dd  %%%ds  %%%dd  %%%ds  %%%ds  %%%ds  %s  %%%ds  %%%ds\n", 
+		maxCommandWidth, maxRxWidth, maxRxDataWidth, maxTxWidth, maxTxDataWidth, maxMemoryWidth, maxStatusWidth, cpuFormatStr, maxUpTimeWidth, maxLastPulseWidth)
 
 	for _, proc := range processes {
 		sb.WriteString(fmt.Sprintf(dataFormat,
 			proc.command,
+			proc.rxCount,
+			formatMemory(uint64(proc.rxDataCount)),
+			proc.txCount,
+			formatMemory(uint64(proc.txDataCount)),
 			formatMemory(proc.virt),
-			formatMemory(proc.res),
-			formatMemory(proc.shr),
 			proc.status,
 			proc.cpu,
-			proc.mem,
-			proc.time))
+			proc.time,
+			proc.lastPulse))
 	}
 
 	return sb.String()
