@@ -205,9 +205,14 @@ function renderNetworkLinks() {
             linkElement.setAttribute('data-from', link.from);
             linkElement.setAttribute('data-to', link.to);
 
-            // Add hover event
+            // Add hover and click events
             linkElement.addEventListener('mouseenter', (e) => showLinkHover(e, link, fromDevice, toDevice));
             linkElement.addEventListener('mouseleave', hideDeviceHover);
+            linkElement.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showLinkDetails(link, fromDevice, toDevice);
+            });
 
             linksContainer.appendChild(linkElement);
         }
@@ -679,4 +684,200 @@ function applyPanLimits() {
     // Apply limits
     panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
     panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
+}
+
+function showLinkDetails(link, fromDevice, toDevice) {
+    hideDeviceHover();
+    
+    document.getElementById('modalLinkTitle').textContent = 'Network Link Properties';
+    
+    const linkType = getLinkType(link.bandwidth);
+    const distance = calculateDistance(fromDevice, toDevice);
+    const latency = calculateLatency(distance);
+    const utilization = generateMockUtilization(link.status);
+    const uptime = generateMockUptime(link.status);
+    
+    document.getElementById('linkInfoContent').innerHTML = `
+        <div class="link-details">
+            <div class="detail-item">
+                <span class="detail-label">From Device:</span>
+                <span class="detail-value">${fromDevice.name}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">To Device:</span>
+                <span class="detail-value">${toDevice.name}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Link Status:</span>
+                <span class="link-status-indicator ${link.status}">${link.status.toUpperCase()}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Bandwidth Capacity:</span>
+                <span class="detail-value">${link.bandwidth}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Link Type:</span>
+                <span class="detail-value">${linkType}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Geographic Distance:</span>
+                <span class="detail-value">${distance.toFixed(0)} km</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Estimated Latency:</span>
+                <span class="detail-value">${latency.toFixed(1)} ms</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Link Uptime:</span>
+                <span class="detail-value">${uptime}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">From Location:</span>
+                <span class="detail-value">${fromDevice.location}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">To Location:</span>
+                <span class="detail-value">${toDevice.location}</span>
+            </div>
+        </div>
+    `;
+    
+    const bandwidthPercent = getBandwidthUtilization(link.bandwidth, utilization);
+    const bandwidthColor = getBandwidthColor(bandwidthPercent);
+    
+    document.getElementById('linkPerformanceContent').innerHTML = `
+        <div class="link-metrics">
+            <div class="detail-item">
+                <span class="detail-label">Current Utilization:</span>
+                <span class="detail-value">${utilization}% (${calculateThroughput(link.bandwidth, utilization)})</span>
+            </div>
+            
+            <div class="link-bandwidth-bar">
+                <div class="link-bandwidth-fill" style="width: ${bandwidthPercent}%; background: ${bandwidthColor}"></div>
+            </div>
+            
+            <div class="performance-metrics" style="margin-top: 15px;">
+                <div class="metric-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="metric-card">
+                        <div class="metric-label">Packets/sec</div>
+                        <div class="metric-value">${generateMockPackets(link.bandwidth, utilization)}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Error Rate</div>
+                        <div class="metric-value">${generateMockErrorRate(link.status)}</div>
+                    </div>
+                </div>
+                
+                <div class="metric-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
+                    <div class="metric-card">
+                        <div class="metric-label">Availability</div>
+                        <div class="metric-value">${generateMockAvailability(link.status)}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Last Updated</div>
+                        <div class="metric-value">${new Date().toLocaleTimeString()}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="link-path-info" style="margin-top: 15px; padding: 12px; background: rgba(0, 129, 194, 0.05); border-radius: 6px;">
+                <div class="detail-item">
+                    <span class="detail-label">Network Path:</span>
+                    <span class="detail-value">${fromDevice.name} → ${toDevice.name}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Route Type:</span>
+                    <span class="detail-value">${getRouteType(distance, linkType)}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Protocol:</span>
+                    <span class="detail-value">MPLS/BGP</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('linkModal').style.display = 'block';
+}
+
+function closeLinkModal() {
+    document.getElementById('linkModal').style.display = 'none';
+}
+
+function calculateDistance(device1, device2) {
+    const lat1 = device1.latitude * Math.PI / 180;
+    const lat2 = device2.latitude * Math.PI / 180;
+    const deltaLat = (device2.latitude - device1.latitude) * Math.PI / 180;
+    const deltaLng = (device2.longitude - device1.longitude) * Math.PI / 180;
+    
+    const a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) +
+              Math.cos(lat1) * Math.cos(lat2) *
+              Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    
+    return 6371 * c;
+}
+
+function calculateLatency(distance) {
+    return (distance / 300000) * 1000 * 2;
+}
+
+function getLinkType(bandwidth) {
+    if (bandwidth.includes('100G')) return 'High-Speed Backbone';
+    if (bandwidth.includes('40G')) return 'Regional Backbone';
+    if (bandwidth.includes('10G')) return 'Metro Connection';
+    return 'Standard Link';
+}
+
+function generateMockUtilization(status) {
+    if (status === 'active') return Math.floor(Math.random() * 40) + 20;
+    if (status === 'warning') return Math.floor(Math.random() * 30) + 60;
+    return 0;
+}
+
+function generateMockUptime(status) {
+    if (status === 'active') return '99.9%';
+    if (status === 'warning') return '98.2%';
+    return '0%';
+}
+
+function getBandwidthUtilization(bandwidth, utilization) {
+    return utilization;
+}
+
+function getBandwidthColor(percent) {
+    if (percent < 50) return '#28a745';
+    if (percent < 80) return '#ffc107';
+    return '#dc3545';
+}
+
+function calculateThroughput(bandwidth, utilizationPercent) {
+    const capacity = parseFloat(bandwidth);
+    const unit = bandwidth.replace(/[0-9.]/g, '');
+    const throughput = (capacity * utilizationPercent / 100).toFixed(1);
+    return `${throughput}${unit}`;
+}
+
+function generateMockPackets(bandwidth, utilization) {
+    const base = parseFloat(bandwidth) * 1000 * (utilization / 100);
+    return `${(base * Math.random() * 10).toFixed(0)}K`;
+}
+
+function generateMockErrorRate(status) {
+    if (status === 'active') return '< 0.01%';
+    if (status === 'warning') return '0.05%';
+    return 'N/A';
+}
+
+function generateMockAvailability(status) {
+    if (status === 'active') return '99.95%';
+    if (status === 'warning') return '98.50%';
+    return '0%';
+}
+
+function getRouteType(distance, linkType) {
+    if (distance > 5000) return 'Intercontinental';
+    if (distance > 1000) return 'International';
+    if (distance > 500) return 'National';
+    return 'Regional';
 }

@@ -27,4 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize keyboard shortcuts
     initializeKeyboardShortcuts();
+    
+    // Initialize modal handlers
+    initializeModalHandlers();
 });

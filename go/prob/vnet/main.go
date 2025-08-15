@@ -54,6 +54,7 @@ func startWebServer() {
 	nic.Resources().Registry().Register(&types4.Pollaris{})
 	nic.Resources().Registry().Register(&types4.Device{})
 	nic.Resources().Registry().Register(&types.NetworkDevice{})
+	nic.Resources().Registry().Register(&types.NetworkDeviceList{})
 	nic.Resources().Registry().Register(&types2.K8SCluster{})
 	nic.Resources().Registry().Register(&types3.Query{})
 	nic.Resources().Registry().Register(&types3.Top{})

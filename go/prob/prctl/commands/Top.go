@@ -3,7 +3,7 @@ package commands
 import (
 	"bytes"
 	"fmt"
-	common2 "github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/ifs"
 	types2 "github.com/saichler/l8types/go/types"
 	"github.com/saichler/l8web/go/web/client"
 	health2 "github.com/saichler/layer8/go/overlay/health"
@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func Top(rc *client.RestClient, resources common2.IResources) {
+func Top(rc *client.RestClient, resources ifs.IResources) {
 	defer time.Sleep(time.Second)
 	health := &types2.Health{}
 	resp, err := rc.GET("0/"+health2.ServiceName, "Top",
@@ -25,7 +25,7 @@ func Top(rc *client.RestClient, resources common2.IResources) {
 	}
 	top, ok := resp.(*types2.Top)
 	if ok {
-		fmt.Println(buildTop(top))
+		fmt.Println(FormatTop(top))
 	}
 }
 

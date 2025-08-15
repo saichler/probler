@@ -221,6 +221,167 @@
     box-shadow: 0 2px 8px rgba(0, 129, 194, 0.2);
 }
 
+/* Link Modal Specific Styles */
+.link-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+}
+
+.link-info-section {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    padding: 16px;
+    border: 2px solid rgba(0, 129, 194, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 129, 194, 0.2), 0 2px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.link-info-section::before {
+    content: 'Link Information';
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #0081c2;
+    padding: 4px 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 129, 194, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 129, 194, 0.2);
+}
+
+.link-performance-section {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    padding: 16px;
+    border: 2px solid rgba(40, 167, 69, 0.3);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2), 0 2px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.link-performance-section::before {
+    content: 'Performance & Metrics';
+    position: absolute;
+    top: -12px;
+    left: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #28a745;
+    padding: 4px 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+}
+
+.link-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.link-metrics {
+    margin-top: 10px;
+}
+
+.link-status-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.link-status-indicator.active {
+    background: rgba(40, 167, 69, 0.15);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.link-status-indicator.warning {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.link-status-indicator.inactive {
+    background: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.link-bandwidth-bar {
+    margin: 10px 0;
+    background: rgba(0, 129, 194, 0.1);
+    border-radius: 10px;
+    height: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.link-bandwidth-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.link-bandwidth-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.metric-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 129, 194, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 129, 194, 0.15);
+}
+
+.metric-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 500;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    font-size: 0.95rem;
+    color: #212529;
+    font-weight: 600;
+}
+
 /* Tree View Styles (for modals) */
 .tree-view {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

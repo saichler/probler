@@ -8,6 +8,14 @@ function closeModal() {
     document.getElementById('deviceModal').style.display = 'none';
 }
 
+function closeLinkModal() {
+    document.getElementById('linkModal').style.display = 'none';
+}
+
+function closeAlarmModal() {
+    document.getElementById('alarmModal').style.display = 'none';
+}
+
 // Loading functions
 function showLoading(elementId) {
     const element = document.getElementById(elementId);
@@ -55,9 +63,11 @@ function initializeKeyboardShortcuts() {
             loadDashboardStats();
         }
         
-        // Escape: Close modal
+        // Escape: Close modals
         if (event.key === 'Escape') {
             closeModal();
+            closeLinkModal();
+            closeAlarmModal();
         }
         
         // Ctrl/Cmd + D: Toggle dashboard
@@ -76,6 +86,26 @@ function initializeKeyboardShortcuts() {
         if ((event.ctrlKey || event.metaKey) && event.key === '2') {
             event.preventDefault();
             toggleAlarmsSection();
+        }
+    });
+}
+
+// Initialize modal click handlers
+function initializeModalHandlers() {
+    // Close modals when clicking outside of them
+    window.addEventListener('click', function(event) {
+        const deviceModal = document.getElementById('deviceModal');
+        const linkModal = document.getElementById('linkModal');
+        const alarmModal = document.getElementById('alarmModal');
+        
+        if (event.target === deviceModal) {
+            closeModal();
+        }
+        if (event.target === linkModal) {
+            closeLinkModal();
+        }
+        if (event.target === alarmModal) {
+            closeAlarmModal();
         }
     });
 }

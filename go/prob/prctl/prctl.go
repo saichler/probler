@@ -47,7 +47,9 @@ func main() {
 	resources.Introspector().Inspect(&types2.Top{})
 	resources.Introspector().Inspect(&types3.K8SCluster{})
 	resources.Introspector().Inspect(&types5.NetworkDevice{})
+	resources.Introspector().Inspect(&types5.NetworkDeviceList{})
 	resources.Introspector().Inspect(&types2.Empty{})
+	resources.Introspector().Inspect(&types2.Query{})
 
 	rc, err := client.NewRestClient(clientConfig, resources)
 	if err != nil {

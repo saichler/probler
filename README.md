@@ -1,101 +1,277 @@
-# Probler
-**Poll** data as a service -> **Parse** data as a service -> **Model** data as service -> 
-**Cache** data as a service -> **Persist** data as a service. 
+# Probler - Network Automation & Monitoring Platform
 
-All agnostic to networking, cloud, kubernetes, docker, security & model.
+[![Go Version](https://img.shields.io/badge/Go-1.23.8-blue.svg)](https://golang.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-green.svg)](https://kubernetes.io/)
 
-## Overview
-**"Been there, done that"** — but what does **“as a service”** really mean?
-Anyone who has faced the challenges mentioned above understands the cost
-and pain points of attempting this using a **Microservices** approach.
-In such a setup, multiple applications — each with its own business
-logic — interact with and rely on a single model,
-all while maintaining concurrency & maintainability. It’s complex and far from painless.
+A comprehensive microservices-based network automation and monitoring platform that implements a "data as a service" approach with the core philosophy: **Poll → Parse → Model → Cache → Persist**.
 
-**Probler** is a journey focused on making it as easy and painless as possible to 
-address, abstract, and interface with the challenges and pain points of 
-**Microservices—across** the entire stack. The goal is to arrive at a well-defined, 
-coherent development framework that significantly accelerates Microservices-based 
-application development while drastically reducing costs—without compromising on 
-security, concurrency, testability, or maintainability.
+## 🎯 Vision
 
-## Problem Definition
-Building applications in a **Microservices environment** has revealed critical gaps 
-in design patterns, infrastructure, and tooling—particularly in internal 
-service-to-service integration. To address these challenges, organizations often 
-form **Infrastructure Teams** tasked with the nearly **impossible goal** of 
-delivering a perfect solution from day one. **Unsurprisingly**, this often leads 
-to failure, as the sheer number of moving parts and lack of alignment across teams 
-makes **full coherence unachievable**.
+Probler addresses the fundamental pain points of building scalable, maintainable microservices architectures by providing:
 
-![alt text](https://github.com/saichler/layer8/blob/main/problem-1.png)
-![alt text](https://github.com/saichler/layer8/blob/main/problem-2.png)
+- **Model-agnostic services** that adapt to any data structure
+- **Seamless service-to-service communication** through virtual networking
+- **Built-in security, health monitoring, and service discovery**
+- **Horizontal and vertical scaling capabilities**
+- **Platform-agnostic deployment** (bare metal, Docker, Kubernetes)
 
-## **The result?** <span style="color:red">Massive costs in both time and money—and even greater long-term expenses when it comes to maintainability.</span>
+## 🏗️ Architecture Overview
 
-## The Journey
-Over the years, I’ve closely observed the recurring challenges faced by the 
-organizations I’ve been part of—particularly the pain points, inconsistencies, 
-and design missteps in building Microservices architectures. I started from a 
-humble place: I didn’t claim to know everything, and I’m certainly no expert in 
-every domain—but I’ve always been clear about what I want to achieve.
+### Core Components
 
-### For the infrastructure, my vision was:
-* To free developers from worrying about **Security & AAA** (Authentication, Authorization,
-Accounting) during app development, **without compromising on their importance**.
-* To enable **seamless, secure** platform- and machine-agnostic communication between 
-Microservices, omitting the need for **Micro Segmentation**
-* To support OS-, Kubernetes-, and Docker-**agnostic deployments**.
-* To support seamless **Horizontally & Vertically** scale.
-* To provide built-in support for both **Request/Reply** and **Publish/Subscribe** 
-messaging paradigms.
-* To include a **Service Directory** for service discovery and lookup.
-* To embed **Health Monitoring** capabilities.
-* To support **Leader/Follower** election mechanisms for stateful services.
-* To define **common API exposure** standards across all Microservices.
-* To allow **flexible API invocation** patterns tailored to different use cases.
-* To introduce a **common API querying language**, enabling Microservices to query 
-each other effectively.
-* To support **transactional API invocations** in Active/Active service setups.
-* To handle **sharded, transactional API** invocations across multiple service instances (e.g., Active/Active with 3+ shards).
-* To implement a **distributed, model-agnostic stateful cache**.
-* To enable seamless **delta notifications** for attribute changes between services.
-* To support seamless **delta updates** on the cache itself.
-* To offer an **ORM-as-a-Service** that requires little to no annotations in the data models.
-* To make the **ORM agnostic** to the model design.
-* To achieve **100% testability** for the application on **any laptop**, 
-regardless of the installed operating system.
-* To be compatible with running on mobile phone??!
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│    Collector    │───▶│     Parser      │───▶│   Inventory     │
+│  (Data Polling) │    │ (Model-Agnostic)│    │ (Device State)  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│      VNet       │◀───│      ORM        │───▶│   PostgreSQL    │
+│ (Web Interface) │    │ (Persistence)   │    │   (Database)    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
 
-### For Probler, I envisioned:
-* A collection Microservice that is both **horizontally and vertically** scalable.
-* A parsing Microservice that is **entirely model-agnostic**.
-* A **metadata-driven instrumentation service** capable of populating the model 
-with parsed data—without writing proprietary code.
-* An inventory Microservice that **does not depend** on any specific model.
-* A persistence service that is similarly **model-agnostic**.
+### Microservices
 
+| Service | Purpose | Scaling |
+|---------|---------|---------|
+| **Collector** | Network device polling & data collection | Horizontal |
+| **Parser** | Model-agnostic data parsing & transformation | Horizontal |
+| **Inventory Box** | Network device inventory management | Vertical |
+| **Inventory K8s** | Kubernetes cluster inventory | Vertical |
+| **ORM** | Object-relational mapping & persistence | Vertical |
+| **VNet** | Virtual network overlay & web interface | Vertical |
+| **Security** | Authentication & authorization | Vertical |
 
-## Base Projects
-* https://github.com/saichler/types
+## 🚀 Quick Start
 
-* https://github.com/saichler/shared
+### Prerequisites
 
-* https://github.com/saichler/layer8
+- Go 1.23.8+
+- Docker & Docker Compose
+- Kubernetes cluster (for production deployment)
+- PostgreSQL database
 
-* https://github.com/saichler/servicepoints
+### Local Development
 
-* https://github.com/saichler/serializer
+```bash
+# Clone the repository
+git clone https://github.com/saichler/probler.git
+cd probler
 
-* https://github.com/saichler/reflect
+# Build all services
+cd go && ./build-images.sh
 
-* https://github.com/saichler/gsql
+# Start with Docker Compose (development)
+docker-compose up -d
 
-* https://github.com/saichler/l8orm
+# Access the web interface
+open https://localhost:443/probler/
+```
 
-* https://github.com/saichler/l8web
+### Kubernetes Deployment
 
-* https://github.com/saichler/collect
+```bash
+# Deploy all services to Kubernetes
+cd k8s && ./apply-all.sh
 
-* https://github.com/saichler/l8test
+# Verify deployment
+kubectl get pods -n probler
 
+# Access via ingress or port-forward
+kubectl port-forward svc/vnet 8080:443 -n probler
+```
+
+## 🌐 Web Interface
+
+### Network Operations Center (NOC) Dashboard
+
+The web interface provides comprehensive network monitoring and management:
+
+#### 📊 **Dashboard**
+- Real-time device statistics and health metrics
+- Critical alarm monitoring
+- Network performance overview
+- Interactive stat cards with filtering
+
+#### 🗺️ **Network Topology** 
+- Interactive world map with device visualization
+- Click-able network links with detailed properties
+- Geographic device positioning with precise coordinates
+- Real-time link status and bandwidth utilization
+- Zoom, pan, and link toggle controls
+
+#### 🖥️ **Device Management**
+- Comprehensive device inventory
+- Detailed hardware and performance metrics
+- Multi-tab device details (Basic Info, Hardware, Performance, Physical)
+- SNMP-based monitoring and status tracking
+
+#### 🚨 **Alarm & Fault Management**
+- Real-time alarm aggregation and correlation
+- Severity-based filtering and prioritization
+- Historical alarm tracking and trends
+
+#### 🔧 **Additional Applications**
+- **Bandwidth Monitor**: Real-time traffic analysis
+- **Config Manager**: Device configuration management
+- **Security Center**: Network security monitoring
+- **Reports**: Comprehensive analytics and reporting
+- **Automation Hub**: Workflow automation platform
+
+### Authentication
+
+- **Default Credentials**: `admin / admin`
+- **Role-based access control**
+- **Session management with timeout**
+
+## 🏷️ Technology Stack
+
+### Backend
+- **Go 1.23.8** - Primary backend language
+- **Layer8 Framework** - Custom networking and service communication
+- **gRPC/Protocol Buffers** - Service communication
+- **PostgreSQL** - Data persistence
+- **SNMP (gosnmp)** - Network device polling
+
+### Frontend
+- **Vanilla JavaScript** - No framework dependencies
+- **CSS3 with CSS Grid & Flexbox** - Modern responsive design
+- **SVG Graphics** - Interactive network topology
+- **WebSocket** - Real-time data updates
+
+### Infrastructure
+- **Docker** - Containerization
+- **Kubernetes** - Container orchestration
+- **StatefulSets** - For stateful services
+- **DaemonSets** - For network overlay
+
+## 📁 Project Structure
+
+```
+probler/
+├── go/                          # Go microservices
+│   ├── prob/
+│   │   ├── collector/          # Data collection service
+│   │   ├── parser/             # Data parsing service
+│   │   ├── inv_box/            # Network inventory
+│   │   ├── inv_k8s/            # K8s inventory
+│   │   ├── orm/                # ORM service
+│   │   ├── vnet/               # Virtual network & web UI
+│   │   ├── security/           # Security service
+│   │   └── prctl/              # CLI control tool
+│   ├── go.mod                  # Go module definition
+│   └── build-images.sh         # Docker build script
+├── k8s/                        # Kubernetes manifests
+│   ├── apply-all.sh           # Deployment script
+│   ├── delete-all.sh          # Cleanup script
+│   └── *.yaml                 # Service configurations
+├── proto/                      # Protocol buffer definitions
+├── builder/                    # Docker build configurations
+├── coordinate_calculator.py    # Device positioning utility
+├── coordinate_validator.py     # Position validation
+└── README.md                  # This file
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `POSTGRES_HOST` | Database host | `localhost` |
+| `POSTGRES_PORT` | Database port | `5432` |
+| `POSTGRES_DB` | Database name | `probler` |
+| `VNET_PORT` | Web interface port | `443` |
+| `LOG_LEVEL` | Logging level | `INFO` |
+
+### Service Configuration
+
+Services are configured through:
+- **Environment variables** in Kubernetes ConfigMaps
+- **Command-line flags** for local development
+- **Default configurations** in `/go/prob/common/defaults.go`
+
+## 🔍 Monitoring & Observability
+
+### Health Checks
+- **Service health endpoints** on all services
+- **Kubernetes readiness and liveness probes**
+- **Automatic leader election** for stateful services
+
+### Logging
+- **Structured logging** with configurable levels
+- **Centralized log aggregation** via Kubernetes
+- **Request tracing** across service boundaries
+
+### Metrics
+- **Performance metrics** exposed via web interface
+- **Device health monitoring** with SNMP polling
+- **Network topology health** and link status
+
+## 🚀 Scaling & Performance
+
+### Horizontal Scaling
+- **Collectors**: Scale based on device count and polling frequency
+- **Parsers**: Scale based on data processing volume
+- **Stateless services** can be replicated as needed
+
+### Vertical Scaling
+- **Inventory services**: Scale by service areas and sharding
+- **Database connections**: Configurable connection pooling
+- **Memory optimization** through delta updates and caching
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+
+- **Go code** follows standard Go conventions
+- **Tests** should accompany all new features
+- **Documentation** should be updated for API changes
+- **Commit messages** should be descriptive and clear
+
+## 📝 License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support & Documentation
+
+### Getting Help
+- **Issues**: Report bugs and request features via GitHub Issues
+- **Documentation**: Check the `/docs` directory for detailed guides
+- **Code Examples**: See `/examples` for integration samples
+
+### API Documentation
+- **REST API**: Available at `https://<host>/api/docs`
+- **gRPC Services**: Protocol buffer definitions in `/proto`
+- **Web Interface**: Built-in help and tooltips
+
+## 🎯 Use Cases
+
+### Network Operations Centers (NOCs)
+- **Real-time monitoring** of network infrastructure
+- **Fault management** and alarm correlation
+- **Performance tracking** and capacity planning
+
+### Cloud Infrastructure Management
+- **Kubernetes cluster monitoring**
+- **Service discovery** and health tracking
+- **Automated scaling** based on metrics
+
+### DevOps & Site Reliability Engineering
+- **Infrastructure as Code** with model-agnostic services
+- **Automated remediation** through workflow engine
+- **Compliance monitoring** and reporting
+
+---
+
+**Probler** - Making microservices painless, one service at a time.
