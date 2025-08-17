@@ -3,6 +3,7 @@
 
 let servicesRefreshInterval = null;
 let currentProcesses = [];
+let currentHealthData = null; // Store original health data
 let currentSortColumn = null;
 let currentSortOrder = "desc";
 let isAutoRefreshEnabled = true;
@@ -60,12 +61,16 @@ function processServicesData(topData) {
         return;
     }
     
+    // Store original health data
+    currentHealthData = topData.healths;
+    
     // Convert health data to process info similar to FormatTop
     const processes = [];
     
     for (const [key, health] of Object.entries(topData.healths)) {
         const process = {
             command: health.alias || key || 'unknown',
+            originalKey: key, // Store original key for lookup
             rxCount: health.stats?.rxMsgCount || 0,
             rxDataCount: health.stats?.rxDataCont || 0,
             txCount: health.stats?.txMsgCount || 0,
@@ -149,8 +154,8 @@ function renderServicesTable(processes) {
     separatorElement.innerHTML = headers.map(h => `<td>${'-'.repeat(h.width)}</td>`).join('');
     
     // Build body
-    bodyElement.innerHTML = processes.map(process => `
-        <tr>
+    bodyElement.innerHTML = processes.map((process, index) => `
+        <tr onclick="showServiceHealthDetails(${index})" style="cursor: pointer;" title="Click to view detailed health information">
             <td>${process.command}</td>
             <td>${process.rxCount}</td>
             <td class="memory-value">${formatMemory(process.rxDataCount)}</td>
@@ -468,3 +473,258 @@ function sortProcesses(columnIndex) {
     updateServicesStats(currentProcesses);
 }
 window.sortProcesses = sortProcesses;
+
+// Service Health Modal Functions
+function showServiceHealthDetails(processIndex) {
+    const process = currentProcesses[processIndex];
+    if (!process) {
+        console.error('Process not found at index:', processIndex);
+        return;
+    }
+    
+    console.log('Showing service health details for:', process.command);
+    
+    // Get the original health data for this service
+    const originalHealthData = findOriginalHealthData(processIndex);
+    
+    // Set modal title
+    document.getElementById('modalServiceName').textContent = `${process.command} - Health Details`;
+    
+    // Populate service information section
+    populateServiceInfo(process, originalHealthData);
+    
+    // Populate services map section
+    populateServiceMap(process, originalHealthData);
+    
+    // Populate service statistics section
+    populateServiceStats(process, originalHealthData);
+    
+    // Show the modal
+    document.getElementById('serviceHealthModal').style.display = 'block';
+    
+    // Show notification
+    if (typeof window.showNotification === "function") {
+        window.showNotification(`📊 Viewing health details for ${process.command}`, "info");
+    }
+}
+
+function findOriginalHealthData(processIndex) {
+    const process = currentProcesses[processIndex];
+    if (!process || !currentHealthData) {
+        return null;
+    }
+    
+    // Find the original health data using the originalKey
+    return currentHealthData[process.originalKey] || null;
+}
+
+function populateServiceInfo(process, originalHealthData) {
+    const serviceInfoContent = document.getElementById('serviceInfoContent');
+    
+    const statusIndicator = getStatusIndicatorHtml(process.status);
+    const startTimeStr = originalHealthData?.startTime ? 
+        new Date(parseInt(originalHealthData.startTime)).toLocaleString() : 
+        'Unknown';
+    
+    // Get service areas and types
+    const services = originalHealthData?.services?.serviceToAreas || {};
+    const serviceTypes = Object.keys(services).join(', ') || 'Unknown';
+    const isVnet = originalHealthData?.isVnet ? 'Yes' : 'No';
+    const uuid = originalHealthData?.aUuid || 'Unknown';
+    const zoneUuid = originalHealthData?.zUuid || 'N/A';
+    
+    serviceInfoContent.innerHTML = `
+        <div class="service-details">
+            <div class="service-detail-item">
+                <div class="service-detail-label">Service Name</div>
+                <div class="service-detail-value">${process.command}</div>
+            </div>
+            <div class="service-detail-item">
+                <div class="service-detail-label">Status</div>
+                <div class="service-detail-value">${statusIndicator}</div>
+            </div>
+            <div class="service-detail-item">
+                <div class="service-detail-label">Service UUID</div>
+                <div class="service-detail-value" style="font-family: monospace; font-size: 0.8rem;">${uuid}</div>
+            </div>
+            <div class="service-detail-item">
+                <div class="service-detail-label">Zone UUID</div>
+                <div class="service-detail-value" style="font-family: monospace; font-size: 0.8rem;">${zoneUuid}</div>
+            </div>
+            <div class="service-detail-item">
+                <div class="service-detail-label">Service Types</div>
+                <div class="service-detail-value">${serviceTypes}</div>
+            </div>
+            <div class="service-detail-item">
+                <div class="service-detail-label">VNet Service</div>
+                <div class="service-detail-value">${isVnet}</div>
+            </div>
+            <div class="service-detail-item">
+                <div class="service-detail-label">Start Time</div>
+                <div class="service-detail-value">${startTimeStr}</div>
+            </div>
+            <div class="service-detail-item">
+                <div class="service-detail-label">Uptime</div>
+                <div class="service-detail-value">${process.upTime}</div>
+            </div>
+            <div class="service-detail-item">
+                <div class="service-detail-label">Last Activity</div>
+                <div class="service-detail-value">${process.lastPulse} ago</div>
+            </div>
+            <div class="service-detail-item">
+                <div class="service-detail-label">CPU Usage</div>
+                <div class="service-detail-value">${process.cpuUsage.toFixed(2)}%</div>
+            </div>
+        </div>
+    `;
+}
+
+function populateServiceMap(process, originalHealthData) {
+    const serviceMapContent = document.getElementById('serviceMapContent');
+    
+    // Get services map from original health data
+    const servicesMap = originalHealthData?.services?.serviceToAreas || {};
+    const serviceKeys = Object.keys(servicesMap);
+    
+    if (serviceKeys.length === 0) {
+        serviceMapContent.innerHTML = `
+            <div class="no-services-message">
+                🔍 No services map available for this service
+            </div>
+        `;
+        return;
+    }
+    
+    // Create service count summary
+    const totalServices = serviceKeys.length;
+    const totalAreas = new Set();
+    
+    // Count unique areas across all services
+    serviceKeys.forEach(serviceName => {
+        const areas = servicesMap[serviceName]?.areas || {};
+        Object.keys(areas).forEach(area => totalAreas.add(area));
+    });
+    
+    serviceMapContent.innerHTML = `
+        <div class="service-count-summary">
+            📊 <strong>${totalServices}</strong> service${totalServices !== 1 ? 's' : ''} mapped to <strong>${totalAreas.size}</strong> area${totalAreas.size !== 1 ? 's' : ''}
+        </div>
+        <div class="service-map-grid">
+            ${serviceKeys.map(serviceName => {
+                const serviceData = servicesMap[serviceName];
+                const areas = serviceData?.areas || {};
+                const areaKeys = Object.keys(areas);
+                
+                // Get service icon based on service type
+                const serviceIcon = getServiceIcon(serviceName);
+                
+                return `
+                    <div class="service-item">
+                        <div class="service-item-header">
+                            <span class="service-icon">${serviceIcon}</span>
+                            <span class="service-name">${serviceName}</span>
+                        </div>
+                        <div class="service-areas">
+                            <div class="service-areas-label">Areas (${areaKeys.length})</div>
+                            <div class="area-tags">
+                                ${areaKeys.map(areaKey => {
+                                    const isActive = areas[areaKey] === true;
+                                    return `<span class="area-tag ${isActive ? 'active' : ''}" title="${isActive ? 'Active' : 'Inactive'} area">
+                                        Area ${areaKey}
+                                    </span>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+}
+
+function getServiceIcon(serviceName) {
+    const name = serviceName.toLowerCase();
+    
+    if (name.includes('health')) return '🏥';
+    if (name.includes('web') || name.includes('http')) return '🌐';
+    if (name.includes('plugin')) return '🔌';
+    if (name.includes('database') || name.includes('db')) return '🗄️';
+    if (name.includes('auth') || name.includes('security')) return '🔐';
+    if (name.includes('api')) return '🔗';
+    if (name.includes('log') || name.includes('monitor')) return '📋';
+    if (name.includes('cache')) return '💾';
+    if (name.includes('queue') || name.includes('message')) return '📬';
+    if (name.includes('file') || name.includes('storage')) return '📁';
+    if (name.includes('network') || name.includes('net')) return '🌍';
+    if (name.includes('config') || name.includes('setting')) return '⚙️';
+    
+    // Default service icon
+    return '⚡';
+}
+
+function populateServiceStats(process, originalHealthData) {
+    const serviceStatsContent = document.getElementById('serviceStatsContent');
+    
+    serviceStatsContent.innerHTML = `
+        <div class="service-metrics-grid">
+            <div class="service-metric-card">
+                <div class="service-metric-label">Memory Usage</div>
+                <div class="service-metric-value memory">${formatMemory(process.memoryUsage)}</div>
+            </div>
+            <div class="service-metric-card">
+                <div class="service-metric-label">CPU Usage</div>
+                <div class="service-metric-value cpu">${process.cpuUsage.toFixed(2)}%</div>
+            </div>
+            <div class="service-metric-card">
+                <div class="service-metric-label">RX Messages</div>
+                <div class="service-metric-value count">${process.rxCount.toLocaleString()}</div>
+            </div>
+            <div class="service-metric-card">
+                <div class="service-metric-label">TX Messages</div>
+                <div class="service-metric-value count">${process.txCount.toLocaleString()}</div>
+            </div>
+            <div class="service-metric-card">
+                <div class="service-metric-label">RX Data</div>
+                <div class="service-metric-value memory">${formatMemory(process.rxDataCount)}</div>
+            </div>
+            <div class="service-metric-card">
+                <div class="service-metric-label">TX Data</div>
+                <div class="service-metric-value memory">${formatMemory(process.txDataCount)}</div>
+            </div>
+            <div class="service-metric-card">
+                <div class="service-metric-label">Uptime</div>
+                <div class="service-metric-value time">${process.upTime}</div>
+            </div>
+            <div class="service-metric-card">
+                <div class="service-metric-label">Last Pulse</div>
+                <div class="service-metric-value time">${process.lastPulse}</div>
+            </div>
+        </div>
+    `;
+}
+
+function getStatusIndicatorHtml(status) {
+    const statusClass = getStatusClass(status);
+    const statusText = status === 'R' ? 'Running' : status === 'T' ? 'Stopped' : 'Sleeping';
+    
+    return `<span class="service-status-indicator status-${statusClass}">
+        <span class="status-indicator">${status === 'R' ? '🟢' : status === 'T' ? '🔴' : '🟡'}</span>
+        ${statusText}
+    </span>`;
+}
+
+function closeServiceHealthModal() {
+    document.getElementById('serviceHealthModal').style.display = 'none';
+}
+
+// Close modal when clicking outside of it
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('serviceHealthModal');
+    if (event.target === modal) {
+        closeServiceHealthModal();
+    }
+});
+
+// Export functions for global access
+window.showServiceHealthDetails = showServiceHealthDetails;
+window.closeServiceHealthModal = closeServiceHealthModal;

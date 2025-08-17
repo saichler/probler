@@ -545,6 +545,35 @@
         </div>
     </div>
 
+    <!-- Service Health Details Modal -->
+    <div id="serviceHealthModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalServiceName">Service Health Details</h2>
+                <span class="close" onclick="closeServiceHealthModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="service-content">
+                    <div class="service-info-section">
+                        <div class="service-details" id="serviceInfoContent">
+                            <!-- Dynamic content will be inserted here -->
+                        </div>
+                    </div>
+                    <div class="service-map-section">
+                        <div class="service-map" id="serviceMapContent">
+                            <!-- Dynamic services map will be inserted here -->
+                        </div>
+                    </div>
+                    <div class="service-stats-section">
+                        <div class="service-metrics" id="serviceStatsContent">
+                            <!-- Dynamic metrics will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript Files -->
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>

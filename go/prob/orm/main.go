@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
-	"github.com/saichler/collect/go/types"
+	types3 "github.com/saichler/l8inventory/go/types"
 	"github.com/saichler/l8orm/go/orm/convert"
 	"github.com/saichler/l8orm/go/orm/persist"
 	"github.com/saichler/l8types/go/ifs"
@@ -28,24 +28,24 @@ func main() {
 	nic.Resources().Services().RegisterServiceHandlerType(&convert.ConvertService{})
 
 	//Add the inventory model and mark the Id field as key
-	inventoryNode, _ := nic.Resources().Introspector().Inspect(&types.NetworkBox{})
+	inventoryNode, _ := nic.Resources().Introspector().Inspect(&types3.NetworkDevice{})
 	introspecting.AddPrimaryKeyDecorator(inventoryNode, "Id")
 
 	//Add the k8s cluster model and mark the Name as key
-	k8sClusterNode, _ := nic.Resources().Introspector().Inspect(&types2.Cluster{})
+	k8sClusterNode, _ := nic.Resources().Introspector().Inspect(&types2.K8SCluster{})
 	introspecting.AddPrimaryKeyDecorator(k8sClusterNode, "Name")
 
 	//init the db and register the inventory service as "myPostgres" service name
 	db := openDBConection()
 	p := persist.NewPostgres(db, nic.Resources())
 	_, err := nic.Resources().Services().Activate(persist.ServiceType, common2.ORM_SERVICE, 0,
-		nic.Resources(), nic, p, &types.NetworkBox{})
+		nic.Resources(), nic, p, &types3.NetworkDevice{})
 	if err != nil {
 		res.Logger().Error(err.Error())
 	}
 
 	_, err = nic.Resources().Services().Activate(persist.ServiceType, common2.ORM_SERVICE, 1,
-		nic.Resources(), nic, p, &types2.Cluster{})
+		nic.Resources(), nic, p, &types2.K8SCluster{})
 	if err != nil {
 		res.Logger().Error(err.Error())
 	}

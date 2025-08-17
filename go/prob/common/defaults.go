@@ -16,7 +16,7 @@ import (
 
 const (
 	PROBLER_VNET          = 26000
-	ORM_SERVICE           = "MyPostgresOrmService"
+	ORM_SERVICE           = "orm"
 	PARSER_SERVICE_BOX    = common.ParserServicePrefix + INVENTORY_SERVICE_BOX
 	PARSER_SERVICE_K8s    = common.ParserServicePrefix + INVENTORY_SERVICE_K8S
 	PARSER_AREA_BOX       = 0
