@@ -72,6 +72,61 @@
             color: #667eea;
         }
 
+        /* Emphasis animation for About link */
+        .about-emphasized {
+            position: relative;
+            font-weight: 600;
+            animation: gentle-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes gentle-pulse {
+            0%, 100% {
+                color: #333;
+                transform: scale(1);
+            }
+            50% {
+                color: #667eea;
+                transform: scale(1.1);
+            }
+        }
+
+        .about-emphasized::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+            animation: glow-line 2s ease-in-out infinite;
+        }
+
+        @keyframes glow-line {
+            0%, 100% {
+                opacity: 0.3;
+                box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                opacity: 0.8;
+                box-shadow: 0 0 10px rgba(102, 126, 234, 0.6);
+            }
+        }
+
+        .about-emphasized:hover {
+            animation: hover-bounce 0.6s ease-in-out;
+            color: #667eea !important;
+        }
+
+        @keyframes hover-bounce {
+            0%, 100% {
+                transform: scale(1.1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
         .nav-buttons {
             display: flex;
             gap: 1rem;
@@ -440,6 +495,346 @@
             font-weight: 600;
             margin: 0.2rem;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .close {
+            color: white;
+            float: right;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #f0f0f0;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 0 0 20px 20px;
+        }
+
+        .developer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .developer-intro {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            margin-bottom: 4rem;
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .developer-avatar {
+            flex-shrink: 0;
+        }
+
+        .avatar-placeholder {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+
+        .developer-info h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .developer-title {
+            font-size: 1.3rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .developer-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #666;
+        }
+
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .expertise-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .expertise-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .expertise-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .expertise-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .expertise-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .expertise-card li {
+            padding: 0.3rem 0;
+            color: #666;
+            border-left: 3px solid #667eea;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .projects-showcase {
+            margin-bottom: 4rem;
+        }
+
+        .projects-showcase h3 {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .project-card h4 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .project-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tech-tag {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .philosophy-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 4rem;
+        }
+
+        .philosophy-section h3 {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .philosophy-content {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .philosophy-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background: #f8f9ff;
+        }
+
+        .philosophy-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .philosophy-item h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .philosophy-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .contact-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .contact-section h3 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .contact-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .contact-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Responsive adjustments for About Developer */
+        @media (max-width: 768px) {
+            .developer-intro {
+                flex-direction: column;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .expertise-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .philosophy-item {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -454,6 +849,7 @@
                 <li><a href="#architecture">Architecture</a></li>
                 <li><a href="#getting-started">Get Started</a></li>
                 <li><a href="#docs">Docs</a></li>
+                <li><a href="#" onclick="openAboutModal()" class="about-emphasized">About</a></li>
             </ul>
             <div class="nav-buttons">
                 <a href="https://107.196.180.135" class="demo-button" target="_blank">Demo</a>
@@ -587,6 +983,14 @@
                         <h4>🌐 Web Services</h4>
                         <p>Web-based interfaces and services with modern UI components</p>
                     </div>
+                    <div class="service-card clickable" onclick="openGSQLDemo()">
+                        <h4>📊 GSQL</h4>
+                        <p>Graph SQL interface for querying and managing network topology data</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openReflectDemo()">
+                        <h4>🔍 Agnostic via Reflection</h4>
+                        <p>Dynamic type introspection and model adaptation using Go reflection capabilities</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -716,6 +1120,151 @@ open https://localhost:443/probler/
                 </div>
             </div>
         </section>
+
+        <!-- About Modal -->
+        <div id="aboutModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>👨‍💻 About the Developer</h2>
+                    <span class="close" onclick="closeAboutModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="developer-content">
+                        <div class="developer-intro">
+                            <div class="developer-avatar">
+                                <div class="avatar-placeholder">🚀</div>
+                            </div>
+                            <div class="developer-info">
+                                <h3>Sharon Aicler (saichler@gmail.com)</h3>
+                                <p class="developer-title">Senior Software Architect & Network Automation Specialist</p>
+                                <p class="developer-description">
+                                    Visionary Software Architect and DevOps Leader with decades of delivering transformative, high-impact technology solutions that accelerate business growth and operational efficiency. Proven expertise in designing and orchestrating distributed, cloud-native architectures in Go and Java, enabling organizations to scale securely and reliably. Recognized for building high-performance, multi-tier frameworks that reduce time-to-market, improve developer productivity, and ensure long-term maintainability. Trusted advisor to executive leadership, bridging business objectives with technical execution through deep knowledge of Kubernetes ecosystems, virtualization, and DevOps automation. Passionate about driving innovation, optimizing systems, and creating cohesive architectures that endure and evolve.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="expertise-grid">
+                            <div class="expertise-card">
+                                <div class="expertise-icon">⚡</div>
+                                <h4>Core Technologies</h4>
+                                <ul>
+                                    <li>Go (Golang) - Advanced</li>
+                                    <li>Kubernetes & Docker</li>
+                                    <li>PostgreSQL & Database Design</li>
+                                    <li>gRPC & REST APIs</li>
+                                    <li>Network Protocols (SNMP, SSH)</li>
+                                </ul>
+                            </div>
+
+                            <div class="expertise-card">
+                                <div class="expertise-icon">🏗️</div>
+                                <h4>Architecture Patterns</h4>
+                                <ul>
+                                    <li>Microservices Architecture</li>
+                                    <li>Model-Agnostic Design</li>
+                                    <li>Horizontal & Vertical Scaling</li>
+                                    <li>Service Discovery & Mesh</li>
+                                    <li>Event-Driven Systems</li>
+                                </ul>
+                            </div>
+
+                            <div class="expertise-card">
+                                <div class="expertise-icon">🌐</div>
+                                <h4>Network Operations</h4>
+                                <ul>
+                                    <li>Network Device Management</li>
+                                    <li>Topology Discovery & Mapping</li>
+                                    <li>Performance Monitoring</li>
+                                    <li>Alarm Correlation & Analysis</li>
+                                    <li>Automation Workflows</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="projects-showcase">
+                            <h3>Featured Projects</h3>
+                            <div class="projects-grid">
+                                <div class="project-card">
+                                    <h4>🕸️ Probler Platform</h4>
+                                    <p>Complete network automation and monitoring platform built with microservices architecture. Features horizontal scaling, model-agnostic services, and comprehensive NOC dashboard.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go</span>
+                                        <span class="tech-tag">Kubernetes</span>
+                                        <span class="tech-tag">PostgreSQL</span>
+                                        <span class="tech-tag">gRPC</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card">
+                                    <h4>📊 GSQL</h4>
+                                    <p>Graph SQL interface for querying and managing network topology data with intuitive query capabilities and visualization features.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Graph Databases</span>
+                                        <span class="tech-tag">SQL</span>
+                                        <span class="tech-tag">Data Visualization</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card">
+                                    <h4>🔍 Reflection Framework</h4>
+                                    <p>Dynamic type introspection and model adaptation system using Go reflection capabilities for building truly agnostic services.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go Reflection</span>
+                                        <span class="tech-tag">Dynamic Types</span>
+                                        <span class="tech-tag">Code Generation</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="philosophy-section">
+                            <h3>Development Philosophy</h3>
+                            <div class="philosophy-content">
+                                <div class="philosophy-item">
+                                    <div class="philosophy-icon">🎯</div>
+                                    <div>
+                                        <h4>Simplicity Through Abstraction</h4>
+                                        <p>Complex problems deserve elegant solutions. I believe in creating abstractions that hide complexity while maintaining flexibility and performance.</p>
+                                    </div>
+                                </div>
+                                <div class="philosophy-item">
+                                    <div class="philosophy-icon">🔄</div>
+                                    <div>
+                                        <h4>Model-Agnostic Design</h4>
+                                        <p>Building systems that adapt to changing requirements without code modifications. Future-proofing through intelligent abstraction layers.</p>
+                                    </div>
+                                </div>
+                                <div class="philosophy-item">
+                                    <div class="philosophy-icon">📈</div>
+                                    <div>
+                                        <h4>Scalable by Design</h4>
+                                        <p>Every component should scale independently. Horizontal and vertical scaling capabilities built into the foundation, not added as an afterthought.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contact-section">
+                            <h3>Connect & Collaborate</h3>
+                            <div class="contact-links">
+                                <a href="https://github.com/saichler" class="contact-link" target="_blank">
+                                    <span class="contact-icon">📚</span>
+                                    <span>GitHub Portfolio</span>
+                                </a>
+                                <a href="https://github.com/saichler/probler" class="contact-link" target="_blank">
+                                    <span class="contact-icon">🕸️</span>
+                                    <span>Probler Project</span>
+                                </a>
+                                <a href="https://github.com/saichler/probler/issues" class="contact-link" target="_blank">
+                                    <span class="contact-icon">💬</span>
+                                    <span>Discussions & Issues</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <footer>
@@ -790,6 +1339,42 @@ open https://localhost:443/probler/
         function openWebDemo() {
             window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8web/refs/heads/main/web.html', '_blank');
         }
+
+        // Function to open GSQL demo
+        function openGSQLDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/gsql/refs/heads/master/web.html', '_blank');
+        }
+
+        // Function to open Reflect demo
+        function openReflectDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/reflect/refs/heads/main/web.html', '_blank');
+        }
+
+        // Modal functions
+        function openAboutModal() {
+            document.getElementById('aboutModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeAboutModal() {
+            document.getElementById('aboutModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('aboutModal');
+            if (event.target === modal) {
+                closeAboutModal();
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAboutModal();
+            }
+        });
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
