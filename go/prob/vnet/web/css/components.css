@@ -739,3 +739,243 @@
         display: none;
     }
 }
+
+/* =============================================================================
+   SYSTEM SERVICES - Professional table and controls
+   ============================================================================= */
+
+/* Services Controls */
+.services-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(0, 129, 194, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 129, 194, 0.2);
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.services-btn {
+    background: linear-gradient(135deg, #0081c2, #005a87);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.services-btn:hover {
+    background: linear-gradient(135deg, #005a87, #003d5c);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 129, 194, 0.4);
+}
+
+.services-btn:active {
+    transform: translateY(0);
+}
+
+.services-stats {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+}
+
+/* Services Container */
+.services-container {
+    position: relative;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: visible;
+}
+
+/* Services Table */
+.services-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.85rem;
+    background: white;
+    table-layout: auto;
+}
+
+.services-table th {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 700;
+    color: #333;
+    border-bottom: 2px solid #0081c2;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.services-table .separator-row td {
+    padding: 0;
+    height: 2px;
+    background: #0081c2;
+    border: none;
+    color: #0081c2;
+    text-align: center;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.services-table td {
+    padding: 8px;
+    text-align: right;
+    border-bottom: 1px solid #eee;
+    font-weight: 500;
+    white-space: nowrap;
+    vertical-align: middle;
+    overflow: visible;
+}
+
+.services-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+    color: #0081c2;
+}
+
+.services-table tr:nth-child(even) {
+    background: rgba(0, 129, 194, 0.02);
+}
+
+.services-table tr:hover {
+    background: rgba(0, 129, 194, 0.08);
+    transform: scale(1.01);
+    box-shadow: 0 2px 8px rgba(0, 129, 194, 0.2);
+}
+
+/* Status indicators */
+.status-running {
+    color: #28a745;
+    font-weight: 700;
+}
+
+.status-stopped {
+    color: #dc3545;
+    font-weight: 700;
+}
+
+.status-sleeping {
+    color: #ffc107;
+    font-weight: 700;
+}
+
+/* Memory formatting */
+.memory-value {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    color: #6f42c1;
+    font-weight: 600;
+}
+
+/* Time formatting */
+.time-value {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    color: #17a2b8;
+    font-weight: 600;
+}
+
+/* CPU percentage */
+.cpu-value {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    color: #fd7e14;
+    font-weight: 600;
+}
+
+/* Error Message */
+.error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    border-radius: 8px;
+    margin: 20px;
+}
+
+.error-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.error-text {
+    color: #721c24;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.retry-btn {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+/* Sortable table headers */
+.services-table th[onclick] {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+    position: relative;
+}
+
+.services-table th[onclick]:hover {
+    background: linear-gradient(135deg, #e9ecef, #dee2e6);
+    color: #0056b3;
+}
+
+.services-table th[onclick]:active {
+    background: linear-gradient(135deg, #dee2e6, #ced4da);
+    transform: translateY(1px);
+}
+
+.services-table th[onclick]::after {
+    content: " ↓";
+    color: #6c757d;
+    font-size: 0.8em;
+    margin-left: 4px;
+}

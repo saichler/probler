@@ -28,6 +28,13 @@ function switchApp(appName) {
         setTimeout(() => {
             initializeZoomControls();
         }, 100);
+    } else if (appName === 'services') {
+        // Initialize System Services app
+        if (typeof initServicesApp === 'function') {
+            setTimeout(() => {
+                initServicesApp();
+            }, 100);
+        }
     }
     
     // Show notification for non-dashboard apps
@@ -39,7 +46,8 @@ function switchApp(appName) {
             'security': 'Security Center',
             'reports': 'Reports Dashboard',
             'tools': 'Network Tools Suite',
-            'automation': 'Automation Hub'
+            'automation': 'Automation Hub',
+            'services': 'System Services Monitor'
         };
         
         const appDisplayName = appMap[appName] || appName;

@@ -111,6 +111,9 @@
                 <button class="app-button" onclick="switchApp('automation')" title="Automation Hub">
                     <span class="app-icon">🤖</span>
                 </button>
+                <button class="app-button" onclick="switchApp('services')" title="System Services">
+                    <span class="app-icon">⚙️</span>
+                </button>
             </div>
 
             <div class="main-content">
@@ -374,6 +377,68 @@
                         <p class="app-subtitle">Network automation workflows and scripting platform</p>
                     </div>
                 </div>
+
+                <!-- System Services Application -->
+                <div class="app-content" id="services-app">
+                    <div class="app-header">
+                        <h1 class="app-title">⚙️ System Services</h1>
+                        <p class="app-subtitle">Real-time system process monitoring and management</p>
+                    </div>
+                    
+                    <div class="services-controls">
+                        <div class="control-group">
+                            <button class="services-btn" onclick="refreshServices()" title="Refresh Services">
+                                🔄 Refresh
+                            </button>
+                            <button class="services-btn" onclick="toggleAutoRefresh()" title="Toggle Auto-refresh" id="autoRefreshBtn">
+                                ⏸️ Auto-refresh (15s)
+                            </button>
+                        </div>
+                        <div class="services-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Total Services:</span>
+                                <span class="stat-value" id="totalServices">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Running:</span>
+                                <span class="stat-value status-online" id="runningServices">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Stopped:</span>
+                                <span class="stat-value status-offline" id="stoppedServices">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Last Update:</span>
+                                <span class="stat-value" id="lastUpdate">Never</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="services-container">
+                        
+                        <div class="error-message" id="servicesError" style="display: none;">
+                            <div class="error-icon">⚠️</div>
+                            <div class="error-text">Failed to load services data. Please check connection.</div>
+                            <button class="retry-btn" onclick="refreshServices()">Retry</button>
+                        </div>
+                        
+                        <div class="table-container" id="servicesTableContainer">
+                            <table class="services-table" id="servicesTable">
+                                <thead>
+                                    <tr id="servicesTableHeader">
+                                        <!-- Dynamic headers will be inserted here -->
+                                    </tr>
+                                    <tr id="servicesTableSeparator" class="separator-row">
+                                        <!-- Dynamic separators will be inserted here -->
+                                    </tr>
+                                </thead>
+                                <tbody id="servicesTableBody">
+                                    <!-- Dynamic service data will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -487,6 +552,7 @@
     <script src="js/devices.js"></script>
     <script src="js/alarms.js"></script>
     <script src="js/topology.js"></script>
+    <script src="js/services.js"></script>
     <script src="js/app-management.js"></script>
     <script src="js/main.js"></script>
 

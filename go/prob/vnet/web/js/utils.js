@@ -109,3 +109,5 @@ function initializeModalHandlers() {
         }
     });
 }
+// Export notification function globally
+window.showNotification = showNotification;

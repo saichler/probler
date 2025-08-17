@@ -93,3 +93,10 @@ tr {
         font-size: 0.9rem;
     }
 }
+
+/* Services Table Container - No scrolling, show all rows */
+.services-container .table-container {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
