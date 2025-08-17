@@ -249,6 +249,16 @@
             padding: 1.5rem;
             border-radius: 10px;
             text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .service-card.clickable {
+            cursor: pointer;
+        }
+
+        .service-card.clickable:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .service-card h4 {
@@ -541,15 +551,15 @@
                 </div>
 
                 <div class="services-grid">
-                    <div class="service-card">
+                    <div class="service-card clickable" onclick="openCollectorDemo()">
                         <h4>🔍 Collector</h4>
                         <p>Network device polling & data collection with horizontal scaling</p>
                     </div>
-                    <div class="service-card">
+                    <div class="service-card clickable" onclick="openParserDemo()">
                         <h4>⚙️ Parser</h4>
                         <p>Model-agnostic data parsing & transformation with horizontal scaling</p>
                     </div>
-                    <div class="service-card">
+                    <div class="service-card clickable" onclick="openInventoryBoxDemo()">
                         <h4>📦 Inventory Box</h4>
                         <p>Network device inventory management with vertical scaling</p>
                     </div>
@@ -557,17 +567,25 @@
                         <h4>☸️ Inventory K8s</h4>
                         <p>Kubernetes cluster inventory with vertical scaling</p>
                     </div>
-                    <div class="service-card">
+                    <div class="service-card clickable" onclick="openORMDemo()">
                         <h4>🗄️ ORM</h4>
                         <p>Object-relational mapping & persistence with vertical scaling</p>
                     </div>
-                    <div class="service-card">
+                    <div class="service-card clickable" onclick="openVNetDemo()">
                         <h4>🌐 VNet</h4>
                         <p>Virtual network overlay & web interface with vertical scaling</p>
                     </div>
                     <div class="service-card">
                         <h4>🛡️ Security</h4>
                         <p>Authentication & authorization with vertical scaling</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openModelAgnosticServicesDemo()">
+                        <h4>🤖 Model-Agnostic Services</h4>
+                        <p>Universal services that adapt to any data structure with dynamic modeling</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openWebDemo()">
+                        <h4>🌐 Web Services</h4>
+                        <p>Web-based interfaces and services with modern UI components</p>
                     </div>
                 </div>
             </div>
@@ -738,6 +756,41 @@ open https://localhost:443/probler/
     </footer>
 
     <script>
+        // Function to open collector demo
+        function openCollectorDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8collector/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open parser demo
+        function openParserDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8parser/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open inventory box demo
+        function openInventoryBoxDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8inventory/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open ORM demo
+        function openORMDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8orm/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open VNet demo
+        function openVNetDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/layer8/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open Model-Agnostic Services demo
+        function openModelAgnosticServicesDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8services/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open Web Services demo
+        function openWebDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8web/refs/heads/main/web.html', '_blank');
+        }
+
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
