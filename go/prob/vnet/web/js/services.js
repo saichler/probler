@@ -6,7 +6,7 @@ let currentProcesses = [];
 let currentHealthData = null; // Store original health data
 let currentSortColumn = null;
 let currentSortOrder = "desc";
-let isAutoRefreshEnabled = true;
+let isAutoRefreshEnabled = false;
 const REFRESH_INTERVAL = 15000; // 15 seconds
 
 
@@ -14,7 +14,7 @@ const REFRESH_INTERVAL = 15000; // 15 seconds
 function initializeServices() {
     console.log('Initializing System Services...');
     refreshServices();
-    startAutoRefresh();
+    updateAutoRefreshButton();
 }
 
 // Main function to refresh services data

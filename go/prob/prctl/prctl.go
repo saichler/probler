@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	types5 "github.com/saichler/l8inventory/go/types"
 	"github.com/saichler/l8pollaris/go/types"
 	types2 "github.com/saichler/l8types/go/types"
@@ -9,7 +11,6 @@ import (
 	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/prob/prctl/commands"
 	types3 "github.com/saichler/probler/go/types"
-	"os"
 )
 
 func main() {
@@ -46,6 +47,7 @@ func main() {
 	resources.Introspector().Inspect(&types2.Health{})
 	resources.Introspector().Inspect(&types2.Top{})
 	resources.Introspector().Inspect(&types3.K8SCluster{})
+	resources.Introspector().Inspect(&types3.K8SClusterList{})
 	resources.Introspector().Inspect(&types5.NetworkDevice{})
 	resources.Introspector().Inspect(&types5.NetworkDeviceList{})
 	resources.Introspector().Inspect(&types2.Empty{})
@@ -61,6 +63,9 @@ func main() {
 			return
 		} else if cmd2 == "device" {
 			commands.GetDevice(rc, resources, cmd3)
+			return
+		} else if cmd2 == "ocluster" {
+			commands.GetClusterOrm(rc, resources, cmd3)
 			return
 		}
 	}

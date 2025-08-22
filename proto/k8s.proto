@@ -28,6 +28,10 @@ enum K8sNodeStatus {
   Ready = 1;
 }
 
+message K8sClusterList {
+  repeated K8sCluster list = 1;
+}
+
 message K8sCluster {
   string name = 1;
   map<string, K8sNode> nodes = 2;

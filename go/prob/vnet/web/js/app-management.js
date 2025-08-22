@@ -35,6 +35,13 @@ function switchApp(appName) {
                 initServicesApp();
             }, 100);
         }
+    } else if (appName === 'kubernetes') {
+        // Initialize Kubernetes app
+        if (typeof initKubernetesApp === 'function') {
+            setTimeout(() => {
+                initKubernetesApp();
+            }, 100);
+        }
     }
     
     // Show notification for non-dashboard apps
@@ -47,7 +54,8 @@ function switchApp(appName) {
             'reports': 'Reports Dashboard',
             'tools': 'Network Tools Suite',
             'automation': 'Automation Hub',
-            'services': 'System Services Monitor'
+            'services': 'System Services Monitor',
+            'kubernetes': 'Kubernetes Cluster Monitor'
         };
         
         const appDisplayName = appMap[appName] || appName;

@@ -114,6 +114,9 @@
                 <button class="app-button" onclick="switchApp('services')" title="System Services">
                     <span class="app-icon">⚙️</span>
                 </button>
+                <button class="app-button" onclick="switchApp('kubernetes')" title="Kubernetes">
+                    <span class="app-icon">☸️</span>
+                </button>
             </div>
 
             <div class="main-content">
@@ -390,8 +393,8 @@
                             <button class="services-btn" onclick="refreshServices()" title="Refresh Services">
                                 🔄 Refresh
                             </button>
-                            <button class="services-btn" onclick="toggleAutoRefresh()" title="Toggle Auto-refresh" id="autoRefreshBtn">
-                                ⏸️ Auto-refresh (15s)
+                            <button class="services-btn" onclick="toggleAutoRefresh()" title="Start auto-refresh" id="autoRefreshBtn">
+                                ▶️ Auto-refresh (OFF)
                             </button>
                         </div>
                         <div class="services-stats">
@@ -436,6 +439,56 @@
                                     <!-- Dynamic service data will be inserted here -->
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kubernetes Application -->
+                <div class="app-content" id="kubernetes-app">
+                    <div class="app-header">
+                        <h1 class="app-title">☸️ Kubernetes</h1>
+                        <p class="app-subtitle">Kubernetes cluster monitoring and management</p>
+                    </div>
+                    
+                    <div class="kubernetes-controls">
+                        <div class="control-group">
+                            <button class="kubernetes-btn" onclick="refreshKubernetes()" title="Refresh Kubernetes Data">
+                                🔄 Refresh
+                            </button>
+                            <button class="kubernetes-btn" onclick="toggleK8sAutoRefresh()" title="Toggle Auto-refresh" id="k8sAutoRefreshBtn">
+                                ⏸️ Auto-refresh (30s)
+                            </button>
+                        </div>
+                        <div class="kubernetes-global-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Last Update:</span>
+                                <span class="stat-value" id="k8sLastUpdate">Never</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="kubernetes-container">
+                        <!-- Cluster Tabs -->
+                        <div class="cluster-tabs">
+                            <div class="tab-nav" id="clusterTabNav">
+                                <!-- Dynamic cluster tabs will be inserted here -->
+                            </div>
+                            <div class="tab-content" id="clusterTabContent">
+                                <!-- Dynamic cluster content will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Loading state for initial data fetch -->
+                        <div class="loading" id="k8sClustersLoading">
+                            <div class="spinner"></div>
+                            <div>Loading clusters...</div>
+                        </div>
+                        
+                        <!-- Error state -->
+                        <div class="error-message" id="k8sClustersError" style="display: none;">
+                            <div class="error-icon">⚠️</div>
+                            <div class="error-text">Failed to load clusters data. Please check connection.</div>
+                            <button class="retry-btn" onclick="refreshKubernetes()">Retry</button>
                         </div>
                     </div>
                 </div>
@@ -582,6 +635,7 @@
     <script src="js/alarms.js"></script>
     <script src="js/topology.js"></script>
     <script src="js/services.js"></script>
+    <script src="js/kubernetes.js"></script>
     <script src="js/app-management.js"></script>
     <script src="js/main.js"></script>
 

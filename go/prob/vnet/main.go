@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/saichler/l8inventory/go/types"
 	types4 "github.com/saichler/l8pollaris/go/types"
 	"github.com/saichler/l8types/go/ifs"
@@ -13,7 +15,6 @@ import (
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
 	"github.com/saichler/reflect/go/reflect/introspecting"
-	"os"
 )
 
 func main() {
@@ -56,6 +57,7 @@ func startWebServer() {
 	nic.Resources().Registry().Register(&types.NetworkDevice{})
 	nic.Resources().Registry().Register(&types.NetworkDeviceList{})
 	nic.Resources().Registry().Register(&types2.K8SCluster{})
+	nic.Resources().Registry().Register(&types2.K8SClusterList{})
 	nic.Resources().Registry().Register(&types3.Query{})
 	nic.Resources().Registry().Register(&types3.Top{})
 	nic.Resources().Registry().Register(&types3.Empty{})
