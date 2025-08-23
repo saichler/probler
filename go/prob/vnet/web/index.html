@@ -82,44 +82,57 @@
         </div>
 
         <div class="layout-grid">
-            <!-- Network Applications Toolbar -->
-            <div class="toolbar">
-                <div class="toolbar-header">
-                    <h3 class="toolbar-title">Apps</h3>
+            <!-- Traditional Horizontal Tab System -->
+            <div class="app-tab-system">
+                <div class="app-tab-nav">
+                    <button class="app-tab-button active" onclick="switchApp('dashboard')" title="Dashboard">
+                        <span class="app-tab-icon">📊</span>
+                        <span class="app-tab-text">Dashboard</span>
+                    </button>
+                    <button class="app-tab-button" onclick="switchApp('devices')" title="Network Devices">
+                        <span class="app-tab-icon">🖥️</span>
+                        <span class="app-tab-text">Devices</span>
+                    </button>
+                    <button class="app-tab-button" onclick="switchApp('topology')" title="Network Topology">
+                        <span class="app-tab-icon">🗺️</span>
+                        <span class="app-tab-text">Topology</span>
+                    </button>
+                    <button class="app-tab-button" onclick="switchApp('bandwidth')" title="Bandwidth Monitor">
+                        <span class="app-tab-icon">📈</span>
+                        <span class="app-tab-text">Bandwidth</span>
+                    </button>
+                    <button class="app-tab-button" onclick="switchApp('config')" title="Config Manager">
+                        <span class="app-tab-icon">⚙️</span>
+                        <span class="app-tab-text">Config</span>
+                    </button>
+                    <button class="app-tab-button" onclick="switchApp('security')" title="Security Center">
+                        <span class="app-tab-icon">🛡️</span>
+                        <span class="app-tab-text">Security</span>
+                    </button>
+                    <button class="app-tab-button" onclick="switchApp('reports')" title="Reports">
+                        <span class="app-tab-icon">📋</span>
+                        <span class="app-tab-text">Reports</span>
+                    </button>
+                    <button class="app-tab-button" onclick="switchApp('tools')" title="Network Tools">
+                        <span class="app-tab-icon">🔧</span>
+                        <span class="app-tab-text">Tools</span>
+                    </button>
+                    <button class="app-tab-button" onclick="switchApp('automation')" title="Automation Hub">
+                        <span class="app-tab-icon">🤖</span>
+                        <span class="app-tab-text">Automation</span>
+                    </button>
+                    <button class="app-tab-button" onclick="switchApp('services')" title="System Services">
+                        <span class="app-tab-icon">⚙️</span>
+                        <span class="app-tab-text">Services</span>
+                    </button>
+                    <button class="app-tab-button" onclick="switchApp('kubernetes')" title="Kubernetes">
+                        <span class="app-tab-icon">☸️</span>
+                        <span class="app-tab-text">Kubernetes</span>
+                    </button>
                 </div>
-                <button class="app-button active" onclick="switchApp('dashboard')" title="Dashboard">
-                    <span class="app-icon">📊</span>
-                </button>
-                <button class="app-button" onclick="switchApp('topology')" title="Network Topology">
-                    <span class="app-icon">🗺️</span>
-                </button>
-                <button class="app-button" onclick="switchApp('bandwidth')" title="Bandwidth Monitor">
-                    <span class="app-icon">📈</span>
-                </button>
-                <button class="app-button" onclick="switchApp('config')" title="Config Manager">
-                    <span class="app-icon">⚙️</span>
-                </button>
-                <button class="app-button" onclick="switchApp('security')" title="Security Center">
-                    <span class="app-icon">🛡️</span>
-                </button>
-                <button class="app-button" onclick="switchApp('reports')" title="Reports">
-                    <span class="app-icon">📋</span>
-                </button>
-                <button class="app-button" onclick="switchApp('tools')" title="Network Tools">
-                    <span class="app-icon">🔧</span>
-                </button>
-                <button class="app-button" onclick="switchApp('automation')" title="Automation Hub">
-                    <span class="app-icon">🤖</span>
-                </button>
-                <button class="app-button" onclick="switchApp('services')" title="System Services">
-                    <span class="app-icon">⚙️</span>
-                </button>
-                <button class="app-button" onclick="switchApp('kubernetes')" title="Kubernetes">
-                    <span class="app-icon">☸️</span>
-                </button>
-            </div>
-
-            <div class="main-content">
+                
+                <div class="app-tab-content">
+                    <div class="main-content">
                 <!-- Dashboard Application Content -->
                 <div class="app-content active" id="dashboard-app">
                     <div class="app-header">
@@ -163,43 +176,6 @@
 
                     <!-- Content Grid -->
                     <div class="content-grid">
-                        <!-- Network Devices Table -->
-                        <div class="section collapsed devices-section" id="devicesSection">
-                            <div class="section-header">
-                                <h2 class="section-title">Network Devices</h2>
-                                <div class="section-header-controls">
-                                    <button class="refresh-btn" onclick="refreshDevices()">🔄 Refresh</button>
-                                    <button class="collapse-btn" onclick="toggleDevicesSection()">
-                                        <span id="devicesToggleIcon">+</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="section-content" id="devicesContent">
-                                <div class="loading" id="devicesLoading">
-                                    <div class="spinner"></div>
-                                    <div>Loading devices...</div>
-                                </div>
-                                <div class="table-container">
-                                    <table id="devicesTable">
-                                        <thead>
-                                            <tr>
-                                                <th>Status</th>
-                                                <th>Device Name</th>
-                                                <th>IP Address</th>
-                                                <th>Type</th>
-                                                <th>Location</th>
-                                                <th>CPU Usage</th>
-                                                <th>Memory Usage</th>
-                                                <th>Uptime</th>
-                                                <th>Last Seen</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="devicesTableBody">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Alarms & Faults Table -->
                         <div class="section visible" id="alarmsSection">
@@ -231,6 +207,55 @@
                                             </tr>
                                         </thead>
                                         <tbody id="alarmsTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network Devices Application -->
+                <div class="app-content" id="devices-app">
+                    <div class="app-header">
+                        <h1 class="app-title">🖥️ Network Devices</h1>
+                        <p class="app-subtitle">Comprehensive network device monitoring and management</p>
+                    </div>
+                    
+                    <!-- Devices Content Grid -->
+                    <div class="content-grid">
+                        <!-- Network Devices Table -->
+                        <div class="section visible devices-section" id="devicesSection">
+                            <div class="section-header">
+                                <h2 class="section-title">Network Devices</h2>
+                                <div class="section-header-controls">
+                                    <button class="refresh-btn" onclick="refreshDevices()">🔄 Refresh</button>
+                                    <button class="collapse-btn" onclick="toggleDevicesSection()">
+                                        <span id="devicesToggleIcon">−</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="section-content" id="devicesContent">
+                                <div class="loading" id="devicesLoading">
+                                    <div class="spinner"></div>
+                                    <div>Loading devices...</div>
+                                </div>
+                                <div class="table-container">
+                                    <table id="devicesTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Status</th>
+                                                <th>Device Name</th>
+                                                <th>IP Address</th>
+                                                <th>Type</th>
+                                                <th>Location</th>
+                                                <th>CPU Usage</th>
+                                                <th>Memory Usage</th>
+                                                <th>Uptime</th>
+                                                <th>Last Seen</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="devicesTableBody">
                                         </tbody>
                                     </table>
                                 </div>
@@ -623,7 +648,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+                    </div> <!-- End main-content -->
+                </div> <!-- End app-tab-content -->
+            </div> <!-- End app-tab-system -->
         </div>
     </div>
 

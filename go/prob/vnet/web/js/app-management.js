@@ -6,8 +6,8 @@ function switchApp(appName) {
     const allApps = document.querySelectorAll('.app-content');
     allApps.forEach(app => app.classList.remove('active'));
     
-    // Remove active class from all buttons
-    const allButtons = document.querySelectorAll('.app-button');
+    // Remove active class from all buttons (support both old and new classes)
+    const allButtons = document.querySelectorAll('.app-button, .app-tab-button');
     allButtons.forEach(button => button.classList.remove('active'));
     
     // Show selected app content
@@ -18,7 +18,10 @@ function switchApp(appName) {
     
     // Add active class to clicked button
     if (event && event.target) {
-        event.target.closest('.app-button').classList.add('active');
+        const button = event.target.closest('.app-button') || event.target.closest('.app-tab-button');
+        if (button) {
+            button.classList.add('active');
+        }
     }
     
     // Initialize specific apps when opened
@@ -47,6 +50,7 @@ function switchApp(appName) {
     // Show notification for non-dashboard apps
     if (appName !== 'dashboard') {
         const appMap = {
+            'devices': 'Network Devices Manager',
             'topology': 'Network Topology Viewer',
             'bandwidth': 'Bandwidth Monitor',
             'config': 'Configuration Manager',
