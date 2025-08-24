@@ -96,6 +96,14 @@
                     <span class="app-tab-icon">🗺️</span>
                     <span class="app-tab-text">Topology</span>
                 </button>
+                <button class="app-tab-button" onclick="switchApp('services')" title="System Services">
+                    <span class="app-tab-icon">🔄</span>
+                    <span class="app-tab-text">Services</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('kubernetes')" title="Kubernetes">
+                    <span class="app-tab-icon">☸</span>
+                    <span class="app-tab-text">Kubernetes</span>
+                </button>
                 <button class="app-tab-button" onclick="switchApp('bandwidth')" title="Bandwidth Monitor">
                     <span class="app-tab-icon">📈</span>
                     <span class="app-tab-text">Bandwidth</span>
@@ -119,14 +127,6 @@
                 <button class="app-tab-button" onclick="switchApp('automation')" title="Automation Hub">
                     <span class="app-tab-icon">🤖</span>
                     <span class="app-tab-text">Automation</span>
-                </button>
-                <button class="app-tab-button" onclick="switchApp('services')" title="System Services">
-                    <span class="app-tab-icon">⚙️</span>
-                    <span class="app-tab-text">Services</span>
-                </button>
-                <button class="app-tab-button" onclick="switchApp('kubernetes')" title="Kubernetes">
-                    <span class="app-tab-icon">☸️</span>
-                    <span class="app-tab-text">Kubernetes</span>
                 </button>
             </div>
         </div>
@@ -482,19 +482,23 @@
                 <!-- Kubernetes Application -->
                 <div class="app-content" id="kubernetes-app">
                     <div class="app-header">
-                        <h1 class="app-title">☸️ Kubernetes</h1>
-                        <p class="app-subtitle">Kubernetes cluster monitoring and management</p>
+                        <div class="app-header-content">
+                            <div class="app-header-left">
+                                <h1 class="app-title">☸ Kubernetes</h1>
+                                <p class="app-subtitle">Kubernetes cluster monitoring and management</p>
+                            </div>
+                            <div class="app-header-right">
+                                <button class="kubernetes-btn" onclick="refreshKubernetes()" title="Refresh Kubernetes Data">
+                                    🔄 Refresh
+                                </button>
+                                <button class="kubernetes-btn" onclick="toggleK8sAutoRefresh()" title="Toggle Auto-refresh" id="k8sAutoRefreshBtn">
+                                    ⏸️ Auto-refresh (30s)
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="kubernetes-controls">
-                        <div class="control-group">
-                            <button class="kubernetes-btn" onclick="refreshKubernetes()" title="Refresh Kubernetes Data">
-                                🔄 Refresh
-                            </button>
-                            <button class="kubernetes-btn" onclick="toggleK8sAutoRefresh()" title="Toggle Auto-refresh" id="k8sAutoRefreshBtn">
-                                ⏸️ Auto-refresh (30s)
-                            </button>
-                        </div>
                         <div class="kubernetes-global-stats">
                             <div class="stat-item">
                                 <span class="stat-label">Last Update:</span>

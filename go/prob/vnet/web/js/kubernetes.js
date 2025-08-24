@@ -443,7 +443,7 @@ function createClusterTabs(clusters) {
         // Create tab navigation button
         const tabButton = document.createElement('button');
         tabButton.className = `tab-button ${index === 0 ? 'active' : ''}`;
-        tabButton.textContent = `☸️ ${cluster.name}`;
+        tabButton.textContent = `🖧 ${cluster.name}`;
         tabButton.onclick = (event) => switchClusterTab(event, cluster.name);
         tabNav.appendChild(tabButton);
         
@@ -498,9 +498,6 @@ function createClusterTabs(clusters) {
                 <div class="sub-tab-content-container">
                     <!-- Nodes Tab Content -->
                     <div id="nodes-content-${cluster.name}" class="sub-tab-pane" style="display: block;">
-                        <div class="table-controls" style="margin-bottom: 1rem;">
-                            <button class="refresh-btn" onclick="refreshKubernetes()">🔄 Refresh</button>
-                        </div>
                         <div class="table-container">
                             <table class="k8s-table" id="k8sNodesTable-${cluster.name}">
                                 <thead>
@@ -529,7 +526,6 @@ function createClusterTabs(clusters) {
                             <button class="refresh-btn" onclick="toggleSystemPods('${cluster.name}')" title="Hide system pods (kube-system, calico-system, calico-apiserver)" id="systemPodsBtn-${cluster.name}">
                                 👁️ Hide System
                             </button>
-                            <button class="refresh-btn" onclick="refreshKubernetes()">🔄 Refresh</button>
                         </div>
                         <div class="table-container">
                             <table class="k8s-table" id="k8sPodsTable-${cluster.name}">

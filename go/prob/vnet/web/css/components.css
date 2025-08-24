@@ -64,6 +64,10 @@
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
+.header-tabs button[onclick*="kubernetes"] .app-tab-icon {
+    font-size: 18px;
+}
+
 .header-tabs .app-tab-text {
     font-weight: inherit;
     letter-spacing: inherit;
@@ -152,6 +156,22 @@
     line-height: 1.4;
     text-transform: none;
     letter-spacing: -0.01em;
+}
+
+.app-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-header-left {
+    flex: 1;
+}
+
+.app-header-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 
 /* Flyhyer Modern Minimalist Header */
