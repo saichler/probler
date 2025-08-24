@@ -9,26 +9,25 @@
     box-sizing: border-box;
 }
 
-/* Body and Base Layout - Professional Business Theme */
+/* Body and Base Layout - Flyhyer Modern Minimalist Theme */
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    color: #1e293b;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    background: #ffffff;
+    color: #1a1a1a;
     min-height: 100vh;
     overflow-x: hidden;
-    line-height: 1.6;
+    line-height: 1.5;
     font-weight: 400;
-    font-size: 15px;
+    font-size: 16px;
+    letter-spacing: -0.01em;
 }
 
 /* Main Container */
 .container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 14px;
-    padding-left: 14px;
-    padding-right: 14px;
-    padding-top: 98px;
+    padding: 0;
+    padding-top: 120px;
 }
 
 /* Layout Grid System */
@@ -49,15 +48,15 @@ body {
     gap: 17px;
 }
 
-/* Section Base Styles - Professional Business */
+/* Section Base Styles - Flyhyer Minimalist */
 .section {
     background: #ffffff;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
     overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: all 0.15s ease;
+    margin-bottom: 24px;
 }
 
 .section.collapsed .section-content {

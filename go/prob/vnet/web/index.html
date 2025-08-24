@@ -63,11 +63,14 @@
         <!-- Header -->
         <div class="header">
             <div class="header-content">
-                <div class="header-left">
-                    <h1>Open Network Automation</h1>
+                <div class="header-logo-left">
+                    <img src="logo.gif" alt="Open Network Automation Logo" class="main-logo">
+                </div>
+                <div class="header-center">
+                    <h1 class="main-title">Open Network Automation</h1>
                     <div class="subtitle">Network Operations Center - Real-time Monitoring & Management</div>
                 </div>
-                <div class="header-logo">
+                <div class="header-right">
                     <div class="user-info">
                         <span class="username" id="currentUsername">admin</span>
                         <div class="logout-btn" onclick="logout()" title="Logout">
@@ -79,60 +82,58 @@
                     </div>
                 </div>
             </div>
+            <!-- App Navigation Tabs Integrated into Header -->
+            <div class="header-tabs">
+                <button class="app-tab-button active" onclick="switchApp('dashboard')" title="Dashboard">
+                    <span class="app-tab-icon">📊</span>
+                    <span class="app-tab-text">Dashboard</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('devices')" title="Network Devices">
+                    <span class="app-tab-icon">🖥️</span>
+                    <span class="app-tab-text">Devices</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('topology')" title="Network Topology">
+                    <span class="app-tab-icon">🗺️</span>
+                    <span class="app-tab-text">Topology</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('bandwidth')" title="Bandwidth Monitor">
+                    <span class="app-tab-icon">📈</span>
+                    <span class="app-tab-text">Bandwidth</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('config')" title="Config Manager">
+                    <span class="app-tab-icon">⚙️</span>
+                    <span class="app-tab-text">Config</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('security')" title="Security Center">
+                    <span class="app-tab-icon">🛡️</span>
+                    <span class="app-tab-text">Security</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('reports')" title="Reports">
+                    <span class="app-tab-icon">📋</span>
+                    <span class="app-tab-text">Reports</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('tools')" title="Network Tools">
+                    <span class="app-tab-icon">🔧</span>
+                    <span class="app-tab-text">Tools</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('automation')" title="Automation Hub">
+                    <span class="app-tab-icon">🤖</span>
+                    <span class="app-tab-text">Automation</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('services')" title="System Services">
+                    <span class="app-tab-icon">⚙️</span>
+                    <span class="app-tab-text">Services</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('kubernetes')" title="Kubernetes">
+                    <span class="app-tab-icon">☸️</span>
+                    <span class="app-tab-text">Kubernetes</span>
+                </button>
+            </div>
         </div>
 
         <div class="layout-grid">
-            <!-- Traditional Horizontal Tab System -->
-            <div class="app-tab-system">
-                <div class="app-tab-nav">
-                    <button class="app-tab-button active" onclick="switchApp('dashboard')" title="Dashboard">
-                        <span class="app-tab-icon">📊</span>
-                        <span class="app-tab-text">Dashboard</span>
-                    </button>
-                    <button class="app-tab-button" onclick="switchApp('devices')" title="Network Devices">
-                        <span class="app-tab-icon">🖥️</span>
-                        <span class="app-tab-text">Devices</span>
-                    </button>
-                    <button class="app-tab-button" onclick="switchApp('topology')" title="Network Topology">
-                        <span class="app-tab-icon">🗺️</span>
-                        <span class="app-tab-text">Topology</span>
-                    </button>
-                    <button class="app-tab-button" onclick="switchApp('bandwidth')" title="Bandwidth Monitor">
-                        <span class="app-tab-icon">📈</span>
-                        <span class="app-tab-text">Bandwidth</span>
-                    </button>
-                    <button class="app-tab-button" onclick="switchApp('config')" title="Config Manager">
-                        <span class="app-tab-icon">⚙️</span>
-                        <span class="app-tab-text">Config</span>
-                    </button>
-                    <button class="app-tab-button" onclick="switchApp('security')" title="Security Center">
-                        <span class="app-tab-icon">🛡️</span>
-                        <span class="app-tab-text">Security</span>
-                    </button>
-                    <button class="app-tab-button" onclick="switchApp('reports')" title="Reports">
-                        <span class="app-tab-icon">📋</span>
-                        <span class="app-tab-text">Reports</span>
-                    </button>
-                    <button class="app-tab-button" onclick="switchApp('tools')" title="Network Tools">
-                        <span class="app-tab-icon">🔧</span>
-                        <span class="app-tab-text">Tools</span>
-                    </button>
-                    <button class="app-tab-button" onclick="switchApp('automation')" title="Automation Hub">
-                        <span class="app-tab-icon">🤖</span>
-                        <span class="app-tab-text">Automation</span>
-                    </button>
-                    <button class="app-tab-button" onclick="switchApp('services')" title="System Services">
-                        <span class="app-tab-icon">⚙️</span>
-                        <span class="app-tab-text">Services</span>
-                    </button>
-                    <button class="app-tab-button" onclick="switchApp('kubernetes')" title="Kubernetes">
-                        <span class="app-tab-icon">☸️</span>
-                        <span class="app-tab-text">Kubernetes</span>
-                    </button>
-                </div>
-                
-                <div class="app-tab-content">
-                    <div class="main-content">
+            <!-- App Content Area -->
+            <div class="main-content">
                 <!-- Dashboard Application Content -->
                 <div class="app-content active" id="dashboard-app">
                     <div class="app-header">
@@ -143,33 +144,43 @@
                     <!-- Dashboard Stats -->
                     <div class="dashboard visible" id="dashboardSection">
                         <div class="stat-card" onclick="filterDevices('all')">
-                            <div class="stat-icon">🕸️</div>
+                            <div class="stat-card-header">
+                                <div class="stat-icon">🕸️</div>
+                                <div class="stat-label">Total Devices</div>
+                            </div>
                             <div class="stat-value" id="totalDevices">0</div>
-                            <div class="stat-label">Total Devices</div>
                             <div class="stat-trend">↗️ +3 this week</div>
                         </div>
                         <div class="stat-card" onclick="filterDevices('online')">
-                            <div class="stat-icon status-online">✅</div>
+                            <div class="stat-card-header">
+                                <div class="stat-icon status-online">✅</div>
+                                <div class="stat-label">Online Devices</div>
+                            </div>
                             <div class="stat-value status-online" id="onlineDevices">0</div>
-                            <div class="stat-label">Online Devices</div>
                             <div class="stat-trend">98.5% uptime</div>
                         </div>
                         <div class="stat-card" onclick="filterDevices('offline')">
-                            <div class="stat-icon status-offline">❌</div>
+                            <div class="stat-card-header">
+                                <div class="stat-icon status-offline">❌</div>
+                                <div class="stat-label">Offline Devices</div>
+                            </div>
                             <div class="stat-value status-offline" id="offlineDevices">0</div>
-                            <div class="stat-label">Offline Devices</div>
                             <div class="stat-trend">-2 from yesterday</div>
                         </div>
                         <div class="stat-card" onclick="showCriticalAlarms()">
-                            <div class="stat-icon status-critical">🚨</div>
+                            <div class="stat-card-header">
+                                <div class="stat-icon status-critical">🚨</div>
+                                <div class="stat-label">Critical Alarms</div>
+                            </div>
                             <div class="stat-value status-critical" id="criticalAlarms">0</div>
-                            <div class="stat-label">Critical Alarms</div>
                             <div class="stat-trend">Immediate attention</div>
                         </div>
                         <div class="stat-card" onclick="showAllAlarms()">
-                            <div class="stat-icon status-warning">⚠️</div>
+                            <div class="stat-card-header">
+                                <div class="stat-icon status-warning">⚠️</div>
+                                <div class="stat-label">Total Alarms</div>
+                            </div>
                             <div class="stat-value status-warning" id="totalAlarms">0</div>
-                            <div class="stat-label">Total Alarms</div>
                             <div class="stat-trend">Last updated: now</div>
                         </div>
                     </div>
@@ -648,9 +659,7 @@
                         </div>
                     </div>
                 </div>
-                    </div> <!-- End main-content -->
-                </div> <!-- End app-tab-content -->
-            </div> <!-- End app-tab-system -->
+            </div> <!-- End main-content -->
         </div>
     </div>
 
