@@ -9,9 +9,9 @@
     box-sizing: border-box;
 }
 
-/* Body and Base Layout - Forum Typography */
+/* Body and Base Layout - Droid Serif Typography */
 body {
-    font-family: 'Forum', serif;
+    font-family: 'Droid Serif', serif;
     background: #ffffff;
     color: #1a1a1a;
     min-height: 100vh;
@@ -19,7 +19,7 @@ body {
     line-height: 1.6;
     font-weight: 400;
     font-size: 16px;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.005em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }

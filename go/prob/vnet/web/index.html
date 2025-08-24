@@ -6,7 +6,7 @@
     <title>Open Network Automation - NOC Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Forum:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Droid+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/tables.css">
@@ -491,6 +491,10 @@
                                 <p class="app-subtitle">Kubernetes cluster monitoring and management</p>
                             </div>
                             <div class="app-header-right">
+                                <div class="stat-item">
+                                    <span class="stat-label">Last Update:</span>
+                                    <span class="stat-value" id="k8sLastUpdate">Never</span>
+                                </div>
                                 <button class="kubernetes-btn" onclick="refreshKubernetes()" title="Refresh Kubernetes Data">
                                     🔄 Refresh
                                 </button>
@@ -502,12 +506,6 @@
                     </div>
                     
                     <div class="kubernetes-controls">
-                        <div class="kubernetes-global-stats">
-                            <div class="stat-item">
-                                <span class="stat-label">Last Update:</span>
-                                <span class="stat-value" id="k8sLastUpdate">Never</span>
-                            </div>
-                        </div>
                     </div>
                     
                     <div class="kubernetes-container">

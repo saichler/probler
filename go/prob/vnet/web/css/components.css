@@ -18,44 +18,50 @@
     overflow-y: auto;
 }
 
-/* Flyhyer Style Tab Buttons */
+/* Modern Tab Buttons */
 .header-tabs .app-tab-button {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: row;
     flex-shrink: 0;
-    min-width: 140px;
-    padding: 14px 20px;
-    margin: 0;
-    background: transparent;
-    border: none;
-    border-right: 1px solid #e5e7eb;
+    min-width: 120px;
+    padding: 12px 18px;
+    margin: 0 4px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 12px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
-    color: #6b7280;
+    color: #64748b;
     font-size: 14px;
     font-weight: 500;
     text-transform: none;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
     white-space: nowrap;
     position: relative;
     overflow: hidden;
     gap: 8px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .header-tabs .app-tab-button:hover {
-    background: #ffffff;
-    color: #1a1a1a;
+    background: rgba(255, 255, 255, 0.95);
+    color: #334155;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
 }
 
 .header-tabs .app-tab-button.active {
-    background: #ffffff;
-    color: #1a1a1a;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff;
     font-weight: 600;
-    border-bottom: 2px solid #3b82f6;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-color: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .header-tabs .app-tab-icon {
@@ -139,12 +145,12 @@
 }
 
 .app-title {
-    font-family: 'Forum', serif;
+    font-family: 'Droid Serif', serif;
     font-size: 1.25rem;
-    font-weight: 400;
+    font-weight: 700;
     color: #1a1a1a;
     margin: 0;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.005em;
     line-height: 1.25;
 }
 
@@ -220,13 +226,13 @@
 }
 
 .header h1 {
-    font-family: 'Forum', serif;
+    font-family: 'Droid Serif', serif;
     font-size: 1.5rem;
-    font-weight: 400;
+    font-weight: 700;
     color: #1a1a1a;
     text-align: center;
     margin: 0;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.005em;
     line-height: 1.25;
 }
 
@@ -252,13 +258,14 @@
     align-items: center;
 }
 
-/* Flyhyer Style Header Tabs */
+/* Modern Header Tabs */
 .header-tabs {
     display: flex;
-    background: #f9fafb;
-    border-top: 1px solid #e5e7eb;
-    padding: 0;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-top: 1px solid #e2e8f0;
+    padding: 8px 12px;
     overflow-x: auto;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 /* Logo Styles */
@@ -458,12 +465,12 @@
 }
 
 .stat-value {
-    font-family: 'Forum', serif;
+    font-family: 'Droid Serif', serif;
     font-size: 1.875rem;
-    font-weight: 400;
+    font-weight: 700;
     margin-bottom: 8px;
     color: #1a1a1a;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.005em;
     line-height: 1.1;
 }
 
@@ -502,78 +509,102 @@
 }
 
 .section-title {
-    font-family: 'Forum', serif;
+    font-family: 'Droid Serif', serif;
     font-size: 1.125rem;
-    font-weight: 400;
+    font-weight: 700;
     color: #1a1a1a;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.005em;
 }
 
-/* Flyhyer Minimalist Buttons */
+/* Modern Buttons */
 .refresh-btn {
-    background: #3b82f6;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    padding: 12px 24px;
+    border-radius: 12px;
     cursor: pointer;
     font-weight: 500;
-    transition: all 0.15s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 14px;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
     text-transform: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
 }
 
 .refresh-btn:hover {
-    background: #2563eb;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: #1d4ed8;
+}
+
+.refresh-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.6s ease;
+}
+
+.refresh-btn:hover::before {
+    left: 100%;
 }
 
 .collapse-btn {
-    background: #ffffff;
-    color: #6b7280;
-    border: 1px solid #d1d5db;
-    padding: 10px 12px;
-    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #64748b;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    padding: 12px 16px;
+    border-radius: 12px;
     cursor: pointer;
     font-weight: 500;
-    transition: all 0.15s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 14px;
-    min-width: 40px;
-    height: 40px;
+    min-width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .collapse-btn:hover {
-    background: #f9fafb;
-    color: #374151;
-    border-color: #9ca3af;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 1);
+    color: #334155;
+    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Topology Buttons */
+/* Modern Topology Buttons */
 .topology-btn {
-    background: #3b82f6;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    padding: 10px 20px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 0.875rem;
     font-weight: 500;
-    transition: all 0.15s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
 }
 
 .topology-btn:hover {
-    background: #2563eb;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .zoom-btn {
@@ -984,60 +1015,65 @@
     margin-bottom: 24px;
 }
 
-/* Cluster Tab Navigation - Professional Design */
+/* Modern Cluster Tab Navigation */
 .cluster-tabs .tab-nav {
     display: flex;
     flex-direction: row;
     width: 100%;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 4px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 16px;
+    padding: 8px;
     overflow-x: auto;
-    gap: 2px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    gap: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
     position: relative;
+    backdrop-filter: blur(10px);
 }
 
-/* Cluster Tab Buttons - Professional Design */
+/* Modern Cluster Tab Buttons */
 .cluster-tabs .tab-button {
     display: flex;
     align-items: center;
     justify-content: center;
     flex: 1;
     max-width: 180px;
-    min-width: 100px;
-    padding: 12px 16px;
-    border: none;
-    background: transparent;
+    min-width: 120px;
+    padding: 14px 20px;
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    background: rgba(255, 255, 255, 0.7);
     text-align: center;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     color: #64748b;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    border-radius: 6px;
+    border-radius: 12px;
     z-index: 2;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 
 .cluster-tabs .tab-button:hover {
-    background: #f8fafc;
+    background: rgba(255, 255, 255, 0.95);
     color: #334155;
-    transform: none;
-    box-shadow: none;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
 }
 
 .cluster-tabs .tab-button.active {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: #ffffff;
     font-weight: 600;
-    transform: none;
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-color: #2563eb;
     z-index: 3;
 }
 
@@ -1077,22 +1113,26 @@
 .services-btn {
     background: linear-gradient(135deg, #0081c2, #005a87);
     color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
+    border: 1px solid rgba(0, 129, 194, 0.3);
+    padding: 12px 20px;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 0.9rem;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0, 129, 194, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
 }
 
 .services-btn:hover {
     background: linear-gradient(135deg, #005a87, #003d5c);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 129, 194, 0.4);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0, 129, 194, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .services-btn:active {
