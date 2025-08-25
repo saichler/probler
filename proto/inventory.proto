@@ -208,7 +208,7 @@ message NetworkNode {
   string node_id = 1;
   string name = 2;
   NetworkNodeType node_type = 3;
-  NodeStatus status = 4;
+  NetworkNodeStatus status = 4;
   string location = 5;
   double latitude = 6;
   double longitude = 7;
@@ -869,7 +869,7 @@ enum NetworkNodeType {
   NETWORK_NODE_TYPE_ENDPOINT = 9;
 }
 
-enum NodeStatus {
+enum NetworkNodeStatus {
   NODE_STATUS_UNKNOWN = 0;
   NODE_STATUS_ONLINE = 1;
   NODE_STATUS_OFFLINE = 2;
