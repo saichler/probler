@@ -1,0 +1,1037 @@
+syntax = "proto3";
+
+package types;
+
+option java_multiple_files = true;
+option java_outer_classname = "Types";
+option java_package = "com.inventory.types";
+option go_package = "./types";
+
+message NetworkBox {
+  string id = 1;
+  EquipmentInfo info = 2;
+  map<string, Physical> physicals = 3;
+  map<string, Logical> logicals = 4;
+  // Topology application support
+  NetworkTopology topology = 5;
+  repeated NetworkLink network_links = 6;
+  NetworkHealth network_health = 7;
+}
+
+message EquipmentInfo {
+  string vendor = 1;
+  string series = 2;
+  string family = 3;
+  string software = 4;
+  string hardware = 5;
+  string version = 6;
+  string sys_name = 7;
+  string sys_oid = 8;
+  // Additional fields for device application
+  string model = 9;
+  string serial_number = 10;
+  string firmware_version = 11;
+  string ip_address = 12;
+  DeviceType device_type = 13;
+  string location = 14;
+  double latitude = 15;
+  double longitude = 16;
+  DeviceStatus device_status = 17;
+  string last_seen = 18;
+  string uptime = 19;
+}
+
+message Physical {
+  string id = 1;
+  repeated Chassis chassis = 2;
+  repeated Port ports = 3;
+  repeated PowerSupply power_supplies = 4;
+  repeated Fan fans = 5;
+  PerformanceMetrics performance = 6;
+}
+
+message Logical {
+  string id = 1;
+  repeated Interface intefaces = 2;
+}
+
+message Chassis {
+  string id = 1;
+  string serial_number = 2;
+  string model = 3;
+  string description = 4;
+  ComponentStatus status = 5;
+  repeated Slot slots = 6;
+  repeated Port ports = 7;
+  repeated Module modules = 8;
+  repeated PowerSupply power_supplies = 9;
+  repeated Fan fans = 10;
+  double temperature = 11;
+}
+
+message Slot {
+  string id = 1;
+  Module module = 2;
+  repeated Port ports = 3;
+}
+
+message Module {
+  string id = 1;
+  string name = 2;
+  string serial_number = 3;
+  string model = 4;
+  string description = 5;
+  ModuleType module_type = 6;
+  ComponentStatus status = 7;
+  repeated Port ports = 8;
+  repeated Cpu cpus = 9;
+  repeated Memory memory_modules = 10;
+  double temperature = 11;
+}
+
+message Port {
+  string id = 1;
+  repeated Interface interfaces = 2;
+}
+
+message Interface {
+  string id = 1;
+  string name = 2;
+  string status = 3;
+  string description = 4;
+  InterfaceType interface_type = 5;
+  uint64 speed = 6;
+  string mac_address = 7;
+  string ip_address = 8;
+  uint32 mtu = 9;
+  bool admin_status = 10;
+  TrafficEngineeringInfo te_info = 11;
+  QosInfo qos_info = 12;
+  BgpInfo bgp_info = 13;
+  MplsInfo mpls_info = 14;
+  InterfaceStatistics statistics = 15;
+}
+
+// Hardware Component Messages
+message Cpu {
+  string id = 1;
+  string name = 2;
+  string model = 3;
+  string architecture = 4;
+  uint32 cores = 5;
+  uint32 frequency_mhz = 6;
+  ComponentStatus status = 7;
+  double temperature = 8;
+  double utilization_percent = 9;
+}
+
+message Memory {
+  string id = 1;
+  string name = 2;
+  string type = 3;
+  uint64 size_bytes = 4;
+  uint32 frequency_mhz = 5;
+  ComponentStatus status = 6;
+  double utilization_percent = 7;
+}
+
+message PowerSupply {
+  string id = 1;
+  string name = 2;
+  string model = 3;
+  string serial_number = 4;
+  uint32 wattage = 5;
+  PowerType power_type = 6;
+  ComponentStatus status = 7;
+  double temperature = 8;
+  double load_percent = 9;
+  double voltage = 10;
+  double current = 11;
+}
+
+message Fan {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  ComponentStatus status = 4;
+  uint32 speed_rpm = 5;
+  uint32 max_speed_rpm = 6;
+  double temperature = 7;
+  bool variable_speed = 8;
+}
+
+// Performance and Statistics Messages
+message PerformanceMetrics {
+  double cpu_usage_percent = 1;
+  double memory_usage_percent = 2;
+  double temperature_celsius = 3;
+  string uptime = 4;
+  uint64 load_average = 5;
+  repeated ProcessInfo processes = 6;
+}
+
+message ProcessInfo {
+  string name = 1;
+  uint32 pid = 2;
+  double cpu_percent = 3;
+  double memory_percent = 4;
+  string status = 5;
+}
+
+message InterfaceStatistics {
+  uint64 rx_packets = 1;
+  uint64 tx_packets = 2;
+  uint64 rx_bytes = 3;
+  uint64 tx_bytes = 4;
+  uint64 rx_errors = 5;
+  uint64 tx_errors = 6;
+  uint64 rx_drops = 7;
+  uint64 tx_drops = 8;
+  uint64 collisions = 9;
+}
+
+// Topology Application Messages
+message NetworkTopology {
+  string topology_id = 1;
+  string name = 2;
+  TopologyType topology_type = 3;
+  repeated NetworkNode nodes = 4;
+  repeated NetworkEdge edges = 5;
+  GeographicBounds geographic_bounds = 6;
+  TopologyStatistics statistics = 7;
+  TopologyHealth health_status = 8;
+  repeated NetworkRegion regions = 9;
+  string last_updated = 10;
+}
+
+message NetworkNode {
+  string node_id = 1;
+  string name = 2;
+  NetworkNodeType node_type = 3;
+  NodeStatus status = 4;
+  string location = 5;
+  double latitude = 6;
+  double longitude = 7;
+  GeographicCoordinates coordinates = 8;
+  repeated string interfaces = 9;
+  NodeCapabilities capabilities = 10;
+  NodeMetrics metrics = 11;
+  string region = 12;
+  uint32 tier = 13;
+}
+
+message NetworkLink {
+  string link_id = 1;
+  string name = 2;
+  string from_node = 3;
+  string to_node = 4;
+  LinkStatus link_status = 5;
+  string bandwidth = 6;
+  LinkType link_type = 7;
+  LinkMetrics metrics = 8;
+  GeographicPath path = 9;
+  double utilization_percent = 10;
+  double latency_ms = 11;
+  double distance_km = 12;
+  string uptime = 13;
+  double error_rate = 14;
+  double availability_percent = 15;
+}
+
+message NetworkEdge {
+  string edge_id = 1;
+  string source_node = 2;
+  string target_node = 3;
+  EdgeType edge_type = 4;
+  EdgeStatus status = 5;
+  EdgeProperties properties = 6;
+  repeated EdgeMetric metrics = 7;
+}
+
+message GeographicCoordinates {
+  double latitude = 1;
+  double longitude = 2;
+  double altitude = 3;
+  string coordinate_system = 4;
+}
+
+message GeographicBounds {
+  GeographicCoordinates north_east = 1;
+  GeographicCoordinates south_west = 2;
+  GeographicCoordinates center = 3;
+  double zoom_level = 4;
+}
+
+message GeographicPath {
+  repeated GeographicCoordinates waypoints = 1;
+  double total_distance_km = 2;
+  PathType path_type = 3;
+  repeated string transit_regions = 4;
+}
+
+message NetworkRegion {
+  string region_id = 1;
+  string name = 2;
+  RegionType region_type = 3;
+  GeographicBounds bounds = 4;
+  repeated string nodes = 5;
+  repeated string links = 6;
+  RegionStatistics statistics = 7;
+  RegionHealth health = 8;
+}
+
+message NetworkHealth {
+  HealthStatus overall_status = 1;
+  uint32 total_devices = 2;
+  uint32 online_devices = 3;
+  uint32 offline_devices = 4;
+  uint32 warning_devices = 5;
+  uint32 critical_devices = 6;
+  uint32 total_links = 7;
+  uint32 active_links = 8;
+  uint32 inactive_links = 9;
+  uint32 warning_links = 10;
+  double network_availability_percent = 11;
+  repeated HealthAlert alerts = 12;
+  string last_health_check = 13;
+}
+
+message TopologyStatistics {
+  uint32 total_nodes = 1;
+  uint32 total_edges = 2;
+  uint32 active_nodes = 3;
+  uint32 active_edges = 4;
+  double network_density = 5;
+  uint32 connected_components = 6;
+  double average_degree = 7;
+  uint32 max_degree = 8;
+  double clustering_coefficient = 9;
+  repeated RegionStatistics region_stats = 10;
+}
+
+message RegionStatistics {
+  string region_name = 1;
+  uint32 node_count = 2;
+  uint32 link_count = 3;
+  uint32 active_nodes = 4;
+  uint32 active_links = 5;
+  double region_utilization = 6;
+  double average_latency_ms = 7;
+}
+
+message NodeCapabilities {
+  repeated string protocols = 1;
+  repeated string services = 2;
+  uint64 max_throughput_bps = 3;
+  uint32 max_connections = 4;
+  bool routing_capable = 5;
+  bool switching_capable = 6;
+  bool firewall_capable = 7;
+  bool load_balancing_capable = 8;
+}
+
+message NodeMetrics {
+  double cpu_utilization = 1;
+  double memory_utilization = 2;
+  uint64 packets_forwarded = 3;
+  uint64 packets_dropped = 4;
+  uint64 bytes_processed = 5;
+  uint32 active_connections = 6;
+  double temperature = 7;
+  string uptime = 8;
+  repeated InterfaceMetric interface_metrics = 9;
+}
+
+message InterfaceMetric {
+  string interface_name = 1;
+  InterfaceStatus status = 2;
+  uint64 rx_bytes = 3;
+  uint64 tx_bytes = 4;
+  uint64 rx_packets = 5;
+  uint64 tx_packets = 6;
+  double utilization_percent = 7;
+  uint32 errors = 8;
+}
+
+message LinkMetrics {
+  uint64 bytes_transmitted = 1;
+  uint64 bytes_received = 2;
+  uint64 packets_transmitted = 3;
+  uint64 packets_received = 4;
+  uint32 error_count = 5;
+  uint32 drop_count = 6;
+  double jitter_ms = 7;
+  double packet_loss_percent = 8;
+  double throughput_bps = 9;
+  string last_measurement = 10;
+}
+
+message EdgeProperties {
+  double weight = 1;
+  uint32 cost = 2;
+  string label = 3;
+  map<string, string> attributes = 4;
+}
+
+message EdgeMetric {
+  string metric_name = 1;
+  double value = 2;
+  string unit = 3;
+  string timestamp = 4;
+}
+
+message TopologyHealth {
+  HealthStatus status = 1;
+  double health_score = 2;
+  repeated HealthIssue issues = 3;
+  repeated HealthRecommendation recommendations = 4;
+  string assessment_time = 5;
+}
+
+message HealthAlert {
+  string alert_id = 1;
+  AlertSeverity severity = 2;
+  string title = 3;
+  string description = 4;
+  string affected_component = 5;
+  ComponentType component_type = 6;
+  string timestamp = 7;
+  bool acknowledged = 8;
+}
+
+message HealthIssue {
+  string issue_id = 1;
+  IssueSeverity severity = 2;
+  IssueCategory category = 3;
+  string description = 4;
+  string affected_component = 5;
+  string detection_time = 6;
+  bool resolved = 7;
+}
+
+message HealthRecommendation {
+  string recommendation_id = 1;
+  RecommendationType type = 2;
+  string title = 3;
+  string description = 4;
+  RecommendationPriority priority = 5;
+  string target_component = 6;
+  repeated string action_items = 7;
+}
+
+message TrafficEngineeringInfo {
+  bool te_enabled = 1;
+  uint64 max_reservable_bandwidth = 2;
+  repeated uint64 unreserved_bandwidth = 3;
+  repeated TeTunnel te_tunnels = 4;
+  RsvpInfo rsvp_info = 5;
+}
+
+message TeTunnel {
+  string tunnel_id = 1;
+  string name = 2;
+  string destination = 3;
+  string source = 4;
+  TunnelStatus status = 5;
+  uint32 setup_priority = 6;
+  uint32 hold_priority = 7;
+  uint64 bandwidth = 8;
+  repeated string explicit_path = 9;
+  TunnelType tunnel_type = 10;
+  repeated TeLsp lsps = 11;
+  TeMetrics metrics = 12;
+  repeated SrPolicy sr_policies = 13;
+}
+
+message TeLsp {
+  string lsp_id = 1;
+  LspStatus status = 2;
+  repeated string path_hops = 3;
+  uint64 bandwidth = 4;
+  TeMetrics metrics = 5;
+}
+
+message RsvpInfo {
+  bool rsvp_enabled = 1;
+  uint32 hello_interval = 2;
+  uint32 hello_missed = 3;
+  repeated RsvpSession sessions = 4;
+  repeated RsvpReservation reservations = 5;
+}
+
+message RsvpSession {
+  string session_id = 1;
+  string destination = 2;
+  uint32 tunnel_id = 3;
+  uint32 extended_tunnel_id = 4;
+  SessionStatus status = 5;
+}
+
+message RsvpReservation {
+  string reservation_id = 1;
+  string session_id = 2;
+  uint64 bandwidth = 3;
+  uint32 setup_priority = 4;
+  uint32 hold_priority = 5;
+  ReservationStatus status = 6;
+}
+
+message QosInfo {
+  repeated QosPolicy policies = 1;
+  repeated ClassMap class_maps = 2;
+  repeated PolicyMap policy_maps = 3;
+}
+
+message QosPolicy {
+  string name = 1;
+  string direction = 2;
+  repeated QosClass classes = 3;
+  QosPolicyStats stats = 4;
+}
+
+message ClassMap {
+  string name = 1;
+  string match_type = 2;
+  repeated string match_criteria = 3;
+}
+
+message PolicyMap {
+  string name = 1;
+  repeated PolicyClass policy_classes = 2;
+}
+
+message PolicyClass {
+  string class_name = 1;
+  repeated QosAction actions = 2;
+}
+
+message QosAction {
+  ActionType action_type = 1;
+  string action_value = 2;
+}
+
+message QosClass {
+  string class_name = 1;
+  uint64 offered_rate = 2;
+  uint64 drop_rate = 3;
+  uint64 match_packets = 4;
+  uint64 match_bytes = 5;
+}
+
+message QosPolicyStats {
+  uint64 total_packets = 1;
+  uint64 total_bytes = 2;
+  uint64 total_drops = 3;
+  repeated QosClass class_stats = 4;
+}
+
+message TeMetrics {
+  uint64 packets_sent = 1;
+  uint64 bytes_sent = 2;
+  uint64 packets_received = 3;
+  uint64 bytes_received = 4;
+  uint64 setup_time = 5;
+  uint64 last_flap_time = 6;
+  uint32 flap_count = 7;
+}
+
+enum TunnelStatus {
+  TUNNEL_UNKNOWN = 0;
+  TUNNEL_UP = 1;
+  TUNNEL_DOWN = 2;
+  TUNNEL_ADMIN_DOWN = 3;
+}
+
+enum TunnelType {
+  TUNNEL_TYPE_UNKNOWN = 0;
+  TUNNEL_TYPE_P2P = 1;
+  TUNNEL_TYPE_P2MP = 2;
+  TUNNEL_TYPE_MP2MP = 3;
+}
+
+enum LspStatus {
+  LSP_UNKNOWN = 0;
+  LSP_ACTIVE = 1;
+  LSP_INACTIVE = 2;
+  LSP_FAILED = 3;
+}
+
+enum SessionStatus {
+  SESSION_UNKNOWN = 0;
+  SESSION_ACTIVE = 1;
+  SESSION_INACTIVE = 2;
+  SESSION_FAILED = 3;
+}
+
+enum ReservationStatus {
+  RESERVATION_UNKNOWN = 0;
+  RESERVATION_ACTIVE = 1;
+  RESERVATION_INACTIVE = 2;
+  RESERVATION_FAILED = 3;
+}
+
+enum ActionType {
+  ACTION_UNKNOWN = 0;
+  ACTION_SET_DSCP = 1;
+  ACTION_SET_PRECEDENCE = 2;
+  ACTION_POLICE = 3;
+  ACTION_SHAPE = 4;
+  ACTION_BANDWIDTH = 5;
+  ACTION_PRIORITY = 6;
+  ACTION_QUEUE_LIMIT = 7;
+  ACTION_DROP = 8;
+}
+
+// BGP Information
+message BgpInfo {
+  bool bgp_enabled = 1;
+  uint32 as_number = 2;
+  string router_id = 3;
+  repeated BgpPeer peers = 4;
+  repeated BgpRoute routes = 5;
+  BgpStats statistics = 6;
+}
+
+message BgpPeer {
+  string peer_id = 1;
+  string peer_ip = 2;
+  uint32 peer_as = 3;
+  BgpPeerState state = 4;
+  uint32 uptime = 5;
+  uint32 routes_received = 6;
+  uint32 routes_sent = 7;
+  BgpPeerType peer_type = 8;
+}
+
+message BgpRoute {
+  string prefix = 1;
+  uint32 prefix_length = 2;
+  string next_hop = 3;
+  uint32 local_preference = 4;
+  uint32 med = 5;
+  repeated uint32 as_path = 6;
+  repeated string communities = 7;
+  BgpOrigin origin = 8;
+  bool best_path = 9;
+}
+
+message BgpStats {
+  uint32 total_routes = 1;
+  uint32 active_routes = 2;
+  uint32 total_peers = 3;
+  uint32 established_peers = 4;
+  uint64 updates_sent = 5;
+  uint64 updates_received = 6;
+}
+
+// MPLS Information
+message MplsInfo {
+  bool mpls_enabled = 1;
+  repeated MplsLabel labels = 2;
+  repeated MplsFec fecs = 3;
+  repeated LdpSession ldp_sessions = 4;
+  MplsForwardingTable forwarding_table = 5;
+}
+
+message MplsLabel {
+  uint32 label = 1;
+  MplsLabelType label_type = 2;
+  string fec = 3;
+  string next_hop = 4;
+  string outgoing_interface = 5;
+  uint32 incoming_label = 6;
+  uint32 outgoing_label = 7;
+}
+
+message MplsFec {
+  string fec_id = 1;
+  string prefix = 2;
+  uint32 prefix_length = 3;
+  repeated MplsLabel labels = 4;
+}
+
+message LdpSession {
+  string session_id = 1;
+  string peer_ip = 2;
+  LdpSessionState state = 3;
+  uint32 uptime = 4;
+  uint32 labels_advertised = 5;
+  uint32 labels_received = 6;
+}
+
+message MplsForwardingTable {
+  repeated MplsLabel entries = 1;
+  uint32 total_entries = 2;
+  uint32 active_entries = 3;
+}
+
+// Segment Routing (SR) Policies
+message SrPolicy {
+  string policy_id = 1;
+  string name = 2;
+  string endpoint = 3;
+  uint32 color = 4;
+  SrPolicyStatus status = 5;
+  repeated SrPath paths = 6;
+  SrPolicyMetrics metrics = 7;
+  uint32 preference = 8;
+  string binding_sid = 9;
+}
+
+message SrPath {
+  string path_id = 1;
+  SrPathStatus status = 2;
+  uint32 weight = 3;
+  repeated SrSegment segments = 4;
+  SrPathMetrics metrics = 5;
+  bool is_valid = 6;
+}
+
+message SrSegment {
+  SrSegmentType segment_type = 1;
+  uint32 sid = 2;
+  string node_id = 3;
+  string interface_id = 4;
+}
+
+message SrPolicyMetrics {
+  uint64 packets_steered = 1;
+  uint64 bytes_steered = 2;
+  uint64 packets_dropped = 3;
+  uint32 path_switches = 4;
+}
+
+message SrPathMetrics {
+  uint64 packets_forwarded = 1;
+  uint64 bytes_forwarded = 2;
+  uint32 utilization_percent = 3;
+}
+
+// Additional Enums
+enum BgpPeerState {
+  BGP_PEER_UNKNOWN = 0;
+  BGP_PEER_IDLE = 1;
+  BGP_PEER_CONNECT = 2;
+  BGP_PEER_ACTIVE = 3;
+  BGP_PEER_OPENSENT = 4;
+  BGP_PEER_OPENCONFIRM = 5;
+  BGP_PEER_ESTABLISHED = 6;
+}
+
+enum BgpPeerType {
+  BGP_PEER_TYPE_UNKNOWN = 0;
+  BGP_PEER_TYPE_INTERNAL = 1;
+  BGP_PEER_TYPE_EXTERNAL = 2;
+}
+
+enum BgpOrigin {
+  BGP_ORIGIN_UNKNOWN = 0;
+  BGP_ORIGIN_IGP = 1;
+  BGP_ORIGIN_EGP = 2;
+  BGP_ORIGIN_INCOMPLETE = 3;
+}
+
+enum MplsLabelType {
+  MPLS_LABEL_UNKNOWN = 0;
+  MPLS_LABEL_STATIC = 1;
+  MPLS_LABEL_DYNAMIC = 2;
+  MPLS_LABEL_LDP = 3;
+  MPLS_LABEL_RSVP = 4;
+  MPLS_LABEL_SR = 5;
+}
+
+enum LdpSessionState {
+  LDP_SESSION_UNKNOWN = 0;
+  LDP_SESSION_NONEXISTENT = 1;
+  LDP_SESSION_INITIALIZED = 2;
+  LDP_SESSION_OPENREC = 3;
+  LDP_SESSION_OPENSENT = 4;
+  LDP_SESSION_OPERATIONAL = 5;
+}
+
+enum SrPolicyStatus {
+  SR_POLICY_UNKNOWN = 0;
+  SR_POLICY_UP = 1;
+  SR_POLICY_DOWN = 2;
+  SR_POLICY_ADMIN_DOWN = 3;
+}
+
+enum SrPathStatus {
+  SR_PATH_UNKNOWN = 0;
+  SR_PATH_ACTIVE = 1;
+  SR_PATH_INACTIVE = 2;
+  SR_PATH_INVALID = 3;
+}
+
+enum SrSegmentType {
+  SR_SEGMENT_UNKNOWN = 0;
+  SR_SEGMENT_NODE = 1;
+  SR_SEGMENT_ADJACENCY = 2;
+  SR_SEGMENT_BINDING = 3;
+}
+
+// Device Application Enums
+enum DeviceType {
+  DEVICE_TYPE_UNKNOWN = 0;
+  DEVICE_TYPE_ROUTER = 1;
+  DEVICE_TYPE_SWITCH = 2;
+  DEVICE_TYPE_FIREWALL = 3;
+  DEVICE_TYPE_LOAD_BALANCER = 4;
+  DEVICE_TYPE_ACCESS_POINT = 5;
+  DEVICE_TYPE_SERVER = 6;
+  DEVICE_TYPE_STORAGE = 7;
+  DEVICE_TYPE_GATEWAY = 8;
+}
+
+enum DeviceStatus {
+  DEVICE_STATUS_UNKNOWN = 0;
+  DEVICE_STATUS_ONLINE = 1;
+  DEVICE_STATUS_OFFLINE = 2;
+  DEVICE_STATUS_WARNING = 3;
+  DEVICE_STATUS_CRITICAL = 4;
+  DEVICE_STATUS_MAINTENANCE = 5;
+}
+
+enum ComponentStatus {
+  COMPONENT_STATUS_UNKNOWN = 0;
+  COMPONENT_STATUS_OK = 1;
+  COMPONENT_STATUS_WARNING = 2;
+  COMPONENT_STATUS_ERROR = 3;
+  COMPONENT_STATUS_CRITICAL = 4;
+  COMPONENT_STATUS_OFFLINE = 5;
+  COMPONENT_STATUS_NOT_PRESENT = 6;
+}
+
+enum ModuleType {
+  MODULE_TYPE_UNKNOWN = 0;
+  MODULE_TYPE_SUPERVISOR = 1;
+  MODULE_TYPE_LINE_CARD = 2;
+  MODULE_TYPE_ROUTE_PROCESSOR = 3;
+  MODULE_TYPE_INTERFACE_MODULE = 4;
+  MODULE_TYPE_MANAGEMENT_PROCESSOR = 5;
+  MODULE_TYPE_SECURITY_PROCESSING_UNIT = 6;
+  MODULE_TYPE_SERVICE_MODULE = 7;
+  MODULE_TYPE_FABRIC_MODULE = 8;
+}
+
+enum InterfaceType {
+  INTERFACE_TYPE_UNKNOWN = 0;
+  INTERFACE_TYPE_ETHERNET = 1;
+  INTERFACE_TYPE_FAST_ETHERNET = 2;
+  INTERFACE_TYPE_GIGABIT_ETHERNET = 3;
+  INTERFACE_TYPE_10GIGE = 4;
+  INTERFACE_TYPE_25GIGE = 5;
+  INTERFACE_TYPE_40GIGE = 6;
+  INTERFACE_TYPE_100GIGE = 7;
+  INTERFACE_TYPE_SERIAL = 8;
+  INTERFACE_TYPE_ATM = 9;
+  INTERFACE_TYPE_FRAME_RELAY = 10;
+  INTERFACE_TYPE_LOOPBACK = 11;
+  INTERFACE_TYPE_MANAGEMENT = 12;
+  INTERFACE_TYPE_TUNNEL = 13;
+  INTERFACE_TYPE_VLAN = 14;
+  INTERFACE_TYPE_BRIDGE = 15;
+}
+
+enum PowerType {
+  POWER_TYPE_UNKNOWN = 0;
+  POWER_TYPE_AC = 1;
+  POWER_TYPE_DC = 2;
+  POWER_TYPE_POE = 3;
+  POWER_TYPE_REDUNDANT = 4;
+  POWER_TYPE_BATTERY = 5;
+  POWER_TYPE_SOLAR = 6;
+}
+
+// Topology Application Enums
+enum TopologyType {
+  TOPOLOGY_TYPE_UNKNOWN = 0;
+  TOPOLOGY_TYPE_PHYSICAL = 1;
+  TOPOLOGY_TYPE_LOGICAL = 2;
+  TOPOLOGY_TYPE_L2 = 3;
+  TOPOLOGY_TYPE_L3 = 4;
+  TOPOLOGY_TYPE_OVERLAY = 5;
+  TOPOLOGY_TYPE_UNDERLAY = 6;
+  TOPOLOGY_TYPE_SERVICE = 7;
+  TOPOLOGY_TYPE_GLOBAL = 8;
+}
+
+enum NetworkNodeType {
+  NETWORK_NODE_TYPE_UNKNOWN = 0;
+  NETWORK_NODE_TYPE_ROUTER = 1;
+  NETWORK_NODE_TYPE_SWITCH = 2;
+  NETWORK_NODE_TYPE_FIREWALL = 3;
+  NETWORK_NODE_TYPE_SERVER = 4;
+  NETWORK_NODE_TYPE_LOAD_BALANCER = 5;
+  NETWORK_NODE_TYPE_GATEWAY = 6;
+  NETWORK_NODE_TYPE_ACCESS_POINT = 7;
+  NETWORK_NODE_TYPE_CONTROLLER = 8;
+  NETWORK_NODE_TYPE_ENDPOINT = 9;
+}
+
+enum NodeStatus {
+  NODE_STATUS_UNKNOWN = 0;
+  NODE_STATUS_ONLINE = 1;
+  NODE_STATUS_OFFLINE = 2;
+  NODE_STATUS_WARNING = 3;
+  NODE_STATUS_CRITICAL = 4;
+  NODE_STATUS_MAINTENANCE = 5;
+  NODE_STATUS_UNREACHABLE = 6;
+}
+
+enum LinkStatus {
+  LINK_STATUS_UNKNOWN = 0;
+  LINK_STATUS_ACTIVE = 1;
+  LINK_STATUS_INACTIVE = 2;
+  LINK_STATUS_WARNING = 3;
+  LINK_STATUS_DOWN = 4;
+  LINK_STATUS_CONGESTED = 5;
+  LINK_STATUS_MAINTENANCE = 6;
+}
+
+enum LinkType {
+  LINK_TYPE_UNKNOWN = 0;
+  LINK_TYPE_ETHERNET = 1;
+  LINK_TYPE_FIBER = 2;
+  LINK_TYPE_WIRELESS = 3;
+  LINK_TYPE_SATELLITE = 4;
+  LINK_TYPE_COPPER = 5;
+  LINK_TYPE_VPN = 6;
+  LINK_TYPE_VIRTUAL = 7;
+  LINK_TYPE_WAN = 8;
+  LINK_TYPE_LAN = 9;
+  LINK_TYPE_BACKBONE = 10;
+}
+
+enum EdgeType {
+  EDGE_TYPE_UNKNOWN = 0;
+  EDGE_TYPE_PHYSICAL = 1;
+  EDGE_TYPE_LOGICAL = 2;
+  EDGE_TYPE_VIRTUAL = 3;
+  EDGE_TYPE_AGGREGATED = 4;
+  EDGE_TYPE_BACKUP = 5;
+  EDGE_TYPE_PRIMARY = 6;
+}
+
+enum EdgeStatus {
+  EDGE_STATUS_UNKNOWN = 0;
+  EDGE_STATUS_UP = 1;
+  EDGE_STATUS_DOWN = 2;
+  EDGE_STATUS_WARNING = 3;
+  EDGE_STATUS_CRITICAL = 4;
+  EDGE_STATUS_FLAPPING = 5;
+}
+
+enum PathType {
+  PATH_TYPE_UNKNOWN = 0;
+  PATH_TYPE_DIRECT = 1;
+  PATH_TYPE_REDUNDANT = 2;
+  PATH_TYPE_BACKUP = 3;
+  PATH_TYPE_LOAD_BALANCED = 4;
+  PATH_TYPE_SHORTEST = 5;
+  PATH_TYPE_FASTEST = 6;
+  PATH_TYPE_CHEAPEST = 7;
+}
+
+enum RegionType {
+  REGION_TYPE_UNKNOWN = 0;
+  REGION_TYPE_CONTINENT = 1;
+  REGION_TYPE_COUNTRY = 2;
+  REGION_TYPE_STATE = 3;
+  REGION_TYPE_CITY = 4;
+  REGION_TYPE_DATACENTER = 5;
+  REGION_TYPE_CAMPUS = 6;
+  REGION_TYPE_BUILDING = 7;
+  REGION_TYPE_FLOOR = 8;
+  REGION_TYPE_RACK = 9;
+}
+
+enum HealthStatus {
+  HEALTH_STATUS_UNKNOWN = 0;
+  HEALTH_STATUS_HEALTHY = 1;
+  HEALTH_STATUS_WARNING = 2;
+  HEALTH_STATUS_CRITICAL = 3;
+  HEALTH_STATUS_FAILED = 4;
+  HEALTH_STATUS_DEGRADED = 5;
+  HEALTH_STATUS_MAINTENANCE = 6;
+}
+
+enum InterfaceStatus {
+  INTERFACE_STATUS_UNKNOWN = 0;
+  INTERFACE_STATUS_UP = 1;
+  INTERFACE_STATUS_DOWN = 2;
+  INTERFACE_STATUS_ADMIN_DOWN = 3;
+  INTERFACE_STATUS_TESTING = 4;
+  INTERFACE_STATUS_DORMANT = 5;
+  INTERFACE_STATUS_NOT_PRESENT = 6;
+  INTERFACE_STATUS_LOWER_LAYER_DOWN = 7;
+}
+
+enum AlertSeverity {
+  ALERT_SEVERITY_UNKNOWN = 0;
+  ALERT_SEVERITY_INFO = 1;
+  ALERT_SEVERITY_WARNING = 2;
+  ALERT_SEVERITY_MAJOR = 3;
+  ALERT_SEVERITY_CRITICAL = 4;
+  ALERT_SEVERITY_EMERGENCY = 5;
+}
+
+enum ComponentType {
+  COMPONENT_TYPE_UNKNOWN = 0;
+  COMPONENT_TYPE_DEVICE = 1;
+  COMPONENT_TYPE_INTERFACE = 2;
+  COMPONENT_TYPE_LINK = 3;
+  COMPONENT_TYPE_SERVICE = 4;
+  COMPONENT_TYPE_APPLICATION = 5;
+  COMPONENT_TYPE_NETWORK = 6;
+  COMPONENT_TYPE_REGION = 7;
+}
+
+enum IssueSeverity {
+  ISSUE_SEVERITY_UNKNOWN = 0;
+  ISSUE_SEVERITY_LOW = 1;
+  ISSUE_SEVERITY_MEDIUM = 2;
+  ISSUE_SEVERITY_HIGH = 3;
+  ISSUE_SEVERITY_CRITICAL = 4;
+}
+
+enum IssueCategory {
+  ISSUE_CATEGORY_UNKNOWN = 0;
+  ISSUE_CATEGORY_CONNECTIVITY = 1;
+  ISSUE_CATEGORY_PERFORMANCE = 2;
+  ISSUE_CATEGORY_SECURITY = 3;
+  ISSUE_CATEGORY_CONFIGURATION = 4;
+  ISSUE_CATEGORY_HARDWARE = 5;
+  ISSUE_CATEGORY_SOFTWARE = 6;
+  ISSUE_CATEGORY_CAPACITY = 7;
+}
+
+enum RecommendationType {
+  RECOMMENDATION_TYPE_UNKNOWN = 0;
+  RECOMMENDATION_TYPE_PREVENTIVE = 1;
+  RECOMMENDATION_TYPE_CORRECTIVE = 2;
+  RECOMMENDATION_TYPE_OPTIMIZATION = 3;
+  RECOMMENDATION_TYPE_SECURITY = 4;
+  RECOMMENDATION_TYPE_UPGRADE = 5;
+  RECOMMENDATION_TYPE_MAINTENANCE = 6;
+}
+
+enum RecommendationPriority {
+  RECOMMENDATION_PRIORITY_UNKNOWN = 0;
+  RECOMMENDATION_PRIORITY_LOW = 1;
+  RECOMMENDATION_PRIORITY_MEDIUM = 2;
+  RECOMMENDATION_PRIORITY_HIGH = 3;
+  RECOMMENDATION_PRIORITY_URGENT = 4;
+}
+
+// Additional message for RegionHealth
+message RegionHealth {
+  HealthStatus status = 1;
+  double health_score = 2;
+  uint32 healthy_nodes = 3;
+  uint32 unhealthy_nodes = 4;
+  uint32 active_links = 5;
+  uint32 failed_links = 6;
+  repeated HealthAlert alerts = 7;
+  string last_assessment = 8;
+}
