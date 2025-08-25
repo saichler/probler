@@ -1,0 +1,196 @@
+{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+        "annotations": {
+            "cni.projectcalico.org/containerID": "162235f496d11e2812460b2171ec0e090d681c8d0a967cc3a42fc7b0de7aa725",
+            "cni.projectcalico.org/podIP": "10.10.3.79/32",
+            "cni.projectcalico.org/podIPs": "10.10.3.79/32"
+        },
+        "creationTimestamp": "2025-08-24T13:10:57Z",
+        "generateName": "probler-collector-",
+        "labels": {
+            "app": "probler-collector",
+            "apps.kubernetes.io/pod-index": "6",
+            "controller-revision-hash": "probler-collector-7fbfd4d857",
+            "statefulset.kubernetes.io/pod-name": "probler-collector-6"
+        },
+        "name": "probler-collector-6",
+        "namespace": "probler-collector",
+        "ownerReferences": [
+            {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "StatefulSet",
+                "name": "probler-collector",
+                "uid": "e7a252e1-d216-45da-988c-48e67a08e28a"
+            }
+        ],
+        "resourceVersion": "39957539",
+        "uid": "d7c079cd-d29b-4744-9582-cae348c92e40"
+    },
+    "spec": {
+        "containers": [
+            {
+                "env": [
+                    {
+                        "name": "NODE_IP",
+                        "valueFrom": {
+                            "fieldRef": {
+                                "apiVersion": "v1",
+                                "fieldPath": "status.hostIP"
+                            }
+                        }
+                    }
+                ],
+                "image": "saichler/probler-collector:latest",
+                "imagePullPolicy": "Always",
+                "name": "probler-collector",
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                    {
+                        "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                        "name": "kube-api-access-9k4jd",
+                        "readOnly": true
+                    }
+                ]
+            }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "enableServiceLinks": true,
+        "hostname": "probler-collector-6",
+        "nodeName": "node4",
+        "preemptionPolicy": "PreemptLowerPriority",
+        "priority": 0,
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "subdomain": "probler-collector",
+        "terminationGracePeriodSeconds": 30,
+        "tolerations": [
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            },
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            }
+        ],
+        "volumes": [
+            {
+                "name": "kube-api-access-9k4jd",
+                "projected": {
+                    "defaultMode": 420,
+                    "sources": [
+                        {
+                            "serviceAccountToken": {
+                                "expirationSeconds": 3607,
+                                "path": "token"
+                            }
+                        },
+                        {
+                            "configMap": {
+                                "items": [
+                                    {
+                                        "key": "ca.crt",
+                                        "path": "ca.crt"
+                                    }
+                                ],
+                                "name": "kube-root-ca.crt"
+                            }
+                        },
+                        {
+                            "downwardAPI": {
+                                "items": [
+                                    {
+                                        "fieldRef": {
+                                            "apiVersion": "v1",
+                                            "fieldPath": "metadata.namespace"
+                                        },
+                                        "path": "namespace"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "status": {
+        "conditions": [
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2025-08-24T13:10:59Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2025-08-24T13:10:57Z",
+                "status": "True",
+                "type": "Initialized"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2025-08-24T13:10:59Z",
+                "status": "True",
+                "type": "Ready"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2025-08-24T13:10:59Z",
+                "status": "True",
+                "type": "ContainersReady"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2025-08-24T13:10:57Z",
+                "status": "True",
+                "type": "PodScheduled"
+            }
+        ],
+        "containerStatuses": [
+            {
+                "containerID": "containerd://08fd251b53148d6314c0e1d004365bbb536dfb1fd55c97cf272f2d6d4b59f786",
+                "image": "docker.io/saichler/probler-collector:latest",
+                "imageID": "docker.io/saichler/probler-collector@sha256:4392c9affe25d8666473a094dc797b55cc2aee04f5c2fd913baead576510de44",
+                "lastState": {},
+                "name": "probler-collector",
+                "ready": true,
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                    "running": {
+                        "startedAt": "2025-08-24T13:10:58Z"
+                    }
+                }
+            }
+        ],
+        "hostIP": "192.168.86.226",
+        "hostIPs": [
+            {
+                "ip": "192.168.86.226"
+            }
+        ],
+        "phase": "Running",
+        "podIP": "10.10.3.79",
+        "podIPs": [
+            {
+                "ip": "10.10.3.79"
+            }
+        ],
+        "qosClass": "BestEffort",
+        "startTime": "2025-08-24T13:10:57Z"
+    }
+}

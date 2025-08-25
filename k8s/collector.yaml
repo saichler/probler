@@ -16,7 +16,7 @@ metadata:
     app: probler-collector
 spec:
   serviceName: probler-collector
-  replicas: 12
+  replicas: 2
   selector:
     matchLabels:
       app: probler-collector

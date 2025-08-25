@@ -45,6 +45,13 @@ function switchApp(appName) {
                 initKubernetesApp();
             }, 100);
         }
+    } else if (appName === 'traffic-engineering') {
+        // Initialize Traffic Engineering app
+        if (typeof initializeTrafficEngineering === 'function') {
+            setTimeout(() => {
+                initializeTrafficEngineering();
+            }, 100);
+        }
     }
     
     // Show notification for non-dashboard apps

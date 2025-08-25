@@ -654,7 +654,8 @@ function populateK8sPodsTable(pods, clusterName) {
         
         const row = document.createElement('tr');
         row.className = 'table-row clickable';
-        row.onclick = () => showPodDetails(pod);
+        row.onclick = () => showPodBasicInfo(pod);
+        row.oncontextmenu = (event) => showPodContextMenu(event, pod, clusterName);
         
         const statusClass = pod.status === 1 ? 'status-online' : 'status-offline';
         const statusText = pod.status === 1 ? '✅ Running' : '❌ Not Running';
@@ -834,10 +835,742 @@ function showNodeDetails(node) {
     showNotification(`Node Details: ${node.name} (${node.status === 1 ? 'Ready' : 'Not Ready'})`, 'info');
 }
 
-// Show pod details (placeholder)
-function showPodDetails(pod) {
-    console.log('Showing details for pod:', pod.name);
+// Global variable to store current pod for context menu
+let currentPod = null;
+let currentClusterName = null;
+
+// Show pod basic info (placeholder for table click)
+function showPodBasicInfo(pod) {
+    console.log('Showing basic info for pod:', pod.name);
     showNotification(`Pod Details: ${pod.name} in ${pod.namespace} namespace`, 'info');
+}
+
+// Show context menu for pod actions
+function showPodContextMenu(event, pod, clusterName) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    console.log('showPodContextMenu called with pod:', pod.name, 'cluster:', clusterName);
+    
+    // Store current pod and cluster for later use
+    currentPod = pod;
+    currentClusterName = clusterName;
+    
+    const contextMenu = document.getElementById('podContextMenu');
+    const detailsMenuItem = document.getElementById('detailsMenuItem');
+    const logsMenuItem = document.getElementById('logsMenuItem');
+    
+    if (contextMenu && detailsMenuItem && logsMenuItem) {
+        // Set up click handler for details menu item
+        detailsMenuItem.onclick = function() {
+            console.log('Details menu item clicked');
+            showPodDetails();
+        };
+        
+        // Set up click handler for logs menu item
+        logsMenuItem.onclick = function() {
+            console.log('Logs menu item clicked');
+            showPodLogs();
+        };
+        
+        // Position the context menu at mouse position
+        contextMenu.style.left = event.pageX + 'px';
+        contextMenu.style.top = event.pageY + 'px';
+        contextMenu.style.display = 'block';
+        
+        console.log('Context menu displayed, currentPod set to:', currentPod.name);
+    } else {
+        console.error('Context menu or logs menu item not found');
+    }
+    
+    return false;
+}
+
+// Hide context menu when clicking elsewhere
+function hideContextMenu() {
+    const contextMenu = document.getElementById('podContextMenu');
+    if (contextMenu) {
+        contextMenu.style.display = 'none';
+    }
+    // Don't clear the variables here immediately, let the modal functions handle clearing
+}
+
+// Show pod logs modal
+function showPodLogs() {
+    console.log('showPodLogs called, currentPod:', currentPod, 'currentClusterName:', currentClusterName);
+    
+    if (!currentPod || !currentClusterName) {
+        console.error('No pod selected for logs. currentPod:', currentPod, 'currentClusterName:', currentClusterName);
+        hideContextMenu();
+        return;
+    }
+    
+    // Hide context menu after checking we have the pod data
+    const contextMenu = document.getElementById('podContextMenu');
+    if (contextMenu) {
+        contextMenu.style.display = 'none';
+    }
+    
+    const modal = document.getElementById('podLogsModal');
+    const modalTitle = document.getElementById('modalPodLogsTitle');
+    const podLogsInfo = document.getElementById('podLogsInfo');
+    
+    if (modal && modalTitle && podLogsInfo) {
+        // Set modal title
+        modalTitle.textContent = `Logs: ${currentPod.name}`;
+        
+        // Populate pod information
+        podLogsInfo.innerHTML = `
+            <div class="logs-details">
+                <div class="logs-detail-item">
+                    <div class="logs-detail-label">Pod Name</div>
+                    <div class="logs-detail-value">${currentPod.name}</div>
+                </div>
+                <div class="logs-detail-item">
+                    <div class="logs-detail-label">Namespace</div>
+                    <div class="logs-detail-value">${currentPod.namespace}</div>
+                </div>
+                <div class="logs-detail-item">
+                    <div class="logs-detail-label">Cluster</div>
+                    <div class="logs-detail-value">${currentClusterName}</div>
+                </div>
+                <div class="logs-detail-item">
+                    <div class="logs-detail-label">Node</div>
+                    <div class="logs-detail-value">${currentPod.node}</div>
+                </div>
+                <div class="logs-detail-item">
+                    <div class="logs-detail-label">Status</div>
+                    <div class="logs-detail-value">${currentPod.status === 1 ? '✅ Running' : '❌ Not Running'}</div>
+                </div>
+                <div class="logs-detail-item">
+                    <div class="logs-detail-label">Age</div>
+                    <div class="logs-detail-value">${currentPod.age}</div>
+                </div>
+            </div>
+        `;
+        
+        // Show modal
+        modal.style.display = 'block';
+        
+        // Fetch logs
+        fetchPodLogs();
+    }
+}
+
+// Fetch pod logs from API
+async function fetchPodLogs() {
+    if (!currentPod || !currentClusterName) {
+        console.error('No pod selected for logs');
+        return;
+    }
+    
+    const loadingElement = document.getElementById('podLogsLoading');
+    const errorElement = document.getElementById('podLogsError');
+    const outputElement = document.getElementById('podLogsOutput');
+    
+    // Show loading state
+    if (loadingElement) loadingElement.style.display = 'flex';
+    if (errorElement) errorElement.style.display = 'none';
+    if (outputElement) outputElement.textContent = '';
+    
+    const requestBody = {
+        "deviceId": currentClusterName,
+        "hostId": currentClusterName,
+        "pollarisName": "kubernetes",
+        "jobName": "logs",
+        "arguments": {
+            "namespace": currentPod.namespace,
+            "podname": currentPod.name
+        }
+    };
+    
+    try {
+        const response = await fetch('/probler/0/exec', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const responseText = await response.text();
+        
+        // Parse JSON response and extract the "result" attribute
+        let logContent = 'No logs available';
+        try {
+            const jsonResponse = JSON.parse(responseText);
+            if (jsonResponse && jsonResponse.result) {
+                // Decode base64 content
+                try {
+                    logContent = atob(jsonResponse.result);
+                } catch (base64Error) {
+                    console.error('Failed to decode base64 result:', base64Error);
+                    console.log('Raw result value:', jsonResponse.result);
+                    logContent = `Error decoding base64 result: ${jsonResponse.result}`;
+                }
+            } else {
+                console.warn('No "result" attribute found in response:', jsonResponse);
+                logContent = 'No logs available in response';
+            }
+        } catch (parseError) {
+            console.error('Failed to parse JSON response:', parseError);
+            console.log('Raw response:', responseText);
+            logContent = `Error parsing response: ${responseText}`;
+        }
+        
+        // Hide loading state
+        if (loadingElement) loadingElement.style.display = 'none';
+        
+        // Display logs
+        if (outputElement) {
+            outputElement.textContent = logContent;
+            // Scroll to bottom to show latest logs
+            outputElement.scrollTop = outputElement.scrollHeight;
+        }
+        
+    } catch (error) {
+        console.error('Error fetching pod logs:', error);
+        
+        // Hide loading state and show error
+        if (loadingElement) loadingElement.style.display = 'none';
+        if (errorElement) {
+            errorElement.style.display = 'block';
+            errorElement.querySelector('.error-text').textContent = 
+                `Failed to fetch logs for ${currentPod.name}: ${error.message}`;
+        }
+        
+        // Show error in logs output as fallback
+        if (outputElement) {
+            outputElement.textContent = `Error: Failed to fetch logs for ${currentPod.name}\n${error.message}`;
+        }
+    }
+}
+
+// Refresh pod logs
+function refreshPodLogs() {
+    fetchPodLogs();
+}
+
+// Clear pod logs display
+function clearPodLogs() {
+    const outputElement = document.getElementById('podLogsOutput');
+    if (outputElement) {
+        outputElement.textContent = '';
+    }
+}
+
+// Download pod logs
+function downloadPodLogs() {
+    if (!currentPod) {
+        console.error('No pod selected for download');
+        return;
+    }
+    
+    const outputElement = document.getElementById('podLogsOutput');
+    const logContent = outputElement ? outputElement.textContent : '';
+    
+    if (!logContent.trim()) {
+        showNotification('No logs to download', 'warning');
+        return;
+    }
+    
+    const blob = new Blob([logContent], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = `${currentPod.name}-${currentPod.namespace}-logs.txt`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    
+    showNotification(`Downloaded logs for ${currentPod.name}`, 'success');
+}
+
+// Show pod details modal
+function showPodDetails() {
+    console.log('showPodDetails called, currentPod:', currentPod, 'currentClusterName:', currentClusterName);
+    
+    if (!currentPod || !currentClusterName) {
+        console.error('No pod selected for details. currentPod:', currentPod, 'currentClusterName:', currentClusterName);
+        hideContextMenu();
+        return;
+    }
+    
+    // Hide context menu after checking we have the pod data
+    const contextMenu = document.getElementById('podContextMenu');
+    if (contextMenu) {
+        contextMenu.style.display = 'none';
+    }
+    
+    const modal = document.getElementById('podDetailsModal');
+    const modalTitle = document.getElementById('modalPodDetailsTitle');
+    
+    if (modal && modalTitle) {
+        // Set modal title
+        modalTitle.textContent = `Pod Details: ${currentPod.name}`;
+        
+        // Show modal
+        modal.style.display = 'block';
+        
+        // Fetch pod details
+        fetchPodDetails();
+    }
+}
+
+// Fetch pod details from API
+async function fetchPodDetails() {
+    if (!currentPod || !currentClusterName) {
+        console.error('No pod selected for details');
+        return;
+    }
+    
+    const loadingElement = document.getElementById('podDetailsLoading');
+    const errorElement = document.getElementById('podDetailsError');
+    const contentElement = document.getElementById('podDetailsContent');
+    
+    // Show loading state
+    if (loadingElement) loadingElement.style.display = 'flex';
+    if (errorElement) errorElement.style.display = 'none';
+    if (contentElement) contentElement.innerHTML = '';
+    
+    const requestBody = {
+        "deviceId": currentClusterName,
+        "hostId": currentClusterName,
+        "pollarisName": "kubernetes",
+        "jobName": "details",
+        "arguments": {
+            "namespace": currentPod.namespace,
+            "podname": currentPod.name
+        }
+    };
+    
+    try {
+        const response = await fetch('/probler/0/exec', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const responseText = await response.text();
+        console.log('Raw response text:', responseText);
+        console.log('Response length:', responseText.length);
+        console.log('First 200 chars:', responseText.substring(0, 200));
+        console.log('Last 200 chars:', responseText.substring(responseText.length - 200));
+        
+        // Parse JSON response and extract the "result" attribute
+        let podDetailsData = null;
+        try {
+            const jsonResponse = JSON.parse(responseText);
+            console.log('Successfully parsed API response:', jsonResponse);
+            
+            if (jsonResponse && jsonResponse.result) {
+                console.log('Base64 result found, length:', jsonResponse.result.length);
+                
+                // Decode base64 content and parse as JSON
+                try {
+                    let base64Content = jsonResponse.result;
+                    console.log('Original base64 content sample:', base64Content.substring(0, 50));
+                    
+                    // Try to decode and see if it looks like JSON
+                    let decodedResult = atob(base64Content);
+                    console.log('First decode attempt result:', decodedResult.substring(0, 100));
+                    
+                    // If it doesn't look like JSON (starts with binary data), try to find JSON start
+                    if (!decodedResult.trim().startsWith('{')) {
+                        console.log('Decoded result doesn\'t start with JSON, looking for JSON start...');
+                        
+                        // Look for the first '{' character which should be the start of JSON
+                        const jsonStart = decodedResult.indexOf('{');
+                        if (jsonStart > 0) {
+                            console.log('Found JSON start at position:', jsonStart);
+                            decodedResult = decodedResult.substring(jsonStart);
+                            console.log('Trimmed decoded result:', decodedResult.substring(0, 100));
+                        }
+                    }
+                    
+                    podDetailsData = JSON.parse(decodedResult);
+                    console.log('Successfully parsed pod details data:', podDetailsData);
+                } catch (base64Error) {
+                    console.error('Failed to decode base64 result or parse JSON:', base64Error);
+                    console.log('Base64 string sample:', jsonResponse.result.substring(0, 100));
+                    console.log('Error details:', base64Error.message);
+                    throw new Error('Invalid response format');
+                }
+            } else {
+                console.warn('No "result" attribute found in response:', jsonResponse);
+                throw new Error('No result data available');
+            }
+        } catch (parseError) {
+            console.error('Failed to parse initial JSON response:', parseError);
+            console.error('Parse error message:', parseError.message);
+            console.error('Parse error at position:', parseError.message.match(/position (\d+)/)?.[1]);
+            console.log('Raw response for debugging:', responseText);
+            
+            // Try to identify problematic characters
+            for (let i = 0; i < Math.min(responseText.length, 1000); i++) {
+                const char = responseText[i];
+                const charCode = char.charCodeAt(0);
+                if (charCode < 32 && charCode !== 9 && charCode !== 10 && charCode !== 13) {
+                    console.warn(`Suspicious character at position ${i}: code ${charCode}, char: "${char}"`);
+                }
+            }
+            
+            throw new Error(`Failed to parse response: ${parseError.message}`);
+        }
+        
+        // Hide loading state
+        if (loadingElement) loadingElement.style.display = 'none';
+        
+        // Display pod details
+        if (contentElement && podDetailsData) {
+            renderPodDetails(podDetailsData);
+        }
+        
+    } catch (error) {
+        console.error('Error fetching pod details:', error);
+        
+        // Hide loading state and show error
+        if (loadingElement) loadingElement.style.display = 'none';
+        if (errorElement) {
+            errorElement.style.display = 'block';
+            errorElement.querySelector('.error-text').textContent = 
+                `Failed to fetch details for ${currentPod.name}: ${error.message}`;
+        }
+    }
+}
+
+// Render pod details in the modal with tabs
+function renderPodDetails(podData) {
+    const contentElement = document.getElementById('podDetailsContent');
+    if (!contentElement) return;
+    
+    let html = '';
+    
+    // Tab Navigation
+    html += `
+        <div class="pod-details-tabs">
+            <div class="pod-details-tab-nav">
+                <button class="pod-details-tab-button active" onclick="switchPodDetailsTab(event, 'basic')" id="basic-tab">
+                    📋 Basic Info
+                </button>
+                <button class="pod-details-tab-button" onclick="switchPodDetailsTab(event, 'labels')" id="labels-tab">
+                    🏷️ Labels & Annotations
+                </button>
+                <button class="pod-details-tab-button" onclick="switchPodDetailsTab(event, 'conditions')" id="conditions-tab">
+                    🔍 Conditions
+                </button>
+                <button class="pod-details-tab-button" onclick="switchPodDetailsTab(event, 'containers')" id="containers-tab">
+                    📦 Containers
+                </button>
+                <button class="pod-details-tab-button" onclick="switchPodDetailsTab(event, 'volumes')" id="volumes-tab">
+                    💾 Volumes
+                </button>
+            </div>
+            
+            <div class="pod-details-tab-content">
+    `;
+    
+    // Basic Information Tab
+    html += `
+                <div id="basic-content" class="pod-details-tab-pane active">
+                    <div class="pod-details-section">
+                        <div class="pod-details-grid">
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">Name</div>
+                                <div class="pod-details-value">${podData.metadata?.name || 'N/A'}</div>
+                            </div>
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">Namespace</div>
+                                <div class="pod-details-value">${podData.metadata?.namespace || 'N/A'}</div>
+                            </div>
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">UID</div>
+                                <div class="pod-details-value code">${podData.metadata?.uid || 'N/A'}</div>
+                            </div>
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">Creation Time</div>
+                                <div class="pod-details-value">${podData.metadata?.creationTimestamp || 'N/A'}</div>
+                            </div>
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">Node Name</div>
+                                <div class="pod-details-value">${podData.spec?.nodeName || 'N/A'}</div>
+                            </div>
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">Phase</div>
+                                <div class="pod-details-value">${podData.status?.phase || 'N/A'}</div>
+                            </div>
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">Pod IP</div>
+                                <div class="pod-details-value">${podData.status?.podIP || 'N/A'}</div>
+                            </div>
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">Host IP</div>
+                                <div class="pod-details-value">${podData.status?.hostIP || 'N/A'}</div>
+                            </div>
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">QoS Class</div>
+                                <div class="pod-details-value">${podData.status?.qosClass || 'N/A'}</div>
+                            </div>
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">Restart Policy</div>
+                                <div class="pod-details-value">${podData.spec?.restartPolicy || 'N/A'}</div>
+                            </div>
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">DNS Policy</div>
+                                <div class="pod-details-value">${podData.spec?.dnsPolicy || 'N/A'}</div>
+                            </div>
+                            <div class="pod-details-item">
+                                <div class="pod-details-label">Service Account</div>
+                                <div class="pod-details-value">${podData.spec?.serviceAccountName || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    `;
+    
+    // Labels & Annotations Tab
+    html += `
+                <div id="labels-content" class="pod-details-tab-pane">
+                    <div class="pod-details-section">
+    `;
+    
+    // Labels Section
+    if (podData.metadata?.labels && Object.keys(podData.metadata.labels).length > 0) {
+        html += `
+                        <h3>🏷️ Labels</h3>
+                        <div class="pod-labels">
+        `;
+        for (const [key, value] of Object.entries(podData.metadata.labels)) {
+            html += `<span class="pod-label">${key}: ${value}</span>`;
+        }
+        html += `</div>`;
+    } else {
+        html += `<h3>🏷️ Labels</h3><p>No labels found.</p>`;
+    }
+    
+    // Annotations Section
+    if (podData.metadata?.annotations && Object.keys(podData.metadata.annotations).length > 0) {
+        html += `
+                        <h3 style="margin-top: 20px;">📝 Annotations</h3>
+                        <div class="pod-annotations">
+        `;
+        for (const [key, value] of Object.entries(podData.metadata.annotations)) {
+            const shortValue = value.length > 50 ? value.substring(0, 50) + '...' : value;
+            html += `<span class="pod-annotation" title="${key}: ${value}">${key}: ${shortValue}</span>`;
+        }
+        html += `</div>`;
+    } else {
+        html += `<h3 style="margin-top: 20px;">📝 Annotations</h3><p>No annotations found.</p>`;
+    }
+    
+    html += `
+                    </div>
+                </div>
+    `;
+    
+    // Conditions Tab
+    html += `
+                <div id="conditions-content" class="pod-details-tab-pane">
+                    <div class="pod-details-section">
+    `;
+    
+    if (podData.status?.conditions && podData.status.conditions.length > 0) {
+        html += `<div class="pod-conditions">`;
+        podData.status.conditions.forEach(condition => {
+            const statusClass = condition.status === 'True' ? 'true' : 'false';
+            html += `
+                <div class="pod-condition">
+                    <span class="pod-condition-status ${statusClass}">${condition.status}</span>
+                    <span class="pod-condition-type">${condition.type}</span>
+                    <span class="pod-condition-time">${condition.lastTransitionTime || 'N/A'}</span>
+                </div>
+            `;
+        });
+        html += `</div>`;
+    } else {
+        html += `<p>No conditions found.</p>`;
+    }
+    
+    html += `
+                    </div>
+                </div>
+    `;
+    
+    // Containers Tab
+    html += `
+                <div id="containers-content" class="pod-details-tab-pane">
+                    <div class="pod-details-section">
+    `;
+    
+    if (podData.spec?.containers && podData.spec.containers.length > 0) {
+        html += `<div class="pod-containers">`;
+        podData.spec.containers.forEach(container => {
+            const containerStatus = podData.status?.containerStatuses?.find(cs => cs.name === container.name);
+            const isReady = containerStatus?.ready ? 'ready' : 'not-ready';
+            const readyText = containerStatus?.ready ? 'Ready' : 'Not Ready';
+            
+            html += `
+                <div class="pod-container">
+                    <div class="pod-container-header">
+                        <div class="pod-container-name">${container.name}</div>
+                        <div class="pod-container-status ${isReady}">${readyText}</div>
+                    </div>
+                    <div class="pod-details-grid">
+                        <div class="pod-details-item">
+                            <div class="pod-details-label">Image</div>
+                            <div class="pod-details-value code">${container.image || 'N/A'}</div>
+                        </div>
+                        <div class="pod-details-item">
+                            <div class="pod-details-label">Image Pull Policy</div>
+                            <div class="pod-details-value">${container.imagePullPolicy || 'N/A'}</div>
+                        </div>
+                        <div class="pod-details-item">
+                            <div class="pod-details-label">Restart Count</div>
+                            <div class="pod-details-value">${containerStatus?.restartCount || '0'}</div>
+                        </div>
+                        <div class="pod-details-item">
+                            <div class="pod-details-label">Container ID</div>
+                            <div class="pod-details-value code">${containerStatus?.containerID || 'N/A'}</div>
+                        </div>
+                        <div class="pod-details-item">
+                            <div class="pod-details-label">Image ID</div>
+                            <div class="pod-details-value code">${containerStatus?.imageID || 'N/A'}</div>
+                        </div>
+                        <div class="pod-details-item">
+                            <div class="pod-details-label">Started</div>
+                            <div class="pod-details-value">${containerStatus?.started ? 'Yes' : 'No'}</div>
+                        </div>
+                    </div>
+            `;
+            
+            // Environment Variables
+            if (container.env && container.env.length > 0) {
+                html += `
+                    <div style="margin-top: 15px;">
+                        <div class="pod-details-label" style="margin-bottom: 8px;">Environment Variables:</div>
+                        <div class="env-vars-container">
+                `;
+                container.env.forEach(envVar => {
+                    html += `<div class="env-var-item"><code>${envVar.name}</code></div>`;
+                });
+                html += `</div></div>`;
+            }
+            
+            html += `</div>`;
+        });
+        html += `</div>`;
+    } else {
+        html += `<p>No containers found.</p>`;
+    }
+    
+    html += `
+                    </div>
+                </div>
+    `;
+    
+    // Volumes Tab
+    html += `
+                <div id="volumes-content" class="pod-details-tab-pane">
+                    <div class="pod-details-section">
+    `;
+    
+    if (podData.spec?.volumes && podData.spec.volumes.length > 0) {
+        html += `<div class="pod-volumes">`;
+        podData.spec.volumes.forEach(volume => {
+            const volumeType = Object.keys(volume).find(key => key !== 'name') || 'unknown';
+            html += `
+                <div class="pod-volume">
+                    <div class="pod-volume-name">${volume.name}</div>
+                    <div class="pod-volume-type">Type: ${volumeType}</div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+    } else {
+        html += `<p>No volumes found.</p>`;
+    }
+    
+    html += `
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    contentElement.innerHTML = html;
+}
+
+// Switch pod details tabs
+function switchPodDetailsTab(event, tabName) {
+    // Hide all tab content
+    const tabPanes = document.querySelectorAll('.pod-details-tab-pane');
+    tabPanes.forEach(pane => {
+        pane.classList.remove('active');
+    });
+    
+    // Remove active class from all tab buttons
+    const tabButtons = document.querySelectorAll('.pod-details-tab-button');
+    tabButtons.forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    const targetPane = document.getElementById(`${tabName}-content`);
+    if (targetPane) {
+        targetPane.classList.add('active');
+    }
+    
+    // Add active class to clicked button
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+}
+
+// Refresh pod details
+function refreshPodDetails() {
+    fetchPodDetails();
+}
+
+// Close pod details modal
+function closePodDetailsModal() {
+    const modal = document.getElementById('podDetailsModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    
+    // Clear the current pod reference only if logs modal is also closed
+    const logsModal = document.getElementById('podLogsModal');
+    if (!logsModal || logsModal.style.display === 'none') {
+        currentPod = null;
+        currentClusterName = null;
+    }
+}
+
+// Close pod logs modal
+function closePodLogsModal() {
+    const modal = document.getElementById('podLogsModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    
+    // Clear the current pod reference only if details modal is also closed
+    const detailsModal = document.getElementById('podDetailsModal');
+    if (!detailsModal || detailsModal.style.display === 'none') {
+        currentPod = null;
+        currentClusterName = null;
+    }
 }
 
 // Helper function to update element text
@@ -1127,3 +1860,36 @@ function updateClusterStats(cluster, clusterName) {
     updateElementText(`runningPods-${clusterName}`, runningPods);
     updateElementText(`namespaces-${clusterName}`, namespaces.length);
 }
+
+// Global event handlers
+document.addEventListener('DOMContentLoaded', function() {
+    // Hide context menu when clicking elsewhere
+    document.addEventListener('click', function(event) {
+        const contextMenu = document.getElementById('podContextMenu');
+        if (contextMenu && !contextMenu.contains(event.target) && contextMenu.style.display !== 'none') {
+            hideContextMenu();
+            // Clear variables when hiding due to outside click (not when opening modal)
+            setTimeout(() => {
+                const modal = document.getElementById('podLogsModal');
+                if (!modal || modal.style.display === 'none') {
+                    currentPod = null;
+                    currentClusterName = null;
+                }
+            }, 100);
+        }
+    });
+    
+    // Handle modal close when clicking outside
+    window.addEventListener('click', function(event) {
+        const podLogsModal = document.getElementById('podLogsModal');
+        const podDetailsModal = document.getElementById('podDetailsModal');
+        
+        if (event.target === podLogsModal) {
+            closePodLogsModal();
+        }
+        
+        if (event.target === podDetailsModal) {
+            closePodDetailsModal();
+        }
+    });
+});

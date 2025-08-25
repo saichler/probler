@@ -67,6 +67,12 @@ func main() {
 		} else if cmd2 == "ocluster" {
 			commands.GetClusterOrm(rc, resources, cmd3)
 			return
+		} else if cmd2 == "logs" {
+			commands.Logs(rc, "", "", resources)
+			return
+		} else if cmd2 == "details" {
+			commands.Details(rc, "", "", resources)
+			return
 		}
 	}
 	if cmd1 == "add" {

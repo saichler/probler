@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/tables.css">
     <link rel="stylesheet" href="css/modals.css">
     <link rel="stylesheet" href="css/utilities.css">
+    <link rel="stylesheet" href="css/traffic-engineering.css">
 </head>
 <body>
     <!-- Login Screen -->
@@ -88,7 +89,7 @@
             <!-- App Navigation Tabs Integrated into Header -->
             <div class="header-tabs">
                 <button class="app-tab-button active" onclick="switchApp('dashboard')" title="Dashboard">
-                    <span class="app-tab-icon">📊</span>
+                    <span class="app-tab-icon">📶</span>
                     <span class="app-tab-text">Dashboard</span>
                 </button>
                 <button class="app-tab-button" onclick="switchApp('devices')" title="Network Devices">
@@ -98,6 +99,10 @@
                 <button class="app-tab-button" onclick="switchApp('topology')" title="Network Topology">
                     <span class="app-tab-icon">🗺️</span>
                     <span class="app-tab-text">Topology</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('traffic-engineering')" title="Traffic Engineering">
+                    <span class="app-tab-icon">🚀</span>
+                    <span class="app-tab-text">TE</span>
                 </button>
                 <button class="app-tab-button" onclick="switchApp('services')" title="System Services">
                     <span class="app-tab-icon">🔄</span>
@@ -140,7 +145,7 @@
                 <!-- Dashboard Application Content -->
                 <div class="app-content active" id="dashboard-app">
                     <div class="app-header">
-                        <h1 class="app-title">📊 Dashboard</h1>
+                        <h1 class="app-title">📶 Dashboard</h1>
                         <p class="app-subtitle">Network Operations Center - Real-time monitoring and management</p>
                     </div>
                     
@@ -420,6 +425,78 @@
                     </div>
                 </div>
 
+                <!-- Traffic Engineering Application -->
+                <div class="app-content" id="traffic-engineering-app">
+                    <div class="te-container">
+                        <div class="te-header">
+                            <h1 class="te-title">🚀 Traffic Engineering</h1>
+                            <div class="te-controls">
+                                <select id="te-view-selector" class="te-view-selector" onchange="switchTeView(this.value)">
+                                    <option value="topology">L3 Topology</option>
+                                    <option value="sr-policies">SR Policies</option>
+                                    <option value="bgp">BGP Sessions</option>
+                                    <option value="mpls">MPLS Labels</option>
+                                    <option value="te-tunnels">TE Tunnels</option>
+                                </select>
+                                <div class="te-zoom-controls">
+                                    <button class="te-zoom-btn" onclick="teZoomIn()" title="Zoom In">🔍+</button>
+                                    <button class="te-zoom-btn" onclick="teZoomOut()" title="Zoom Out">🔍-</button>
+                                    <button class="te-zoom-btn" onclick="teResetZoom()" title="Reset Zoom">⚡</button>
+                                    <button class="te-zoom-btn" onclick="teCenterMap()" title="Center Map">🌍</button>
+                                </div>
+                                <button id="refresh-te-data" class="te-refresh-btn" onclick="refreshTeData()">
+                                    🔄 Refresh
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="te-stats" id="te-stats">
+                            <!-- Statistics will be populated by JavaScript -->
+                            <div class="stat-item">
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">Routers</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">Links</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">SR Policies</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">BGP Sessions</div>
+                            </div>
+                        </div>
+
+                        <div class="te-main-layout">
+                            <div class="te-visualization-container">
+                                <div id="te-visualization">
+                                    <!-- TE Visualization will be rendered here -->
+                                </div>
+                            </div>
+
+                            <div class="te-policies-panel">
+                                <div class="te-policies-header">
+                                    <h3>SR Policies</h3>
+                                    <div class="te-policies-controls">
+                                        <button id="toggle-all-policies" class="te-policy-toggle-btn">Show All</button>
+                                        <button id="clear-policy-highlights" class="te-policy-clear-btn">Clear</button>
+                                    </div>
+                                </div>
+                                <div class="te-policies-content" id="te-policies-content">
+                                    <!-- SR Policies will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="te-details-panel" id="te-details-panel" style="display: none;">
+                            <!-- Detailed information panel -->
+                        </div>
+                    </div>
+                </div>
+
                 <!-- System Services Application -->
                 <div class="app-content" id="services-app">
                     <div class="app-header">
@@ -585,6 +662,86 @@
         </div>
     </div>
 
+    <!-- Pod Logs Modal -->
+    <div id="podLogsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalPodLogsTitle">Pod Logs</h2>
+                <span class="close" onclick="closePodLogsModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="logs-content">
+                    <div class="logs-info-section">
+                        <div class="logs-details" id="podLogsInfo">
+                            <!-- Pod information will be inserted here -->
+                        </div>
+                    </div>
+                    <div class="logs-section">
+                        <div class="logs-controls">
+                            <button class="logs-btn" onclick="refreshPodLogs()" title="Refresh Logs">
+                                🔄 Refresh
+                            </button>
+                            <button class="logs-btn" onclick="clearPodLogs()" title="Clear Logs">
+                                🗑️ Clear
+                            </button>
+                            <button class="logs-btn" onclick="downloadPodLogs()" title="Download Logs">
+                                💾 Download
+                            </button>
+                        </div>
+                        <div class="logs-container" id="podLogsContent">
+                            <div class="loading" id="podLogsLoading" style="display: none;">
+                                <div class="spinner"></div>
+                                <div>Loading logs...</div>
+                            </div>
+                            <div class="error-message" id="podLogsError" style="display: none;">
+                                <div class="error-icon">⚠️</div>
+                                <div class="error-text">Failed to load logs. Please try again.</div>
+                                <button class="retry-btn" onclick="refreshPodLogs()">Retry</button>
+                            </div>
+                            <pre class="logs-output" id="podLogsOutput"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pod Details Modal -->
+    <div id="podDetailsModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalPodDetailsTitle">Pod Details</h2>
+                <span class="close" onclick="closePodDetailsModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="pod-details-content">
+                    <div class="loading" id="podDetailsLoading" style="display: none;">
+                        <div class="spinner"></div>
+                        <div>Loading pod details...</div>
+                    </div>
+                    <div class="error-message" id="podDetailsError" style="display: none;">
+                        <div class="error-icon">⚠️</div>
+                        <div class="error-text">Failed to load pod details. Please try again.</div>
+                        <button class="retry-btn" onclick="refreshPodDetails()">Retry</button>
+                    </div>
+                    <div id="podDetailsContent">
+                        <!-- Pod details will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu for Pod Actions -->
+    <div id="podContextMenu" class="context-menu" style="display: none; position: absolute; z-index: 1001;">
+        <div class="context-menu-item" id="detailsMenuItem">
+            📊 Details
+        </div>
+        <div class="context-menu-item" id="logsMenuItem">
+            📋 Logs
+        </div>
+    </div>
+
     <!-- Device Details Modal -->
     <div id="deviceModal" class="modal">
         <div class="modal-content">
@@ -675,6 +832,7 @@
     <script src="js/devices.js"></script>
     <script src="js/alarms.js"></script>
     <script src="js/topology.js"></script>
+    <script src="js/traffic-engineering.js"></script>
     <script src="js/services.js"></script>
     <script src="js/kubernetes.js"></script>
     <script src="js/app-management.js"></script>
