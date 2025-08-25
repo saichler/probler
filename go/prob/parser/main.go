@@ -1,13 +1,13 @@
 package main
 
 import (
-	types3 "github.com/saichler/l8inventory/go/types"
 	"github.com/saichler/l8parser/go/parser/service"
 	"github.com/saichler/l8pollaris/go/pollaris"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
+	types3 "github.com/saichler/probler/go/types"
 	"os"
 )
 

@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 
-	"github.com/saichler/l8inventory/go/types"
 	types4 "github.com/saichler/l8pollaris/go/types"
 	"github.com/saichler/l8types/go/ifs"
 	types3 "github.com/saichler/l8types/go/types"
@@ -13,6 +12,7 @@ import (
 	"github.com/saichler/layer8/go/overlay/vnet"
 	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
+	"github.com/saichler/probler/go/types"
 	types2 "github.com/saichler/probler/go/types"
 	"github.com/saichler/reflect/go/reflect/introspecting"
 )

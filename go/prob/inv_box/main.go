@@ -1,14 +1,15 @@
 package main
 
 import (
+	"os"
+
 	"github.com/saichler/l8inventory/go/inv/service"
-	types2 "github.com/saichler/l8inventory/go/types"
 	"github.com/saichler/l8pollaris/go/types"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
+	types2 "github.com/saichler/probler/go/types"
 	"github.com/saichler/reflect/go/reflect/introspecting"
-	"os"
 )
 
 func main() {

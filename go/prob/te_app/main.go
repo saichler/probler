@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/saichler/l8inventory/go/types"
+	"github.com/saichler/probler/go/types"
 	types4 "github.com/saichler/l8pollaris/go/types"
 	"github.com/saichler/l8types/go/ifs"
 	types3 "github.com/saichler/l8types/go/types"
