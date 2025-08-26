@@ -13,7 +13,7 @@ message NetworkDeviceList {
 
 message NetworkDevice {
   string id = 1;
-  EquipmentInfo info = 2;
+  EquipmentInfo equipmentinfo = 2;
   map<string, Physical> physicals = 3;
   map<string, Logical> logicals = 4;
   // Topology application support
