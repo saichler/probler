@@ -12,12 +12,12 @@ import (
 // used in the device application's JavaScript mock data generation
 func GenerateMockNetworkDevice(deviceID, deviceType string) *types.NetworkDevice {
 	device := &types.NetworkDevice{
-		Id:   deviceID,
-		Info: generateMockEquipmentInfo(deviceID, deviceType),
-		Physicals: make(map[string]*types.Physical),
-		Logicals:  make(map[string]*types.Logical),
-		Topology: generateMockNetworkTopology(deviceID),
-		NetworkLinks: generateMockNetworkLinks(deviceID),
+		Id:            deviceID,
+		Equipmentinfo: generateMockEquipmentInfo(deviceID, deviceType),
+		Physicals:     make(map[string]*types.Physical),
+		Logicals:      make(map[string]*types.Logical),
+		Topology:      generateMockNetworkTopology(deviceID),
+		NetworkLinks:  generateMockNetworkLinks(deviceID),
 		NetworkHealth: generateMockNetworkHealth(),
 	}
 
@@ -34,16 +34,16 @@ func GenerateMockNetworkDevice(deviceID, deviceType string) *types.NetworkDevice
 
 func generateMockEquipmentInfo(deviceID, deviceType string) *types.EquipmentInfo {
 	now := time.Now().Format(time.RFC3339)
-	
+
 	info := &types.EquipmentInfo{
-		SysName:         fmt.Sprintf("%s.example.com", deviceID),
-		Location:        "Data Center A - Rack 42",
-		Latitude:        37.7749,
-		Longitude:       -122.4194,
-		DeviceStatus:    types.DeviceStatus_DEVICE_STATUS_ONLINE,
-		LastSeen:        now,
-		Uptime:          "45d 12h 30m",
-		IpAddress:       fmt.Sprintf("192.168.1.%d", len(deviceID)%254+1),
+		SysName:      fmt.Sprintf("%s.example.com", deviceID),
+		Location:     "Data Center A - Rack 42",
+		Latitude:     37.7749,
+		Longitude:    -122.4194,
+		DeviceStatus: types.DeviceStatus_DEVICE_STATUS_ONLINE,
+		LastSeen:     now,
+		Uptime:       "45d 12h 30m",
+		IpAddress:    fmt.Sprintf("192.168.1.%d", len(deviceID)%254+1),
 	}
 
 	switch deviceType {
@@ -94,12 +94,12 @@ func generateMockEquipmentInfo(deviceID, deviceType string) *types.EquipmentInfo
 
 func generateMockPhysical(deviceType string) *types.Physical {
 	physical := &types.Physical{
-		Id:       "physical-0",
-		Chassis:  []*types.Chassis{generateMockChassis(deviceType)},
-		Ports:    generateMockPorts(deviceType),
+		Id:            "physical-0",
+		Chassis:       []*types.Chassis{generateMockChassis(deviceType)},
+		Ports:         generateMockPorts(deviceType),
 		PowerSupplies: generateMockPowerSupplies(deviceType),
-		Fans:     generateMockFans(deviceType),
-		Performance: generateMockPerformanceMetrics(),
+		Fans:          generateMockFans(deviceType),
+		Performance:   generateMockPerformanceMetrics(),
 	}
 
 	return physical
@@ -107,13 +107,13 @@ func generateMockPhysical(deviceType string) *types.Physical {
 
 func generateMockChassis(deviceType string) *types.Chassis {
 	chassis := &types.Chassis{
-		Id:           "chassis-0",
-		Model:        "Main Chassis",
-		Description:  fmt.Sprintf("%s Main Chassis", deviceType),
-		Status:       types.ComponentStatus_COMPONENT_STATUS_OK,
-		Temperature:  35.5,
-		Modules:      generateMockModules(deviceType),
-		Ports:        generateMockPorts(deviceType),
+		Id:          "chassis-0",
+		Model:       "Main Chassis",
+		Description: fmt.Sprintf("%s Main Chassis", deviceType),
+		Status:      types.ComponentStatus_COMPONENT_STATUS_OK,
+		Temperature: 35.5,
+		Modules:     generateMockModules(deviceType),
+		Ports:       generateMockPorts(deviceType),
 	}
 
 	switch deviceType {
@@ -140,17 +140,17 @@ func generateMockModules(deviceType string) []*types.Module {
 	case "switch":
 		// Supervisor Module
 		supervisor := &types.Module{
-			Id:          "module-supervisor",
-			Name:        "Supervisor Module",
-			Model:       "C9300-SUP-1",
-			Description: "Supervisor Engine",
-			ModuleType:  types.ModuleType_MODULE_TYPE_SUPERVISOR,
-			Status:      types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature: 42.3,
-			Cpus:        []*types.Cpu{generateMockCpu("supervisor")},
+			Id:            "module-supervisor",
+			Name:          "Supervisor Module",
+			Model:         "C9300-SUP-1",
+			Description:   "Supervisor Engine",
+			ModuleType:    types.ModuleType_MODULE_TYPE_SUPERVISOR,
+			Status:        types.ComponentStatus_COMPONENT_STATUS_OK,
+			Temperature:   42.3,
+			Cpus:          []*types.Cpu{generateMockCpu("supervisor")},
 			MemoryModules: []*types.Memory{generateMockMemory("supervisor")},
 		}
-		
+
 		// Line Card
 		lineCard := &types.Module{
 			Id:          "module-linecard-1",
@@ -168,14 +168,14 @@ func generateMockModules(deviceType string) []*types.Module {
 	case "router":
 		// Route Processor
 		routeProcessor := &types.Module{
-			Id:          "module-rp",
-			Name:        "Route Processor",
-			Model:       "ISR4431-RP",
-			Description: "Main Route Processor",
-			ModuleType:  types.ModuleType_MODULE_TYPE_ROUTE_PROCESSOR,
-			Status:      types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature: 45.2,
-			Cpus:        []*types.Cpu{generateMockCpu("route-processor")},
+			Id:            "module-rp",
+			Name:          "Route Processor",
+			Model:         "ISR4431-RP",
+			Description:   "Main Route Processor",
+			ModuleType:    types.ModuleType_MODULE_TYPE_ROUTE_PROCESSOR,
+			Status:        types.ComponentStatus_COMPONENT_STATUS_OK,
+			Temperature:   45.2,
+			Cpus:          []*types.Cpu{generateMockCpu("route-processor")},
 			MemoryModules: []*types.Memory{generateMockMemory("route-processor")},
 		}
 
@@ -196,14 +196,14 @@ func generateMockModules(deviceType string) []*types.Module {
 	case "firewall":
 		// Management Processor
 		managementProcessor := &types.Module{
-			Id:          "module-mgmt",
-			Name:        "Management Processor",
-			Model:       "ASA5516-MGMT",
-			Description: "Main Management Processor",
-			ModuleType:  types.ModuleType_MODULE_TYPE_MANAGEMENT_PROCESSOR,
-			Status:      types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature: 41.5,
-			Cpus:        []*types.Cpu{generateMockCpu("management")},
+			Id:            "module-mgmt",
+			Name:          "Management Processor",
+			Model:         "ASA5516-MGMT",
+			Description:   "Main Management Processor",
+			ModuleType:    types.ModuleType_MODULE_TYPE_MANAGEMENT_PROCESSOR,
+			Status:        types.ComponentStatus_COMPONENT_STATUS_OK,
+			Temperature:   41.5,
+			Cpus:          []*types.Cpu{generateMockCpu("management")},
 			MemoryModules: []*types.Memory{generateMockMemory("management")},
 		}
 
@@ -223,14 +223,14 @@ func generateMockModules(deviceType string) []*types.Module {
 	default:
 		// Basic Processor for unknown devices
 		processor := &types.Module{
-			Id:          "module-proc",
-			Name:        "Main Processor",
-			Model:       "GENERIC-PROC",
-			Description: "Main Processing Unit",
-			ModuleType:  types.ModuleType_MODULE_TYPE_UNKNOWN,
-			Status:      types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature: 40.0,
-			Cpus:        []*types.Cpu{generateMockCpu("generic")},
+			Id:            "module-proc",
+			Name:          "Main Processor",
+			Model:         "GENERIC-PROC",
+			Description:   "Main Processing Unit",
+			ModuleType:    types.ModuleType_MODULE_TYPE_UNKNOWN,
+			Status:        types.ComponentStatus_COMPONENT_STATUS_OK,
+			Temperature:   40.0,
+			Cpus:          []*types.Cpu{generateMockCpu("generic")},
 			MemoryModules: []*types.Memory{generateMockMemory("generic")},
 		}
 
@@ -375,7 +375,7 @@ func generateMockPorts(deviceType string) []*types.Port {
 		return generateRouterPorts()
 	case "firewall":
 		var ports []*types.Port
-		
+
 		// 16 x 1GE ports
 		for i := 1; i <= 16; i++ {
 			port := &types.Port{
@@ -397,7 +397,7 @@ func generateMockPorts(deviceType string) []*types.Port {
 			}
 			ports = append(ports, port)
 		}
-		
+
 		// 4 x 10GE ports
 		for i := 1; i <= 4; i++ {
 			port := &types.Port{
@@ -419,7 +419,7 @@ func generateMockPorts(deviceType string) []*types.Port {
 			}
 			ports = append(ports, port)
 		}
-		
+
 		return ports
 	default:
 		// Single network interface for generic device
@@ -642,7 +642,7 @@ func generateMockInterfaces() []*types.Interface {
 
 func generateMockNetworkTopology(deviceID string) *types.NetworkTopology {
 	now := time.Now().Format(time.RFC3339)
-	
+
 	return &types.NetworkTopology{
 		TopologyId:   fmt.Sprintf("topology-%s", deviceID),
 		Name:         "Network Topology",
@@ -684,23 +684,23 @@ func generateMockNetworkNodes(deviceID string) []*types.NetworkNode {
 			},
 			Interfaces: []string{"ge-0/0/1", "ge-0/0/2", "ge-0/0/3"},
 			Capabilities: &types.NodeCapabilities{
-				Protocols:             []string{"OSPF", "BGP", "LACP"},
-				Services:              []string{"switching", "routing"},
-				MaxThroughputBps:      48000000000, // 48Gbps
-				MaxConnections:        1000,
-				RoutingCapable:        true,
-				SwitchingCapable:      true,
-				FirewallCapable:       false,
-				LoadBalancingCapable:  false,
+				Protocols:            []string{"OSPF", "BGP", "LACP"},
+				Services:             []string{"switching", "routing"},
+				MaxThroughputBps:     48000000000, // 48Gbps
+				MaxConnections:       1000,
+				RoutingCapable:       true,
+				SwitchingCapable:     true,
+				FirewallCapable:      false,
+				LoadBalancingCapable: false,
 			},
 			Metrics: &types.NodeMetrics{
-				CpuUtilization:     15.7,
-				MemoryUtilization:  32.5,
-				PacketsForwarded:   1234567890,
-				PacketsDropped:     12345,
-				BytesProcessed:     9876543210,
-				ActiveConnections:  125,
-				Temperature:        42.3,
+				CpuUtilization:    15.7,
+				MemoryUtilization: 32.5,
+				PacketsForwarded:  1234567890,
+				PacketsDropped:    12345,
+				BytesProcessed:    9876543210,
+				ActiveConnections: 125,
+				Temperature:       42.3,
 				Uptime:            "45d 12h 30m",
 			},
 			Region: "US-West",
@@ -745,13 +745,13 @@ func generateMockNetworkEdges() []*types.NetworkEdge {
 func generateMockNetworkLinks(deviceID string) []*types.NetworkLink {
 	links := []*types.NetworkLink{
 		{
-			LinkId:        fmt.Sprintf("link-%s-1", deviceID),
-			Name:          "Primary Uplink",
-			FromNode:      deviceID,
-			ToNode:        "core-switch-1",
-			LinkStatus:    types.LinkStatus_LINK_STATUS_ACTIVE,
-			Bandwidth:     "10Gbps",
-			LinkType:      types.LinkType_LINK_TYPE_ETHERNET,
+			LinkId:     fmt.Sprintf("link-%s-1", deviceID),
+			Name:       "Primary Uplink",
+			FromNode:   deviceID,
+			ToNode:     "core-switch-1",
+			LinkStatus: types.LinkStatus_LINK_STATUS_ACTIVE,
+			Bandwidth:  "10Gbps",
+			LinkType:   types.LinkType_LINK_TYPE_ETHERNET,
 			Metrics: &types.LinkMetrics{
 				BytesTransmitted:   9876543210,
 				BytesReceived:      8765432109,
@@ -764,12 +764,12 @@ func generateMockNetworkLinks(deviceID string) []*types.NetworkLink {
 				ThroughputBps:      8500000000, // 8.5Gbps
 				LastMeasurement:    time.Now().Format(time.RFC3339),
 			},
-			UtilizationPercent:    85.0,
-			LatencyMs:             2.3,
-			DistanceKm:            0.5,
-			Uptime:                "45d 12h 30m",
-			ErrorRate:             0.001,
-			AvailabilityPercent:   99.95,
+			UtilizationPercent:  85.0,
+			LatencyMs:           2.3,
+			DistanceKm:          0.5,
+			Uptime:              "45d 12h 30m",
+			ErrorRate:           0.001,
+			AvailabilityPercent: 99.95,
 		},
 	}
 
@@ -778,27 +778,27 @@ func generateMockNetworkLinks(deviceID string) []*types.NetworkLink {
 
 func generateMockNetworkHealth() *types.NetworkHealth {
 	now := time.Now().Format(time.RFC3339)
-	
+
 	return &types.NetworkHealth{
-		OverallStatus:             types.HealthStatus_HEALTH_STATUS_HEALTHY,
-		TotalDevices:              100,
-		OnlineDevices:             98,
-		OfflineDevices:            1,
-		WarningDevices:            1,
-		CriticalDevices:           0,
-		TotalLinks:                150,
-		ActiveLinks:               148,
-		InactiveLinks:             1,
-		WarningLinks:              1,
+		OverallStatus:              types.HealthStatus_HEALTH_STATUS_HEALTHY,
+		TotalDevices:               100,
+		OnlineDevices:              98,
+		OfflineDevices:             1,
+		WarningDevices:             1,
+		CriticalDevices:            0,
+		TotalLinks:                 150,
+		ActiveLinks:                148,
+		InactiveLinks:              1,
+		WarningLinks:               1,
 		NetworkAvailabilityPercent: 99.2,
-		Alerts:                    generateMockHealthAlerts(),
-		LastHealthCheck:           now,
+		Alerts:                     generateMockHealthAlerts(),
+		LastHealthCheck:            now,
 	}
 }
 
 func generateMockHealthAlerts() []*types.HealthAlert {
 	now := time.Now().Format(time.RFC3339)
-	
+
 	alerts := []*types.HealthAlert{
 		{
 			AlertId:           "alert-001",
@@ -824,14 +824,14 @@ func generateMockTopologyStatistics() *types.TopologyStatistics {
 		NetworkDensity:        0.75,
 		ConnectedComponents:   1,
 		AverageDegree:         3.0,
-		MaxDegree:            12,
+		MaxDegree:             12,
 		ClusteringCoefficient: 0.65,
 	}
 }
 
 func generateMockTopologyHealth() *types.TopologyHealth {
 	now := time.Now().Format(time.RFC3339)
-	
+
 	return &types.TopologyHealth{
 		Status:      types.HealthStatus_HEALTH_STATUS_HEALTHY,
 		HealthScore: 95.5,
@@ -839,12 +839,12 @@ func generateMockTopologyHealth() *types.TopologyHealth {
 		Recommendations: []*types.HealthRecommendation{
 			{
 				RecommendationId: "rec-001",
-				Type:            types.RecommendationType_RECOMMENDATION_TYPE_OPTIMIZATION,
-				Title:           "Network Optimization",
-				Description:     "Consider load balancing traffic across redundant links",
-				Priority:        types.RecommendationPriority_RECOMMENDATION_PRIORITY_MEDIUM,
-				TargetComponent: "network-core",
-				ActionItems:     []string{"Enable ECMP", "Configure link aggregation"},
+				Type:             types.RecommendationType_RECOMMENDATION_TYPE_OPTIMIZATION,
+				Title:            "Network Optimization",
+				Description:      "Consider load balancing traffic across redundant links",
+				Priority:         types.RecommendationPriority_RECOMMENDATION_PRIORITY_MEDIUM,
+				TargetComponent:  "network-core",
+				ActionItems:      []string{"Enable ECMP", "Configure link aggregation"},
 			},
 		},
 		AssessmentTime: now,
@@ -1095,7 +1095,7 @@ func parseVendorFromModel(model string) string {
 func convertMockDataToNetworkDevice(mockData deviceMockData) *types.NetworkDevice {
 	deviceID := fmt.Sprintf("device-%03d", mockData.id)
 	vendor := parseVendorFromModel(mockData.model)
-	
+
 	// Create equipment info with the exact mock data
 	info := &types.EquipmentInfo{
 		Vendor:          vendor,
@@ -1113,7 +1113,7 @@ func convertMockDataToNetworkDevice(mockData deviceMockData) *types.NetworkDevic
 		Uptime:          mockData.uptime,
 		Version:         mockData.firmware,
 	}
-	
+
 	// Parse series and family from model
 	switch vendor {
 	case "Cisco":
@@ -1195,7 +1195,7 @@ func convertMockDataToNetworkDevice(mockData deviceMockData) *types.NetworkDevic
 
 	device := &types.NetworkDevice{
 		Id:            deviceID,
-		Info:          info,
+		Equipmentinfo: info,
 		Physicals:     make(map[string]*types.Physical),
 		Logicals:      make(map[string]*types.Logical),
 		Topology:      generateMockNetworkTopology(deviceID),
@@ -1208,7 +1208,7 @@ func convertMockDataToNetworkDevice(mockData deviceMockData) *types.NetworkDevic
 	if deviceTypeForGeneration == "server" {
 		deviceTypeForGeneration = "generic" // Use generic template for servers
 	}
-	
+
 	physical := generateMockPhysicalForRealDevice(deviceTypeForGeneration, mockData)
 	device.Physicals["physical-0"] = physical
 
@@ -1222,11 +1222,11 @@ func convertMockDataToNetworkDevice(mockData deviceMockData) *types.NetworkDevic
 // generateMockPhysicalForRealDevice creates physical components with real device metrics
 func generateMockPhysicalForRealDevice(deviceType string, mockData deviceMockData) *types.Physical {
 	physical := &types.Physical{
-		Id:       "physical-0",
-		Chassis:  []*types.Chassis{generateMockChassisForRealDevice(deviceType, mockData)},
-		Ports:    generateMockPortsForRealDevice(deviceType, mockData.interfaces),
+		Id:            "physical-0",
+		Chassis:       []*types.Chassis{generateMockChassisForRealDevice(deviceType, mockData)},
+		Ports:         generateMockPortsForRealDevice(deviceType, mockData.interfaces),
 		PowerSupplies: generateMockPowerSupplies(deviceType),
-		Fans:     generateMockFans(deviceType),
+		Fans:          generateMockFans(deviceType),
 		Performance: &types.PerformanceMetrics{
 			CpuUsagePercent:    float64(mockData.cpuUsage),
 			MemoryUsagePercent: float64(mockData.memoryUsage),
