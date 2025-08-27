@@ -601,6 +601,35 @@
             color: white;
         }
 
+        .developer-gif {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3), 
+                        0 0 0 8px rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+            animation: gentle-glow 3s ease-in-out infinite;
+        }
+
+        .developer-gif:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4), 
+                        0 0 0 12px rgba(102, 126, 234, 0.15);
+        }
+
+        @keyframes gentle-glow {
+            0%, 100% {
+                box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3), 
+                            0 0 0 8px rgba(102, 126, 234, 0.1);
+            }
+            50% {
+                box-shadow: 0 8px 32px rgba(102, 126, 234, 0.5), 
+                            0 0 0 8px rgba(102, 126, 234, 0.2);
+            }
+        }
+
         .developer-info h3 {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
@@ -1161,7 +1190,7 @@ open https://localhost:443/probler/
                     <div class="developer-content">
                         <div class="developer-intro">
                             <div class="developer-avatar">
-                                <div class="avatar-placeholder">🚀</div>
+                                <img src="me.gif" alt="Sharon Aicler - Software Architect" class="developer-gif">
                             </div>
                             <div class="developer-info">
                                 <h3>Sharon Aicler (saichler@gmail.com)</h3>
