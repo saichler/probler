@@ -1,6 +1,9 @@
 package main
 
 import (
+	"os"
+
+	"github.com/saichler/l8parser/go/parser/boot"
 	"github.com/saichler/l8parser/go/parser/service"
 	"github.com/saichler/l8pollaris/go/pollaris"
 	"github.com/saichler/l8types/go/ifs"
@@ -8,7 +11,6 @@ import (
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
 	types3 "github.com/saichler/probler/go/types"
-	"os"
 )
 
 func main() {
@@ -33,6 +35,14 @@ func main() {
 	//The polling config, e.g. what to poll per protocol, is also agnostic to the model, hence always on service are 0
 	nic.Resources().Services().Activate(pollaris.ServiceType, pollaris.ServiceName,
 		pollaris.ServiceArea, nic.Resources(), nic)
+
+	ps := pollaris.Pollaris(nic.Resources())
+	for _, p := range boot.GetAllPolarisModels() {
+		err := ps.Add(p, false)
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	common2.WaitForSignal(resources)
 }

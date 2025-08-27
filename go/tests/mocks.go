@@ -8,7 +8,7 @@ import (
 	"github.com/saichler/probler/go/types"
 )
 
-// GenerateMockNetworkDevice creates a mock NetworkDevice based on the same patterns 
+// GenerateMockNetworkDevice creates a mock NetworkDevice based on the same patterns
 // used in the device application's JavaScript mock data generation
 func GenerateMockNetworkDevice(deviceID, deviceType string) *types.NetworkDevice {
 	device := &types.NetworkDevice{

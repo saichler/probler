@@ -16,7 +16,7 @@ metadata:
     app: probler-parser
 spec:
   serviceName: probler-parser
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: probler-parser

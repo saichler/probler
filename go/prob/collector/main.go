@@ -1,14 +1,16 @@
 package main
 
 import (
+	"os"
+
 	"github.com/saichler/l8collector/go/collector/common"
 	"github.com/saichler/l8collector/go/collector/devices"
 	"github.com/saichler/l8collector/go/collector/service"
+	"github.com/saichler/l8parser/go/parser/boot"
 	"github.com/saichler/l8pollaris/go/pollaris"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
-	"os"
 )
 
 func main() {
@@ -30,6 +32,14 @@ func main() {
 	//The polling config, e.g. what to poll per protocol, is also agnostic to the model, hence always on service are 0
 	nic.Resources().Services().Activate(pollaris.ServiceType, pollaris.ServiceName,
 		pollaris.ServiceArea, nic.Resources(), nic)
+
+	ps := pollaris.Pollaris(nic.Resources())
+	for _, p := range boot.GetAllPolarisModels() {
+		err := ps.Add(p, false)
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	common2.WaitForSignal(res)
 }

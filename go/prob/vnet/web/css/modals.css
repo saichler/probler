@@ -1,8 +1,8 @@
 /* =============================================================================
-   MODALS - Modal, popup, and overlay styles
+   MODALS - Wabi-Sabi Organic Modal Styles with Natural Imperfection
    ============================================================================= */
 
-/* Base Modal */
+/* Wabi-Sabi Organic Base Modal */
 .modal {
     display: none;
     position: fixed;
@@ -11,53 +11,58 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
+    background: radial-gradient(ellipse at center, rgba(45, 42, 38, 0.75) 0%, rgba(45, 42, 38, 0.65) 100%);
+    backdrop-filter: blur(8px);
 }
 
-/* Modal Content */
+/* Wabi-Sabi Organic Modal Content */
 .modal-content {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    margin: 5% auto;
+    background: linear-gradient(145deg, #fdfcfa 0%, #f7f4f0 100%);
+    margin: 4% auto;
     padding: 0;
-    border-radius: 14px;
-    width: 85%;
-    max-width: 728px;
-    border: 1px solid rgba(0, 129, 194, 0.15);
-    box-shadow: 0 14px 42px rgba(0, 129, 194, 0.2);
-    animation: modalSlideIn 0.3s ease;
+    border-radius: 15px 13px 16px 12px;
+    width: 84%;
+    max-width: 726px;
+    border: 1px solid rgba(139, 122, 84, 0.18);
+    box-shadow: 
+        0 12px 40px rgba(45, 42, 38, 0.15),
+        0 4px 12px rgba(45, 42, 38, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    animation: modalSlideIn 0.35s ease;
 }
 
-/* Modal Header */
+/* Wabi-Sabi Organic Modal Header */
 .modal-header {
-    background: rgba(248, 249, 250, 0.95);
-    padding: 17px 21px;
-    border-bottom: 1px solid rgba(0, 129, 194, 0.1);
+    background: linear-gradient(145deg, rgba(253, 252, 250, 0.95) 0%, rgba(247, 244, 240, 0.9) 100%);
+    padding: 16px 20px 18px 22px;
+    border-bottom: 1px solid rgba(139, 122, 84, 0.12);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 14px 14px 0 0;
+    border-radius: 15px 13px 0 0;
     position: relative;
+    backdrop-filter: blur(10px);
 }
 
 .modal-title {
     font-size: 1.26rem;
     font-weight: 600;
-    color: #0081c2;
+    color: #6b8471;
     flex: 1;
+    letter-spacing: 0.008em;
 }
 
-/* Modal Close Button */
+/* Wabi-Sabi Organic Modal Close Button */
 .close {
-    color: #2c2c2c;
+    color: #2d2a26;
     font-size: 1.4rem;
     font-weight: bold;
     cursor: pointer;
-    transition: color 0.3s ease;
+    transition: color 0.35s ease;
 }
 
 .close:hover {
-    color: #0081c2;
+    color: #6b8471;
 }
 
 /* Modal Body */
@@ -558,8 +563,11 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #0081c2 0%, #005a87 50%, #003d5c 100%);
-    color: white;
+    background: 
+        radial-gradient(ellipse at 25% 35%, rgba(107, 132, 113, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 75% 65%, rgba(147, 122, 84, 0.12) 0%, transparent 45%),
+        linear-gradient(135deg, #6b8471 0%, #5a6f60 50%, #4a5950 100%);
+    color: #fdfcfa;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -585,17 +593,20 @@
 }
 
 .login-container {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-    padding: 40px;
+    background: linear-gradient(145deg, rgba(253, 252, 250, 0.12) 0%, rgba(247, 244, 240, 0.08) 100%);
+    backdrop-filter: blur(25px);
+    border-radius: 21px 19px 20px 18px;
+    border: 1px solid rgba(253, 252, 250, 0.25);
+    box-shadow: 
+        0 18px 45px rgba(45, 42, 38, 0.25),
+        0 6px 15px rgba(45, 42, 38, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    padding: 39px 41px 40px 39px;
     width: 100%;
-    max-width: 420px;
+    max-width: 418px;
     z-index: 10;
     position: relative;
-    animation: slideUp 0.8s ease;
+    animation: slideUp 0.85s ease;
 }
 
 .login-header {

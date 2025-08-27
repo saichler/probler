@@ -1,12 +1,14 @@
 /* =============================================================================
-   TABLES - All table-related styles
+   TABLES - Wabi-Sabi Organic Table Styles with Natural Imperfection
    ============================================================================= */
 
-/* Table Container */
+/* Wabi-Sabi Organic Table Container */
 .table-container {
     overflow-x: auto;
-    max-height: 280px;
+    max-height: 279px;
     overflow-y: auto;
+    border-radius: 9px 11px 8px 10px;
+    background: linear-gradient(145deg, #fdfcfa 0%, #f9f6f2 100%);
 }
 
 /* Base Table Styles */
@@ -16,34 +18,37 @@ table {
 }
 
 th, td {
-    padding: 10px 14px;
+    padding: 9px 13px 11px 15px;
     text-align: left;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(139, 122, 84, 0.12);
     font-size: 0.85rem;
 }
 
 th {
-    background: rgba(248, 249, 250, 0.95);
+    background: linear-gradient(145deg, rgba(253, 252, 250, 0.95) 0%, rgba(247, 244, 240, 0.9) 100%);
     font-weight: 600;
-    color: #0081c2;
+    color: #6b8471;
     position: sticky;
     top: 0;
     z-index: 10;
+    backdrop-filter: blur(10px);
 }
 
 tr {
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Row Hover Effects */
+/* Wabi-Sabi Organic Row Hover Effects */
 .device-row:hover {
-    background: rgba(0, 129, 194, 0.05);
+    background: linear-gradient(145deg, rgba(107, 132, 113, 0.04) 0%, rgba(107, 132, 113, 0.06) 100%);
     cursor: pointer;
+    transform: translateX(1px);
 }
 
 .alarm-row:hover {
-    background: rgba(0, 129, 194, 0.05);
+    background: linear-gradient(145deg, rgba(107, 132, 113, 0.04) 0%, rgba(107, 132, 113, 0.06) 100%);
     cursor: pointer;
+    transform: translateX(1px);
 }
 
 /* Status Indicators in Tables */
@@ -56,41 +61,48 @@ tr {
 }
 
 .status-online .status-indicator { 
-    background: #28a745; 
+    background: linear-gradient(135deg, #6b8471 0%, #5a6f60 100%);
+    box-shadow: 0 1px 3px rgba(107, 132, 113, 0.3);
 }
 
 .status-offline .status-indicator { 
-    background: #dc3545; 
+    background: linear-gradient(135deg, #b85c47 0%, #a04f3c 100%);
+    box-shadow: 0 1px 3px rgba(184, 92, 71, 0.3);
 }
 
 .status-warning .status-indicator { 
-    background: #ffc107; 
+    background: linear-gradient(135deg, #937a54 0%, #7d6549 100%);
+    box-shadow: 0 1px 3px rgba(147, 122, 84, 0.3);
 }
 
-/* Detail Items (used in table-like structures) */
+/* Wabi-Sabi Organic Detail Items */
 .detail-item {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 7px;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 6px;
+    padding: 5px 0 7px 0;
+    border-bottom: 1px solid rgba(139, 122, 84, 0.12);
     font-size: 0.8rem;
 }
 
 .detail-label {
     font-weight: 600;
-    color: #495057;
+    color: #2d2a26;
 }
 
 .detail-value {
-    color: #212529;
+    color: #847b72;
 }
 
-/* Responsive Table Design */
+/* Wabi-Sabi Organic Responsive Table Design */
 @media (max-width: 768px) {
     th, td {
-        padding: 10px;
+        padding: 9px 11px 10px 9px;
         font-size: 0.9rem;
+    }
+
+    .table-container {
+        border-radius: 8px 10px 7px 9px;
     }
 }
 

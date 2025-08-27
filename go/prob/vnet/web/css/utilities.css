@@ -2,78 +2,78 @@
    UTILITIES - Status colors, loading states, animations, keyframes
    ============================================================================= */
 
-/* Status Colors */
+/* Wabi-Sabi Organic Status Colors */
 .status-online { 
-    color: #28a745; 
+    color: #6b8471; 
 }
 
 .status-offline { 
-    color: #dc3545; 
+    color: #b85c47; 
 }
 
 .status-warning { 
-    color: #ffc107; 
+    color: #937a54; 
 }
 
 .status-critical { 
-    color: #dc3545; 
+    color: #b85c47; 
 }
 
 .status-info { 
-    color: #0081c2; 
+    color: #6b8471; 
 }
 
 .status-ok { 
-    color: #28a745; 
+    color: #6b8471; 
 }
 
 .status-error { 
-    color: #dc3545; 
+    color: #b85c47; 
 }
 
 .status-unknown { 
-    color: #6c757d; 
+    color: #847b72; 
 }
 
-/* Alarm Severity Colors */
+/* Wabi-Sabi Organic Alarm Severity Colors */
 .severity-critical { 
-    color: #dc3545; 
+    color: #b85c47; 
     font-weight: bold; 
 }
 
 .severity-major { 
-    color: #fd7e14; 
+    color: #b85c47; 
     font-weight: bold; 
 }
 
 .severity-minor { 
-    color: #ffc107; 
+    color: #937a54; 
 }
 
 .severity-warning { 
-    color: #ffc107; 
+    color: #937a54; 
 }
 
 .severity-info { 
-    color: #28a745; 
+    color: #6b8471; 
 }
 
-/* Loading States */
+/* Wabi-Sabi Organic Loading States */
 .loading {
     display: none;
     text-align: center;
-    padding: 40px;
-    color: #0081c2;
+    padding: 39px 41px 40px 39px;
+    color: #6b8471;
 }
 
 .spinner {
-    border: 4px solid rgba(0, 129, 194, 0.1);
-    border-radius: 50%;
-    border-top: 4px solid #0081c2;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
+    border: 4px solid rgba(107, 132, 113, 0.1);
+    border-radius: 51%;
+    border-top: 4px solid #6b8471;
+    width: 39px;
+    height: 41px;
+    animation: spin 1.1s linear infinite;
+    margin: 0 auto 19px;
 }
 
 /* Component Type Icons */

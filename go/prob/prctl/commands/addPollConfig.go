@@ -12,9 +12,25 @@ import (
 )
 
 func AddPollConfigs(rc *client.RestClient, resources common2.IResources) {
-	snmpPollaris := boot.CreateSNMPBootPolls()
+	snmpPollarises := boot.GetAllPolarisModels()
+	for _, snmpPollaris := range snmpPollarises {
+		resp, err := rc.POST(strconv.Itoa(int(pollaris.ServiceArea))+"/"+pollaris.ServiceName,
+			"Pollaris", "", "", snmpPollaris)
+
+		if err != nil {
+			resources.Logger().Error(err.Error())
+			return
+		}
+		_, ok := resp.(*types.Pollaris)
+		if ok {
+			resources.Logger().Info("Added ", snmpPollaris.Name, " Successfully")
+		}
+		time.Sleep(time.Second)
+	}
+
+	k8sPollaris := boot.CreateK8sBootPolls()
 	resp, err := rc.POST(strconv.Itoa(int(pollaris.ServiceArea))+"/"+pollaris.ServiceName,
-		"Pollaris", "", "", snmpPollaris)
+		"Pollaris", "", "", k8sPollaris)
 
 	if err != nil {
 		resources.Logger().Error(err.Error())
@@ -22,21 +38,8 @@ func AddPollConfigs(rc *client.RestClient, resources common2.IResources) {
 	}
 	_, ok := resp.(*types.Pollaris)
 	if ok {
-		resources.Logger().Info("Added ", snmpPollaris.Name, " Successfully")
-	}
-	time.Sleep(time.Second)
-
-	k8sPollaris := boot.CreateK8sBootPolls()
-	resp, err = rc.POST(strconv.Itoa(int(pollaris.ServiceArea))+"/"+pollaris.ServiceName,
-		"Pollaris", "", "", k8sPollaris)
-
-	if err != nil {
-		resources.Logger().Error(err.Error())
-		return
-	}
-	_, ok = resp.(*types.Pollaris)
-	if ok {
 		resources.Logger().Info("Added ", k8sPollaris.Name, " Successfully")
 	}
 	time.Sleep(time.Second)
+
 }
