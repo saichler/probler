@@ -35,11 +35,11 @@ func main() {
 
 	ps := pollaris.Pollaris(nic.Resources())
 	for _, p := range boot.GetAllPolarisModels() {
-		err := ps.Add(p, false)
+		err := ps.Add(p, true)
 		if err != nil {
 			panic(err)
 		}
 	}
-
+	ps.Add(boot.CreateK8sBootPolls(), true)
 	common2.WaitForSignal(res)
 }
