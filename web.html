@@ -687,6 +687,7 @@
             border-radius: 15px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
         }
 
         .project-card:hover {
@@ -1212,7 +1213,7 @@ open https://localhost:443/probler/
                         <div class="projects-showcase">
                             <h3>Featured Projects</h3>
                             <div class="projects-grid">
-                                <div class="project-card">
+                                <div class="project-card" onclick="openProjectGitHub('probler')">
                                     <h4>🕸️ Probler</h4>
                                     <p>Complete network automation and monitoring platform built with microservices architecture. Features horizontal scaling, model-agnostic services, and comprehensive NOC dashboard.</p>
                                     <div class="project-tech">
@@ -1223,7 +1224,7 @@ open https://localhost:443/probler/
                                     </div>
                                 </div>
 
-                                <div class="project-card">
+                                <div class="project-card" onclick="openProjectGitHub('layer8')">
                                     <h4>🌐 Layer8</h4>
                                     <p>Advanced network communication framework providing virtual network overlay, service discovery, and intelligent message routing for distributed systems.</p>
                                     <div class="project-tech">
@@ -1234,7 +1235,7 @@ open https://localhost:443/probler/
                                     </div>
                                 </div>
 
-                                <div class="project-card">
+                                <div class="project-card" onclick="openProjectGitHub('l8services')">
                                     <h4>🔧 L8Services</h4>
                                     <p>Model-agnostic services framework enabling universal service adaptation to any data structure without code modifications. Core of the Layer8 ecosystem.</p>
                                     <div class="project-tech">
@@ -1245,7 +1246,7 @@ open https://localhost:443/probler/
                                     </div>
                                 </div>
 
-                                <div class="project-card">
+                                <div class="project-card" onclick="openProjectGitHub('opensim')">
                                     <h4>🎮 OpenSim</h4>
                                     <p>Advanced simulation framework for modeling and testing complex system behaviors with comprehensive scenario management and performance analysis.</p>
                                     <div class="project-tech">
@@ -1256,7 +1257,7 @@ open https://localhost:443/probler/
                                     </div>
                                 </div>
 
-                                <div class="project-card">
+                                <div class="project-card" onclick="openProjectGitHub('reflect')">
                                     <h4>🔍 Reflect</h4>
                                     <p>Dynamic type introspection and model adaptation system using Go reflection capabilities for building truly agnostic services and applications.</p>
                                     <div class="project-tech">
@@ -1267,7 +1268,7 @@ open https://localhost:443/probler/
                                     </div>
                                 </div>
 
-                                <div class="project-card">
+                                <div class="project-card" onclick="openProjectGitHub('l8orm')">
                                     <h4>🗄️ L8ORM</h4>
                                     <p>Object-relational mapping framework with advanced caching, transaction management, and automatic schema generation for PostgreSQL databases.</p>
                                     <div class="project-tech">
@@ -1278,7 +1279,7 @@ open https://localhost:443/probler/
                                     </div>
                                 </div>
 
-                                <div class="project-card">
+                                <div class="project-card" onclick="openProjectGitHub('l8srlz')">
                                     <h4>📦 L8Srlz</h4>
                                     <p>High-performance serialization library providing efficient binary encoding/decoding with support for complex data structures and version compatibility.</p>
                                     <div class="project-tech">
@@ -1289,7 +1290,7 @@ open https://localhost:443/probler/
                                     </div>
                                 </div>
 
-                                <div class="project-card">
+                                <div class="project-card" onclick="openProjectGitHub('l8web')">
                                     <h4>🌐 L8Web</h4>
                                     <p>Web services framework with modern UI components, REST APIs, and WebSocket support for building responsive network management interfaces.</p>
                                     <div class="project-tech">
@@ -1300,7 +1301,7 @@ open https://localhost:443/probler/
                                     </div>
                                 </div>
 
-                                <div class="project-card">
+                                <div class="project-card" onclick="openProjectGitHub('l8test')">
                                     <h4>🧪 L8Test</h4>
                                     <p>Comprehensive testing and automation framework providing validation tools, quality assurance utilities, and continuous integration support.</p>
                                     <div class="project-tech">
@@ -1311,7 +1312,7 @@ open https://localhost:443/probler/
                                     </div>
                                 </div>
 
-                                <div class="project-card">
+                                <div class="project-card" onclick="openProjectGitHub('gsql')">
                                     <h4>📊 GSQL</h4>
                                     <p>Graph SQL interface for querying and managing network topology data with intuitive query capabilities and advanced visualization features.</p>
                                     <div class="project-tech">
@@ -1322,7 +1323,7 @@ open https://localhost:443/probler/
                                     </div>
                                 </div>
 
-                                <div class="project-card">
+                                <div class="project-card" onclick="openProjectGitHub('traffic')">
                                     <h4>🚀 Traffic</h4>
                                     <p>Advanced traffic engineering application with MPLS and Segment Routing policy management, BGP analytics, and interactive network visualization.</p>
                                     <div class="project-tech">
@@ -1476,6 +1477,11 @@ open https://localhost:443/probler/
         // Function to open Test and Automation demo
         function openTestAndAutomationDemo() {
             window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8test/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open project GitHub repository
+        function openProjectGitHub(projectName) {
+            window.open(`https://github.com/saichler/${projectName}`, '_blank');
         }
 
         // Modal functions
