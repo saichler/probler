@@ -914,6 +914,16 @@
                         <h3>Real-time Monitoring</h3>
                         <p>Interactive NOC dashboard with topology visualization, alarm management, and performance metrics.</p>
                     </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🚀</div>
+                        <h3>Traffic Engineering</h3>
+                        <p>Advanced MPLS & SR policy management with interactive global network visualization and BGP analytics.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💚</div>
+                        <h3>System Health</h3>
+                        <p>Comprehensive process monitoring and health management with real-time performance metrics.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -941,7 +951,13 @@
                             ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐<br>
                             │      VNet       │◀───│      ORM        │───▶│   PostgreSQL    │<br>
                             │ (Web Interface) │    │ (Persistence)   │    │   (Database)    │<br>
-                            └─────────────────┘    └─────────────────┘    └─────────────────┘
+                            └─────────────────┘    └─────────────────┘    └─────────────────┘<br>
+                                     │<br>
+                                     ▼<br>
+                            ┌─────────────────┐    ┌─────────────────┐<br>
+                            │     TE App      │    │    Security     │<br>
+                            │(Traffic Eng.)   │    │ (Auth & Authz)  │<br>
+                            └─────────────────┘    └─────────────────┘
                         </div>
                     </div>
                 </div>
@@ -970,6 +986,10 @@
                     <div class="service-card clickable" onclick="openVNetDemo()">
                         <h4>🌐 VNet</h4>
                         <p>Virtual network overlay & web interface with vertical scaling</p>
+                    </div>
+                    <div class="service-card">
+                        <h4>🚀 TE App</h4>
+                        <p>Traffic Engineering & SR policies management with vertical scaling</p>
                     </div>
                     <div class="service-card">
                         <h4>🛡️ Security</h4>
@@ -1007,7 +1027,7 @@
             <div class="container">
                 <div class="stats-grid">
                     <div class="stat-item">
-                        <h3>7</h3>
+                        <h3>8</h3>
                         <p>Microservices</p>
                     </div>
                     <div class="stat-item">
@@ -1103,7 +1123,7 @@ open https://localhost:443/probler/
                     <div class="feature-card">
                         <div class="feature-icon">🌍</div>
                         <h3>Network Operations Center</h3>
-                        <p>Interactive dashboard with topology visualization, device management, alarm correlation, and real-time monitoring.</p>
+                        <p>Interactive dashboard with topology visualization, device management, alarm correlation, real-time monitoring, and traffic engineering.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">🔧</div>
@@ -1118,7 +1138,7 @@ open https://localhost:443/probler/
                     <div class="feature-card">
                         <div class="feature-icon">🎯</div>
                         <h3>Use Cases</h3>
-                        <p>Real-world scenarios: Network Operations Centers, Cloud Infrastructure Management, DevOps & SRE.</p>
+                        <p>Real-world scenarios: Network Operations Centers, Service Provider Networks, Cloud Infrastructure Management, DevOps & SRE.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">🆘</div>
@@ -1295,15 +1315,15 @@ open https://localhost:443/probler/
                     <a href="#">Go 1.23.8</a>
                     <a href="#">Kubernetes</a>
                     <a href="#">PostgreSQL</a>
-                    <a href="#">gRPC</a>
-                    <a href="#">SNMP</a>
+                    <a href="#">gRPC & REST APIs</a>
+                    <a href="#">SNMP & SSH</a>
                 </div>
                 <div class="footer-section">
                     <h3>Use Cases</h3>
                     <a href="#">Network Operations Centers</a>
+                    <a href="#">Service Provider Networks</a>
                     <a href="#">Cloud Infrastructure</a>
                     <a href="#">DevOps & SRE</a>
-                    <a href="#">Automation Workflows</a>
                 </div>
             </div>
             <div class="footer-bottom">
