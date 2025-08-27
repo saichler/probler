@@ -1,4 +1,4 @@
-// System Services Management - Professional top equivalent web GUI
+// System Health Management - Professional top equivalent web GUI
 // Fetches data from /0/Health endpoint and displays in FormatTop equivalent format
 
 let servicesRefreshInterval = null;
@@ -10,9 +10,9 @@ let isAutoRefreshEnabled = false;
 const REFRESH_INTERVAL = 15000; // 15 seconds
 
 
-// Initialize services when app loads
+// Initialize health monitoring when app loads
 function initializeServices() {
-    console.log('Initializing System Services...');
+    console.log('Initializing System Health Monitor...');
     refreshServices();
     updateAutoRefreshButton();
 }
@@ -22,7 +22,7 @@ async function refreshServices() {
     console.log("refreshServices called");
     // Use global notification if available
     if (typeof window.showNotification === "function") {
-        window.showNotification("🔄 Refreshing system services...", "info");
+        window.showNotification("🔄 Refreshing system health...", "info");
     }
     
     hideError();
@@ -48,7 +48,7 @@ async function refreshServices() {
         
     } catch (error) {
         console.error('Failed to fetch services data:', error);
-        showError(`Failed to load services: ${error.message}`);
+        showError(`Failed to load health data: ${error.message}`);
     }
 }
 
@@ -369,17 +369,17 @@ function updateLastUpdateTime() {
     }
 }
 
-// Initialize services when the app is opened
-// This will be called from app-management.js when the services app is activated
+// Initialize health monitoring when the app is opened
+// This will be called from app-management.js when the health app is activated
 function initServicesApp() {
     console.log("initServicesApp called");
     if (typeof window.showNotification === "function") {
-        window.showNotification("⚙️ System Services initialized", "info");
+        window.showNotification("💚 System Health initialized", "info");
     }
     initializeServices();
 }
 
-// Cleanup when switching away from services app
+// Cleanup when switching away from health app
 function cleanupServicesApp() {
     stopAutoRefresh();
 }
@@ -392,7 +392,7 @@ window.cleanupServicesApp = cleanupServicesApp;console.log('Services.js loaded')
 
 // Debug: Test manual trigger
 window.testServices = function() {
-    console.log('Manual services test');
+    console.log('Manual health test');
     if (window.initServicesApp) {
         window.initServicesApp();
     } else {

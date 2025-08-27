@@ -31,8 +31,8 @@ function switchApp(appName) {
         setTimeout(() => {
             initializeZoomControls();
         }, 100);
-    } else if (appName === 'services') {
-        // Initialize System Services app
+    } else if (appName === 'health') {
+        // Initialize System Health app
         if (typeof initServicesApp === 'function') {
             setTimeout(() => {
                 initServicesApp();
@@ -65,7 +65,7 @@ function switchApp(appName) {
             'reports': 'Reports Dashboard',
             'tools': 'Network Tools Suite',
             'automation': 'Automation Hub',
-            'services': 'System Services Monitor',
+            'health': 'System Health Monitor',
             'kubernetes': 'Kubernetes Cluster Monitor'
         };
         

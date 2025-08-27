@@ -104,9 +104,9 @@
                     <span class="app-tab-icon">🚀</span>
                     <span class="app-tab-text">TE</span>
                 </button>
-                <button class="app-tab-button" onclick="switchApp('services')" title="System Services">
-                    <span class="app-tab-icon">🔄</span>
-                    <span class="app-tab-text">Services</span>
+                <button class="app-tab-button" onclick="switchApp('health')" title="System Health">
+                    <span class="app-tab-icon">💚</span>
+                    <span class="app-tab-text">Health</span>
                 </button>
                 <button class="app-tab-button" onclick="switchApp('kubernetes')" title="Kubernetes">
                     <span class="app-tab-icon">☸</span>
@@ -497,16 +497,16 @@
                     </div>
                 </div>
 
-                <!-- System Services Application -->
-                <div class="app-content" id="services-app">
+                <!-- System Health Application -->
+                <div class="app-content" id="health-app">
                     <div class="app-header">
-                        <h1 class="app-title">⚙️ System Services</h1>
-                        <p class="app-subtitle">Real-time system process monitoring and management</p>
+                        <h1 class="app-title">💚 System Health</h1>
+                        <p class="app-subtitle">Real-time system process monitoring and health management</p>
                     </div>
                     
                     <div class="services-controls">
                         <div class="control-group">
-                            <button class="services-btn" onclick="refreshServices()" title="Refresh Services">
+                            <button class="services-btn" onclick="refreshServices()" title="Refresh Health">
                                 🔄 Refresh
                             </button>
                             <button class="services-btn" onclick="toggleAutoRefresh()" title="Start auto-refresh" id="autoRefreshBtn">
@@ -515,7 +515,7 @@
                         </div>
                         <div class="services-stats">
                             <div class="stat-item">
-                                <span class="stat-label">Total Services:</span>
+                                <span class="stat-label">Total Processes:</span>
                                 <span class="stat-value" id="totalServices">0</span>
                             </div>
                             <div class="stat-item">
@@ -537,7 +537,7 @@
                         
                         <div class="error-message" id="servicesError" style="display: none;">
                             <div class="error-icon">⚠️</div>
-                            <div class="error-text">Failed to load services data. Please check connection.</div>
+                            <div class="error-text">Failed to load health data. Please check connection.</div>
                             <button class="retry-btn" onclick="refreshServices()">Retry</button>
                         </div>
                         
