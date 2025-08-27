@@ -44,6 +44,7 @@ Probler addresses the fundamental pain points of building scalable, maintainable
 | **Inventory K8s** | Kubernetes cluster inventory | Vertical |
 | **ORM** | Object-relational mapping & persistence | Vertical |
 | **VNet** | Virtual network overlay & web interface | Vertical |
+| **TE App** | Traffic Engineering & SR policies management | Vertical |
 | **Security** | Authentication & authorization | Vertical |
 
 ## 🚀 Quick Start
@@ -118,6 +119,12 @@ The web interface provides comprehensive network monitoring and management:
 #### 🔧 **Additional Applications**
 - **Bandwidth Monitor**: Real-time traffic analysis
 - **Config Manager**: Device configuration management
+- **Traffic Engineering**: Advanced MPLS & SR policy management
+  - Interactive global network topology visualization
+  - Segment Routing (SR) policy configuration and monitoring
+  - BGP session management and analytics
+  - MPLS label distribution and switching statistics
+  - Real-time traffic engineering metrics and performance
 - **Security Center**: Network security monitoring
 - **Reports**: Comprehensive analytics and reporting
 - **Automation Hub**: Workflow automation platform
@@ -128,6 +135,36 @@ The web interface provides comprehensive network monitoring and management:
 - **Role-based access control**
 - **Session management with timeout**
 
+### 🔄 Traffic Engineering & MPLS
+
+The **TE App** provides advanced traffic engineering capabilities for MPLS and Segment Routing (SR) networks:
+
+#### **Network Topology Visualization**
+- **Global Map Integration**: Interactive world map with precise device positioning
+- **Multi-AS Support**: Visualization of complex multi-AS networks
+- **Real-time Status**: Live device and link status monitoring
+- **Zoom & Pan**: Full interactive controls for detailed network exploration
+
+#### **Segment Routing (SR) Policies**
+- **SR Policy Management**: Create, monitor, and modify SR policies
+- **Path Visualization**: Interactive path highlighting on network topology
+- **Traffic Metrics**: Real-time traffic steering and performance statistics
+- **Preference & Color**: Full SR policy preference and color management
+- **Multi-path Support**: Support for primary, backup, and load-balanced paths
+
+#### **BGP Session Analytics**
+- **Session Monitoring**: Comprehensive iBGP and eBGP session tracking
+- **Route Analytics**: Detailed route advertisement and reception metrics
+- **Peer Relationship Mapping**: Visual representation of BGP peer relationships
+- **Internet Exchange Integration**: IXP session monitoring and route analysis
+
+#### **MPLS Label Management**
+- **Label Database**: Complete MPLS forwarding information base (FIB)
+- **SR Node Labels**: Segment routing node SID management (16000-23999 range)
+- **SR Adjacency Labels**: Adjacency SID tracking (24000-31999 range)
+- **Service Labels**: L3VPN, L2VPN, and 6PE service label management
+- **RSVP-TE Support**: Traditional RSVP-TE tunnel label management
+
 ## 🏷️ Technology Stack
 
 ### Backend
@@ -136,12 +173,14 @@ The web interface provides comprehensive network monitoring and management:
 - **gRPC/Protocol Buffers** - Service communication
 - **PostgreSQL** - Data persistence
 - **SNMP (gosnmp)** - Network device polling
+- **REST APIs** - Traffic engineering data endpoints
 
 ### Frontend
 - **Vanilla JavaScript** - No framework dependencies
 - **CSS3 with CSS Grid & Flexbox** - Modern responsive design
 - **SVG Graphics** - Interactive network topology
 - **WebSocket** - Real-time data updates
+- **Traffic Engineering Visualization** - Advanced MPLS/SR policy rendering
 
 ### Infrastructure
 - **Docker** - Containerization
@@ -161,6 +200,7 @@ probler/
 │   │   ├── inv_k8s/            # K8s inventory
 │   │   ├── orm/                # ORM service
 │   │   ├── vnet/               # Virtual network & web UI
+│   │   ├── te_app/             # Traffic Engineering application
 │   │   ├── security/           # Security service
 │   │   └── prctl/              # CLI control tool
 │   ├── go.mod                  # Go module definition
@@ -168,11 +208,13 @@ probler/
 ├── k8s/                        # Kubernetes manifests
 │   ├── apply-all.sh           # Deployment script
 │   ├── delete-all.sh          # Cleanup script
+│   ├── te_app.yaml            # Traffic Engineering service
 │   └── *.yaml                 # Service configurations
 ├── proto/                      # Protocol buffer definitions
 ├── builder/                    # Docker build configurations
-├── coordinate_calculator.py    # Device positioning utility
-├── coordinate_validator.py     # Position validation
+├── coordinate_calculator.py    # Device geographic positioning utility
+├── coordinate_validator.py     # Position validation & verification
+├── deploy-script.sh            # Automated deployment script
 └── README.md                  # This file
 ```
 
@@ -261,6 +303,13 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - **Real-time monitoring** of network infrastructure
 - **Fault management** and alarm correlation
 - **Performance tracking** and capacity planning
+- **Traffic engineering** and path optimization
+
+### Service Provider Networks
+- **MPLS VPN Service Management**: Complete L3VPN and L2VPN lifecycle management
+- **Segment Routing Deployment**: Modern SR policy configuration and monitoring
+- **BGP Route Engineering**: Advanced route policy management and optimization
+- **Network Planning**: Capacity planning and traffic forecasting tools
 
 ### Cloud Infrastructure Management
 - **Kubernetes cluster monitoring**
