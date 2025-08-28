@@ -43,6 +43,9 @@ message EquipmentInfo {
   DeviceStatus device_status = 17;
   string last_seen = 18;
   string uptime = 19;
+  // Additional fields for mock data correlation
+  uint32 device_id = 20;        // Numeric device ID from mock data
+  uint32 interface_count = 21;  // Total number of interfaces
 }
 
 message Physical {

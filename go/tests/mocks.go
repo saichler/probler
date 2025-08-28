@@ -1112,6 +1112,8 @@ func convertMockDataToNetworkDevice(mockData deviceMockData) *types.NetworkDevic
 		LastSeen:        mockData.lastSeen,
 		Uptime:          mockData.uptime,
 		Version:         mockData.firmware,
+		DeviceId:        uint32(mockData.id),         // Map numeric device ID
+		InterfaceCount:  uint32(mockData.interfaces), // Map interface count
 	}
 
 	// Parse series and family from model
