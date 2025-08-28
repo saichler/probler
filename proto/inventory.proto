@@ -302,6 +302,7 @@ message NetworkHealth {
   double network_availability_percent = 11;
   repeated HealthAlert alerts = 12;
   string last_health_check = 13;
+  uint32 alert_count = 14;
 }
 
 message TopologyStatistics {
