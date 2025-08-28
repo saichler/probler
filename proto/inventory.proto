@@ -175,6 +175,7 @@ message PerformanceMetrics {
   string uptime = 4;
   uint64 load_average = 5;
   repeated ProcessInfo processes = 6;
+  uint64 active_connections = 7;
 }
 
 message ProcessInfo {
