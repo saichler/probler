@@ -604,8 +604,8 @@ func generateMockInterfaceStatistics() *types.InterfaceStatistics {
 
 func generateMockLogical() *types.Logical {
 	logical := &types.Logical{
-		Id:        "logical-0",
-		Intefaces: generateMockInterfaces(),
+		Id:         "logical-0",
+		Interfaces: generateMockInterfaces(),
 	}
 
 	return logical
