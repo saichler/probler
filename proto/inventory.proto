@@ -59,7 +59,7 @@ message Physical {
 
 message Logical {
   string id = 1;
-  repeated Interface intefaces = 2;
+  repeated Interface interfaces = 2;
 }
 
 message Chassis {
