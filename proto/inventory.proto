@@ -46,6 +46,14 @@ message EquipmentInfo {
   // Additional fields for mock data correlation
   uint32 device_id = 20;        // Numeric device ID from mock data
   uint32 interface_count = 21;  // Total number of interfaces
+  // Entity MIB fields from RFC 4133
+  string vendor_type_oid = 22;     // entPhysicalVendorType - Vendor-specific hardware type OID
+  string physical_alias = 23;      // entPhysicalAlias - Admin-assigned alias name
+  string asset_id = 24;            // entPhysicalAssetID - Asset tracking identifier
+  bool is_fru = 25;                // entPhysicalIsFRU - Field Replaceable Unit flag
+  string manufacturing_date = 26;  // entPhysicalMfgDate - Manufacturing date
+  string manufacturer_name = 27;   // entPhysicalMfgName - Manufacturer name
+  string identification_uris = 28; // entPhysicalUris - Additional identification URIs (CLEI codes, etc.)
 }
 
 message Physical {
@@ -55,6 +63,11 @@ message Physical {
   repeated PowerSupply power_supplies = 4;
   repeated Fan fans = 5;
   PerformanceMetrics performance = 6;
+  // Entity MIB hierarchical relationship fields
+  uint32 physical_index = 7;        // entPhysicalIndex - Unique index for this physical entity
+  uint32 contained_in = 8;          // entPhysicalContainedIn - Index of parent entity that contains this one
+  int32 parent_rel_pos = 9;         // entPhysicalParentRelPos - Relative position within parent entity
+  PhysicalClass physical_class = 10; // entPhysicalClass - General hardware type classification
 }
 
 message Logical {
@@ -1043,4 +1056,20 @@ message RegionHealth {
   uint32 failed_links = 6;
   repeated HealthAlert alerts = 7;
   string last_assessment = 8;
+}
+
+// Entity MIB Physical Class enumeration from RFC 4133
+enum PhysicalClass {
+  PHYSICAL_CLASS_UNKNOWN = 0;
+  PHYSICAL_CLASS_OTHER = 1;
+  PHYSICAL_CLASS_CHASSIS = 2;
+  PHYSICAL_CLASS_BACKPLANE = 3;
+  PHYSICAL_CLASS_CONTAINER = 4;
+  PHYSICAL_CLASS_POWER_SUPPLY = 5;
+  PHYSICAL_CLASS_FAN = 6;
+  PHYSICAL_CLASS_SENSOR = 7;
+  PHYSICAL_CLASS_MODULE = 8;
+  PHYSICAL_CLASS_PORT = 9;
+  PHYSICAL_CLASS_STACK = 10;
+  PHYSICAL_CLASS_CPU = 11;
 }
