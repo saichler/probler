@@ -25,12 +25,12 @@ func main() {
 
 	//Register the inventory for NetworkBox as Parser-NetworkBox service name on area 0
 	nic.Resources().Services().Activate(service.ServiceType, common2.PARSER_SERVICE_BOX, common2.PARSER_AREA_BOX,
-		nic.Resources(), nic, &types3.NetworkDevice{}, "Id")
+		nic.Resources(), nic, &types3.NetworkDevice{}, "Id", false)
 
 	//Register the inventory for K8s clusters as Parser-Cluster. we need to place it on area 1 as the service point type is the same
 	//as the NetworkBox
 	nic.Resources().Services().Activate(service.ServiceType, common2.PARSER_SERVICE_K8s,
-		common2.PARSER_AREA_K8S, nic.Resources(), nic, &types2.K8SCluster{}, "Name")
+		common2.PARSER_AREA_K8S, nic.Resources(), nic, &types2.K8SCluster{}, "Name", false)
 
 	//The polling config, e.g. what to poll per protocol, is also agnostic to the model, hence always on service are 0
 	nic.Resources().Services().Activate(pollaris.ServiceType, pollaris.ServiceName,
