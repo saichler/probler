@@ -12,7 +12,7 @@ function convertApiDataToDeviceFormat(apiDevices) {
             id: equipmentInfo.device_id || index + 1,
             name: equipmentInfo.sys_name || `Device-${index + 1}`,
             ipAddress: equipmentInfo.ip_address || 'Unknown',
-            type: getDeviceTypeString(equipmentInfo.device_type) || 'Unknown',
+            type: getDeviceTypeString(equipmentInfo.deviceType) || 'Unknown',
             location: equipmentInfo.location || 'Unknown Location',
             latitude: equipmentInfo.latitude || 0,
             longitude: equipmentInfo.longitude || 0,
@@ -73,133 +73,83 @@ function generatePhysicalInventoryData(device) {
             children: []
         };
 
-        // Process each physical component
+        // Process each physical component (e.g., "physical-0")
         Object.keys(physicals).forEach(physicalKey => {
             const physical = physicals[physicalKey];
             
+            // Add physical component node
+            const physicalNode = {
+                name: `Physical Component ${physical.id || physicalKey}`,
+                type: 'physical',
+                details: `Physical component ${physical.id || physicalKey}`,
+                status: 'ok',
+                children: []
+            };
+
             // Add chassis components
             if (physical.chassis && physical.chassis.length > 0) {
-                physical.chassis.forEach(chassis => {
+                physical.chassis.forEach((chassis, chassisIndex) => {
                     const chassisNode = {
-                        name: chassis.description || `Chassis ${chassis.id}`,
+                        name: chassis.description || `Chassis ${chassisIndex + 1}`,
                         type: 'chassis',
-                        details: `Model: ${chassis.model || 'Unknown'}, S/N: ${chassis.serial_number || 'Unknown'}`,
+                        details: `Model: ${chassis.model || 'Unknown'}, S/N: ${chassis.serial_number || chassis.serialNumber || 'Unknown'}`,
                         status: getComponentStatus(chassis.status),
                         children: []
                     };
 
-                    // Add slots
-                    if (chassis.slots && chassis.slots.length > 0) {
-                        chassis.slots.forEach(slot => {
-                            const slotNode = {
-                                name: `Slot ${slot.id}`,
-                                type: 'slot',
-                                details: slot.module ? `Module: ${slot.module.name || slot.module.id}` : 'Empty',
-                                status: slot.module ? getComponentStatus(slot.module.status) : 'unknown',
+                    // Add modules directly attached to chassis
+                    if (chassis.modules && chassis.modules.length > 0) {
+                        chassis.modules.forEach((module, moduleIndex) => {
+                            const moduleNode = {
+                                name: module.name || `Module ${moduleIndex + 1}`,
+                                type: 'module',
+                                details: `${module.model || 'Unknown'} - ${module.description || 'Network Module'}`,
+                                status: getComponentStatus(module.status),
                                 children: []
                             };
 
-                            // Add module details if present
-                            if (slot.module) {
-                                // Add CPUs
-                                if (slot.module.cpus && slot.module.cpus.length > 0) {
-                                    slot.module.cpus.forEach(cpu => {
-                                        slotNode.children.push({
-                                            name: cpu.name || `CPU ${cpu.id}`,
-                                            type: 'cpu',
-                                            details: `${cpu.model || 'Unknown'}, ${cpu.cores || 'N/A'} cores, ${cpu.frequency_mhz || 'N/A'}MHz`,
-                                            status: getComponentStatus(cpu.status)
-                                        });
+                            // Add CPUs if present
+                            if (module.cpus && module.cpus.length > 0) {
+                                module.cpus.forEach(cpu => {
+                                    moduleNode.children.push({
+                                        name: cpu.name || `CPU ${cpu.id}`,
+                                        type: 'cpu',
+                                        details: `${cpu.model || 'Unknown'}, ${cpu.cores || 'N/A'} cores, ${cpu.frequency_mhz || 'N/A'}MHz`,
+                                        status: getComponentStatus(cpu.status)
                                     });
-                                }
-
-                                // Add Memory
-                                if (slot.module.memory_modules && slot.module.memory_modules.length > 0) {
-                                    slot.module.memory_modules.forEach(mem => {
-                                        slotNode.children.push({
-                                            name: mem.name || `Memory ${mem.id}`,
-                                            type: 'memory',
-                                            details: `${mem.type || 'Unknown'}, ${Math.round((mem.size_bytes || 0) / (1024*1024*1024))}GB`,
-                                            status: getComponentStatus(mem.status)
-                                        });
-                                    });
-                                }
-
-                                // Add Ports
-                                if (slot.module.ports && slot.module.ports.length > 0) {
-                                    slot.module.ports.forEach(port => {
-                                        const portNode = {
-                                            name: `Port ${port.id}`,
-                                            type: 'port',
-                                            details: `Port ${port.id}`,
-                                            status: 'ok',
-                                            children: []
-                                        };
-
-                                        // Add interfaces
-                                        if (port.interfaces && port.interfaces.length > 0) {
-                                            port.interfaces.forEach(intf => {
-                                                portNode.children.push({
-                                                    name: intf.name || `Interface ${intf.id}`,
-                                                    type: 'interface',
-                                                    details: `${intf.description || ''} - ${intf.ip_address || 'No IP'}`,
-                                                    status: intf.admin_status ? 'ok' : 'down'
-                                                });
-                                            });
-                                        }
-
-                                        slotNode.children.push(portNode);
-                                    });
-                                }
+                                });
                             }
 
-                            chassisNode.children.push(slotNode);
+                            // Add Memory if present
+                            if (module.memory_modules && module.memory_modules.length > 0) {
+                                module.memory_modules.forEach(mem => {
+                                    moduleNode.children.push({
+                                        name: mem.name || `Memory ${mem.id}`,
+                                        type: 'memory',
+                                        details: `${mem.type || 'Unknown'}, ${Math.round((mem.size_bytes || 0) / (1024*1024*1024))}GB`,
+                                        status: getComponentStatus(mem.status)
+                                    });
+                                });
+                            }
+
+                            chassisNode.children.push(moduleNode);
                         });
                     }
 
-                    // Add modules directly attached to chassis
-                    if (chassis.modules && chassis.modules.length > 0) {
-                        chassis.modules.forEach(module => {
-                            chassisNode.children.push({
-                                name: module.name || `Module ${module.id}`,
-                                type: 'module',
-                                details: `${module.model || 'Unknown'} - ${module.description || ''}`,
-                                status: getComponentStatus(module.status)
-                            });
-                        });
-                    }
-
-                    // Add power supplies
-                    if (chassis.power_supplies && chassis.power_supplies.length > 0) {
-                        chassis.power_supplies.forEach(psu => {
-                            chassisNode.children.push({
-                                name: psu.name || `PSU ${psu.id}`,
-                                type: 'power',
-                                details: `${psu.model || 'Unknown'}, ${psu.wattage || 'N/A'}W`,
-                                status: getComponentStatus(psu.status)
-                            });
-                        });
-                    }
-
-                    // Add fans
-                    if (chassis.fans && chassis.fans.length > 0) {
-                        chassis.fans.forEach(fan => {
-                            chassisNode.children.push({
-                                name: fan.name || `Fan ${fan.id}`,
-                                type: 'fan',
-                                details: `${fan.description || ''} - ${fan.speed_rpm || 'N/A'} RPM`,
-                                status: getComponentStatus(fan.status)
-                            });
-                        });
-                    }
-
-                    rootNode.children.push(chassisNode);
+                    physicalNode.children.push(chassisNode);
                 });
             }
 
-            // Add standalone ports if not under chassis
-            if (physical.ports && physical.ports.length > 0 && 
-                (!physical.chassis || physical.chassis.length === 0)) {
+            // Add ports (at physical level)
+            if (physical.ports && physical.ports.length > 0) {
+                const portsNode = {
+                    name: 'Network Ports',
+                    type: 'ports_group',
+                    details: `${physical.ports.length} ports available`,
+                    status: 'ok',
+                    children: []
+                };
+
                 physical.ports.forEach(port => {
                     const portNode = {
                         name: `Port ${port.id}`,
@@ -209,20 +159,100 @@ function generatePhysicalInventoryData(device) {
                         children: []
                     };
 
+                    // Add interfaces
                     if (port.interfaces && port.interfaces.length > 0) {
                         port.interfaces.forEach(intf => {
                             portNode.children.push({
                                 name: intf.name || `Interface ${intf.id}`,
                                 type: 'interface',
-                                details: `${intf.description || ''} - ${intf.ip_address || 'No IP'}`,
+                                details: `${intf.description || intf.name || ''} - ${intf.ip_address || 'No IP'}`,
                                 status: intf.admin_status ? 'ok' : 'down'
                             });
                         });
                     }
 
-                    rootNode.children.push(portNode);
+                    portsNode.children.push(portNode);
                 });
+
+                physicalNode.children.push(portsNode);
             }
+
+            // Add power supplies (at physical level)
+            if (physical.powerSupplies && physical.powerSupplies.length > 0) {
+                const powerNode = {
+                    name: 'Power Supplies',
+                    type: 'power_group',
+                    details: `${physical.powerSupplies.length} power supplies`,
+                    status: 'ok',
+                    children: []
+                };
+
+                physical.powerSupplies.forEach((psu, psuIndex) => {
+                    powerNode.children.push({
+                        name: psu.name || `PSU ${psuIndex + 1}`,
+                        type: 'power',
+                        details: `${psu.model || 'Unknown'}, ${psu.wattage || 'N/A'}W`,
+                        status: getComponentStatus(psu.status)
+                    });
+                });
+
+                physicalNode.children.push(powerNode);
+            }
+
+            // Add fans (at physical level)
+            if (physical.fans && physical.fans.length > 0) {
+                const fansNode = {
+                    name: 'Fans',
+                    type: 'fans_group',
+                    details: `${physical.fans.length} fans`,
+                    status: 'ok',
+                    children: []
+                };
+
+                physical.fans.forEach((fan, fanIndex) => {
+                    fansNode.children.push({
+                        name: fan.name || `Fan ${fanIndex + 1}`,
+                        type: 'fan',
+                        details: `${fan.description || ''} - ${fan.speed_rpm || 'Variable'} RPM`,
+                        status: getComponentStatus(fan.status)
+                    });
+                });
+
+                physicalNode.children.push(fansNode);
+            }
+
+            // Add performance metrics if available
+            if (physical.performance) {
+                const perfNode = {
+                    name: 'Performance Metrics',
+                    type: 'performance',
+                    details: `CPU: ${physical.performance.cpuUsagePercent || 0}%, Memory: ${physical.performance.memoryUsagePercent || 0}%`,
+                    status: (physical.performance.cpuUsagePercent > 80 || physical.performance.memoryUsagePercent > 80) ? 'warning' : 'ok',
+                    children: []
+                };
+
+                if (physical.performance.cpuUsagePercent !== undefined) {
+                    perfNode.children.push({
+                        name: 'CPU Usage',
+                        type: 'metric',
+                        details: `${physical.performance.cpuUsagePercent}%`,
+                        status: physical.performance.cpuUsagePercent > 80 ? 'warning' : 'ok'
+                    });
+                }
+
+                if (physical.performance.memoryUsagePercent !== undefined) {
+                    perfNode.children.push({
+                        name: 'Memory Usage',
+                        type: 'metric',
+                        details: `${physical.performance.memoryUsagePercent}%`,
+                        status: physical.performance.memoryUsagePercent > 80 ? 'warning' : 'ok'
+                    });
+                }
+
+                physicalNode.children.push(perfNode);
+            }
+
+            rootNode.children.push(physicalNode);
         });
 
         return rootNode;
