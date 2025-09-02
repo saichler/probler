@@ -3,15 +3,302 @@
 // Sample data for demonstration (replace with API calls)
 let devicesData = [];
 
+// Convert API NetworkDevice data to the expected device format
+function convertApiDataToDeviceFormat(apiDevices) {
+    return apiDevices.map((apiDevice, index) => {
+        const equipmentInfo = apiDevice.equipmentinfo || {};
+        
+        return {
+            id: equipmentInfo.device_id || index + 1,
+            name: equipmentInfo.sys_name || `Device-${index + 1}`,
+            ipAddress: equipmentInfo.ip_address || 'Unknown',
+            type: getDeviceTypeString(equipmentInfo.device_type) || 'Unknown',
+            location: equipmentInfo.location || 'Unknown Location',
+            latitude: equipmentInfo.latitude || 0,
+            longitude: equipmentInfo.longitude || 0,
+            status: getDeviceStatusString(equipmentInfo.device_status) || 'unknown',
+            cpuUsage: Math.floor(Math.random() * 100), // Placeholder - would come from performance metrics
+            memoryUsage: Math.floor(Math.random() * 100), // Placeholder - would come from performance metrics
+            uptime: equipmentInfo.uptime || 'Unknown',
+            lastSeen: equipmentInfo.last_seen || new Date().toISOString().slice(0, 19).replace('T', ' '),
+            model: equipmentInfo.model || 'Unknown Model',
+            serialNumber: equipmentInfo.serial_number || 'Unknown',
+            firmware: equipmentInfo.firmware_version || equipmentInfo.software || 'Unknown',
+            interfaces: equipmentInfo.interface_count || 0,
+            temperature: Math.floor(Math.random() * 60) + 20 // Placeholder - would come from performance metrics
+        };
+    });
+}
+
+// Helper functions to convert enum values to strings
+function getDeviceTypeString(deviceType) {
+    const typeMap = {
+        0: 'Unknown',
+        1: 'Router', 
+        2: 'Switch',
+        3: 'Firewall',
+        4: 'Load Balancer',
+        5: 'Access Point',
+        6: 'Server',
+        7: 'Storage',
+        8: 'Gateway'
+    };
+    return typeMap[deviceType] || 'Unknown';
+}
+
+function getDeviceStatusString(deviceStatus) {
+    const statusMap = {
+        0: 'unknown',
+        1: 'online',
+        2: 'offline', 
+        3: 'warning',
+        4: 'critical',
+        5: 'maintenance'
+    };
+    return statusMap[deviceStatus] || 'unknown';
+}
+
+// Generate Physical Tree data from NetworkDevice.physicals
+function generatePhysicalInventoryData(device) {
+    // If we have original API data with physicals, use it
+    if (device.originalApiData && device.originalApiData.physicals) {
+        const physicals = device.originalApiData.physicals;
+        
+        // Create root device node
+        const rootNode = {
+            name: device.name,
+            type: 'chassis',
+            details: `${device.model} - ${device.serialNumber}`,
+            status: device.status === 'online' ? 'ok' : 'error',
+            children: []
+        };
+
+        // Process each physical component
+        Object.keys(physicals).forEach(physicalKey => {
+            const physical = physicals[physicalKey];
+            
+            // Add chassis components
+            if (physical.chassis && physical.chassis.length > 0) {
+                physical.chassis.forEach(chassis => {
+                    const chassisNode = {
+                        name: chassis.description || `Chassis ${chassis.id}`,
+                        type: 'chassis',
+                        details: `Model: ${chassis.model || 'Unknown'}, S/N: ${chassis.serial_number || 'Unknown'}`,
+                        status: getComponentStatus(chassis.status),
+                        children: []
+                    };
+
+                    // Add slots
+                    if (chassis.slots && chassis.slots.length > 0) {
+                        chassis.slots.forEach(slot => {
+                            const slotNode = {
+                                name: `Slot ${slot.id}`,
+                                type: 'slot',
+                                details: slot.module ? `Module: ${slot.module.name || slot.module.id}` : 'Empty',
+                                status: slot.module ? getComponentStatus(slot.module.status) : 'unknown',
+                                children: []
+                            };
+
+                            // Add module details if present
+                            if (slot.module) {
+                                // Add CPUs
+                                if (slot.module.cpus && slot.module.cpus.length > 0) {
+                                    slot.module.cpus.forEach(cpu => {
+                                        slotNode.children.push({
+                                            name: cpu.name || `CPU ${cpu.id}`,
+                                            type: 'cpu',
+                                            details: `${cpu.model || 'Unknown'}, ${cpu.cores || 'N/A'} cores, ${cpu.frequency_mhz || 'N/A'}MHz`,
+                                            status: getComponentStatus(cpu.status)
+                                        });
+                                    });
+                                }
+
+                                // Add Memory
+                                if (slot.module.memory_modules && slot.module.memory_modules.length > 0) {
+                                    slot.module.memory_modules.forEach(mem => {
+                                        slotNode.children.push({
+                                            name: mem.name || `Memory ${mem.id}`,
+                                            type: 'memory',
+                                            details: `${mem.type || 'Unknown'}, ${Math.round((mem.size_bytes || 0) / (1024*1024*1024))}GB`,
+                                            status: getComponentStatus(mem.status)
+                                        });
+                                    });
+                                }
+
+                                // Add Ports
+                                if (slot.module.ports && slot.module.ports.length > 0) {
+                                    slot.module.ports.forEach(port => {
+                                        const portNode = {
+                                            name: `Port ${port.id}`,
+                                            type: 'port',
+                                            details: `Port ${port.id}`,
+                                            status: 'ok',
+                                            children: []
+                                        };
+
+                                        // Add interfaces
+                                        if (port.interfaces && port.interfaces.length > 0) {
+                                            port.interfaces.forEach(intf => {
+                                                portNode.children.push({
+                                                    name: intf.name || `Interface ${intf.id}`,
+                                                    type: 'interface',
+                                                    details: `${intf.description || ''} - ${intf.ip_address || 'No IP'}`,
+                                                    status: intf.admin_status ? 'ok' : 'down'
+                                                });
+                                            });
+                                        }
+
+                                        slotNode.children.push(portNode);
+                                    });
+                                }
+                            }
+
+                            chassisNode.children.push(slotNode);
+                        });
+                    }
+
+                    // Add modules directly attached to chassis
+                    if (chassis.modules && chassis.modules.length > 0) {
+                        chassis.modules.forEach(module => {
+                            chassisNode.children.push({
+                                name: module.name || `Module ${module.id}`,
+                                type: 'module',
+                                details: `${module.model || 'Unknown'} - ${module.description || ''}`,
+                                status: getComponentStatus(module.status)
+                            });
+                        });
+                    }
+
+                    // Add power supplies
+                    if (chassis.power_supplies && chassis.power_supplies.length > 0) {
+                        chassis.power_supplies.forEach(psu => {
+                            chassisNode.children.push({
+                                name: psu.name || `PSU ${psu.id}`,
+                                type: 'power',
+                                details: `${psu.model || 'Unknown'}, ${psu.wattage || 'N/A'}W`,
+                                status: getComponentStatus(psu.status)
+                            });
+                        });
+                    }
+
+                    // Add fans
+                    if (chassis.fans && chassis.fans.length > 0) {
+                        chassis.fans.forEach(fan => {
+                            chassisNode.children.push({
+                                name: fan.name || `Fan ${fan.id}`,
+                                type: 'fan',
+                                details: `${fan.description || ''} - ${fan.speed_rpm || 'N/A'} RPM`,
+                                status: getComponentStatus(fan.status)
+                            });
+                        });
+                    }
+
+                    rootNode.children.push(chassisNode);
+                });
+            }
+
+            // Add standalone ports if not under chassis
+            if (physical.ports && physical.ports.length > 0 && 
+                (!physical.chassis || physical.chassis.length === 0)) {
+                physical.ports.forEach(port => {
+                    const portNode = {
+                        name: `Port ${port.id}`,
+                        type: 'port',
+                        details: `Port ${port.id}`,
+                        status: 'ok',
+                        children: []
+                    };
+
+                    if (port.interfaces && port.interfaces.length > 0) {
+                        port.interfaces.forEach(intf => {
+                            portNode.children.push({
+                                name: intf.name || `Interface ${intf.id}`,
+                                type: 'interface',
+                                details: `${intf.description || ''} - ${intf.ip_address || 'No IP'}`,
+                                status: intf.admin_status ? 'ok' : 'down'
+                            });
+                        });
+                    }
+
+                    rootNode.children.push(portNode);
+                });
+            }
+        });
+
+        return rootNode;
+    }
+
+    // Fallback to original mock data generation if no physicals data
+    return generateInventoryData(device);
+}
+
+// Helper function to convert component status to string
+function getComponentStatus(status) {
+    const statusMap = {
+        0: 'unknown',
+        1: 'ok',
+        2: 'warning',
+        3: 'error',
+        4: 'critical',
+        5: 'offline',
+        6: 'not_present'
+    };
+    return statusMap[status] || 'unknown';
+}
+
 async function loadDevices() {
     showLoading('devicesLoading');
     
     try {
-        // Replace with actual API call
-        // const response = await fetch(`${API_BASE_URL}/devices`);
-        // devicesData = await response.json();
+        // Try to fetch data from the REST API endpoint first
+        const apiEndpoint = '/probler/0/NetDev';
+        const bodyParam = '{"text":"select * from NetworkDevice where Id=*", "rootType":"networkdevice", "properties":["*"], "criteria":{"condition":{"comparator":{"left":"id", "oper":"=", "right":"*"}}}, "matchCase":true}';
+
+        console.log('Attempting to fetch devices from API:', apiEndpoint);
         
-        // Sample data - All devices from topology map plus original local devices
+        // Pass the body parameter as URL query parameter for GET request
+        const queryParams = new URLSearchParams({
+            body: bodyParam
+        });
+        
+        const response = await fetch(`${apiEndpoint}?${queryParams}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (response.ok) {
+            const apiData = await response.json();
+            console.log('Successfully fetched device data from API:', apiData);
+            
+            // Convert API response to expected format if needed
+            if (apiData && apiData.list && Array.isArray(apiData.list)) {
+                devicesData = convertApiDataToDeviceFormat(apiData.list);
+                // Store the original API data for detailed views
+                devicesData.forEach((device, index) => {
+                    device.originalApiData = apiData.list[index];
+                });
+                console.log(`Loaded ${devicesData.length} devices from API`);
+                renderDevicesTable();
+                return;
+            }
+        }
+        
+        // If API call fails or returns unexpected data, fall back to mock data
+        console.warn('API call failed or returned unexpected data, falling back to mock data');
+        throw new Error('API call failed, using fallback data');
+        
+    } catch (error) {
+        console.error('Error loading devices from API:', error);
+        console.log('Using fallback mock data');
+        
+        // Show notification to user about fallback
+        if (typeof showNotification === 'function') {
+            showNotification('Unable to connect to device service. Displaying sample data.', 'warning');
+        }
+        
+        // Fallback to original mock data
         devicesData = [
             // Original local devices (updated with consistent naming)
             {
@@ -379,8 +666,6 @@ async function loadDevices() {
         ];
 
         renderDevicesTable();
-    } catch (error) {
-        console.error('Error loading devices:', error);
     } finally {
         hideLoading('devicesLoading');
     }
@@ -566,8 +851,8 @@ function showDeviceDetails(device) {
         </div>
     `;
     
-    // Populate Physical Inventory tab using the existing generateInventoryData function
-    const inventoryData = generateInventoryData(device);
+    // Populate Physical Inventory tab using NetworkDevice.physicals data
+    const inventoryData = generatePhysicalInventoryData(device);
     const treeHtml = `<ul class="tree-node">${createTreeNode(inventoryData)}</ul>`;
     document.getElementById('inventoryContent').innerHTML = treeHtml;
     
@@ -600,5 +885,6 @@ function filterDevices(status) {
 }
 
 function refreshDevices() {
+    console.log('Refreshing device data...');
     loadDevices();
 }
