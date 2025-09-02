@@ -812,6 +812,7 @@ enum DeviceStatus {
   DEVICE_STATUS_WARNING = 3;
   DEVICE_STATUS_CRITICAL = 4;
   DEVICE_STATUS_MAINTENANCE = 5;
+  DEVICE_STATUS_PARTIAL = 6;
 }
 
 enum ComponentStatus {
