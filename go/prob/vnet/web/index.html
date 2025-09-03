@@ -245,15 +245,6 @@
                     <div class="content-grid">
                         <!-- Network Devices Table -->
                         <div class="section visible devices-section" id="devicesSection">
-                            <div class="section-header">
-                                <h2 class="section-title">Network Devices</h2>
-                                <div class="section-header-controls">
-                                    <button class="refresh-btn" onclick="refreshDevices()">🔄 Refresh</button>
-                                    <button class="collapse-btn" onclick="toggleDevicesSection()">
-                                        <span id="devicesToggleIcon">−</span>
-                                    </button>
-                                </div>
-                            </div>
                             <div class="section-content" id="devicesContent">
                                 <div class="loading" id="devicesLoading">
                                     <div class="spinner"></div>
@@ -272,6 +263,9 @@
                                             <span>devices per page</span>
                                         </div>
                                         <div class="table-control-group">
+                                            <button class="refresh-btn" onclick="refreshDevices()" title="Refresh devices">
+                                                🔄 Refresh
+                                            </button>
                                             <button class="clear-filters-btn" onclick="clearAllFilters()" title="Clear all filters">
                                                 🗑️ Clear Filters
                                             </button>

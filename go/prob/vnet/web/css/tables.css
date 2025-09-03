@@ -151,21 +151,42 @@ tr {
     color: #2d2a26;
 }
 
-.clear-filters-btn {
+.clear-filters-btn,
+.devices-table-controls .refresh-btn {
     padding: 6px 12px;
-    background: linear-gradient(145deg, #b85c47 0%, #a04f3c 100%);
-    color: white;
     border: none;
     border-radius: 5px;
     font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.25s ease;
+    height: 32px;
+    min-width: 100px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.clear-filters-btn {
+    background: linear-gradient(145deg, #b85c47 0%, #a04f3c 100%);
+    color: white;
 }
 
 .clear-filters-btn:hover {
     background: linear-gradient(145deg, #a04f3c 0%, #8f4435 100%);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(184, 92, 71, 0.3);
+}
+
+.devices-table-controls .refresh-btn {
+    background: linear-gradient(145deg, #6b8471 0%, #5a6f60 100%);
+    color: white;
+}
+
+.devices-table-controls .refresh-btn:hover {
+    background: linear-gradient(145deg, #5a6f60 0%, #4a5a50 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(107, 132, 113, 0.3);
 }
 
 /* Sortable Column Headers */

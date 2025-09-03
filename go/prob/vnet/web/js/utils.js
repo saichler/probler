@@ -76,10 +76,12 @@ function initializeKeyboardShortcuts() {
             toggleDashboard();
         }
         
-        // Ctrl/Cmd + 1: Toggle devices section
+        // Ctrl/Cmd + 1: Refresh devices (devices section is always visible)
         if ((event.ctrlKey || event.metaKey) && event.key === '1') {
             event.preventDefault();
-            toggleDevicesSection();
+            if (typeof refreshDevices === 'function') {
+                refreshDevices();
+            }
         }
         
         // Ctrl/Cmd + 2: Toggle alarms section

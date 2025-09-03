@@ -2,7 +2,6 @@
 
 // Dashboard visibility state
 let isDashboardVisible = true;
-let isDevicesVisible = false;
 let isAlarmsVisible = true;
 
 function toggleDashboard() {
@@ -28,23 +27,7 @@ function toggleDashboard() {
     }
 }
 
-function toggleDevicesSection() {
-    const devicesSection = document.getElementById('devicesSection');
-    const toggleIcon = document.getElementById('devicesToggleIcon');
-    
-    isDevicesVisible = !isDevicesVisible;
-    
-    if (isDevicesVisible) {
-        devicesSection.className = 'section visible devices-section';
-        toggleIcon.textContent = '−';
-    } else {
-        devicesSection.className = 'section collapsed devices-section';
-        toggleIcon.textContent = '+';
-    }
-    
-    // Save preference
-    saveSectionPreference('devicesVisible', isDevicesVisible);
-}
+// toggleDevicesSection function removed - devices section is always visible
 
 function toggleAlarmsSection() {
     const alarmsSection = document.getElementById('alarmsSection');
@@ -100,21 +83,7 @@ function loadDashboardPreference() {
 function loadSectionPreferences() {
     try {
         if (typeof Storage !== 'undefined') {
-            // Load devices preference
-            const devicesVisible = sessionStorage.getItem('devicesVisible');
-            if (devicesVisible !== null) {
-                isDevicesVisible = devicesVisible === 'true';
-                const devicesSection = document.getElementById('devicesSection');
-                const devicesToggleIcon = document.getElementById('devicesToggleIcon');
-                
-                if (isDevicesVisible) {
-                    devicesSection.className = 'section visible devices-section';
-                    devicesToggleIcon.textContent = '−';
-                } else {
-                    devicesSection.className = 'section collapsed devices-section';
-                    devicesToggleIcon.textContent = '+';
-                }
-            }
+            // Devices section is always visible (no toggle functionality)
             
             // Load alarms preference
             const alarmsVisible = sessionStorage.getItem('alarmsVisible');
