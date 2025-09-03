@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	common.SmoothForSimulators = true
 	res := common2.CreateResources("collector-" + os.Getenv("HOSTNAME"))
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
