@@ -1,6 +1,10 @@
 package common
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/saichler/l8collector/go/collector/common"
 	"github.com/saichler/l8services/go/services/manager"
 	"github.com/saichler/l8types/go/ifs"
@@ -9,9 +13,6 @@ import (
 	"github.com/saichler/l8utils/go/utils/registry"
 	"github.com/saichler/l8utils/go/utils/resources"
 	"github.com/saichler/reflect/go/reflect/introspecting"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 const (
@@ -34,6 +35,7 @@ func CreateResources(alias string) ifs.IResources {
 
 func CreateResources2(alias string, path string) ifs.IResources {
 	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
+	log.SetLogLevel(ifs.Error_Level)
 	res := resources.NewResources(log)
 
 	res.Set(registry.NewRegistry())
