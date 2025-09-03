@@ -43,7 +43,7 @@ function handleLogin(e) {
     // Simulate authentication delay
     setTimeout(() => {
         // Check credentials
-        if (username === 'admin' && password === 'admin') {
+        if (username === 'admin' && password === 'Admin123!') {
             // Success - hide login screen
             sessionStorage.setItem('authenticated', 'true');
             sessionStorage.setItem('username', username);
@@ -105,17 +105,31 @@ function initializeAuth() {
         
         // Focus username field when login screen is shown
         const usernameField = document.getElementById('username');
+        const passwordField = document.getElementById('password');
+        
         if (usernameField) {
             usernameField.focus();
         }
         
-        // Add enter key handling for better UX
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !document.getElementById('loginScreen').classList.contains('hidden')) {
-                if (!document.getElementById('loginBtn').classList.contains('loading')) {
-                    loginForm.dispatchEvent(new Event('submit'));
-                }
+        // Enter key handling - trigger form submission when Enter is pressed
+        const handleEnterKey = (e) => {
+            if (e.key === 'Enter' && !document.getElementById('loginBtn').classList.contains('loading')) {
+                e.preventDefault(); // Prevent any default behavior
+                // Create and dispatch a proper submit event
+                const submitEvent = new Event('submit', { 
+                    bubbles: true, 
+                    cancelable: true 
+                });
+                loginForm.dispatchEvent(submitEvent);
             }
-        });
+        };
+        
+        // Add Enter key listeners to both input fields
+        if (usernameField) {
+            usernameField.addEventListener('keydown', handleEnterKey);
+        }
+        if (passwordField) {
+            passwordField.addEventListener('keydown', handleEnterKey);
+        }
     }
 }
