@@ -139,23 +139,83 @@ function loadSectionPreferences() {
 
 async function loadDashboardStats() {
     try {
-        // Replace with actual API call
-        // const response = await fetch(`${API_BASE_URL}/dashboard/stats`);
-        // const stats = await response.json();
-        
-        // Sample data
-        const stats = {
-            totalDevices: 127,
-            onlineDevices: 123,
-            offlineDevices: 4,
-            criticalAlarms: 2,
-            totalAlarms: 15
-        };
-
+        // Calculate real device statistics from the devicesData array
+        const stats = calculateDeviceStats();
         updateDashboardStats(stats);
     } catch (error) {
         console.error('Error loading dashboard stats:', error);
+        // Fallback to sample data if calculation fails
+        const fallbackStats = {
+            totalDevices: 0,
+            onlineDevices: 0,
+            offlineDevices: 0,
+            criticalAlarms: 2,
+            totalAlarms: 15
+        };
+        updateDashboardStats(fallbackStats);
     }
+}
+
+function calculateDeviceStats() {
+    // Access devicesData from devices.js - if not available, return zeros
+    if (typeof devicesData === 'undefined' || !Array.isArray(devicesData)) {
+        console.warn('devicesData not available, returning default stats');
+        return {
+            totalDevices: 0,
+            onlineDevices: 0,
+            offlineDevices: 0,
+            criticalAlarms: 2,
+            totalAlarms: 15
+        };
+    }
+
+    const totalDevices = devicesData.length;
+    let onlineDevices = 0;
+    let offlineDevices = 0;
+    let warningDevices = 0;
+    let criticalDevices = 0;
+    let partialDevices = 0;
+    let maintenanceDevices = 0;
+
+    devicesData.forEach(device => {
+        switch (device.status.toLowerCase()) {
+            case 'online':
+                onlineDevices++;
+                break;
+            case 'offline':
+                offlineDevices++;
+                break;
+            case 'warning':
+                warningDevices++;
+                break;
+            case 'critical':
+                criticalDevices++;
+                break;
+            case 'partial':
+                partialDevices++;
+                break;
+            case 'maintenance':
+                maintenanceDevices++;
+                break;
+            default:
+                // Unknown status - count as offline for safety
+                offlineDevices++;
+        }
+    });
+
+    console.log(`Dashboard Stats: Total=${totalDevices}, Online=${onlineDevices}, Offline=${offlineDevices}, Warning=${warningDevices}, Critical=${criticalDevices}, Partial=${partialDevices}, Maintenance=${maintenanceDevices}`);
+
+    return {
+        totalDevices: totalDevices,
+        onlineDevices: onlineDevices,
+        offlineDevices: offlineDevices,
+        warningDevices: warningDevices,
+        criticalDevices: criticalDevices,
+        partialDevices: partialDevices,
+        maintenanceDevices: maintenanceDevices,
+        criticalAlarms: 2, // Keep existing alarm data for now
+        totalAlarms: 15
+    };
 }
 
 function updateDashboardStats(stats) {

@@ -2,6 +2,12 @@
 
 // Sample data for demonstration (replace with API calls)
 let devicesData = [];
+let filteredDevicesData = [];
+let currentPage = 1;
+let devicesPerPage = 25;
+let currentSortColumn = null;
+let currentSortDirection = 'asc';
+let columnFilters = {};
 
 // Convert API NetworkDevice data to the expected device format
 function convertApiDataToDeviceFormat(apiDevices) {
@@ -10,13 +16,13 @@ function convertApiDataToDeviceFormat(apiDevices) {
         
         return {
             id: equipmentInfo.device_id || index + 1,
-            name: equipmentInfo.sys_name || `Device-${index + 1}`,
-            ipAddress: equipmentInfo.ip_address || 'Unknown',
+            name: equipmentInfo.sysName || `Device-${index + 1}`,
+            ipAddress: equipmentInfo.ipAddress || 'Unknown',
             type: getDeviceTypeString(equipmentInfo.deviceType) || 'Unknown',
             location: equipmentInfo.location || 'Unknown Location',
             latitude: equipmentInfo.latitude || 0,
             longitude: equipmentInfo.longitude || 0,
-            status: getDeviceStatusString(equipmentInfo.device_status) || 'unknown',
+            status: getDeviceStatusString(equipmentInfo.deviceStatus) || 'unknown',
             cpuUsage: Math.floor(Math.random() * 100), // Placeholder - would come from performance metrics
             memoryUsage: Math.floor(Math.random() * 100), // Placeholder - would come from performance metrics
             uptime: equipmentInfo.uptime || 'Unknown',
@@ -53,7 +59,8 @@ function getDeviceStatusString(deviceStatus) {
         2: 'offline', 
         3: 'warning',
         4: 'critical',
-        5: 'maintenance'
+        5: 'maintenance',
+        6: 'partial'
     };
     return statusMap[deviceStatus] || 'unknown';
 }
@@ -311,6 +318,10 @@ async function loadDevices() {
                 });
                 console.log(`Loaded ${devicesData.length} devices from API`);
                 renderDevicesTable();
+                // Update dashboard stats with new device data
+                if (typeof loadDashboardStats === 'function') {
+                    loadDashboardStats();
+                }
                 return;
             }
         }
@@ -696,16 +707,29 @@ async function loadDevices() {
         ];
 
         renderDevicesTable();
+        // Update dashboard stats with fallback device data
+        if (typeof loadDashboardStats === 'function') {
+            loadDashboardStats();
+        }
     } finally {
         hideLoading('devicesLoading');
     }
 }
 
 function renderDevicesTable() {
+    // Apply filters and sorting
+    applyFiltersAndSorting();
+    
     const tbody = document.getElementById('devicesTableBody');
     tbody.innerHTML = '';
 
-    devicesData.forEach(device => {
+    // Calculate pagination
+    const startIndex = (currentPage - 1) * devicesPerPage;
+    const endIndex = startIndex + devicesPerPage;
+    const pageDevices = filteredDevicesData.slice(startIndex, endIndex);
+
+    // Render devices for current page
+    pageDevices.forEach(device => {
         const row = document.createElement('tr');
         row.className = 'device-row';
         row.onclick = () => showDeviceDetails(device);
@@ -730,6 +754,236 @@ function renderDevicesTable() {
 
         tbody.appendChild(row);
     });
+
+    // Update pagination controls
+    updatePaginationControls();
+    
+    // Update device count display
+    updateDeviceCountDisplay();
+}
+
+function applyFiltersAndSorting() {
+    // Start with all devices
+    filteredDevicesData = [...devicesData];
+    
+    // Apply column filters
+    Object.keys(columnFilters).forEach(column => {
+        const filterValue = columnFilters[column].toLowerCase();
+        if (filterValue) {
+            filteredDevicesData = filteredDevicesData.filter(device => {
+                let value = '';
+                switch(column) {
+                    case 'status': value = device.status; break;
+                    case 'name': value = device.name; break;
+                    case 'ipAddress': value = device.ipAddress; break;
+                    case 'type': value = device.type; break;
+                    case 'location': value = device.location; break;
+                    case 'cpuUsage': value = device.cpuUsage.toString(); break;
+                    case 'memoryUsage': value = device.memoryUsage.toString(); break;
+                    case 'uptime': value = device.uptime; break;
+                    case 'lastSeen': value = device.lastSeen; break;
+                }
+                return value.toLowerCase().includes(filterValue);
+            });
+        }
+    });
+    
+    // Apply sorting
+    if (currentSortColumn) {
+        filteredDevicesData.sort((a, b) => {
+            let aValue, bValue;
+            
+            switch(currentSortColumn) {
+                case 'status': aValue = a.status; bValue = b.status; break;
+                case 'name': aValue = a.name; bValue = b.name; break;
+                case 'ipAddress': aValue = a.ipAddress; bValue = b.ipAddress; break;
+                case 'type': aValue = a.type; bValue = b.type; break;
+                case 'location': aValue = a.location; bValue = b.location; break;
+                case 'cpuUsage': aValue = a.cpuUsage; bValue = b.cpuUsage; break;
+                case 'memoryUsage': aValue = a.memoryUsage; bValue = b.memoryUsage; break;
+                case 'uptime': aValue = a.uptime; bValue = b.uptime; break;
+                case 'lastSeen': aValue = new Date(a.lastSeen); bValue = new Date(b.lastSeen); break;
+                default: return 0;
+            }
+            
+            // Handle numeric comparisons
+            if (typeof aValue === 'number' && typeof bValue === 'number') {
+                return currentSortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+            }
+            
+            // Handle date comparisons
+            if (aValue instanceof Date && bValue instanceof Date) {
+                return currentSortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+            }
+            
+            // Handle string comparisons
+            const comparison = aValue.localeCompare(bValue);
+            return currentSortDirection === 'asc' ? comparison : -comparison;
+        });
+    }
+}
+
+function updatePaginationControls() {
+    const totalPages = Math.ceil(filteredDevicesData.length / devicesPerPage);
+    
+    // Remove existing pagination if it exists
+    const existingPagination = document.querySelector('.devices-pagination');
+    if (existingPagination) {
+        existingPagination.remove();
+    }
+    
+    // Create pagination container
+    const paginationContainer = document.createElement('div');
+    paginationContainer.className = 'devices-pagination';
+    
+    // Previous button
+    const prevButton = document.createElement('button');
+    prevButton.className = 'pagination-btn';
+    prevButton.textContent = '‹ Previous';
+    prevButton.disabled = currentPage === 1;
+    prevButton.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderDevicesTable();
+        }
+    };
+    paginationContainer.appendChild(prevButton);
+    
+    // Page numbers
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+    
+    if (startPage > 1) {
+        const firstButton = createPageButton(1);
+        paginationContainer.appendChild(firstButton);
+        if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.className = 'pagination-ellipsis';
+            ellipsis.textContent = '...';
+            paginationContainer.appendChild(ellipsis);
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const pageButton = createPageButton(i);
+        paginationContainer.appendChild(pageButton);
+    }
+    
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.className = 'pagination-ellipsis';
+            ellipsis.textContent = '...';
+            paginationContainer.appendChild(ellipsis);
+        }
+        const lastButton = createPageButton(totalPages);
+        paginationContainer.appendChild(lastButton);
+    }
+    
+    // Next button
+    const nextButton = document.createElement('button');
+    nextButton.className = 'pagination-btn';
+    nextButton.textContent = 'Next ›';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderDevicesTable();
+        }
+    };
+    paginationContainer.appendChild(nextButton);
+    
+    // Insert pagination after the table
+    const tableContainer = document.querySelector('.devices-section .table-container');
+    tableContainer.appendChild(paginationContainer);
+}
+
+function createPageButton(pageNumber) {
+    const button = document.createElement('button');
+    button.className = `pagination-btn ${pageNumber === currentPage ? 'active' : ''}`;
+    button.textContent = pageNumber;
+    button.onclick = () => {
+        currentPage = pageNumber;
+        renderDevicesTable();
+    };
+    return button;
+}
+
+function updateDeviceCountDisplay() {
+    const startIndex = (currentPage - 1) * devicesPerPage;
+    const endIndex = Math.min(startIndex + devicesPerPage, filteredDevicesData.length);
+    
+    // Remove existing count display if it exists
+    const existingCount = document.querySelector('.devices-count');
+    if (existingCount) {
+        existingCount.remove();
+    }
+    
+    // Create count display
+    const countDisplay = document.createElement('div');
+    countDisplay.className = 'devices-count';
+    countDisplay.innerHTML = `
+        <span>Showing ${startIndex + 1}-${endIndex} of ${filteredDevicesData.length} devices</span>
+        ${filteredDevicesData.length !== devicesData.length ? 
+            `<span class="filter-info">(filtered from ${devicesData.length} total)</span>` : ''}
+    `;
+    
+    // Insert count display before the table
+    const tableContainer = document.querySelector('.devices-section .table-container');
+    tableContainer.insertBefore(countDisplay, tableContainer.firstChild);
+}
+
+function sortDevicesByColumn(column) {
+    if (currentSortColumn === column) {
+        // Toggle sort direction if same column
+        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        // New column, start with ascending
+        currentSortColumn = column;
+        currentSortDirection = 'asc';
+    }
+    
+    // Update sort indicators in table headers
+    updateSortIndicators(column);
+    
+    // Reset to first page when sorting
+    currentPage = 1;
+    
+    // Re-render table
+    renderDevicesTable();
+}
+
+function updateSortIndicators(activeColumn) {
+    // Remove existing sort indicators
+    document.querySelectorAll('.sort-indicator').forEach(indicator => {
+        indicator.remove();
+    });
+    
+    // Add sort indicator to active column
+    const headers = document.querySelectorAll('#devicesTable th');
+    headers.forEach((header, index) => {
+        const columns = ['status', 'name', 'ipAddress', 'type', 'location', 'cpuUsage', 'memoryUsage', 'uptime', 'lastSeen'];
+        if (columns[index] === activeColumn) {
+            const indicator = document.createElement('span');
+            indicator.className = 'sort-indicator';
+            indicator.textContent = currentSortDirection === 'asc' ? ' ▲' : ' ▼';
+            header.appendChild(indicator);
+        }
+    });
+}
+
+function filterDevicesByColumn(column, value) {
+    if (value.trim() === '') {
+        delete columnFilters[column];
+    } else {
+        columnFilters[column] = value;
+    }
+    
+    // Reset to first page when filtering
+    currentPage = 1;
+    
+    // Re-render table
+    renderDevicesTable();
 }
 
 function showDeviceDetails(device) {
@@ -917,4 +1171,44 @@ function filterDevices(status) {
 function refreshDevices() {
     console.log('Refreshing device data...');
     loadDevices();
+}
+
+function changeDevicesPerPage(value) {
+    if (value === 'all') {
+        devicesPerPage = filteredDevicesData.length || devicesData.length;
+    } else {
+        const newPerPage = parseInt(value);
+        if (newPerPage > 0) {
+            devicesPerPage = newPerPage;
+        }
+    }
+    
+    // Reset to first page when changing page size
+    currentPage = 1;
+    
+    // Re-render table
+    renderDevicesTable();
+}
+
+function clearAllFilters() {
+    // Clear all column filters
+    columnFilters = {};
+    
+    // Clear all filter input fields
+    document.querySelectorAll('.column-filter').forEach(input => {
+        input.value = '';
+    });
+    
+    // Reset current page
+    currentPage = 1;
+    
+    // Reset per page selector to default
+    const perPageSelect = document.getElementById('devicesPerPageSelect');
+    if (perPageSelect) {
+        perPageSelect.value = '25';
+        devicesPerPage = 25;
+    }
+    
+    // Re-render table
+    renderDevicesTable();
 }

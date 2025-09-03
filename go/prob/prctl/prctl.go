@@ -83,7 +83,7 @@ func main() {
 			commands.AddDevice(cmd3, rc, resources)
 			return
 		} else if cmd2 == "devices" {
-			commands.AddDevices(rc, resources)
+			commands.AddDevices(cmd3, rc, resources)
 			return
 		} else if cmd2 == "cluster" {
 			commands.AddCluster(cmd3, cmd4, rc, resources)

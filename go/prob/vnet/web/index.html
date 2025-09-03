@@ -259,19 +259,95 @@
                                     <div class="spinner"></div>
                                     <div>Loading devices...</div>
                                 </div>
+                                <div class="devices-table-controls">
+                                    <div class="table-controls-row">
+                                        <div class="table-control-group">
+                                            <label>Show:</label>
+                                            <select id="devicesPerPageSelect" class="per-page-select" onchange="changeDevicesPerPage(this.value)">
+                                                <option value="25" selected>25</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                                <option value="all">All</option>
+                                            </select>
+                                            <span>devices per page</span>
+                                        </div>
+                                        <div class="table-control-group">
+                                            <button class="clear-filters-btn" onclick="clearAllFilters()" title="Clear all filters">
+                                                🗑️ Clear Filters
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="table-container">
                                     <table id="devicesTable">
                                         <thead>
-                                            <tr>
-                                                <th>Status</th>
-                                                <th>Device Name</th>
-                                                <th>IP Address</th>
-                                                <th>Type</th>
-                                                <th>Location</th>
-                                                <th>CPU Usage</th>
-                                                <th>Memory Usage</th>
-                                                <th>Uptime</th>
-                                                <th>Last Seen</th>
+                                            <tr class="header-row">
+                                                <th class="sortable" onclick="sortDevicesByColumn('status')">
+                                                    Status
+                                                </th>
+                                                <th class="sortable" onclick="sortDevicesByColumn('name')">
+                                                    Device Name
+                                                </th>
+                                                <th class="sortable" onclick="sortDevicesByColumn('ipAddress')">
+                                                    IP Address
+                                                </th>
+                                                <th class="sortable" onclick="sortDevicesByColumn('type')">
+                                                    Type
+                                                </th>
+                                                <th class="sortable" onclick="sortDevicesByColumn('location')">
+                                                    Location
+                                                </th>
+                                                <th class="sortable" onclick="sortDevicesByColumn('cpuUsage')">
+                                                    CPU Usage
+                                                </th>
+                                                <th class="sortable" onclick="sortDevicesByColumn('memoryUsage')">
+                                                    Memory Usage
+                                                </th>
+                                                <th class="sortable" onclick="sortDevicesByColumn('uptime')">
+                                                    Uptime
+                                                </th>
+                                                <th class="sortable" onclick="sortDevicesByColumn('lastSeen')">
+                                                    Last Seen
+                                                </th>
+                                            </tr>
+                                            <tr class="filter-row">
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter status..." 
+                                                           oninput="filterDevicesByColumn('status', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter name..." 
+                                                           oninput="filterDevicesByColumn('name', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter IP..." 
+                                                           oninput="filterDevicesByColumn('ipAddress', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter type..." 
+                                                           oninput="filterDevicesByColumn('type', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter location..." 
+                                                           oninput="filterDevicesByColumn('location', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter CPU..." 
+                                                           oninput="filterDevicesByColumn('cpuUsage', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter memory..." 
+                                                           oninput="filterDevicesByColumn('memoryUsage', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter uptime..." 
+                                                           oninput="filterDevicesByColumn('uptime', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter date..." 
+                                                           oninput="filterDevicesByColumn('lastSeen', this.value)">
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody id="devicesTableBody">
