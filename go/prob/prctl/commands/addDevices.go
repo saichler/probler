@@ -14,6 +14,10 @@ import (
 func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
 
+	cluster := creates.CreateCluster("/home/saichler/lab.conf", "lab", 0)
+	rc.POST("0/"+devices.ServiceName, "Device", "", "", cluster)
+	time.Sleep(time.Second * 2)
+
 	for i := 1; i <= 19; i++ {
 		device := creates.CreateDevice("10.20.30."+strconv.Itoa(i), 0)
 		resp, err := rc.POST("0/"+devices.ServiceName, "Device",
@@ -26,24 +30,23 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		if ok {
 			resources.Logger().Info("Added ", device.DeviceId, " Successfully")
 		}
-		time.Sleep(time.Millisecond * 500)
+		//time.Sleep(time.Millisecond * 100)
 	}
 	if cmd != "" {
 		ip := 1
 		sub := 10
 		for i := 1; i <= 1000; i++ {
 			device := creates.CreateDevice("30.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
-			resp, err := rc.POST("0/"+devices.ServiceName, "Device",
-				"", "", device)
+			resp, err := rc.POST("0/"+devices.ServiceName, "Device", "", "", device)
 			if err != nil {
 				resources.Logger().Error(err.Error())
 				//return
 			}
 			_, ok := resp.(*types.Device)
 			if ok {
-				resources.Logger().Info("Added ", device.DeviceId, " Successfully")
+				resources.Logger().Info(i, " Added ", device.DeviceId, " Successfully")
 			}
-			time.Sleep(time.Millisecond * 500)
+			//time.Sleep(time.Millisecond * 500)
 			ip++
 			if ip >= 255 {
 				sub++
@@ -51,4 +54,20 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 			}
 		}
 	}
+}
+
+func addSingleDevice(i int, device *types.Device, rc *client.RestClient, resources common2.IResources) error {
+	resp, err := rc.POST("0/"+devices.ServiceName, "Device", "", "", device)
+	if err != nil {
+		resources.Logger().Error(err.Error())
+		//return
+	}
+	_, ok := resp.(*types.Device)
+	if ok {
+		resources.Logger().Info(i, " Added ", device.DeviceId, " Successfully")
+		return nil
+	}
+	err = resources.Logger().Error(i, " Added ", device.DeviceId, " Successfully")
+	time.Sleep(time.Second)
+	return err
 }
