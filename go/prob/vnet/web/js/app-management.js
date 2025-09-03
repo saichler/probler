@@ -33,10 +33,44 @@ function switchApp(appName) {
         }, 100);
     } else if (appName === 'health') {
         // Initialize System Health app
-        if (typeof initServicesApp === 'function') {
-            setTimeout(() => {
-                initServicesApp();
+        console.log('Switching to health app, checking for initServicesApp function...');
+        
+        // Multiple attempts to initialize health app
+        let attempts = 0;
+        const maxAttempts = 5;
+        
+        const tryInitializeHealth = () => {
+            attempts++;
+            console.log(`Health app initialization attempt ${attempts}`);
+            
+            if (typeof window.initServicesApp === 'function') {
+                console.log('initServicesApp function found, calling it...');
+                window.initServicesApp();
+                return true;
+            } else if (typeof window.refreshServices === 'function') {
+                console.log('refreshServices function found, calling it directly...');
+                window.refreshServices();
+                return true;
+            } else {
+                console.log('Services functions not yet available, available functions:', Object.keys(window).filter(k => k.includes('Services') || k.includes('services')));
+                return false;
+            }
+        };
+        
+        // Try immediately
+        if (!tryInitializeHealth()) {
+            // If first attempt fails, try multiple times with delays
+            const retryInterval = setInterval(() => {
+                if (tryInitializeHealth()) {
+                    console.log('Health app successfully initialized on attempt', attempts);
+                    clearInterval(retryInterval);
+                } else if (attempts >= maxAttempts) {
+                    console.error('Failed to initialize health app after', maxAttempts, 'attempts');
+                    clearInterval(retryInterval);
+                }
             }, 100);
+        } else {
+            console.log('Health app initialized immediately');
         }
     } else if (appName === 'kubernetes') {
         // Initialize Kubernetes app

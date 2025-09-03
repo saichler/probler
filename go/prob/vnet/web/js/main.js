@@ -9,12 +9,12 @@ function initializeApp() {
     loadDevices();
     loadAlarms();
     
-    // Set up auto-refresh every 30 seconds
+    // Set up auto-refresh every 5 minutes
     setInterval(() => {
         loadDashboardStats();
         loadDevices();
         loadAlarms();
-    }, 30000);
+    }, 300000);
 }
 
 // Application startup when DOM is ready

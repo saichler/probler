@@ -13,13 +13,14 @@ import (
 
 func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
+
 	for i := 1; i <= 19; i++ {
 		device := creates.CreateDevice("10.20.30."+strconv.Itoa(i), 0)
 		resp, err := rc.POST("0/"+devices.ServiceName, "Device",
 			"", "", device)
 		if err != nil {
 			resources.Logger().Error(err.Error())
-			return
+			//return
 		}
 		_, ok := resp.(*types.Device)
 		if ok {
@@ -36,7 +37,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 				"", "", device)
 			if err != nil {
 				resources.Logger().Error(err.Error())
-				return
+				//return
 			}
 			_, ok := resp.(*types.Device)
 			if ok {

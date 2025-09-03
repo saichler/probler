@@ -1,11 +1,12 @@
 // System Health Management - Professional top equivalent web GUI
 // Fetches data from /0/Health endpoint and displays in FormatTop equivalent format
+console.log('🔧 Starting to load services.js...');
 
 let servicesRefreshInterval = null;
 let currentProcesses = [];
 let currentHealthData = null; // Store original health data
-let currentSortColumn = null;
-let currentSortOrder = "desc";
+let servicesSortColumn = null; // Renamed to avoid conflict with devices.js
+let servicesSortOrder = "desc";
 let isAutoRefreshEnabled = false;
 const REFRESH_INTERVAL = 15000; // 15 seconds
 
@@ -13,6 +14,7 @@ const REFRESH_INTERVAL = 15000; // 15 seconds
 // Initialize health monitoring when app loads
 function initializeServices() {
     console.log('Initializing System Health Monitor...');
+    console.log('About to call refreshServices...');
     refreshServices();
     updateAutoRefreshButton();
 }
@@ -28,6 +30,7 @@ async function refreshServices() {
     hideError();
     
     try {
+        console.log('Making fetch request to /probler/0/Health...');
         const response = await fetch('/probler/0/Health', {
             method: 'GET',
             headers: {
@@ -36,11 +39,14 @@ async function refreshServices() {
             }
         });
         
+        console.log('Fetch response received:', response.status, response.statusText);
+        
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
         const topData = await response.json();
+        console.log('Health data received:', topData);
         
         // Process and display the data
         processServicesData(topData);
@@ -51,6 +57,11 @@ async function refreshServices() {
         showError(`Failed to load health data: ${error.message}`);
     }
 }
+
+// Export immediately after definition  
+window.refreshServices = refreshServices;
+console.log('🔧 Exported refreshServices immediately:', typeof window.refreshServices);
+
 
 // Process the Top data and render the table
 function processServicesData(topData) {
@@ -147,7 +158,7 @@ function renderServicesTable(processes) {
     ];
     
     headerElement.innerHTML = headers.map((h, index) => {
-        const isSorted = currentSortColumn === index;
+        const isSorted = servicesSortColumn === index;
         const sortIndicator = isSorted ? " ↓" : "";
         return `<th style="min-width: ${h.width * 8}px; cursor: pointer; user-select: none; ${isSorted ? "background: linear-gradient(135deg, #dee2e6, #ced4da);" : ""}" onclick="sortProcesses(${index})" title="Click to sort by ${h.text} (descending)">${h.text}${sortIndicator}</th>`;
     }).join("");
@@ -379,6 +390,10 @@ function initServicesApp() {
     initializeServices();
 }
 
+// Export immediately after definition
+window.initServicesApp = initServicesApp;
+console.log('🔧 Exported initServicesApp immediately:', typeof window.initServicesApp);
+
 // Cleanup when switching away from health app
 function cleanupServicesApp() {
     stopAutoRefresh();
@@ -388,7 +403,60 @@ function cleanupServicesApp() {
 window.refreshServices = refreshServices;
 window.toggleAutoRefresh = toggleAutoRefresh;
 window.initServicesApp = initServicesApp;
-window.cleanupServicesApp = cleanupServicesApp;console.log('Services.js loaded');
+window.cleanupServicesApp = cleanupServicesApp;
+
+console.log('Services.js loaded');
+console.log('Exported initServicesApp:', typeof window.initServicesApp);
+console.log('Exported refreshServices:', typeof window.refreshServices);
+
+// Create a diagnostic function to help debug function availability
+window.diagnoseFunctions = function() {
+    console.log('=== FUNCTION DIAGNOSTICS ===');
+    console.log('refreshServices (local):', typeof refreshServices);
+    console.log('window.refreshServices:', typeof window.refreshServices);
+    console.log('initServicesApp (local):', typeof initServicesApp);  
+    console.log('window.initServicesApp:', typeof window.initServicesApp);
+    console.log('All window functions with "Services":', Object.keys(window).filter(k => k.includes('Services')));
+    console.log('All window functions with "refresh":', Object.keys(window).filter(k => k.includes('refresh')));
+    console.log('=============================');
+};
+
+// Also create a direct refresh caller that can be used from anywhere
+window.forceRefreshServices = function() {
+    console.log('forceRefreshServices called');
+    try {
+        if (typeof refreshServices === 'function') {
+            refreshServices();
+        } else if (typeof window.refreshServices === 'function') {
+            window.refreshServices();
+        } else {
+            console.error('No refreshServices function found, attempting manual fetch...');
+            // Direct fetch as last resort
+            fetch('/probler/0/Health')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Direct fetch successful:', data);
+                    if (typeof processServicesData === 'function') {
+                        processServicesData(data);
+                    }
+                })
+                .catch(err => console.error('Direct fetch failed:', err));
+        }
+    } catch (error) {
+        console.error('Error in forceRefreshServices:', error);
+    }
+};
+
+// Ensure functions are available globally (defensive programming)
+if (typeof window.refreshServices !== 'function') {
+    console.error('refreshServices not properly exported, fixing...');
+    window.refreshServices = refreshServices;
+}
+
+if (typeof window.toggleAutoRefresh !== 'function') {
+    console.error('toggleAutoRefresh not properly exported, fixing...');
+    window.toggleAutoRefresh = toggleAutoRefresh;
+}
 
 // Debug: Test manual trigger
 window.testServices = function() {
@@ -461,8 +529,8 @@ function sortProcesses(columnIndex) {
     });
     
     // Update current sort state
-    currentSortColumn = columnIndex;
-    currentSortOrder = "desc";
+    servicesSortColumn = columnIndex;
+    servicesSortOrder = "desc";
     
     console.log("Sorted processes by", field, "- first 3 items:", currentProcesses.slice(0, 3).map(p => ({[field]: p[field]})));
     
