@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -23,16 +24,16 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		resp, err := rc.POST("0/"+devices.ServiceName, "Device",
 			"", "", device)
 		if err != nil {
-			resources.Logger().Error(err.Error())
+			fmt.Println(err.Error())
 			//return
 		}
 		_, ok := resp.(*types.Device)
 		if ok {
-			resources.Logger().Info("Added ", device.DeviceId, " Successfully")
+			fmt.Println("Added ", device.DeviceId, " Successfully")
 		}
 		//time.Sleep(time.Millisecond * 100)
 	}
-	
+
 	if cmd != "" {
 		ip := 1
 		sub := 10
@@ -42,7 +43,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 			for err != nil {
 				err = addSingleDevice(i, device, rc, resources)
 			}
-			resources.Logger().Info(i, " Added ", device.DeviceId, " Successfully")
+			fmt.Println(i, " Added ", device.DeviceId, " Successfully")
 			//time.Sleep(time.Millisecond * 500)
 			ip++
 			if ip >= 255 {
@@ -56,15 +57,15 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 func addSingleDevice(i int, device *types.Device, rc *client.RestClient, resources common2.IResources) error {
 	resp, err := rc.POST("0/"+devices.ServiceName, "Device", "", "", device)
 	if err != nil {
-		resources.Logger().Error(err.Error())
+		fmt.Println(err.Error())
 		//return
 	}
 	_, ok := resp.(*types.Device)
 	if ok {
-		resources.Logger().Info(i, " Added ", device.DeviceId, " Successfully")
+		fmt.Println(i, " Added ", device.DeviceId, " Successfully")
 		return nil
 	}
-	err = resources.Logger().Error(i, " Addeding ", device.DeviceId, " failed")
+	fmt.Println(i, " Addeding ", device.DeviceId, " failed")
 	time.Sleep(time.Second)
 	return err
 }
