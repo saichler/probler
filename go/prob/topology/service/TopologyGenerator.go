@@ -62,14 +62,15 @@ func updateDeviceCoordinates(list *types.NetworkDeviceList, worldCities *WorldCi
 			continue
 		}
 
-		// Look up coordinates using TopologyUtils methods
+		// Look up coordinates using enhanced TopologyUtils methods
 		if worldCities != nil {
-			if lat, lng, found := worldCities.GetCityCoordinates(cityName); found {
+			// Use SmartCityLookup which handles country context
+			if lat, lng, found := worldCities.SmartCityLookup(location); found {
 				device.Equipmentinfo.Latitude = lat
 				device.Equipmentinfo.Longitude = lng
-				fmt.Printf("Updated %s coordinates: %f, %f\n", device.Id, lat, lng)
+				fmt.Printf("Updated %s coordinates: %f, %f (from location: %s)\n", device.Id, lat, lng, location)
 			} else {
-				fmt.Printf("Warning: Could not find coordinates for city: %s\n", cityName)
+				fmt.Printf("Warning: Could not find coordinates for location: %s\n", location)
 			}
 		}
 	}

@@ -26,7 +26,9 @@ type CityCoordinate struct {
 
 // WorldCitiesData holds the loaded city data
 type WorldCitiesData struct {
-	cities map[string]*CityCoordinate // Key: city name (lowercase)
+	cities       map[string]*CityCoordinate   // Key: city name (lowercase) - for simple lookup
+	cityCountry  map[string]*CityCoordinate   // Key: "city,country" (lowercase) - for precise lookup
+	allCities    []*CityCoordinate            // All cities for iteration and ranking
 }
 
 // LoadWorldCities loads the worldcities.csv file from the specified path
@@ -52,6 +54,8 @@ func LoadWorldCities(path string) (*WorldCitiesData, error) {
 
 	// Skip header row
 	cities := make(map[string]*CityCoordinate)
+	cityCountry := make(map[string]*CityCoordinate)
+	var allCities []*CityCoordinate
 
 	for i, record := range records[1:] {
 		if len(record) < 11 {
@@ -84,24 +88,201 @@ func LoadWorldCities(path string) (*WorldCitiesData, error) {
 			ID:         record[10],
 		}
 
-		// Store by both original city name and ASCII version (lowercase for case-insensitive lookup)
-		cities[strings.ToLower(city.City)] = city
-		if city.CityAscii != city.City {
-			cities[strings.ToLower(city.CityAscii)] = city
+		// Add to all cities slice
+		allCities = append(allCities, city)
+
+		// Store by city name (simple lookup) - prioritize larger cities for duplicate names
+		cityNameLower := strings.ToLower(city.City)
+		if existing, exists := cities[cityNameLower]; !exists || isLargerCity(city, existing) {
+			cities[cityNameLower] = city
 		}
+		
+		// Also store ASCII version if different
+		if city.CityAscii != city.City {
+			cityAsciiLower := strings.ToLower(city.CityAscii)
+			if existing, exists := cities[cityAsciiLower]; !exists || isLargerCity(city, existing) {
+				cities[cityAsciiLower] = city
+			}
+		}
+
+		// Store by "city,country" for precise lookup
+		cityCountryKey := strings.ToLower(city.City) + "," + strings.ToLower(city.Country)
+		cityCountry[cityCountryKey] = city
+		
+		// Also store ASCII version with country
+		if city.CityAscii != city.City {
+			cityCountryAsciiKey := strings.ToLower(city.CityAscii) + "," + strings.ToLower(city.Country)
+			cityCountry[cityCountryAsciiKey] = city
+		}
+
+		// Store by "city,iso2" for country code lookup
+		cityIso2Key := strings.ToLower(city.City) + "," + strings.ToLower(city.ISO2)
+		cityCountry[cityIso2Key] = city
+
+		// Store by "city,iso3" for 3-letter country code lookup
+		cityIso3Key := strings.ToLower(city.City) + "," + strings.ToLower(city.ISO3)
+		cityCountry[cityIso3Key] = city
 	}
 
-	return &WorldCitiesData{cities: cities}, nil
+	return &WorldCitiesData{
+		cities:      cities,
+		cityCountry: cityCountry,
+		allCities:   allCities,
+	}, nil
 }
 
-// GetCityCoordinates returns the latitude and longitude for a given city name
-// Returns (latitude, longitude, found) where found indicates if the city was found
+// isLargerCity compares two cities and returns true if the first city is larger/more important
+func isLargerCity(city1, city2 *CityCoordinate) bool {
+	// Priority order: capital status, then population
+	if city1.Capital == "primary" && city2.Capital != "primary" {
+		return true
+	}
+	if city2.Capital == "primary" && city1.Capital != "primary" {
+		return false
+	}
+	
+	// Compare by population (assuming population string represents relative size)
+	pop1, err1 := strconv.ParseFloat(city1.Population, 64)
+	pop2, err2 := strconv.ParseFloat(city2.Population, 64)
+	
+	if err1 == nil && err2 == nil {
+		return pop1 > pop2
+	}
+	
+	// If population comparison fails, prefer admin capitals
+	if city1.Capital == "admin" && city2.Capital != "admin" {
+		return true
+	}
+	
+	return false
+}
+
+// GetCityCoordinates returns coordinates for a city name (simple lookup, prefers larger cities for duplicate names)
 func (wcd *WorldCitiesData) GetCityCoordinates(cityName string) (float64, float64, bool) {
 	city, exists := wcd.cities[strings.ToLower(cityName)]
 	if !exists {
 		return 0, 0, false
 	}
 	return city.Latitude, city.Longitude, true
+}
+
+// GetCityCoordinatesWithCountry returns coordinates for a city with country context
+// This method should be preferred for precise lookups
+func (wcd *WorldCitiesData) GetCityCoordinatesWithCountry(cityName, country string) (float64, float64, bool) {
+	if country == "" {
+		// Fallback to simple lookup if no country provided
+		return wcd.GetCityCoordinates(cityName)
+	}
+	
+	// Try multiple country lookup formats
+	lookupKeys := []string{
+		strings.ToLower(cityName) + "," + strings.ToLower(country),
+		strings.ToLower(cityName) + "," + strings.ToLower(country),  // Full country name
+	}
+	
+	// Add common country code variations
+	countryLower := strings.ToLower(country)
+	switch countryLower {
+	case "usa", "united states", "us", "america":
+		lookupKeys = append(lookupKeys, 
+			strings.ToLower(cityName)+",united states",
+			strings.ToLower(cityName)+",us")
+	case "uk", "united kingdom", "britain", "england", "scotland", "wales":
+		lookupKeys = append(lookupKeys, 
+			strings.ToLower(cityName)+",united kingdom",
+			strings.ToLower(cityName)+",uk")
+	case "germany", "deutschland", "de":
+		lookupKeys = append(lookupKeys, 
+			strings.ToLower(cityName)+",germany",
+			strings.ToLower(cityName)+",de")
+	}
+	
+	// Try all lookup variations
+	for _, key := range lookupKeys {
+		if city, exists := wcd.cityCountry[key]; exists {
+			return city.Latitude, city.Longitude, true
+		}
+	}
+	
+	// Fallback to simple city name lookup
+	return wcd.GetCityCoordinates(cityName)
+}
+
+// SmartCityLookup performs intelligent city coordinate lookup with country context extraction
+func (wcd *WorldCitiesData) SmartCityLookup(location string) (float64, float64, bool) {
+	if location == "" {
+		return 0, 0, false
+	}
+	
+	// Parse location string for city and country information
+	cityName, country := parseLocationString(location)
+	
+	if country != "" {
+		// Use country-aware lookup if country information is available
+		lat, lng, found := wcd.GetCityCoordinatesWithCountry(cityName, country)
+		if found {
+			return lat, lng, true
+		}
+	}
+	
+	// Fallback to simple city name lookup
+	return wcd.GetCityCoordinates(cityName)
+}
+
+// parseLocationString extracts city and country from various location string formats
+func parseLocationString(location string) (city, country string) {
+	location = strings.TrimSpace(location)
+	
+	// Handle comma-separated format: "Boston, MA, USA" or "Boston, USA"
+	if strings.Contains(location, ",") {
+		parts := strings.Split(location, ",")
+		if len(parts) >= 2 {
+			city = strings.TrimSpace(parts[0])
+			// Use the last part as country (skip state/region)
+			country = strings.TrimSpace(parts[len(parts)-1])
+			return
+		}
+	}
+	
+	// Handle dash-separated format: "Boston-DC-01" - extract city part
+	if strings.Contains(location, "-") {
+		parts := strings.Split(location, "-")
+		for _, part := range parts {
+			part = strings.TrimSpace(part)
+			// Skip common technical prefixes/suffixes
+			if !isLocationSuffix(part) && len(part) > 2 {
+				city = part
+				break
+			}
+		}
+		if city == "" && len(parts) > 0 {
+			city = strings.TrimSpace(parts[0])
+		}
+		return
+	}
+	
+	// Default: use the whole string as city name
+	city = location
+	return
+}
+
+// isLocationSuffix checks if a string part is a common location suffix to skip
+func isLocationSuffix(part string) bool {
+	partLower := strings.ToLower(part)
+	suffixes := []string{"dc", "data", "center", "rack", "server", "node", "sw", "rt", "fw", "gw"}
+	
+	for _, suffix := range suffixes {
+		if strings.Contains(partLower, suffix) {
+			return true
+		}
+	}
+	
+	// Check if it's a number or technical identifier
+	if _, err := strconv.Atoi(part); err == nil {
+		return true
+	}
+	
+	return false
 }
 
 // GetCityInfo returns the complete CityCoordinate information for a given city name
@@ -132,7 +313,7 @@ func (wcd *WorldCitiesData) SearchCitiesByCountry(country string) []*CityCoordin
 
 // GetTotalCities returns the total number of unique cities loaded
 func (wcd *WorldCitiesData) GetTotalCities() int {
-	return len(wcd.cities)
+	return len(wcd.allCities)
 }
 
 // GetAllCityNames returns a slice of all city names (for debugging/listing purposes)
