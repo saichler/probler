@@ -38,7 +38,7 @@ func (ts *TopologyService) Post(elements ifs.IElements, vnic ifs.IVNic) ifs.IEle
 	if ok {
 		ts.networkTopology = generateTopology(list)
 	}
-	return nil
+	return object.New(nil, &types2.Empty{})
 }
 
 // Put implements ifs.IServiceHandler
@@ -78,8 +78,8 @@ func (ts *TopologyService) TransactionMethod() ifs.ITransactionMethod {
 
 // WebService implements ifs.IServiceHandler
 func (ts *TopologyService) WebService() ifs.IWebService {
-	ws := web.New(ServiceName, ServiceArea, nil,
-		nil, nil, nil, nil, nil, nil, nil,
+	ws := web.New(ServiceName, ServiceArea, &types2.Empty{},
+		&types2.Empty{}, nil, nil, nil, nil, nil, nil,
 		&types2.Empty{}, &types.NetworkTopology{})
 	return ws
 }

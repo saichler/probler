@@ -58,6 +58,7 @@ func startWebServer() {
 	nic.Resources().Registry().Register(&types3.Top{})
 	nic.Resources().Registry().Register(&types3.Empty{})
 	nic.Resources().Registry().Register(&types4.CJob{})
+	nic.Resources().Registry().Register(&types2.NetworkTopology{})
 
 	hs, ok := nic.Resources().Services().ServiceHandler(health.ServiceName, 0)
 	if ok {
