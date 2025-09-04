@@ -223,6 +223,8 @@ message NetworkTopology {
   TopologyHealth health_status = 8;
   repeated NetworkRegion regions = 9;
   string last_updated = 10;
+  // Topology UI state and visualization settings
+  TopologyViewState view_state = 11;
 }
 
 message NetworkNode {
@@ -239,6 +241,8 @@ message NetworkNode {
   NodeMetrics metrics = 11;
   string region = 12;
   uint32 tier = 13;
+  // SVG rendering coordinates for topology visualization
+  TopologyRenderingInfo rendering_info = 14;
 }
 
 message NetworkLink {
@@ -257,6 +261,8 @@ message NetworkLink {
   string uptime = 13;
   double error_rate = 14;
   double availability_percent = 15;
+  // Enhanced link properties for topology display
+  LinkDisplayProperties display_properties = 16;
 }
 
 message NetworkEdge {
@@ -1047,6 +1053,33 @@ enum RecommendationPriority {
   RECOMMENDATION_PRIORITY_URGENT = 4;
 }
 
+// New enums for topology UI support
+enum LinkVisualStatus {
+  LINK_VISUAL_UNKNOWN = 0;
+  LINK_VISUAL_NORMAL = 1;
+  LINK_VISUAL_WARNING = 2;
+  LINK_VISUAL_ERROR = 3;
+  LINK_VISUAL_CRITICAL = 4;
+  LINK_VISUAL_INACTIVE = 5;
+  LINK_VISUAL_CONGESTED = 6;
+}
+
+enum FlowDirection {
+  FLOW_DIRECTION_UNKNOWN = 0;
+  FLOW_DIRECTION_BIDIRECTIONAL = 1;
+  FLOW_DIRECTION_TO_TARGET = 2;
+  FLOW_DIRECTION_TO_SOURCE = 3;
+  FLOW_DIRECTION_NO_FLOW = 4;
+}
+
+enum TopologyGroupingType {
+  GROUPING_TYPE_UNKNOWN = 0;
+  GROUPING_TYPE_EQUAL = 1;
+  GROUPING_TYPE_RANGE = 2;
+  GROUPING_TYPE_PATTERN = 3;
+  GROUPING_TYPE_CUSTOM = 4;
+}
+
 // Additional message for RegionHealth
 message RegionHealth {
   HealthStatus status = 1;
@@ -1057,6 +1090,148 @@ message RegionHealth {
   uint32 failed_links = 6;
   repeated HealthAlert alerts = 7;
   string last_assessment = 8;
+}
+
+// Topology Rendering and UI State Messages
+message TopologyRenderingInfo {
+  // SVG coordinates for rendering on topology map
+  double svg_x = 1;
+  double svg_y = 2;
+  // Device visual properties
+  string icon_type = 3;
+  string icon_color = 4;
+  double icon_size = 5;
+  // Hover information for UI
+  TopologyHoverInfo hover_info = 6;
+  // Device tier for visual hierarchy
+  uint32 network_tier = 7;
+  // CSS classes for styling
+  repeated string css_classes = 8;
+}
+
+message TopologyHoverInfo {
+  string display_name = 1;
+  string device_type_display = 2;
+  string status_display = 3;
+  string location_display = 4;
+  string coordinates_display = 5;
+  repeated TopologyInfoItem additional_info = 6;
+}
+
+message TopologyInfoItem {
+  string label = 1;
+  string value = 2;
+  string format = 3; // text, badge, status, etc.
+}
+
+message LinkDisplayProperties {
+  // Visual styling for link rendering
+  string line_color = 1;
+  double line_width = 2;
+  string line_style = 3; // solid, dashed, dotted
+  // Link animation properties
+  bool animated = 4;
+  double animation_speed = 5;
+  // Link status visual indicators
+  LinkVisualStatus visual_status = 6;
+  // Traffic flow direction indicators
+  bool show_direction = 7;
+  FlowDirection primary_flow = 8;
+}
+
+message TopologyViewState {
+  // Map viewport settings
+  TopologyViewport viewport = 1;
+  // Display preferences
+  TopologyDisplaySettings display_settings = 2;
+  // Current filter and selection state
+  TopologyFilterState filter_state = 3;
+  // Last user interaction timestamp
+  string last_interaction = 4;
+}
+
+message TopologyViewport {
+  // Current zoom level (1.0 = 100%)
+  double zoom_level = 1;
+  // Pan offset coordinates
+  double pan_x = 2;
+  double pan_y = 3;
+  // Center point of the viewport
+  GeographicCoordinates center_point = 4;
+  // Viewport bounds
+  ViewportBounds bounds = 5;
+}
+
+message ViewportBounds {
+  double min_x = 1;
+  double min_y = 2;
+  double max_x = 3;
+  double max_y = 4;
+  // Geographic bounds
+  GeographicCoordinates north_east = 5;
+  GeographicCoordinates south_west = 6;
+}
+
+message TopologyDisplaySettings {
+  // Link visibility toggle
+  bool links_visible = 1;
+  // Node label visibility
+  bool show_node_labels = 2;
+  // Link label visibility
+  bool show_link_labels = 3;
+  // Show performance metrics overlay
+  bool show_metrics_overlay = 4;
+  // Color scheme for nodes and links
+  TopologyColorScheme color_scheme = 5;
+  // Node grouping preferences
+  TopologyGrouping grouping = 6;
+}
+
+message TopologyColorScheme {
+  // Device status colors
+  map<string, string> status_colors = 1;
+  // Device type colors
+  map<string, string> device_type_colors = 2;
+  // Link status colors
+  map<string, string> link_status_colors = 3;
+  // Background and UI colors
+  string background_color = 4;
+  string grid_color = 5;
+}
+
+message TopologyGrouping {
+  // Group nodes by region/location
+  bool group_by_region = 1;
+  // Group nodes by device type
+  bool group_by_type = 2;
+  // Group nodes by status
+  bool group_by_status = 3;
+  // Custom grouping rules
+  repeated TopologyGroupingRule custom_rules = 4;
+}
+
+message TopologyGroupingRule {
+  string rule_name = 1;
+  string field_name = 2;
+  TopologyGroupingType grouping_type = 3;
+  repeated string group_values = 4;
+}
+
+message TopologyFilterState {
+  // Node filters
+  repeated string visible_node_types = 1;
+  repeated string visible_node_statuses = 2;
+  repeated string visible_regions = 3;
+  // Link filters
+  repeated string visible_link_types = 4;
+  repeated string visible_link_statuses = 5;
+  // Search and selection
+  string search_query = 6;
+  repeated string selected_nodes = 7;
+  repeated string selected_links = 8;
+  // Date/time filters
+  string time_range_start = 9;
+  string time_range_end = 10;
 }
 
 // Entity MIB Physical Class enumeration from RFC 4133
