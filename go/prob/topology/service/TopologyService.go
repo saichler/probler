@@ -61,8 +61,10 @@ func (this *TopologyService) Post(elements ifs.IElements, vnic ifs.IVNic) ifs.IE
 		vnic.Resources().Logger().Info("Generating Network Topology")
 		topo := generateTopology(list)
 		topo.TopologyId = "topo"
-		this.cache.Put("topo", topo, false)
-
+		_, err := this.cache.Put("topo", topo, false)
+		if err != nil {
+			vnic.Resources().Logger().Error("Cache error: ", err.Error())
+		}
 	}
 	return object.New(nil, &types2.Empty{})
 }
@@ -90,6 +92,9 @@ func (this *TopologyService) GetCopy(elements ifs.IElements, vnic ifs.IVNic) ifs
 // Get implements ifs.IServiceHandler
 func (this *TopologyService) Get(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	topo := this.cache.Get("topo")
+	if topo == nil {
+		vnic.Resources().Logger().Error("No Topology")
+	}
 	return object.New(nil, topo)
 }
 
