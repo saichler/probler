@@ -62,13 +62,22 @@ func updateDeviceCoordinates(list *types.NetworkDeviceList, worldCities *WorldCi
 			continue
 		}
 
-		// Look up coordinates using enhanced TopologyUtils methods
+		// Look up coordinates using enhanced TopologyUtils methods with SVG support
 		if worldCities != nil {
-			// Use SmartCityLookup which handles country context
-			if lat, lng, found := worldCities.SmartCityLookup(location); found {
+			// Use SmartCityLookupWithSVG which handles country context and calculates SVG coordinates
+			if lat, lng, svgX, svgY, found := worldCities.SmartCityLookupWithSVG(location); found {
 				device.Equipmentinfo.Latitude = lat
 				device.Equipmentinfo.Longitude = lng
-				fmt.Printf("Updated %s coordinates: %f, %f (from location: %s)\n", device.Id, lat, lng, location)
+				
+				// TODO: Set SVG coordinates in TopologyRenderingInfo when protobuf is regenerated
+				// This will be available after running protoc on the updated inventory.proto
+				// device.Equipmentinfo.RenderingInfo = &types.TopologyRenderingInfo{
+				//     SvgX: svgX,
+				//     SvgY: svgY,
+				// }
+				
+				fmt.Printf("Updated %s coordinates: lat=%.4f, lng=%.4f, svgX=%.2f, svgY=%.2f (from location: %s)\n", 
+					device.Id, lat, lng, svgX, svgY, location)
 			} else {
 				fmt.Printf("Warning: Could not find coordinates for location: %s\n", location)
 			}
