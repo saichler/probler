@@ -11,6 +11,7 @@ import (
 
 func main() {
 	resources := common.CreateResources("topo-" + os.Getenv("HOSTNAME"))
+	resources.Logger().SetLogLevel(ifs.Info_Level)
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Start()

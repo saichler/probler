@@ -24,6 +24,7 @@ type TopologyService struct {
 func (this *TopologyService) Activate(serviceName string, serviceArea byte,
 	r ifs.IResources, l ifs.IServiceCacheListener, args ...interface{}) error {
 	r.Introspector().Inspect(&types.NetworkTopology{})
+	r.Introspector().Inspect(&types.NetworkDevice{})
 	this.cache = dcache.NewDistributedCache(ServiceName, ServiceArea, "NetworkTopology", "TopologyId", l, r)
 	r.Logger().Info("Activated Topology on ", serviceName, " area ", serviceArea)
 	return nil
@@ -39,8 +40,20 @@ func (this *TopologyService) Post(elements ifs.IElements, vnic ifs.IVNic) ifs.IE
 	gen := this.cache.Get("topo")
 	if gen == nil {
 		vnic.Resources().Logger().Info("Requesting Device Data")
-		data := vnic.RoundRobinRequest(common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX, ifs.GET, &types2.Empty{})
+		q, e := object.NewQuery("select * from NetworkDevice where Id=*", vnic.Resources())
+		if e != nil {
+			return object.New(vnic.Resources().Logger().Error("Query error: ", e.Error()), nil)
+		}
+
+		pq := q.PQuery()
+		data := vnic.ProximityRequest(common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX, ifs.GET, pq)
+
+		if data.Error() != nil {
+			return object.New(vnic.Resources().Logger().Error("Data error: ", data.Error().Error()), nil)
+		}
+
 		list, ok := data.Element().(*types.NetworkDeviceList)
+
 		if ok {
 			vnic.Resources().Logger().Info("Generating Network Topology")
 			topo := generateTopology(list)

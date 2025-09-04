@@ -16,7 +16,7 @@ func GetTopo(rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
 
 	resp, err := rc.POST("0/"+service.ServiceName, "Empty", "", "", &types.Empty{})
-
+	return
 	time.Sleep(time.Second * 5)
 
 	resp, err = rc.GET("0/"+service.ServiceName, "NetworkTopology", "", "", &types.Empty{})
