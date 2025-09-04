@@ -341,6 +341,21 @@ func adjustForCountryBoundaries(svgCoord SVGCoordinate, latitude, longitude floa
 	return svgCoord
 }
 
+// scaleToTopologyApp scales coordinates from world.svg (2000x857) to topology app viewing area (1000x500)
+func scaleToTopologyApp(worldSVGCoord SVGCoordinate) SVGCoordinate {
+	// Scale from world.svg dimensions (2000x857) to topology app dimensions (1000x500)
+	// X: 2000 -> 1000 (scale factor 0.5)
+	// Y: 857 -> 500 (scale factor ~0.584)
+	
+	scaleFactorX := 1000.0 / 2000.0  // 0.5
+	scaleFactorY := 500.0 / 857.0    // ~0.584
+	
+	return SVGCoordinate{
+		X: math.Round((worldSVGCoord.X * scaleFactorX) * 100) / 100,
+		Y: math.Round((worldSVGCoord.Y * scaleFactorY) * 100) / 100,
+	}
+}
+
 // getPreciseCoordinates returns manually curated precise coordinates for known locations
 func getPreciseCoordinates() map[string]SVGCoordinate {
 	return map[string]SVGCoordinate{
@@ -386,7 +401,8 @@ func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordina
 	// Check for precise coordinates first (for known major cities)
 	deviceKey := fmt.Sprintf("%.4f_%.4f", latitude, longitude)
 	if preciseCoord, exists := getPreciseCoordinates()[deviceKey]; exists {
-		return preciseCoord
+		// Scale precise coordinates to topology app dimensions (1000x500)
+		return scaleToTopologyApp(preciseCoord)
 	}
 
 	mapInfo := wcd.svgMapInfo
@@ -426,7 +442,10 @@ func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordina
 	// Apply boundary adjustments to ensure coordinates fall on land within country boundaries
 	adjustedCoord := adjustForCountryBoundaries(initialCoord, latitude, longitude, mapInfo)
 
-	return adjustedCoord
+	// Scale coordinates from world.svg (2000x857) to topology app viewing area (1000x500)
+	scaledCoord := scaleToTopologyApp(adjustedCoord)
+
+	return scaledCoord
 }
 
 // GetCityCoordinates returns coordinates for a city name (simple lookup, prefers larger cities for duplicate names)
@@ -652,9 +671,9 @@ func (wcd *WorldCitiesData) TestCoordinateConversion() {
 		{"Amsterdam (precise)", 52.3676, 4.9041},    // Test precise lookup
 	}
 
-	fmt.Println("Testing coordinate conversion with boundary adjustments:")
-	fmt.Println("City | Lat | Lng | SVG-X | SVG-Y | Source")
-	fmt.Println("-----|-----|-----|-------|-------|-------")
+	fmt.Println("Testing coordinate conversion with boundary adjustments and topology app scaling:")
+	fmt.Println("City | Lat | Lng | Topo-X | Topo-Y | Source")
+	fmt.Println("-----|-----|-----|--------|--------|-------")
 
 	for _, city := range testCities {
 		svgCoord := wcd.LatLngToSVG(city.lat, city.lng)
@@ -663,12 +682,14 @@ func (wcd *WorldCitiesData) TestCoordinateConversion() {
 		deviceKey := fmt.Sprintf("%.4f_%.4f", city.lat, city.lng)
 		var source string
 		if _, exists := getPreciseCoordinates()[deviceKey]; exists {
-			source = "Precise"
+			source = "Precise+Scaled"
 		} else {
-			source = "Calculated+Adjusted"
+			source = "Calc+Adj+Scaled"
 		}
 
 		fmt.Printf("%s | %.2f | %.2f | %.1f | %.1f | %s\n",
 			city.name, city.lat, city.lng, svgCoord.X, svgCoord.Y, source)
 	}
+	
+	fmt.Println("\nCoordinates are now scaled for topology app viewing area (1000x500)")
 }
