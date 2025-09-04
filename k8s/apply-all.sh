@@ -12,3 +12,5 @@ sleep 2
 kubectl apply -f orm.yaml
 sleep 2
 kubectl apply -f webui.yaml
+sleep 2
+kubectl apply -f topo.yaml

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	common2 "github.com/saichler/l8types/go/ifs"
@@ -16,7 +17,7 @@ func GetTopo(rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
 
 	resp, err := rc.POST("0/"+service.ServiceName, "Empty", "", "", &types.Empty{})
-	return
+
 	time.Sleep(time.Second * 5)
 
 	resp, err = rc.GET("0/"+service.ServiceName, "NetworkTopology", "", "", &types.Empty{})
@@ -30,4 +31,5 @@ func GetTopo(rc *client.RestClient, resources common2.IResources) {
 		return
 	}
 	fmt.Println(string(jsn))
+	os.WriteFile("/tmp/topo.json", jsn, 0777)
 }

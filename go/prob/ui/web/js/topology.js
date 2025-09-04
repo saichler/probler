@@ -63,8 +63,125 @@ function latLngToSVG(latitude, longitude) {
     return { x: Math.round(x), y: Math.round(y) };
 }
 
-function initializeTopology() {
-    // Network devices with coordinates calculated from their actual latitude/longitude
+// Load topology data from API
+async function loadTopologyData() {
+    try {
+        showNotification('🔄 Loading topology data...', 'info');
+        
+        const response = await fetch('/probler/0/Topol', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const topologyData = await response.json();
+        console.log('Loaded topology data:', topologyData);
+        
+        return topologyData;
+    } catch (error) {
+        console.error('Failed to load topology data:', error);
+        showNotification('❌ Failed to load topology data. Using mock data.', 'error');
+        return null;
+    }
+}
+
+// Convert NetworkTopology JSON to internal format
+function processTopologyData(networkTopology) {
+    if (!networkTopology || !networkTopology.nodes) {
+        console.warn('Invalid topology data structure');
+        return { devices: [], links: [] };
+    }
+    
+    const devices = [];
+    const links = [];
+    
+    // Process nodes from NetworkTopology
+    networkTopology.nodes.forEach(node => {
+        if (!node.nodeId) return; // Skip nodes without ID
+        
+        const device = {
+            id: node.nodeId,
+            name: node.name || node.nodeId,
+            type: convertNodeTypeToDeviceType(node.nodeType),
+            status: convertNodeStatusToDeviceStatus(node.status),
+            location: node.location || 'Unknown',
+            latitude: node.latitude || node.coordinates?.latitude || 0,
+            longitude: node.longitude || node.coordinates?.longitude || 0
+        };
+        
+        // Convert lat/lng to SVG coordinates
+        const coords = latLngToSVG(device.latitude, device.longitude);
+        device.x = coords.x;
+        device.y = coords.y;
+        
+        devices.push(device);
+    });
+    
+    // Process edges to create links
+    if (networkTopology.edges) {
+        networkTopology.edges.forEach(edge => {
+            if (!edge.sourceNode || !edge.targetNode) return;
+            
+            const link = {
+                from: edge.sourceNode,
+                to: edge.targetNode,
+                status: convertEdgeStatusToLinkStatus(edge.status),
+                bandwidth: edge.properties?.label || 'Unknown'
+            };
+            
+            links.push(link);
+        });
+    }
+    
+    console.log(`Processed ${devices.length} devices and ${links.length} links`);
+    return { devices, links };
+}
+
+// Convert node type from protobuf enum to internal format
+function convertNodeTypeToDeviceType(nodeType) {
+    const typeMapping = {
+        'NETWORK_NODE_TYPE_ROUTER': 'router',
+        'NETWORK_NODE_TYPE_SWITCH': 'switch',
+        'NETWORK_NODE_TYPE_FIREWALL': 'firewall',
+        'NETWORK_NODE_TYPE_SERVER': 'server',
+        'NETWORK_NODE_TYPE_LOAD_BALANCER': 'load_balancer',
+        'NETWORK_NODE_TYPE_GATEWAY': 'gateway'
+    };
+    return typeMapping[nodeType] || 'router';
+}
+
+// Convert node status from protobuf enum to internal format
+function convertNodeStatusToDeviceStatus(nodeStatus) {
+    const statusMapping = {
+        'NODE_STATUS_ONLINE': 'online',
+        'NODE_STATUS_OFFLINE': 'offline',
+        'NODE_STATUS_WARNING': 'warning',
+        'NODE_STATUS_CRITICAL': 'critical',
+        'NODE_STATUS_MAINTENANCE': 'maintenance',
+        'NODE_STATUS_UNREACHABLE': 'offline'
+    };
+    return statusMapping[nodeStatus] || 'online';
+}
+
+// Convert edge status from protobuf enum to internal format
+function convertEdgeStatusToLinkStatus(edgeStatus) {
+    const statusMapping = {
+        'EDGE_STATUS_UP': 'active',
+        'EDGE_STATUS_DOWN': 'inactive',
+        'EDGE_STATUS_WARNING': 'warning',
+        'EDGE_STATUS_CRITICAL': 'inactive',
+        'EDGE_STATUS_FLAPPING': 'warning'
+    };
+    return statusMapping[edgeStatus] || 'active';
+}
+
+// Fallback mock data (original data structure preserved)
+function getMockTopologyData() {
     const deviceLocations = [
         // North America
         { id: 'ny-core-01', name: 'NY-CORE-01', type: 'router', status: 'online', location: 'New York, USA', latitude: 40.7128, longitude: -74.0060 },
@@ -78,27 +195,42 @@ function initializeTopology() {
         { id: 'frankfurt-core-02', name: 'FRA-CORE-02', type: 'router', status: 'online', location: 'Frankfurt, Germany', latitude: 50.1109, longitude: 8.6821 },
         { id: 'amsterdam-srv-01', name: 'AMS-SRV-01', type: 'server', status: 'online', location: 'Amsterdam, Netherlands', latitude: 52.3676, longitude: 4.9041 },
         
-        // Asia
+        // Asia  
         { id: 'tokyo-core-01', name: 'TYO-CORE-01', type: 'router', status: 'online', location: 'Tokyo, Japan', latitude: 35.6762, longitude: 139.6503 },
-        { id: 'singapore-sw-01', name: 'SIN-SW-01', type: 'switch', status: 'online', location: 'Singapore', latitude: 1.3521, longitude: 103.8198 },
-        { id: 'mumbai-fw-01', name: 'MUM-FW-01', type: 'firewall', status: 'offline', location: 'Mumbai, India', latitude: 19.0760, longitude: 72.8777 },
-        { id: 'seoul-srv-01', name: 'SEO-SRV-01', type: 'server', status: 'warning', location: 'Seoul, South Korea', latitude: 37.5665, longitude: 126.9780 },
-        
-        // Australia
-        { id: 'sydney-core-01', name: 'SYD-CORE-01', type: 'router', status: 'online', location: 'Sydney, Australia', latitude: -33.8688, longitude: 151.2093 },
-        { id: 'melbourne-sw-01', name: 'MEL-SW-01', type: 'switch', status: 'online', location: 'Melbourne, Australia', latitude: -37.8136, longitude: 144.9631 },
-        
-        // South America
-        { id: 'saopaulo-core-01', name: 'SAO-CORE-01', type: 'router', status: 'online', location: 'São Paulo, Brazil', latitude: -23.5505, longitude: -46.6333 },
-        { id: 'bogota-fw-01', name: 'BOG-FW-01', type: 'firewall', status: 'warning', location: 'Bogotá, Colombia', latitude: 4.7110, longitude: -74.0721 },
-        
-        // Africa
-        { id: 'cairo-sw-01', name: 'CAI-SW-01', type: 'switch', status: 'online', location: 'Cairo, Egypt', latitude: 30.0444, longitude: 31.2357 },
-        { id: 'capetown-srv-01', name: 'CPT-SRV-01', type: 'server', status: 'online', location: 'Cape Town, South Africa', latitude: -33.9249, longitude: 18.4241 }
+        { id: 'singapore-sw-01', name: 'SIN-SW-01', type: 'switch', status: 'online', location: 'Singapore', latitude: 1.3521, longitude: 103.8198 }
     ];
     
-    // Convert lat/lng to SVG coordinates
-    networkDevicesData = deviceLocations.map(device => {
+    const deviceLinks = [
+        { from: 'ny-core-01', to: 'london-core-01', status: 'active', bandwidth: '100Gbps' },
+        { from: 'la-core-02', to: 'tokyo-core-01', status: 'active', bandwidth: '100Gbps' },
+        { from: 'london-core-01', to: 'frankfurt-core-02', status: 'active', bandwidth: '100Gbps' },
+        { from: 'tokyo-core-01', to: 'singapore-sw-01', status: 'active', bandwidth: '40Gbps' },
+        { from: 'ny-core-01', to: 'chicago-sw-01', status: 'active', bandwidth: '40Gbps' }
+    ];
+    
+    return { devices: deviceLocations, links: deviceLinks };
+}
+
+// Initialize topology with API or mock data
+async function initializeTopology() {
+    console.log('Initializing topology...');
+    
+    // Try to load data from API first
+    const apiData = await loadTopologyData();
+    let topologyData;
+    
+    if (apiData) {
+        // Use API data
+        topologyData = processTopologyData(apiData);
+        showNotification('✓ Topology data loaded from API', 'success');
+    } else {
+        // Fallback to mock data
+        topologyData = getMockTopologyData();
+        console.log('Using fallback mock data');
+    }
+    
+    // Convert devices with SVG coordinates
+    networkDevicesData = topologyData.devices.map(device => {
         const coords = latLngToSVG(device.latitude, device.longitude);
         return {
             ...device,
@@ -106,43 +238,13 @@ function initializeTopology() {
             y: coords.y
         };
     });
-
-    // Network links between devices
-    networkLinksData = [
-        // Trans-Atlantic
-        { from: 'ny-core-01', to: 'london-core-01', status: 'active', bandwidth: '100Gbps' },
-        { from: 'ny-core-01', to: 'frankfurt-core-02', status: 'active', bandwidth: '100Gbps' },
-        
-        // Trans-Pacific
-        { from: 'la-core-02', to: 'tokyo-core-01', status: 'active', bandwidth: '100Gbps' },
-        { from: 'la-core-02', to: 'sydney-core-01', status: 'active', bandwidth: '40Gbps' },
-        
-        // European backbone
-        { from: 'london-core-01', to: 'frankfurt-core-02', status: 'active', bandwidth: '100Gbps' },
-        { from: 'london-core-01', to: 'paris-sw-01', status: 'active', bandwidth: '40Gbps' },
-        { from: 'frankfurt-core-02', to: 'amsterdam-srv-01', status: 'active', bandwidth: '40Gbps' },
-        
-        // Asian routes
-        { from: 'tokyo-core-01', to: 'singapore-sw-01', status: 'active', bandwidth: '40Gbps' },
-        { from: 'tokyo-core-01', to: 'seoul-srv-01', status: 'warning', bandwidth: '10Gbps' },
-        { from: 'singapore-sw-01', to: 'mumbai-fw-01', status: 'inactive', bandwidth: '10Gbps' },
-        
-        // North American backbone  
-        { from: 'ny-core-01', to: 'chicago-sw-01', status: 'active', bandwidth: '40Gbps' },
-        { from: 'chicago-sw-01', to: 'la-core-02', status: 'active', bandwidth: '40Gbps' },
-        { from: 'toronto-fw-01', to: 'ny-core-01', status: 'warning', bandwidth: '10Gbps' },
-        
-        // Regional connections
-        { from: 'sydney-core-01', to: 'melbourne-sw-01', status: 'active', bandwidth: '40Gbps' },
-        { from: 'saopaulo-core-01', to: 'bogota-fw-01', status: 'warning', bandwidth: '10Gbps' },
-        { from: 'cairo-sw-01', to: 'london-core-01', status: 'active', bandwidth: '10Gbps' },
-        { from: 'capetown-srv-01', to: 'cairo-sw-01', status: 'active', bandwidth: '10Gbps' },
-        
-        // Cross-continental
-        { from: 'singapore-sw-01', to: 'sydney-core-01', status: 'active', bandwidth: '40Gbps' },
-        { from: 'frankfurt-core-02', to: 'cairo-sw-01', status: 'active', bandwidth: '10Gbps' }
-    ];
-
+    
+    // Set links data
+    networkLinksData = topologyData.links;
+    
+    console.log(`Initialized topology with ${networkDevicesData.length} devices and ${networkLinksData.length} links`);
+    
+    // Render the topology
     renderTopology();
 }
 
@@ -472,13 +574,43 @@ function updateTopologyStats() {
 }
 
 // Topology control functions
-function refreshTopology() {
+async function refreshTopology() {
     showNotification('🔄 Refreshing topology data...', 'info');
-    // Simulate data refresh
-    setTimeout(() => {
+    
+    try {
+        // Reload data from API
+        const apiData = await loadTopologyData();
+        let topologyData;
+        
+        if (apiData) {
+            // Use API data
+            topologyData = processTopologyData(apiData);
+            showNotification('✓ Topology data refreshed from API', 'success');
+        } else {
+            // Fallback to mock data
+            topologyData = getMockTopologyData();
+            showNotification('⚠️ Using fallback mock data', 'warning');
+        }
+        
+        // Update global data
+        networkDevicesData = topologyData.devices.map(device => {
+            const coords = latLngToSVG(device.latitude, device.longitude);
+            return {
+                ...device,
+                x: coords.x,
+                y: coords.y
+            };
+        });
+        
+        networkLinksData = topologyData.links;
+        
+        // Re-render topology with new data
         renderTopology();
-        showNotification('✓ Topology data refreshed', 'success');
-    }, 1500);
+        
+    } catch (error) {
+        console.error('Failed to refresh topology data:', error);
+        showNotification('❌ Failed to refresh topology data', 'error');
+    }
 }
 
 // Force update topology stats (can be called externally if needed)
