@@ -23,7 +23,6 @@ spec:
       labels:
         app: probler-topo
     spec:
-      hostNetwork: true
       containers:
         - name: probler-topo
           image: saichler/probler-topo:latest

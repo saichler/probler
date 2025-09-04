@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/saichler/l8services/go/services/dcache"
 	"github.com/saichler/l8srlz/go/serialize/object"
 	"github.com/saichler/l8types/go/ifs"
 	types2 "github.com/saichler/l8types/go/types"
@@ -16,68 +17,80 @@ const (
 )
 
 type TopologyService struct {
-	networkTopology *types.NetworkTopology
+	cache ifs.IDistributedCache
 }
 
 // Activate implements ifs.IServiceHandler
-func (ts *TopologyService) Activate(serviceName string, serviceArea byte,
+func (this *TopologyService) Activate(serviceName string, serviceArea byte,
 	r ifs.IResources, l ifs.IServiceCacheListener, args ...interface{}) error {
+	r.Introspector().Inspect(&types.NetworkTopology{})
+	this.cache = dcache.NewDistributedCache(ServiceName, ServiceArea, "NetworkTopology", "TopologyId", l, r)
 	r.Logger().Info("Activated Topology on ", serviceName, " area ", serviceArea)
 	return nil
 }
 
 // DeActivate implements ifs.IServiceHandler
-func (ts *TopologyService) DeActivate() error {
+func (this *TopologyService) DeActivate() error {
 	return nil
 }
 
 // Post implements ifs.IServiceHandler
-func (ts *TopologyService) Post(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
-	data := vnic.RoundRobinRequest(common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX, ifs.GET, &types2.Empty{})
-	list, ok := data.Element().(*types.NetworkDeviceList)
-	if ok {
-		ts.networkTopology = generateTopology(list)
+func (this *TopologyService) Post(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
+	gen := this.cache.Get("topo")
+	if gen == nil {
+		vnic.Resources().Logger().Info("Requesting Device Data")
+		data := vnic.RoundRobinRequest(common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX, ifs.GET, &types2.Empty{})
+		list, ok := data.Element().(*types.NetworkDeviceList)
+		if ok {
+			vnic.Resources().Logger().Info("Generating Network Topology")
+			topo := generateTopology(list)
+			topo.TopologyId = "topo"
+			this.cache.Put("topo", topo, false)
+		} else {
+			vnic.Resources().Logger().Error("Something went wrong...")
+		}
 	}
 	return object.New(nil, &types2.Empty{})
 }
 
 // Put implements ifs.IServiceHandler
-func (ts *TopologyService) Put(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
+func (this *TopologyService) Put(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
 
 // Patch implements ifs.IServiceHandler
-func (ts *TopologyService) Patch(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
+func (this *TopologyService) Patch(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
 
 // Delete implements ifs.IServiceHandler
-func (ts *TopologyService) Delete(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
+func (this *TopologyService) Delete(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
 
 // GetCopy implements ifs.IServiceHandler
-func (ts *TopologyService) GetCopy(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
+func (this *TopologyService) GetCopy(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
 
 // Get implements ifs.IServiceHandler
-func (ts *TopologyService) Get(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
-	return object.New(nil, ts.networkTopology)
+func (this *TopologyService) Get(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
+	topo := this.cache.Get("topo")
+	return object.New(nil, topo)
 }
 
 // Failed implements ifs.IServiceHandler
-func (ts *TopologyService) Failed(elements ifs.IElements, vnic ifs.IVNic, message *ifs.Message) ifs.IElements {
+func (this *TopologyService) Failed(elements ifs.IElements, vnic ifs.IVNic, message *ifs.Message) ifs.IElements {
 	return nil
 }
 
 // TransactionMethod implements ifs.IServiceHandler
-func (ts *TopologyService) TransactionMethod() ifs.ITransactionMethod {
+func (this *TopologyService) TransactionMethod() ifs.ITransactionMethod {
 	return nil
 }
 
 // WebService implements ifs.IServiceHandler
-func (ts *TopologyService) WebService() ifs.IWebService {
+func (this *TopologyService) WebService() ifs.IWebService {
 	ws := web.New(ServiceName, ServiceArea, &types2.Empty{},
 		&types2.Empty{}, nil, nil, nil, nil, nil, nil,
 		&types2.Empty{}, &types.NetworkTopology{})

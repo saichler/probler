@@ -52,13 +52,17 @@ func main() {
 	resources.Introspector().Inspect(&types5.NetworkDeviceList{})
 	resources.Introspector().Inspect(&types2.Empty{})
 	resources.Introspector().Inspect(&types2.Query{})
+	resources.Introspector().Inspect(&types5.NetworkTopology{})
 
 	rc, err := client.NewRestClient(clientConfig, resources)
 	if err != nil {
 		panic(err)
 	}
 	if cmd1 == "get" {
-		if cmd2 == "cluster" {
+		if cmd2 == "topo" {
+			commands.GetTopo(rc, resources)
+			return
+		} else if cmd2 == "cluster" {
 			commands.GetCluster(rc, resources, cmd3)
 			return
 		} else if cmd2 == "device" {
