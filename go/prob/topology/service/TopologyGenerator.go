@@ -79,7 +79,7 @@ func updateDeviceCoordinates(list *types.NetworkDeviceList, worldCities *WorldCi
 func extractCityFromLocation(location string) string {
 	// Handle common location formats:
 	// "New York, USA"
-	// "London, UK" 
+	// "London, UK"
 	// "Data Center A - New York"
 	// "NYC-DC-01"
 

@@ -52,16 +52,17 @@ func (this *TopologyService) Post(elements ifs.IElements, vnic ifs.IVNic) ifs.IE
 			return object.New(vnic.Resources().Logger().Error("Data error: ", data.Error().Error()), nil)
 		}
 
-		list, ok := data.Element().(*types.NetworkDeviceList)
+		list := &types.NetworkDeviceList{List: make([]*types.NetworkDevice, 0)}
 
-		if ok {
-			vnic.Resources().Logger().Info("Generating Network Topology")
-			topo := generateTopology(list)
-			topo.TopologyId = "topo"
-			this.cache.Put("topo", topo, false)
-		} else {
-			vnic.Resources().Logger().Error("Something went wrong...")
+		for _, elem := range data.Elements() {
+			list.List = append(list.List, elem.(*types.NetworkDevice))
 		}
+
+		vnic.Resources().Logger().Info("Generating Network Topology")
+		topo := generateTopology(list)
+		topo.TopologyId = "topo"
+		this.cache.Put("topo", topo, false)
+
 	}
 	return object.New(nil, &types2.Empty{})
 }
