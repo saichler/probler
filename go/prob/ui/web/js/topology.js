@@ -15,8 +15,11 @@ function latLngToSVG(latitude, longitude) {
     // Precise coordinates calculated from actual SVG country boundary analysis
     // Each device positioned accurately within its respective country boundaries
     
+    console.log(`🧮 Client-side coordinate calculation for lat=${latitude}, lng=${longitude}`);
+    
     // Create lookup key for precise positioning
     const deviceKey = `${latitude.toFixed(4)}_${longitude.toFixed(4)}`;
+    console.log(`   Looking up precise coordinates for key: "${deviceKey}"`);
     
     // Precise coordinates based on actual world.svg country boundary analysis
     const preciseCoordinates = {
@@ -53,14 +56,22 @@ function latLngToSVG(latitude, longitude) {
     
     // Return precise coordinates if available
     if (preciseCoordinates[deviceKey]) {
+        console.log(`   ✅ Found precise coordinates: x=${preciseCoordinates[deviceKey].x}, y=${preciseCoordinates[deviceKey].y}`);
         return preciseCoordinates[deviceKey];
     }
+    
+    console.log(`   ❌ No precise coordinates found, using Web Mercator fallback`);
     
     // Fallback to generic Web Mercator projection for unlisted coordinates
     const x = ((longitude + 180) / 360) * 1000;
     const latRad = latitude * Math.PI / 180;
     const mercatorY = Math.log(Math.tan((Math.PI / 4) + (latRad / 2)));
     const y = 500 - ((mercatorY + Math.PI) / (2 * Math.PI)) * 500;
+    
+    console.log(`   📐 Web Mercator calculation:`);
+    console.log(`      X: ((${longitude} + 180) / 360) * 1000 = ${x}`);
+    console.log(`      Y: 500 - ((mercatorY + π) / (2π)) * 500 = ${y}`);
+    console.log(`      Final client coordinates: x=${Math.round(x)}, y=${Math.round(y)}`);
     
     return { x: Math.round(x), y: Math.round(y) };
 }
@@ -82,7 +93,27 @@ async function loadTopologyData() {
         }
         
         const topologyData = await response.json();
-        console.log('Loaded topology data:', topologyData);
+        console.log('=== TOPOLOGY DATA DEBUG ===');
+        console.log('Raw topology data received from server:', JSON.stringify(topologyData, null, 2));
+        
+        if (topologyData && topologyData.nodes) {
+            console.log(`Found ${topologyData.nodes.length} nodes in topology data`);
+            topologyData.nodes.slice(0, 3).forEach((node, idx) => {
+                console.log(`Node ${idx + 1} sample:`, {
+                    nodeId: node.nodeId,
+                    name: node.name,
+                    location: node.location,
+                    latitude: node.latitude,
+                    longitude: node.longitude,
+                    renderingInfo: node.renderingInfo,
+                    hasRenderingInfo: !!node.renderingInfo,
+                    svgCoordinates: node.renderingInfo ? {
+                        svgX: node.renderingInfo.svgX,
+                        svgY: node.renderingInfo.svgY
+                    } : 'No rendering info'
+                });
+            });
+        }
         
         return topologyData;
     } catch (error) {
@@ -103,7 +134,8 @@ function processTopologyData(networkTopology) {
     const links = [];
     
     // Process nodes from NetworkTopology
-    networkTopology.nodes.forEach(node => {
+    console.log('=== COORDINATE PROCESSING DEBUG ===');
+    networkTopology.nodes.forEach((node, idx) => {
         if (!node.nodeId) return; // Skip nodes without ID
         
         const device = {
@@ -116,18 +148,40 @@ function processTopologyData(networkTopology) {
             longitude: node.longitude || node.coordinates?.longitude || 0
         };
         
+        console.log(`\n--- Processing Node ${idx + 1}: ${device.name} ---`);
+        console.log(`Raw node data:`, {
+            nodeId: node.nodeId,
+            name: node.name,
+            location: node.location,
+            latitude: node.latitude,
+            longitude: node.longitude,
+            coordinates: node.coordinates,
+            renderingInfo: node.renderingInfo
+        });
+        
         // Use server-calculated SVG coordinates if available, otherwise fallback to client calculation
         if (node.renderingInfo && node.renderingInfo.svgX !== undefined && node.renderingInfo.svgY !== undefined) {
             // Use server-calculated SVG coordinates
             device.x = node.renderingInfo.svgX;
             device.y = node.renderingInfo.svgY;
-            console.log(`Using server SVG coordinates for ${device.name}: x=${device.x}, y=${device.y}`);
+            console.log(`✅ Using server SVG coordinates for ${device.name}:`);
+            console.log(`   Server coordinates: svgX=${node.renderingInfo.svgX}, svgY=${node.renderingInfo.svgY}`);
+            console.log(`   Final device position: x=${device.x}, y=${device.y}`);
+            console.log(`   Geographic context: lat=${device.latitude}, lng=${device.longitude}, location="${device.location}"`);
         } else {
             // Fallback to client-side calculation for backward compatibility
             const coords = latLngToSVG(device.latitude, device.longitude);
             device.x = coords.x;
             device.y = coords.y;
-            console.log(`Using client SVG coordinates for ${device.name}: x=${device.x}, y=${device.y}`);
+            console.log(`⚠️ Using client SVG coordinates for ${device.name}:`);
+            console.log(`   Input: lat=${device.latitude}, lng=${device.longitude}`);
+            console.log(`   Client calculated: x=${coords.x}, y=${coords.y}`);
+            console.log(`   Final device position: x=${device.x}, y=${device.y}`);
+            console.log(`   Reason: renderingInfo missing or incomplete:`, {
+                hasRenderingInfo: !!node.renderingInfo,
+                svgX: node.renderingInfo?.svgX,
+                svgY: node.renderingInfo?.svgY
+            });
         }
         
         devices.push(device);
@@ -280,13 +334,30 @@ function renderNetworkDevices() {
     
     devicesContainer.innerHTML = '';
 
-    networkDevicesData.forEach(device => {
+    console.log('=== DEVICE RENDERING DEBUG ===');
+    console.log(`Rendering ${networkDevicesData.length} devices to SVG`);
+
+    networkDevicesData.forEach((device, idx) => {
         const deviceElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         deviceElement.setAttribute('cx', device.x);
         deviceElement.setAttribute('cy', device.y);
         deviceElement.setAttribute('r', 8);
         deviceElement.setAttribute('class', `network-device device-${device.type} device-status-${device.status}`);
         deviceElement.setAttribute('data-device-id', device.id);
+
+        console.log(`Rendering device ${idx + 1}: ${device.name} at SVG position cx=${device.x}, cy=${device.y}`);
+        
+        // Check if coordinates are within expected bounds
+        const withinBounds = device.x >= 0 && device.x <= 1000 && device.y >= 0 && device.y <= 500;
+        if (!withinBounds) {
+            console.warn(`⚠️ Device ${device.name} coordinates (${device.x}, ${device.y}) are outside expected bounds (0-1000, 0-500)`);
+        }
+        
+        // Check if device might be positioned in water/sea areas
+        const possiblyInSea = (device.x < 50 || device.x > 950 || device.y < 50 || device.y > 450);
+        if (possiblyInSea) {
+            console.warn(`🌊 Device ${device.name} at (${device.x}, ${device.y}) might be positioned in sea/ocean area (near boundaries)`);
+        }
 
         // Add hover and click events
         deviceElement.addEventListener('mouseenter', (e) => showDeviceHover(e, device));
@@ -300,6 +371,16 @@ function renderNetworkDevices() {
 
         devicesContainer.appendChild(deviceElement);
     });
+
+    console.log('=== SVG VIEWPORT DEBUG ===');
+    const svgElement = devicesContainer.closest('svg');
+    if (svgElement) {
+        const viewBox = svgElement.getAttribute('viewBox');
+        const width = svgElement.getAttribute('width') || svgElement.clientWidth;
+        const height = svgElement.getAttribute('height') || svgElement.clientHeight;
+        console.log(`SVG viewport: width=${width}, height=${height}, viewBox="${viewBox}"`);
+        console.log(`Devices container:`, devicesContainer.tagName, devicesContainer.id);
+    }
 }
 
 function renderNetworkLinks() {
