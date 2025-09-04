@@ -124,18 +124,38 @@ func generateNetworkNodes(list *types.NetworkDeviceList, worldCities *WorldCitie
 			continue
 		}
 
-		// Create rendering info with SVG coordinates if location is available
+		// Create rendering info with SVG coordinates
 		var renderingInfo *types.TopologyRenderingInfo
-		if device.Equipmentinfo.Location != "" {
-			// Calculate SVG coordinates for this device using its lat/lng
-			if worldCities != nil {
-				if _, _, svgX, svgY, found := worldCities.SmartCityLookupWithSVG(device.Equipmentinfo.Location); found {
-					renderingInfo = &types.TopologyRenderingInfo{
-						SvgX: svgX,
-						SvgY: svgY,
-					}
-					fmt.Printf("Generated SVG coordinates for node %s: x=%.2f, y=%.2f\n", device.Id, svgX, svgY)
+		if worldCities != nil {
+			var svgX, svgY float64
+			var found bool
+			var source string
+
+			// Try location-based lookup first
+			if device.Equipmentinfo.Location != "" {
+				_, _, svgX, svgY, found = worldCities.SmartCityLookupWithSVG(device.Equipmentinfo.Location)
+				if found {
+					source = "location"
 				}
+			}
+
+			// Fallback to lat/lng if available and location lookup failed
+			if !found && (device.Equipmentinfo.Latitude != 0 || device.Equipmentinfo.Longitude != 0) {
+				svgCoord := worldCities.LatLngToSVG(device.Equipmentinfo.Latitude, device.Equipmentinfo.Longitude)
+				svgX, svgY = svgCoord.X, svgCoord.Y
+				found = true
+				source = "lat/lng"
+			}
+
+			if found {
+				renderingInfo = &types.TopologyRenderingInfo{
+					SvgX: svgX,
+					SvgY: svgY,
+				}
+				fmt.Printf("Generated SVG coordinates for node %s: x=%.2f, y=%.2f (source: %s)\n", device.Id, svgX, svgY, source)
+			} else {
+				fmt.Printf("No coordinates available for node %s (location: '%s', lat/lng: %.4f,%.4f)\n", 
+					device.Id, device.Equipmentinfo.Location, device.Equipmentinfo.Latitude, device.Equipmentinfo.Longitude)
 			}
 		}
 

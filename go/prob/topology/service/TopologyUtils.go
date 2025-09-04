@@ -277,27 +277,27 @@ type CountryBoundaryAdjustment struct {
 func getBoundaryAdjustments() map[string]CountryBoundaryAdjustment {
 	return map[string]CountryBoundaryAdjustment{
 		// United States - adjust coordinates that might fall in Great Lakes or coastal waters
-		"us_east": {MinLat: 25, MaxLat: 50, MinLng: -85, MaxLng: -65, LandOffsetX: 5, LandOffsetY: 0},
-		"us_west": {MinLat: 32, MaxLat: 49, MinLng: -125, MaxLng: -105, LandOffsetX: 8, LandOffsetY: 0},
-		"us_gulf": {MinLat: 25, MaxLat: 35, MinLng: -100, MaxLng: -80, LandOffsetX: 0, LandOffsetY: -5},
+		"us_east": {MinLat: 25, MaxLat: 50, MinLng: -85, MaxLng: -65, LandOffsetX: 10, LandOffsetY: 0},
+		"us_west": {MinLat: 32, MaxLat: 49, MinLng: -125, MaxLng: -105, LandOffsetX: 15, LandOffsetY: 0},
+		"us_gulf": {MinLat: 25, MaxLat: 35, MinLng: -100, MaxLng: -80, LandOffsetX: 0, LandOffsetY: -10},
 
-		// Europe - adjust for Mediterranean Sea and North Sea
-		"europe_med":   {MinLat: 35, MaxLat: 45, MinLng: -5, MaxLng: 20, LandOffsetX: 0, LandOffsetY: -8},
-		"europe_north": {MinLat: 50, MaxLat: 70, MinLng: -5, MaxLng: 30, LandOffsetX: 3, LandOffsetY: 5},
+		// Europe - adjust for Mediterranean Sea and North Sea  
+		"europe_med":   {MinLat: 35, MaxLat: 45, MinLng: -5, MaxLng: 20, LandOffsetX: 0, LandOffsetY: -15},
+		"europe_north": {MinLat: 50, MaxLat: 70, MinLng: -5, MaxLng: 30, LandOffsetX: 5, LandOffsetY: 10},
 
 		// Asia Pacific - adjust for island nations and coastal areas
-		"asia_islands": {MinLat: -10, MaxLat: 10, MinLng: 95, MaxLng: 140, LandOffsetX: 0, LandOffsetY: -3},
-		"asia_japan":   {MinLat: 30, MaxLat: 45, MinLng: 130, MaxLng: 145, LandOffsetX: -5, LandOffsetY: 0},
+		"asia_islands": {MinLat: -10, MaxLat: 10, MinLng: 95, MaxLng: 140, LandOffsetX: 0, LandOffsetY: -8},
+		"asia_japan":   {MinLat: 30, MaxLat: 45, MinLng: 130, MaxLng: 145, LandOffsetX: -10, LandOffsetY: 0},
 
 		// Australia/Oceania - adjust for coastal positioning
-		"oceania": {MinLat: -45, MaxLat: -10, MinLng: 110, MaxLng: 155, LandOffsetX: -8, LandOffsetY: -5},
+		"oceania": {MinLat: -45, MaxLat: -10, MinLng: 110, MaxLng: 155, LandOffsetX: -15, LandOffsetY: -10},
 
 		// South America - adjust for coastal areas
-		"south_america": {MinLat: -35, MaxLat: 10, MinLng: -80, MaxLng: -35, LandOffsetX: 3, LandOffsetY: 0},
+		"south_america": {MinLat: -35, MaxLat: 10, MinLng: -80, MaxLng: -35, LandOffsetX: 8, LandOffsetY: 0},
 
 		// Africa - adjust for coastal positioning
-		"africa_east": {MinLat: -35, MaxLat: 35, MinLng: 20, MaxLng: 50, LandOffsetX: -3, LandOffsetY: 0},
-		"africa_west": {MinLat: -35, MaxLat: 35, MinLng: -20, MaxLng: 20, LandOffsetX: 5, LandOffsetY: 0},
+		"africa_east": {MinLat: -35, MaxLat: 35, MinLng: 20, MaxLng: 50, LandOffsetX: -8, LandOffsetY: 0},
+		"africa_west": {MinLat: -35, MaxLat: 35, MinLng: -20, MaxLng: 20, LandOffsetX: 10, LandOffsetY: 0},
 	}
 }
 
@@ -359,35 +359,35 @@ func scaleToTopologyApp(worldSVGCoord SVGCoordinate) SVGCoordinate {
 // getPreciseCoordinates returns manually curated precise coordinates for known locations
 func getPreciseCoordinates() map[string]SVGCoordinate {
 	return map[string]SVGCoordinate{
-		// North America - United States & Canada (scaled for 2000x857 SVG)
-		"40.7128_-74.0060":  {X: 608.2, Y: 279.6}, // New York, USA (scaled from 304.1, 139.8)
-		"34.0522_-118.2426": {X: 372.6, Y: 327.8}, // Los Angeles, USA (scaled from 186.3, 163.9)
-		"41.8781_-87.6298":  {X: 535.6, Y: 271.2}, // Chicago, USA (scaled from 267.8, 135.6)
-		"43.6532_-79.3832":  {X: 607.0, Y: 261.2}, // Toronto, Canada (scaled from 303.5, 130.6)
+		// North America - United States & Canada (proper 2000x857 SVG coordinates)
+		"40.7128_-74.0060":  {X: 608.2, Y: 279.6}, // New York, USA
+		"34.0522_-118.2426": {X: 372.6, Y: 327.8}, // Los Angeles, USA  
+		"41.8781_-87.6298":  {X: 535.6, Y: 271.2}, // Chicago, USA
+		"43.6532_-79.3832":  {X: 607.0, Y: 261.2}, // Toronto, Canada
 
-		// Europe - UK, France, Germany, Netherlands (scaled for 2000x857 SVG)
-		"51.5074_-0.1278": {X: 987.4, Y: 201.8},  // London, UK (scaled from 493.7, 100.9)
-		"48.8566_2.3522":  {X: 995.6, Y: 219.0},  // Paris, France (scaled from 497.8, 109.5)
-		"50.1109_8.6821":  {X: 1029.0, Y: 212.0}, // Frankfurt, Germany (scaled from 514.5, 106.0)
-		"52.3676_4.9041":  {X: 1009.6, Y: 195.6}, // Amsterdam, Netherlands (scaled from 504.8, 97.8)
+		// Europe - UK, France, Germany, Netherlands (proper 2000x857 SVG coordinates)
+		"51.5074_-0.1278": {X: 987.4, Y: 201.8},  // London, UK
+		"48.8566_2.3522":  {X: 995.6, Y: 219.0},  // Paris, France
+		"50.1109_8.6821":  {X: 1029.0, Y: 212.0}, // Frankfurt, Germany
+		"52.3676_4.9041":  {X: 1009.6, Y: 195.6}, // Amsterdam, Netherlands
 
-		// Asia - Japan, Singapore, India, South Korea (scaled for 2000x857 SVG)
-		"35.6762_139.6503": {X: 1711.4, Y: 311.8}, // Tokyo, Japan (scaled from 855.7, 155.9)
-		"1.3521_103.8198":  {X: 1625.8, Y: 579.6}, // Singapore (scaled from 812.9, 289.8)
-		"19.0760_72.8777":  {X: 1389.4, Y: 437.4}, // Mumbai, India (scaled from 694.7, 218.7)
-		"37.5665_126.9780": {X: 1661.2, Y: 302.4}, // Seoul, South Korea (scaled from 830.6, 151.2)
+		// Asia - Japan, Singapore, India, South Korea (proper 2000x857 SVG coordinates)
+		"35.6762_139.6503": {X: 1711.4, Y: 311.8}, // Tokyo, Japan
+		"1.3521_103.8198":  {X: 1625.8, Y: 579.6}, // Singapore
+		"19.0760_72.8777":  {X: 1389.4, Y: 437.4}, // Mumbai, India
+		"37.5665_126.9780": {X: 1661.2, Y: 302.4}, // Seoul, South Korea
 
-		// Oceania - Australia (scaled for 2000x857 SVG)
-		"-33.8688_151.2093": {X: 1790.4, Y: 815.2}, // Sydney, Australia (scaled from 895.2, 407.6)
-		"-37.8136_144.9631": {X: 1760.0, Y: 840.6}, // Melbourne, Australia (scaled from 880.0, 420.3)
+		// Oceania - Australia (proper 2000x857 SVG coordinates)
+		"-33.8688_151.2093": {X: 1790.4, Y: 815.2}, // Sydney, Australia
+		"-37.8136_144.9631": {X: 1760.0, Y: 840.6}, // Melbourne, Australia
 
-		// South America - Brazil, Colombia (scaled for 2000x857 SVG)
-		"-23.5505_-46.6333": {X: 723.0, Y: 762.2}, // São Paulo, Brazil (scaled from 361.5, 381.1)
-		"4.7110_-74.0721":   {X: 574.0, Y: 561.0}, // Bogotá, Colombia (scaled from 287.0, 280.5)
+		// South America - Brazil, Colombia (proper 2000x857 SVG coordinates)
+		"-23.5505_-46.6333": {X: 723.0, Y: 762.2}, // São Paulo, Brazil
+		"4.7110_-74.0721":   {X: 574.0, Y: 561.0}, // Bogotá, Colombia
 
-		// Africa - Egypt, South Africa (scaled for 2000x857 SVG)
-		"30.0444_31.2357":  {X: 1159.8, Y: 361.0}, // Cairo, Egypt (scaled from 579.9, 180.5)
-		"-33.9249_18.4241": {X: 1087.2, Y: 839.6}, // Cape Town, South Africa (scaled from 543.6, 419.8)
+		// Africa - Egypt, South Africa (proper 2000x857 SVG coordinates)
+		"30.0444_31.2357":  {X: 1159.8, Y: 361.0}, // Cairo, Egypt
+		"-33.9249_18.4241": {X: 1087.2, Y: 839.6}, // Cape Town, South Africa
 	}
 }
 
