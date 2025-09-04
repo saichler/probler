@@ -120,8 +120,8 @@ func (this *TopologyService) TransactionMethod() ifs.ITransactionMethod {
 
 // WebService implements ifs.IServiceHandler
 func (this *TopologyService) WebService() ifs.IWebService {
-	ws := web.New(ServiceName, ServiceArea, &types2.Empty{},
-		&types2.Empty{}, nil, nil, nil, nil, nil, nil,
+	ws := web.New(ServiceName, ServiceArea, nil,
+		nil, &types2.Empty{}, &types2.Empty{}, nil, nil, nil, nil,
 		&types2.Empty{}, &types.NetworkTopology{})
 	return ws
 }

@@ -17,7 +17,7 @@ func GetTopo(cmd string, rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
 
 	if cmd != "" {
-		rc.POST("0/"+service.ServiceName, "Empty", "", "", &types.Empty{})
+		rc.PUT("0/"+service.ServiceName, "Empty", "", "", &types.Empty{})
 		return
 	}
 
