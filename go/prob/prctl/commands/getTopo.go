@@ -13,14 +13,15 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func GetTopo(rc *client.RestClient, resources common2.IResources) {
+func GetTopo(cmd string, rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
 
-	resp, err := rc.POST("0/"+service.ServiceName, "Empty", "", "", &types.Empty{})
+	if cmd != "" {
+		rc.POST("0/"+service.ServiceName, "Empty", "", "", &types.Empty{})
+		return
+	}
 
-	time.Sleep(time.Second * 5)
-
-	resp, err = rc.GET("0/"+service.ServiceName, "NetworkTopology", "", "", &types.Empty{})
+	resp, err := rc.GET("0/"+service.ServiceName, "NetworkTopology", "", "", &types.Empty{})
 	if err != nil {
 		resources.Logger().Error("Get Error:", err.Error())
 		return

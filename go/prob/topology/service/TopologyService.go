@@ -37,6 +37,21 @@ func (this *TopologyService) DeActivate() error {
 
 // Post implements ifs.IServiceHandler
 func (this *TopologyService) Post(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
+	t, ok := elements.Element().(*types.NetworkTopology)
+	if !ok {
+		return nil
+	}
+	_, err := this.cache.Put(t.TopologyId, t, elements.Notification())
+	if err != nil {
+		vnic.Resources().Logger().Error("Post failed with ", err.Error())
+	} else {
+		vnic.Resources().Logger().Error("Post Success!")
+	}
+	return nil
+}
+
+// Put implements ifs.IServiceHandler
+func (this *TopologyService) Put(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	gen := this.cache.Get("topo")
 	if gen == nil {
 		vnic.Resources().Logger().Info("Requesting Device Data")
@@ -67,11 +82,6 @@ func (this *TopologyService) Post(elements ifs.IElements, vnic ifs.IVNic) ifs.IE
 		}
 	}
 	return object.New(nil, &types2.Empty{})
-}
-
-// Put implements ifs.IServiceHandler
-func (this *TopologyService) Put(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
-	return nil
 }
 
 // Patch implements ifs.IServiceHandler

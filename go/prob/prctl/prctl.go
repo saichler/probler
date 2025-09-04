@@ -60,7 +60,7 @@ func main() {
 	}
 	if cmd1 == "get" {
 		if cmd2 == "topo" {
-			commands.GetTopo(rc, resources)
+			commands.GetTopo(cmd3, rc, resources)
 			return
 		} else if cmd2 == "cluster" {
 			commands.GetCluster(rc, resources, cmd3)
