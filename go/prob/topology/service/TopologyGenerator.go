@@ -69,12 +69,11 @@ func updateDeviceCoordinates(list *types.NetworkDeviceList, worldCities *WorldCi
 				device.Equipmentinfo.Latitude = lat
 				device.Equipmentinfo.Longitude = lng
 				
-				// TODO: Set SVG coordinates in TopologyRenderingInfo when protobuf is regenerated
-				// This will be available after running protoc on the updated inventory.proto
-				// device.Equipmentinfo.RenderingInfo = &types.TopologyRenderingInfo{
-				//     SvgX: svgX,
-				//     SvgY: svgY,
-				// }
+				// Set SVG coordinates in TopologyRenderingInfo (protobuf has been regenerated)
+				device.Equipmentinfo.RenderingInfo = &types.TopologyRenderingInfo{
+					SvgX: svgX,
+					SvgY: svgY,
+				}
 				
 				fmt.Printf("Updated %s coordinates: lat=%.4f, lng=%.4f, svgX=%.2f, svgY=%.2f (from location: %s)\n", 
 					device.Id, lat, lng, svgX, svgY, location)
@@ -149,6 +148,7 @@ func generateNetworkNodes(list *types.NetworkDeviceList) []*types.NetworkNode {
 				FirewallCapable:      device.Equipmentinfo.DeviceType == types.DeviceType_DEVICE_TYPE_FIREWALL,
 				LoadBalancingCapable: device.Equipmentinfo.DeviceType == types.DeviceType_DEVICE_TYPE_LOAD_BALANCER,
 			},
+			RenderingInfo: device.Equipmentinfo.RenderingInfo, // Copy rendering info with SVG coordinates
 		}
 
 		nodes = append(nodes, node)
