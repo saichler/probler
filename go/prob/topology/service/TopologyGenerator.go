@@ -28,7 +28,7 @@ func generateTopology(list *types.NetworkDeviceList) *types.NetworkTopology {
 		TopologyId:   fmt.Sprintf("topology-%d", time.Now().Unix()),
 		Name:         "Generated Network Topology",
 		TopologyType: types.TopologyType_TOPOLOGY_TYPE_PHYSICAL,
-		Nodes:        generateNetworkNodes(list),
+		Nodes:        generateNetworkNodes(list, worldCities),
 		Edges:        generateNetworkEdges(list),
 		Statistics:   generateTopologyStatistics(list),
 		HealthStatus: generateTopologyHealthStatus(list),
@@ -68,12 +68,6 @@ func updateDeviceCoordinates(list *types.NetworkDeviceList, worldCities *WorldCi
 			if lat, lng, svgX, svgY, found := worldCities.SmartCityLookupWithSVG(location); found {
 				device.Equipmentinfo.Latitude = lat
 				device.Equipmentinfo.Longitude = lng
-				
-				// Set SVG coordinates in TopologyRenderingInfo (protobuf has been regenerated)
-				device.Equipmentinfo.RenderingInfo = &types.TopologyRenderingInfo{
-					SvgX: svgX,
-					SvgY: svgY,
-				}
 				
 				fmt.Printf("Updated %s coordinates: lat=%.4f, lng=%.4f, svgX=%.2f, svgY=%.2f (from location: %s)\n", 
 					device.Id, lat, lng, svgX, svgY, location)
@@ -122,12 +116,27 @@ func extractCityFromLocation(location string) string {
 }
 
 // generateNetworkNodes creates NetworkNode objects from NetworkDevices
-func generateNetworkNodes(list *types.NetworkDeviceList) []*types.NetworkNode {
+func generateNetworkNodes(list *types.NetworkDeviceList, worldCities *WorldCitiesData) []*types.NetworkNode {
 	var nodes []*types.NetworkNode
 
 	for _, device := range list.List {
 		if device.Equipmentinfo == nil {
 			continue
+		}
+
+		// Create rendering info with SVG coordinates if location is available
+		var renderingInfo *types.TopologyRenderingInfo
+		if device.Equipmentinfo.Location != "" {
+			// Calculate SVG coordinates for this device using its lat/lng
+			if worldCities != nil {
+				if _, _, svgX, svgY, found := worldCities.SmartCityLookupWithSVG(device.Equipmentinfo.Location); found {
+					renderingInfo = &types.TopologyRenderingInfo{
+						SvgX: svgX,
+						SvgY: svgY,
+					}
+					fmt.Printf("Generated SVG coordinates for node %s: x=%.2f, y=%.2f\n", device.Id, svgX, svgY)
+				}
+			}
 		}
 
 		node := &types.NetworkNode{
@@ -148,7 +157,7 @@ func generateNetworkNodes(list *types.NetworkDeviceList) []*types.NetworkNode {
 				FirewallCapable:      device.Equipmentinfo.DeviceType == types.DeviceType_DEVICE_TYPE_FIREWALL,
 				LoadBalancingCapable: device.Equipmentinfo.DeviceType == types.DeviceType_DEVICE_TYPE_LOAD_BALANCER,
 			},
-			RenderingInfo: device.Equipmentinfo.RenderingInfo, // Copy rendering info with SVG coordinates
+			RenderingInfo: renderingInfo, // Set SVG coordinates for topology visualization
 		}
 
 		nodes = append(nodes, node)
