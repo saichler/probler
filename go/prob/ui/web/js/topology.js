@@ -9,6 +9,8 @@ let panX = 0;
 let panY = 0;
 
 // Convert latitude/longitude to SVG coordinates based on actual world.svg country boundaries
+// NOTE: This function is now primarily used as fallback when server-calculated coordinates aren't available
+// The server (TopologyUtils.go) provides more accurate SVG coordinates based on the actual world.svg file
 function latLngToSVG(latitude, longitude) {
     // Precise coordinates calculated from actual SVG country boundary analysis
     // Each device positioned accurately within its respective country boundaries
@@ -114,10 +116,19 @@ function processTopologyData(networkTopology) {
             longitude: node.longitude || node.coordinates?.longitude || 0
         };
         
-        // Convert lat/lng to SVG coordinates
-        const coords = latLngToSVG(device.latitude, device.longitude);
-        device.x = coords.x;
-        device.y = coords.y;
+        // Use server-calculated SVG coordinates if available, otherwise fallback to client calculation
+        if (node.renderingInfo && node.renderingInfo.svgX !== undefined && node.renderingInfo.svgY !== undefined) {
+            // Use server-calculated SVG coordinates
+            device.x = node.renderingInfo.svgX;
+            device.y = node.renderingInfo.svgY;
+            console.log(`Using server SVG coordinates for ${device.name}: x=${device.x}, y=${device.y}`);
+        } else {
+            // Fallback to client-side calculation for backward compatibility
+            const coords = latLngToSVG(device.latitude, device.longitude);
+            device.x = coords.x;
+            device.y = coords.y;
+            console.log(`Using client SVG coordinates for ${device.name}: x=${device.x}, y=${device.y}`);
+        }
         
         devices.push(device);
     });
@@ -229,14 +240,20 @@ async function initializeTopology() {
         console.log('Using fallback mock data');
     }
     
-    // Convert devices with SVG coordinates
+    // Set devices data (SVG coordinates should already be calculated in processTopologyData)
     networkDevicesData = topologyData.devices.map(device => {
-        const coords = latLngToSVG(device.latitude, device.longitude);
-        return {
-            ...device,
-            x: coords.x,
-            y: coords.y
-        };
+        // If coordinates are already set, use them; otherwise calculate client-side
+        if (device.x !== undefined && device.y !== undefined) {
+            return device;
+        } else {
+            // Fallback calculation for mock data or missing coordinates
+            const coords = latLngToSVG(device.latitude, device.longitude);
+            return {
+                ...device,
+                x: coords.x,
+                y: coords.y
+            };
+        }
     });
     
     // Set links data
@@ -592,14 +609,20 @@ async function refreshTopology() {
             showNotification('⚠️ Using fallback mock data', 'warning');
         }
         
-        // Update global data
+        // Update global data (coordinates should already be calculated in processTopologyData)
         networkDevicesData = topologyData.devices.map(device => {
-            const coords = latLngToSVG(device.latitude, device.longitude);
-            return {
-                ...device,
-                x: coords.x,
-                y: coords.y
-            };
+            // If coordinates are already set, use them; otherwise calculate client-side
+            if (device.x !== undefined && device.y !== undefined) {
+                return device;
+            } else {
+                // Fallback calculation for mock data or missing coordinates
+                const coords = latLngToSVG(device.latitude, device.longitude);
+                return {
+                    ...device,
+                    x: coords.x,
+                    y: coords.y
+                };
+            }
         });
         
         networkLinksData = topologyData.links;
