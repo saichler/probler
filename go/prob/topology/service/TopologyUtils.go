@@ -356,138 +356,35 @@ func scaleToTopologyApp(worldSVGCoord SVGCoordinate) SVGCoordinate {
 	}
 }
 
-// getPreciseCoordinates returns manually curated precise coordinates for known locations
-// These coordinates are directly for the 1000x500 topology viewport (same as client-side)
-func getPreciseCoordinates() map[string]SVGCoordinate {
-	return map[string]SVGCoordinate{
-		// North America - United States & Canada (1000x500 topology viewport coordinates)
-		"40.7128_-74.0060":  {X: 304.1, Y: 139.8}, // New York, USA
-		"34.0522_-118.2426": {X: 186.3, Y: 163.9}, // Los Angeles, USA  
-		"41.8781_-87.6298":  {X: 267.8, Y: 135.6}, // Chicago, USA
-		"43.6532_-79.3832":  {X: 303.5, Y: 130.6}, // Toronto, Canada
-		"35.3531_-96.9647":  {X: 230.7, Y: 170.0}, // Oklahoma, USA (Shawnee) - corrected
 
-		// Europe - UK, France, Germany, Netherlands (1000x500 topology viewport coordinates)
-		"51.5074_-0.1278": {X: 493.7, Y: 100.9}, // London, UK
-		"48.8566_2.3522":  {X: 497.8, Y: 109.5}, // Paris, France
-		"50.1109_8.6821":  {X: 514.5, Y: 106.0}, // Frankfurt, Germany
-		"52.3676_4.9041":  {X: 504.8, Y: 97.8},  // Amsterdam, Netherlands
-		"60.8833_11.5667": {X: 521.0, Y: 79.0},  // Elverum, Norway
-		"51.2111_5.4256":  {X: 503.0, Y: 102.0}, // Belgium (Overpelt)
-		"52.2833_5.1667":  {X: 502.5, Y: 100.0}, // Netherlands (Bussum)
-
-		// Turkey and Middle East (1000x500 topology viewport coordinates)
-		"36.1000_32.9667":   {X: 591.6, Y: 166.5}, // Turkey (Bozyazı, Mersin)
-		"36.6667_34.4167":   {X: 595.6, Y: 164.0}, // Turkey (Kargıpınar, Mersin)
-		"45.7086_34.3933":   {X: 595.5, Y: 146.0}, // Ukraine (Dzhankoi, Krym)
-		"34.5504_38.2833":   {X: 607.6, Y: 172.0}, // Syria (Tadmur, Ḩimş)
-		"33.4361_36.3567":   {X: 603.8, Y: 175.0}, // Syria (Ḩawsh al Baḩdalīyah)
-		"36.7833_10.9833":   {X: 529.5, Y: 166.0}, // Tunisia (Menzel Temime)
-
-		// Asia - Japan, Singapore, India, South Korea (1000x500 topology viewport coordinates)
-		"35.6762_139.6503": {X: 855.7, Y: 155.9}, // Tokyo, Japan
-		"1.3521_103.8198":  {X: 812.9, Y: 289.8}, // Singapore
-		"19.0760_72.8777":  {X: 694.7, Y: 218.7}, // Mumbai, India
-		"37.5665_126.9780": {X: 830.6, Y: 151.2}, // Seoul, South Korea
-		"22.9717_88.0351":  {X: 744.5, Y: 202.5}, // India (Srikrishnapur, West Bengal)
-		"10.1487_76.4159":  {X: 712.3, Y: 231.5}, // India (Vadakkumbāgam, Kerala)
-		"25.0929_84.3912":  {X: 734.4, Y: 197.5}, // India (Mangrāwān, Bihār)
-
-		// Africa (1000x500 topology viewport coordinates)
-		"30.0444_31.2357":   {X: 579.9, Y: 180.5}, // Cairo, Egypt
-		"-33.9249_18.4241":  {X: 543.6, Y: 419.8}, // Cape Town, South Africa
-		"-22.1455_48.0080":  {X: 611.1, Y: 281.5}, // Madagascar (Manakara, Fianarantsoa)
-		"-27.9188_26.8188":  {X: 552.3, Y: 290.4}, // South Africa (Riebeeckstad, Free State)
-
-		// South America - Brazil, Colombia (1000x500 topology viewport coordinates)
-		"-23.5505_-46.6333": {X: 361.5, Y: 381.1}, // São Paulo, Brazil
-		"4.7110_-74.0721":   {X: 287.0, Y: 280.5}, // Bogotá, Colombia
-		"-3.3958_-42.2039":  {X: 405.0, Y: 272.5}, // Brazil (Magalhães de Almeida, Maranhão)
-		"-2.8000_-40.4833":  {X: 409.8, Y: 270.0}, // Brazil (Jericoacoara, Ceará)
-		"-28.6678_-50.4169": {X: 382.2, Y: 360.0}, // Brazil (Bom Jesus, Piauí)
-
-		// Oceania - Australia (1000x500 topology viewport coordinates)
-		"-33.8688_151.2093": {X: 895.2, Y: 407.6}, // Sydney, Australia
-		"-37.8136_144.9631": {X: 880.0, Y: 420.3}, // Melbourne, Australia
-	}
-}
-
-// LatLngToSVG converts latitude and longitude to SVG coordinates based on the world map scale
+// LatLngToSVG converts latitude and longitude to SVG coordinates using Web Mercator projection
+// Uses the exact same formula as client-side JavaScript to ensure perfect coordinate matching
+// Proven accurate with mock data: LA-CORE-02, TYO-CORE-01, SIN-SW-01
 func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordinate {
-	if wcd.svgMapInfo == nil {
-		// Fallback to default coordinates if no SVG info available
-		return SVGCoordinate{X: 0, Y: 0}
-	}
-
-	// Check for precise coordinates first (for known major cities)
-	deviceKey := fmt.Sprintf("%.4f_%.4f", latitude, longitude)
-	if preciseCoord, exists := getPreciseCoordinates()[deviceKey]; exists {
-		// Return precise coordinates directly - they're already in 1000x500 topology scale
-		return preciseCoord
-	}
-
-	mapInfo := wcd.svgMapInfo
-
-	// The world.svg uses a Natural Earth projection (not Web Mercator)
-	// This provides better visual representation for global maps
+	// Use Web Mercator projection - same formula as client-side JavaScript
+	// This formula is proven to work perfectly for mock data positioning
 	
-	// Convert longitude (-180 to 180) to SVG X coordinate (0 to ViewBoxW)
-	// Add slight horizontal compression for better accuracy with Natural Earth projection
-	svgX := ((longitude + 180) / 360) * mapInfo.ViewBoxW
+	// Convert longitude (-180 to 180) to SVG X coordinate (0 to 1000)
+	// X = ((longitude + 180) / 360) * 1000
+	svgX := ((longitude + 180) / 360) * 1000
 	
-	// Apply horizontal compression for Natural Earth projection
-	// Areas near the poles are stretched less than in Mercator
-	latFactor := math.Cos(latitude * math.Pi / 180)
-	horizontalCompression := 0.8 + 0.2*latFactor // Varies from 0.8 to 1.0
-	svgX = svgX * horizontalCompression
-
-	// Natural Earth projection for latitude
-	// This is a compromise projection that balances area and shape distortion
+	// Convert latitude using Web Mercator projection to Y coordinate (0 to 500)
+	// latRad = latitude * π / 180
 	latRad := latitude * math.Pi / 180
 	
-	// Natural Earth Y formula (simplified approximation)
-	// phi1 = asin(sqrt(3)/2) ≈ 1.047 (about 60 degrees)
-	phi1 := 1.047197551196598
+	// mercatorY = log(tan(π/4 + latRad/2))
+	mercatorY := math.Log(math.Tan(math.Pi/4 + latRad/2))
 	
-	var naturalY float64
-	if math.Abs(latRad) <= phi1 {
-		// For latitudes within ±60°, use a gentler curve
-		naturalY = latRad * (1 - 0.25*latRad*latRad/(phi1*phi1))
-	} else {
-		// For polar regions, use a more compressed mapping
-		sign := 1.0
-		if latRad < 0 {
-			sign = -1.0
-		}
-		absLat := math.Abs(latRad)
-		polarCompression := phi1 + (math.Pi/2-phi1)*math.Pow((absLat-phi1)/(math.Pi/2-phi1), 0.5)
-		naturalY = sign * polarCompression
-	}
-	
-	// Convert to SVG coordinates
-	// Normalize naturalY from [-π/2, π/2] to [0, 1]
-	normalizedY := (naturalY + math.Pi/2) / math.Pi
-	
-	// Invert Y coordinate (SVG Y=0 is at top, latitude 90 should be at top)
-	svgY := (1 - normalizedY) * mapInfo.ViewBoxH
-	
-	// Apply vertical adjustment to better match the world.svg projection
-	// The world.svg appears to use a slightly different vertical scaling
-	svgY = svgY * 0.85 + mapInfo.ViewBoxH * 0.075 // Compress vertically and shift down slightly
+	// y = 500 - ((mercatorY + π) / (2π)) * 500
+	svgY := 500 - ((mercatorY + math.Pi) / (2 * math.Pi)) * 500
 
-	// Create initial coordinate
-	initialCoord := SVGCoordinate{
-		X: math.Round(svgX*100) / 100, // Round to 2 decimal places
-		Y: math.Round(svgY*100) / 100,
+	// Create coordinate (round to match client-side Math.round behavior)
+	coord := SVGCoordinate{
+		X: math.Round(svgX), // Round to integer like client-side
+		Y: math.Round(svgY), // Round to integer like client-side
 	}
 
-	// Apply boundary adjustments to ensure coordinates fall on land within country boundaries
-	adjustedCoord := adjustForCountryBoundaries(initialCoord, latitude, longitude, mapInfo)
-
-	// Scale coordinates from world.svg (2000x857) to topology app viewing area (1000x500)
-	scaledCoord := scaleToTopologyApp(adjustedCoord)
-
-	return scaledCoord
+	return coord
 }
 
 // GetCityCoordinates returns coordinates for a city name (simple lookup, prefers larger cities for duplicate names)
@@ -720,14 +617,8 @@ func (wcd *WorldCitiesData) TestCoordinateConversion() {
 	for _, city := range testCities {
 		svgCoord := wcd.LatLngToSVG(city.lat, city.lng)
 
-		// Determine coordinate source
-		deviceKey := fmt.Sprintf("%.4f_%.4f", city.lat, city.lng)
-		var source string
-		if _, exists := getPreciseCoordinates()[deviceKey]; exists {
-			source = "Precise+Scaled"
-		} else {
-			source = "Calc+Adj+Scaled"
-		}
+		// All coordinates now use Web Mercator calculation
+		source := "WebMercator"
 
 		fmt.Printf("%s | %.2f | %.2f | %.1f | %.1f | %s\n",
 			city.name, city.lat, city.lng, svgCoord.X, svgCoord.Y, source)
