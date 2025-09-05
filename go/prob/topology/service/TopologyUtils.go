@@ -388,9 +388,9 @@ func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordina
 	//svgY := ((mercatorY - northMercator) / mercatorRange) * 857
 	var svgY float64
 	if latitude > 0 {
-		svgY = (857 / 2) - (857 / 2 * mercatorY)
+		svgY = (857 / 2) - (857 / 2 * (latitude / 83))
 	} else {
-		svgY = (857 / 2) + (857 / 2 * (mercatorY * (-1)))
+		svgY = (857 / 2) + (857 / 2 * (latitude * (-1) / 83))
 	}
 
 	// Create coordinate for world.svg native scale
