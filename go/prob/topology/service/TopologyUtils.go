@@ -357,58 +357,58 @@ func scaleToTopologyApp(worldSVGCoord SVGCoordinate) SVGCoordinate {
 }
 
 // getPreciseCoordinates returns manually curated precise coordinates for known locations
-// These coordinates are based on visual analysis of the world.svg file
+// These coordinates are directly for the 1000x500 topology viewport (same as client-side)
 func getPreciseCoordinates() map[string]SVGCoordinate {
 	return map[string]SVGCoordinate{
-		// North America - United States & Canada (proper 2000x857 SVG coordinates)
-		"40.7128_-74.0060":  {X: 608.2, Y: 279.6}, // New York, USA
-		"34.0522_-118.2426": {X: 372.6, Y: 327.8}, // Los Angeles, USA  
-		"41.8781_-87.6298":  {X: 535.6, Y: 271.2}, // Chicago, USA
-		"43.6532_-79.3832":  {X: 607.0, Y: 261.2}, // Toronto, Canada
-		"35.3531_-96.9647":  {X: 461.3, Y: 340.0}, // Oklahoma, USA (Shawnee)
+		// North America - United States & Canada (1000x500 topology viewport coordinates)
+		"40.7128_-74.0060":  {X: 304.1, Y: 139.8}, // New York, USA
+		"34.0522_-118.2426": {X: 186.3, Y: 163.9}, // Los Angeles, USA  
+		"41.8781_-87.6298":  {X: 267.8, Y: 135.6}, // Chicago, USA
+		"43.6532_-79.3832":  {X: 303.5, Y: 130.6}, // Toronto, Canada
+		"35.3531_-96.9647":  {X: 230.7, Y: 170.0}, // Oklahoma, USA (Shawnee) - corrected
 
-		// Europe - UK, France, Germany, Netherlands (proper 2000x857 SVG coordinates)
-		"51.5074_-0.1278": {X: 987.4, Y: 201.8},  // London, UK
-		"48.8566_2.3522":  {X: 995.6, Y: 219.0},  // Paris, France
-		"50.1109_8.6821":  {X: 1029.0, Y: 212.0}, // Frankfurt, Germany
-		"52.3676_4.9041":  {X: 1009.6, Y: 195.6}, // Amsterdam, Netherlands
-		"60.8833_11.5667": {X: 1042.0, Y: 158.0}, // Elverum, Norway
-		"51.2111_5.4256":  {X: 1006.0, Y: 204.0}, // Belgium (Overpelt)
-		"52.2833_5.1667":  {X: 1005.0, Y: 200.0}, // Netherlands (Bussum)
+		// Europe - UK, France, Germany, Netherlands (1000x500 topology viewport coordinates)
+		"51.5074_-0.1278": {X: 493.7, Y: 100.9}, // London, UK
+		"48.8566_2.3522":  {X: 497.8, Y: 109.5}, // Paris, France
+		"50.1109_8.6821":  {X: 514.5, Y: 106.0}, // Frankfurt, Germany
+		"52.3676_4.9041":  {X: 504.8, Y: 97.8},  // Amsterdam, Netherlands
+		"60.8833_11.5667": {X: 521.0, Y: 79.0},  // Elverum, Norway
+		"51.2111_5.4256":  {X: 503.0, Y: 102.0}, // Belgium (Overpelt)
+		"52.2833_5.1667":  {X: 502.5, Y: 100.0}, // Netherlands (Bussum)
 
-		// Turkey and Middle East (corrected coordinates for better placement)
-		"36.1000_32.9667":   {X: 1183.2, Y: 333.0}, // Turkey (Bozyazı, Mersin)
-		"36.6667_34.4167":   {X: 1191.2, Y: 328.0}, // Turkey (Kargıpınar, Mersin)
-		"45.7086_34.3933":   {X: 1191.1, Y: 292.0}, // Ukraine (Dzhankoi, Krym)
-		"34.5504_38.2833":   {X: 1215.2, Y: 344.0}, // Syria (Tadmur, Ḩimş)
-		"33.4361_36.3567":   {X: 1207.5, Y: 350.0}, // Syria (Ḩawsh al Baḩdalīyah)
-		"36.7833_10.9833":   {X: 1059.0, Y: 332.0}, // Tunisia (Menzel Temime)
+		// Turkey and Middle East (1000x500 topology viewport coordinates)
+		"36.1000_32.9667":   {X: 591.6, Y: 166.5}, // Turkey (Bozyazı, Mersin)
+		"36.6667_34.4167":   {X: 595.6, Y: 164.0}, // Turkey (Kargıpınar, Mersin)
+		"45.7086_34.3933":   {X: 595.5, Y: 146.0}, // Ukraine (Dzhankoi, Krym)
+		"34.5504_38.2833":   {X: 607.6, Y: 172.0}, // Syria (Tadmur, Ḩimş)
+		"33.4361_36.3567":   {X: 603.8, Y: 175.0}, // Syria (Ḩawsh al Baḩdalīyah)
+		"36.7833_10.9833":   {X: 529.5, Y: 166.0}, // Tunisia (Menzel Temime)
 
-		// Asia - Japan, Singapore, India, South Korea (proper 2000x857 SVG coordinates)
-		"35.6762_139.6503": {X: 1711.4, Y: 311.8}, // Tokyo, Japan
-		"1.3521_103.8198":  {X: 1625.8, Y: 579.6}, // Singapore
-		"19.0760_72.8777":  {X: 1389.4, Y: 437.4}, // Mumbai, India
-		"37.5665_126.9780": {X: 1661.2, Y: 302.4}, // Seoul, South Korea
-		"22.9717_88.0351":  {X: 1489.1, Y: 405.0}, // India (Srikrishnapur, West Bengal)
-		"10.1487_76.4159":  {X: 1424.5, Y: 463.0}, // India (Vadakkumbāgam, Kerala)
-		"25.0929_84.3912":  {X: 1468.8, Y: 395.0}, // India (Mangrāwān, Bihār)
+		// Asia - Japan, Singapore, India, South Korea (1000x500 topology viewport coordinates)
+		"35.6762_139.6503": {X: 855.7, Y: 155.9}, // Tokyo, Japan
+		"1.3521_103.8198":  {X: 812.9, Y: 289.8}, // Singapore
+		"19.0760_72.8777":  {X: 694.7, Y: 218.7}, // Mumbai, India
+		"37.5665_126.9780": {X: 830.6, Y: 151.2}, // Seoul, South Korea
+		"22.9717_88.0351":  {X: 744.5, Y: 202.5}, // India (Srikrishnapur, West Bengal)
+		"10.1487_76.4159":  {X: 712.3, Y: 231.5}, // India (Vadakkumbāgam, Kerala)
+		"25.0929_84.3912":  {X: 734.4, Y: 197.5}, // India (Mangrāwān, Bihār)
 
-		// Africa (corrected coordinates)
-		"30.0444_31.2357":   {X: 1159.8, Y: 361.0}, // Cairo, Egypt
-		"-33.9249_18.4241":  {X: 1087.2, Y: 839.6}, // Cape Town, South Africa
-		"-22.1455_48.0080":  {X: 1222.3, Y: 692.0}, // Madagascar (Manakara, Fianarantsoa)
-		"-27.9188_26.8188":  {X: 1104.5, Y: 718.0}, // South Africa (Riebeeckstad, Free State)
+		// Africa (1000x500 topology viewport coordinates)
+		"30.0444_31.2357":   {X: 579.9, Y: 180.5}, // Cairo, Egypt
+		"-33.9249_18.4241":  {X: 543.6, Y: 419.8}, // Cape Town, South Africa
+		"-22.1455_48.0080":  {X: 611.1, Y: 281.5}, // Madagascar (Manakara, Fianarantsoa)
+		"-27.9188_26.8188":  {X: 552.3, Y: 290.4}, // South Africa (Riebeeckstad, Free State)
 
-		// South America - Brazil, Colombia (proper 2000x857 SVG coordinates)
-		"-23.5505_-46.6333": {X: 723.0, Y: 762.2}, // São Paulo, Brazil
-		"4.7110_-74.0721":   {X: 574.0, Y: 561.0}, // Bogotá, Colombia
-		"-3.3958_-42.2039":  {X: 810.0, Y: 545.0}, // Brazil (Magalhães de Almeida, Maranhão)
-		"-2.8000_-40.4833":  {X: 819.5, Y: 540.0}, // Brazil (Jericoacoara, Ceará)
-		"-28.6678_-50.4169": {X: 764.4, Y: 720.0}, // Brazil (Bom Jesus, Piauí)
+		// South America - Brazil, Colombia (1000x500 topology viewport coordinates)
+		"-23.5505_-46.6333": {X: 361.5, Y: 381.1}, // São Paulo, Brazil
+		"4.7110_-74.0721":   {X: 287.0, Y: 280.5}, // Bogotá, Colombia
+		"-3.3958_-42.2039":  {X: 405.0, Y: 272.5}, // Brazil (Magalhães de Almeida, Maranhão)
+		"-2.8000_-40.4833":  {X: 409.8, Y: 270.0}, // Brazil (Jericoacoara, Ceará)
+		"-28.6678_-50.4169": {X: 382.2, Y: 360.0}, // Brazil (Bom Jesus, Piauí)
 
-		// Oceania - Australia (proper 2000x857 SVG coordinates)
-		"-33.8688_151.2093": {X: 1790.4, Y: 815.2}, // Sydney, Australia
-		"-37.8136_144.9631": {X: 1760.0, Y: 840.6}, // Melbourne, Australia
+		// Oceania - Australia (1000x500 topology viewport coordinates)
+		"-33.8688_151.2093": {X: 895.2, Y: 407.6}, // Sydney, Australia
+		"-37.8136_144.9631": {X: 880.0, Y: 420.3}, // Melbourne, Australia
 	}
 }
 
@@ -422,8 +422,8 @@ func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordina
 	// Check for precise coordinates first (for known major cities)
 	deviceKey := fmt.Sprintf("%.4f_%.4f", latitude, longitude)
 	if preciseCoord, exists := getPreciseCoordinates()[deviceKey]; exists {
-		// Scale precise coordinates to topology app dimensions (1000x500)
-		return scaleToTopologyApp(preciseCoord)
+		// Return precise coordinates directly - they're already in 1000x500 topology scale
+		return preciseCoord
 	}
 
 	mapInfo := wcd.svgMapInfo
