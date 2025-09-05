@@ -361,21 +361,41 @@ func scaleToTopologyApp(worldSVGCoord SVGCoordinate) SVGCoordinate {
 // The client-side will handle aspect ratio scaling to fit the display panel
 func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordinate {
 	// Use Web Mercator projection for world.svg native 2000x857 scale
-	// Client-side will scale this to fit the display panel while preserving aspect ratio
+	// World.svg covers approximately 83°N to -56°S (not full pole to pole)
 	
 	// Convert longitude (-180 to 180) to SVG X coordinate (0 to 2000)
 	// X = ((longitude + 180) / 360) * 2000
 	svgX := ((longitude + 180) / 360) * 2000
 	
-	// Convert latitude using Web Mercator projection to Y coordinate (0 to 857)
-	// latRad = latitude * π / 180
-	latRad := latitude * math.Pi / 180
+	// Convert latitude using Web Mercator projection adjusted for world.svg bounds
+	// World maps typically cover ~83°N to ~-56°S instead of full ±90°
 	
-	// mercatorY = log(tan(π/4 + latRad/2))
+	// Clamp latitude to world.svg bounds
+	const northBound = 83.0  // Northern Greenland, northern Canada
+	const southBound = -56.0 // Southern tip of South America, southern Africa
+	
+	// Clamp input latitude to map bounds
+	clampedLat := latitude
+	if clampedLat > northBound {
+		clampedLat = northBound
+	}
+	if clampedLat < southBound {
+		clampedLat = southBound
+	}
+	
+	// Calculate Web Mercator Y for the bounds
+	northRad := northBound * math.Pi / 180
+	southRad := southBound * math.Pi / 180
+	northMercator := math.Log(math.Tan(math.Pi/4 + northRad/2))
+	southMercator := math.Log(math.Tan(math.Pi/4 + southRad/2))
+	
+	// Current latitude in Mercator
+	latRad := clampedLat * math.Pi / 180
 	mercatorY := math.Log(math.Tan(math.Pi/4 + latRad/2))
 	
-	// y = 857 - ((mercatorY + π) / (2π)) * 857
-	svgY := 857 - ((mercatorY + math.Pi) / (2 * math.Pi)) * 857
+	// Map mercator range to 857px height (Y=0 at north, Y=857 at south)
+	mercatorRange := southMercator - northMercator
+	svgY := ((mercatorY - northMercator) / mercatorRange) * 857
 
 	// Create coordinate for world.svg native scale
 	coord := SVGCoordinate{

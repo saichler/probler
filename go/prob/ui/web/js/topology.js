@@ -64,14 +64,35 @@ function latLngToSVG(latitude, longitude) {
     console.log(`   ❌ No precise coordinates found, using Web Mercator fallback`);
     
     // Fallback to generic Web Mercator projection for world.svg native 2000x857 scale
+    // World.svg covers approximately 83°N to -56°S (not full pole to pole)
     const x = ((longitude + 180) / 360) * 2000;
-    const latRad = latitude * Math.PI / 180;
-    const mercatorY = Math.log(Math.tan((Math.PI / 4) + (latRad / 2)));
-    const y = 857 - ((mercatorY + Math.PI) / (2 * Math.PI)) * 857;
     
-    console.log(`   📐 Web Mercator calculation:`);
+    // Clamp latitude to world.svg bounds
+    const northBound = 83.0;  // Northern Greenland, northern Canada
+    const southBound = -56.0; // Southern tip of South America, southern Africa
+    
+    let clampedLat = latitude;
+    if (clampedLat > northBound) clampedLat = northBound;
+    if (clampedLat < southBound) clampedLat = southBound;
+    
+    // Calculate Web Mercator Y for the bounds
+    const northRad = northBound * Math.PI / 180;
+    const southRad = southBound * Math.PI / 180;
+    const northMercator = Math.log(Math.tan(Math.PI/4 + northRad/2));
+    const southMercator = Math.log(Math.tan(Math.PI/4 + southRad/2));
+    
+    // Current latitude in Mercator
+    const latRad = clampedLat * Math.PI / 180;
+    const mercatorY = Math.log(Math.tan(Math.PI/4 + latRad/2));
+    
+    // Map mercator range to 857px height (Y=0 at north, Y=857 at south)
+    const mercatorRange = southMercator - northMercator;
+    const y = ((mercatorY - northMercator) / mercatorRange) * 857;
+    
+    console.log(`   📐 Web Mercator calculation (83°N to -56°S bounds):`);
     console.log(`      X: ((${longitude} + 180) / 360) * 2000 = ${x}`);
-    console.log(`      Y: 857 - ((mercatorY + π) / (2π)) * 857 = ${y}`);
+    console.log(`      Clamped latitude: ${latitude} → ${clampedLat}`);
+    console.log(`      Y: mapped to 857px range = ${y}`);
     console.log(`      Final client coordinates: x=${Math.round(x)}, y=${Math.round(y)}`);
     
     return { x: Math.round(x), y: Math.round(y) };
