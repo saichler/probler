@@ -380,8 +380,8 @@ func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordina
 	//southMercator := math.Log(math.Tan(math.Pi/4 + southRad/2))
 
 	// Current latitude in Mercator
-	latRad := latitude * math.Pi / 180
-	mercatorY := math.Log(math.Tan(math.Pi/4 + latRad/2))
+	//latRad := latitude * math.Pi / 180
+	//mercatorY := math.Log(math.Tan(math.Pi/4 + latRad/2))
 
 	// Map mercator range to 857px height (Y=0 at north, Y=857 at south)
 	//mercatorRange := southMercator - northMercator
