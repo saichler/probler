@@ -8,95 +8,8 @@ let currentZoom = 1;
 let panX = 0;
 let panY = 0;
 
-// Convert latitude/longitude to SVG coordinates based on actual world.svg country boundaries
-// NOTE: This function is now primarily used as fallback when server-calculated coordinates aren't available
-// The server (TopologyUtils.go) provides more accurate SVG coordinates based on the actual world.svg file
-function latLngToSVG(latitude, longitude) {
-    // Precise coordinates calculated from actual SVG country boundary analysis
-    // Each device positioned accurately within its respective country boundaries
-    
-    console.log(`🧮 Client-side coordinate calculation for lat=${latitude}, lng=${longitude}`);
-    
-    // Create lookup key for precise positioning
-    const deviceKey = `${latitude.toFixed(4)}_${longitude.toFixed(4)}`;
-    console.log(`   Looking up precise coordinates for key: "${deviceKey}"`);
-    
-    // Precise coordinates based on actual world.svg (2000x857) country boundary analysis
-    // These coordinates are now at world.svg native scale for consistency with server-side
-    const preciseCoordinates = {
-        // North America - United States & Canada (2000x857 scale)
-        "40.7128_-74.0060": { x: 608.2, y: 279.6 }, // New York, USA
-        "34.0522_-118.2426": { x: 372.6, y: 327.8 }, // Los Angeles, USA  
-        "41.8781_-87.6298": { x: 535.6, y: 271.2 }, // Chicago, USA
-        "43.6532_-79.3832": { x: 607.0, y: 261.2 }, // Toronto, Canada
-        
-        // Europe - UK, France, Germany, Netherlands (2000x857 scale)
-        "51.5074_-0.1278": { x: 987.4, y: 201.8 }, // London, UK
-        "48.8566_2.3522": { x: 995.6, y: 219.0 }, // Paris, France
-        "50.1109_8.6821": { x: 1029.0, y: 212.0 }, // Frankfurt, Germany
-        "52.3676_4.9041": { x: 1009.6, y: 195.6 }, // Amsterdam, Netherlands
-        
-        // Asia - Japan, Singapore, India, South Korea (2000x857 scale)
-        "35.6762_139.6503": { x: 1711.4, y: 311.8 }, // Tokyo, Japan
-        "1.3521_103.8198": { x: 1625.8, y: 579.6 }, // Singapore
-        "19.0760_72.8777": { x: 1389.4, y: 437.4 }, // Mumbai, India
-        "37.5665_126.9780": { x: 1661.2, y: 302.4 }, // Seoul, South Korea
-        
-        // Oceania - Australia (2000x857 scale)
-        "-33.8688_151.2093": { x: 1790.4, y: 815.2 }, // Sydney, Australia
-        "-37.8136_144.9631": { x: 1760.0, y: 840.6 }, // Melbourne, Australia
-        
-        // South America - Brazil, Colombia (2000x857 scale)
-        "-23.5505_-46.6333": { x: 723.0, y: 762.2 }, // São Paulo, Brazil
-        "4.7110_-74.0721": { x: 574.0, y: 561.0 }, // Bogotá, Colombia
-        
-        // Africa - Egypt, South Africa (2000x857 scale)
-        "30.0444_31.2357": { x: 1159.8, y: 361.0 }, // Cairo, Egypt
-        "-33.9249_18.4241": { x: 1087.2, y: 839.6 } // Cape Town, South Africa
-    };
-    
-    // Return precise coordinates if available
-    if (preciseCoordinates[deviceKey]) {
-        console.log(`   ✅ Found precise coordinates: x=${preciseCoordinates[deviceKey].x}, y=${preciseCoordinates[deviceKey].y}`);
-        return preciseCoordinates[deviceKey];
-    }
-    
-    console.log(`   ❌ No precise coordinates found, using Web Mercator fallback`);
-    
-    // Fallback to generic Web Mercator projection for world.svg native 2000x857 scale
-    // World.svg covers approximately 83°N to -56°S (not full pole to pole)
-    const x = ((longitude + 180) / 360) * 2000;
-    
-    // Clamp latitude to world.svg bounds
-    const northBound = 83.0;  // Northern Greenland, northern Canada
-    const southBound = -56.0; // Southern tip of South America, southern Africa
-    
-    let clampedLat = latitude;
-    if (clampedLat > northBound) clampedLat = northBound;
-    if (clampedLat < southBound) clampedLat = southBound;
-    
-    // Calculate Web Mercator Y for the bounds
-    const northRad = northBound * Math.PI / 180;
-    const southRad = southBound * Math.PI / 180;
-    const northMercator = Math.log(Math.tan(Math.PI/4 + northRad/2));
-    const southMercator = Math.log(Math.tan(Math.PI/4 + southRad/2));
-    
-    // Current latitude in Mercator
-    const latRad = clampedLat * Math.PI / 180;
-    const mercatorY = Math.log(Math.tan(Math.PI/4 + latRad/2));
-    
-    // Map mercator range to 857px height (Y=0 at north, Y=857 at south)
-    const mercatorRange = southMercator - northMercator;
-    const y = ((mercatorY - northMercator) / mercatorRange) * 857;
-    
-    console.log(`   📐 Web Mercator calculation (83°N to -56°S bounds):`);
-    console.log(`      X: ((${longitude} + 180) / 360) * 2000 = ${x}`);
-    console.log(`      Clamped latitude: ${latitude} → ${clampedLat}`);
-    console.log(`      Y: mapped to 857px range = ${y}`);
-    console.log(`      Final client coordinates: x=${Math.round(x)}, y=${Math.round(y)}`);
-    
-    return { x: Math.round(x), y: Math.round(y) };
-}
+// Client-side coordinate calculation has been removed
+// The topology app now uses only server-calculated SVG coordinates from renderingInfo
 
 // Load topology data from API
 async function loadTopologyData() {
@@ -181,7 +94,7 @@ function processTopologyData(networkTopology) {
             renderingInfo: node.renderingInfo
         });
         
-        // Use server-calculated SVG coordinates if available, otherwise fallback to client calculation
+        // Use only server-calculated SVG coordinates
         if (node.renderingInfo && node.renderingInfo.svgX !== undefined && node.renderingInfo.svgY !== undefined) {
             // Use server-calculated SVG coordinates
             device.x = node.renderingInfo.svgX;
@@ -191,19 +104,10 @@ function processTopologyData(networkTopology) {
             console.log(`   Final device position: x=${device.x}, y=${device.y}`);
             console.log(`   Geographic context: lat=${device.latitude}, lng=${device.longitude}, location="${device.location}"`);
         } else {
-            // Fallback to client-side calculation for backward compatibility
-            const coords = latLngToSVG(device.latitude, device.longitude);
-            device.x = coords.x;
-            device.y = coords.y;
-            console.log(`⚠️ Using client SVG coordinates for ${device.name}:`);
-            console.log(`   Input: lat=${device.latitude}, lng=${device.longitude}`);
-            console.log(`   Client calculated: x=${coords.x}, y=${coords.y}`);
-            console.log(`   Final device position: x=${device.x}, y=${device.y}`);
-            console.log(`   Reason: renderingInfo missing or incomplete:`, {
-                hasRenderingInfo: !!node.renderingInfo,
-                svgX: node.renderingInfo?.svgX,
-                svgY: node.renderingInfo?.svgY
-            });
+            // Skip devices without server-provided coordinates
+            console.log(`❌ Skipping device ${device.name}: No server SVG coordinates provided`);
+            console.log(`   renderingInfo:`, node.renderingInfo);
+            return; // Skip this device
         }
         
         devices.push(device);
@@ -369,16 +273,10 @@ function renderNetworkDevices() {
 
         console.log(`Rendering device ${idx + 1}: ${device.name} at SVG position cx=${device.x}, cy=${device.y}`);
         
-        // Check if coordinates are within expected bounds
-        const withinBounds = device.x >= 0 && device.x <= 1000 && device.y >= 0 && device.y <= 500;
+        // Check if coordinates are within world.svg bounds (2000x857)
+        const withinBounds = device.x >= 0 && device.x <= 2000 && device.y >= 0 && device.y <= 857;
         if (!withinBounds) {
-            console.warn(`⚠️ Device ${device.name} coordinates (${device.x}, ${device.y}) are outside expected bounds (0-1000, 0-500)`);
-        }
-        
-        // Check if device might be positioned in water/sea areas
-        const possiblyInSea = (device.x < 50 || device.x > 950 || device.y < 50 || device.y > 450);
-        if (possiblyInSea) {
-            console.warn(`🌊 Device ${device.name} at (${device.x}, ${device.y}) might be positioned in sea/ocean area (near boundaries)`);
+            console.warn(`⚠️ Device ${device.name} coordinates (${device.x}, ${device.y}) are outside world.svg bounds (0-2000, 0-857)`);
         }
 
         // Add hover and click events with debouncing to prevent flicker
