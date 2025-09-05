@@ -357,7 +357,7 @@ func scaleToTopologyApp(worldSVGCoord SVGCoordinate) SVGCoordinate {
 }
 
 // LatLngToSVG converts latitude and longitude to SVG coordinates for world.svg native scale (2000x857)
-// Using the center point (lat=0, lng=0) → (svgX=1000, svgY=428.5) as reference
+// Using asymmetric scaling: North spans 83° (Greenland), South spans 56° (Argentina/Chile, no Antarctica)
 func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordinate {
 	// World.svg dimensions: 2000 × 857
 	// Center point: latitude=0, longitude=0 → svgX=1000, svgY=428.5
@@ -367,14 +367,25 @@ func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordina
 	const centerX = mapWidth / 2   // 1000
 	const centerY = mapHeight / 2  // 428.5
 	
+	// World.svg latitude bounds (asymmetric around equator)
+	const northBound = 83.0  // Northern Greenland, northern Canada
+	const southBound = -56.0 // Southern Argentina/Chile (no Antarctica)
+	
 	// Convert longitude (-180° to +180°) to X coordinate (0 to 2000)
 	// Each degree of longitude = 2000 / 360 = 5.555 pixels
 	svgX := centerX + (longitude * mapWidth / 360)
 	
-	// Convert latitude (-90° to +90°) to Y coordinate (0 to 857)  
-	// Each degree of latitude = 857 / 180 = 4.761 pixels
-	// Note: Y increases downward, so positive latitude decreases Y
-	svgY := centerY - (latitude * mapHeight / 180)
+	// Convert latitude using asymmetric scaling
+	var svgY float64
+	if latitude >= 0 {
+		// Northern hemisphere: 0° to 83° maps to centerY to 0
+		// Each degree = 428.5 / 83 = 5.163 pixels
+		svgY = centerY - (latitude * centerY / northBound)
+	} else {
+		// Southern hemisphere: 0° to -56° maps to centerY to 857
+		// Each degree = 428.5 / 56 = 7.652 pixels (more compressed)
+		svgY = centerY + (math.Abs(latitude) * centerY / math.Abs(southBound))
+	}
 	
 	// Clamp coordinates to map bounds
 	if svgX < 0 {
