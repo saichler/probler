@@ -409,7 +409,7 @@
                         </div>
                         
                         <div class="world-map-container">
-                            <svg id="worldMap" viewBox="0 0 1000 500" class="world-map">
+                            <svg id="worldMap" viewBox="0 0 2000 857" class="world-map">
                                 <!-- World Map Outline -->
                                 <defs>
                                     <pattern id="oceanPattern" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
@@ -424,10 +424,10 @@
                                     </filter>
                                 </defs>
                                 
-                                <!-- World Map using your world.svg -->
-                                <image x="0" y="0" width="1000" height="500" 
+                                <!-- World Map using your world.svg at native scale -->
+                                <image x="0" y="0" width="2000" height="857" 
                                        href="world.svg"
-                                       preserveAspectRatio="xMidYMid slice" 
+                                       preserveAspectRatio="xMidYMid meet" 
                                        opacity="0.8"
                                        class="world-map-image"/>
                                 
@@ -439,8 +439,8 @@
                                 
                                 <!-- Hover Information -->
                                 <g id="hoverInfo" class="hover-info" style="display:none;">
-                                    <rect x="0" y="0" width="200" height="100" rx="5" fill="rgba(0,0,0,0.8)" stroke="rgba(0,129,194,0.5)"/>
-                                    <text id="hoverText" x="10" y="20" fill="white" font-size="12"></text>
+                                    <rect x="0" y="0" width="400" height="200" rx="10" fill="rgba(0,0,0,0.8)" stroke="rgba(0,129,194,0.5)"/>
+                                    <text id="hoverText" x="20" y="40" fill="white" font-size="24"></text>
                                 </g>
                             </svg>
                         </div>

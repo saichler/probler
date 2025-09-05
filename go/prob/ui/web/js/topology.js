@@ -21,37 +21,38 @@ function latLngToSVG(latitude, longitude) {
     const deviceKey = `${latitude.toFixed(4)}_${longitude.toFixed(4)}`;
     console.log(`   Looking up precise coordinates for key: "${deviceKey}"`);
     
-    // Precise coordinates based on actual world.svg country boundary analysis
+    // Precise coordinates based on actual world.svg (2000x857) country boundary analysis
+    // These coordinates are now at world.svg native scale for consistency with server-side
     const preciseCoordinates = {
-        // North America - United States & Canada
-        "40.7128_-74.0060": { x: 304.1, y: 139.8 }, // New York, USA
-        "34.0522_-118.2426": { x: 186.3, y: 163.9 }, // Los Angeles, USA  
-        "41.8781_-87.6298": { x: 267.8, y: 135.6 }, // Chicago, USA
-        "43.6532_-79.3832": { x: 303.5, y: 130.6 }, // Toronto, Canada
+        // North America - United States & Canada (2000x857 scale)
+        "40.7128_-74.0060": { x: 608.2, y: 279.6 }, // New York, USA
+        "34.0522_-118.2426": { x: 372.6, y: 327.8 }, // Los Angeles, USA  
+        "41.8781_-87.6298": { x: 535.6, y: 271.2 }, // Chicago, USA
+        "43.6532_-79.3832": { x: 607.0, y: 261.2 }, // Toronto, Canada
         
-        // Europe - UK, France, Germany, Netherlands
-        "51.5074_-0.1278": { x: 493.7, y: 100.9 }, // London, UK
-        "48.8566_2.3522": { x: 497.8, y: 109.5 }, // Paris, France
-        "50.1109_8.6821": { x: 514.5, y: 106.0 }, // Frankfurt, Germany
-        "52.3676_4.9041": { x: 504.8, y: 97.8 }, // Amsterdam, Netherlands
+        // Europe - UK, France, Germany, Netherlands (2000x857 scale)
+        "51.5074_-0.1278": { x: 987.4, y: 201.8 }, // London, UK
+        "48.8566_2.3522": { x: 995.6, y: 219.0 }, // Paris, France
+        "50.1109_8.6821": { x: 1029.0, y: 212.0 }, // Frankfurt, Germany
+        "52.3676_4.9041": { x: 1009.6, y: 195.6 }, // Amsterdam, Netherlands
         
-        // Asia - Japan, Singapore, India, South Korea
-        "35.6762_139.6503": { x: 855.7, y: 155.9 }, // Tokyo, Japan
-        "1.3521_103.8198": { x: 812.9, y: 289.8 }, // Singapore
-        "19.0760_72.8777": { x: 694.7, y: 218.7 }, // Mumbai, India
-        "37.5665_126.9780": { x: 830.6, y: 151.2 }, // Seoul, South Korea
+        // Asia - Japan, Singapore, India, South Korea (2000x857 scale)
+        "35.6762_139.6503": { x: 1711.4, y: 311.8 }, // Tokyo, Japan
+        "1.3521_103.8198": { x: 1625.8, y: 579.6 }, // Singapore
+        "19.0760_72.8777": { x: 1389.4, y: 437.4 }, // Mumbai, India
+        "37.5665_126.9780": { x: 1661.2, y: 302.4 }, // Seoul, South Korea
         
-        // Oceania - Australia
-        "-33.8688_151.2093": { x: 895.2, y: 407.6 }, // Sydney, Australia
-        "-37.8136_144.9631": { x: 880.0, y: 420.3 }, // Melbourne, Australia
+        // Oceania - Australia (2000x857 scale)
+        "-33.8688_151.2093": { x: 1790.4, y: 815.2 }, // Sydney, Australia
+        "-37.8136_144.9631": { x: 1760.0, y: 840.6 }, // Melbourne, Australia
         
-        // South America - Brazil, Colombia
-        "-23.5505_-46.6333": { x: 361.5, y: 381.1 }, // São Paulo, Brazil
-        "4.7110_-74.0721": { x: 287.0, y: 280.5 }, // Bogotá, Colombia
+        // South America - Brazil, Colombia (2000x857 scale)
+        "-23.5505_-46.6333": { x: 723.0, y: 762.2 }, // São Paulo, Brazil
+        "4.7110_-74.0721": { x: 574.0, y: 561.0 }, // Bogotá, Colombia
         
-        // Africa - Egypt, South Africa
-        "30.0444_31.2357": { x: 579.9, y: 180.5 }, // Cairo, Egypt
-        "-33.9249_18.4241": { x: 543.6, y: 419.8 } // Cape Town, South Africa
+        // Africa - Egypt, South Africa (2000x857 scale)
+        "30.0444_31.2357": { x: 1159.8, y: 361.0 }, // Cairo, Egypt
+        "-33.9249_18.4241": { x: 1087.2, y: 839.6 } // Cape Town, South Africa
     };
     
     // Return precise coordinates if available
@@ -62,15 +63,15 @@ function latLngToSVG(latitude, longitude) {
     
     console.log(`   ❌ No precise coordinates found, using Web Mercator fallback`);
     
-    // Fallback to generic Web Mercator projection for unlisted coordinates
-    const x = ((longitude + 180) / 360) * 1000;
+    // Fallback to generic Web Mercator projection for world.svg native 2000x857 scale
+    const x = ((longitude + 180) / 360) * 2000;
     const latRad = latitude * Math.PI / 180;
     const mercatorY = Math.log(Math.tan((Math.PI / 4) + (latRad / 2)));
-    const y = 500 - ((mercatorY + Math.PI) / (2 * Math.PI)) * 500;
+    const y = 857 - ((mercatorY + Math.PI) / (2 * Math.PI)) * 857;
     
     console.log(`   📐 Web Mercator calculation:`);
-    console.log(`      X: ((${longitude} + 180) / 360) * 1000 = ${x}`);
-    console.log(`      Y: 500 - ((mercatorY + π) / (2π)) * 500 = ${y}`);
+    console.log(`      X: ((${longitude} + 180) / 360) * 2000 = ${x}`);
+    console.log(`      Y: 857 - ((mercatorY + π) / (2π)) * 857 = ${y}`);
     console.log(`      Final client coordinates: x=${Math.round(x)}, y=${Math.round(y)}`);
     
     return { x: Math.round(x), y: Math.round(y) };

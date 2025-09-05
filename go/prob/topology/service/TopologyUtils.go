@@ -357,31 +357,30 @@ func scaleToTopologyApp(worldSVGCoord SVGCoordinate) SVGCoordinate {
 }
 
 
-// LatLngToSVG converts latitude and longitude to SVG coordinates using Web Mercator projection
-// Uses the exact same formula as client-side JavaScript to ensure perfect coordinate matching
-// Proven accurate with mock data: LA-CORE-02, TYO-CORE-01, SIN-SW-01
+// LatLngToSVG converts latitude and longitude to SVG coordinates for world.svg native scale (2000x857)
+// The client-side will handle aspect ratio scaling to fit the display panel
 func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordinate {
-	// Use Web Mercator projection - same formula as client-side JavaScript
-	// This formula is proven to work perfectly for mock data positioning
+	// Use Web Mercator projection for world.svg native 2000x857 scale
+	// Client-side will scale this to fit the display panel while preserving aspect ratio
 	
-	// Convert longitude (-180 to 180) to SVG X coordinate (0 to 1000)
-	// X = ((longitude + 180) / 360) * 1000
-	svgX := ((longitude + 180) / 360) * 1000
+	// Convert longitude (-180 to 180) to SVG X coordinate (0 to 2000)
+	// X = ((longitude + 180) / 360) * 2000
+	svgX := ((longitude + 180) / 360) * 2000
 	
-	// Convert latitude using Web Mercator projection to Y coordinate (0 to 500)
+	// Convert latitude using Web Mercator projection to Y coordinate (0 to 857)
 	// latRad = latitude * π / 180
 	latRad := latitude * math.Pi / 180
 	
 	// mercatorY = log(tan(π/4 + latRad/2))
 	mercatorY := math.Log(math.Tan(math.Pi/4 + latRad/2))
 	
-	// y = 500 - ((mercatorY + π) / (2π)) * 500
-	svgY := 500 - ((mercatorY + math.Pi) / (2 * math.Pi)) * 500
+	// y = 857 - ((mercatorY + π) / (2π)) * 857
+	svgY := 857 - ((mercatorY + math.Pi) / (2 * math.Pi)) * 857
 
-	// Create coordinate (round to match client-side Math.round behavior)
+	// Create coordinate for world.svg native scale
 	coord := SVGCoordinate{
-		X: math.Round(svgX), // Round to integer like client-side
-		Y: math.Round(svgY), // Round to integer like client-side
+		X: math.Round(svgX), // X coordinate in world.svg scale (0-2000)
+		Y: math.Round(svgY), // Y coordinate in world.svg scale (0-857)
 	}
 
 	return coord
