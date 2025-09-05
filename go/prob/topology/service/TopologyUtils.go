@@ -370,8 +370,8 @@ func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordina
 	// World maps typically cover ~83°N to ~-56°S instead of full ±90°
 
 	// Clamp latitude to world.svg bounds
-	//const northBound = 83.0  // Northern Greenland, northern Canada
-	//const southBound = -56.0 // Southern tip of South America, southern Africa
+	const northBound = 83.0  // Northern Greenland, northern Canada
+	const southBound = -56.0 // Southern tip of South America, southern Africa
 
 	// Calculate Web Mercator Y for the bounds
 	//northRad := northBound * math.Pi / 180
@@ -387,10 +387,10 @@ func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordina
 	//mercatorRange := southMercator - northMercator
 	//svgY := ((mercatorY - northMercator) / mercatorRange) * 857
 	var svgY float64
-	if mercatorY > 0 {
-		svgY = (857 / 2) - (857 / 100 * mercatorY)
+	if latitude > 0 {
+		svgY = (857 / 2) - (857 / 2 * mercatorY)
 	} else {
-		svgY = (857 / 2) + (857 / 100 * (mercatorY * (-1)))
+		svgY = (857 / 2) + (857 / 2 * (mercatorY * (-1)))
 	}
 
 	// Create coordinate for world.svg native scale

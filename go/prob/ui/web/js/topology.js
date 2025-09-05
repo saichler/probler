@@ -381,9 +381,16 @@ function renderNetworkDevices() {
             console.warn(`🌊 Device ${device.name} at (${device.x}, ${device.y}) might be positioned in sea/ocean area (near boundaries)`);
         }
 
-        // Add hover and click events
-        deviceElement.addEventListener('mouseenter', (e) => showDeviceHover(e, device));
-        deviceElement.addEventListener('mouseleave', hideDeviceHover);
+        // Add hover and click events with debouncing to prevent flicker
+        let hoverTimeout;
+        deviceElement.addEventListener('mouseenter', (e) => {
+            clearTimeout(hoverTimeout);
+            showDeviceHover(e, device);
+        });
+        deviceElement.addEventListener('mouseleave', () => {
+            // Add small delay before hiding to prevent flicker
+            hoverTimeout = setTimeout(hideDeviceHover, 100);
+        });
         deviceElement.addEventListener('click', (e) => {
             // Prevent device details from opening during drag operations
             if (!isDragging) {
@@ -427,9 +434,16 @@ function renderNetworkLinks() {
             linkElement.setAttribute('data-from', link.from);
             linkElement.setAttribute('data-to', link.to);
 
-            // Add hover and click events
-            linkElement.addEventListener('mouseenter', (e) => showLinkHover(e, link, fromDevice, toDevice));
-            linkElement.addEventListener('mouseleave', hideDeviceHover);
+            // Add hover and click events with debouncing to prevent flicker
+            let linkHoverTimeout;
+            linkElement.addEventListener('mouseenter', (e) => {
+                clearTimeout(linkHoverTimeout);
+                showLinkHover(e, link, fromDevice, toDevice);
+            });
+            linkElement.addEventListener('mouseleave', () => {
+                // Add small delay before hiding to prevent flicker
+                linkHoverTimeout = setTimeout(hideDeviceHover, 100);
+            });
             linkElement.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -447,15 +461,27 @@ function showDeviceHover(event, device) {
     
     if (hoverInfo && hoverText) {
         hoverText.innerHTML = `
-            <tspan x="10" y="20" font-weight="bold">${device.name}</tspan>
-            <tspan x="10" y="35">Type: ${device.type.toUpperCase()}</tspan>
-            <tspan x="10" y="50">Status: ${device.status.toUpperCase()}</tspan>
-            <tspan x="10" y="65">Location: ${device.location}</tspan>
-            <tspan x="10" y="80">Coordinates: ${device.latitude}°, ${device.longitude}°</tspan>
+            <tspan x="20" y="40" font-weight="bold">${device.name}</tspan>
+            <tspan x="20" y="70">Type: ${device.type.toUpperCase()}</tspan>
+            <tspan x="20" y="100">Status: ${device.status.toUpperCase()}</tspan>
+            <tspan x="20" y="130">Location: ${device.location}</tspan>
+            <tspan x="20" y="160">Coordinates: ${device.latitude}°, ${device.longitude}°</tspan>
         `;
         
-        hoverInfo.setAttribute('transform', `translate(${event.target.getAttribute('cx') - 100}, ${event.target.getAttribute('cy') - 120})`);
+        // Position tooltip away from cursor to prevent hover conflicts
+        // Place it to the right and below the device to avoid cursor overlap
+        const deviceX = parseFloat(event.target.getAttribute('cx'));
+        const deviceY = parseFloat(event.target.getAttribute('cy'));
+        
+        // Position tooltip offset from device position, not cursor position
+        const tooltipX = deviceX + 30; // 30px to the right of device
+        const tooltipY = deviceY + 20; // 20px below device
+        
+        hoverInfo.setAttribute('transform', `translate(${tooltipX}, ${tooltipY})`);
         hoverInfo.style.display = 'block';
+        
+        // Make tooltip non-interactive to prevent mouse events
+        hoverInfo.style.pointerEvents = 'none';
     }
 }
 
@@ -465,18 +491,26 @@ function showLinkHover(event, link, fromDevice, toDevice) {
     
     if (hoverInfo && hoverText) {
         hoverText.innerHTML = `
-            <tspan x="10" y="20" font-weight="bold">Network Link</tspan>
-            <tspan x="10" y="35">From: ${fromDevice.name}</tspan>
-            <tspan x="10" y="50">To: ${toDevice.name}</tspan>
-            <tspan x="10" y="65">Bandwidth: ${link.bandwidth}</tspan>
-            <tspan x="10" y="80">Status: ${link.status.toUpperCase()}</tspan>
+            <tspan x="20" y="40" font-weight="bold">Network Link</tspan>
+            <tspan x="20" y="70">From: ${fromDevice.name}</tspan>
+            <tspan x="20" y="100">To: ${toDevice.name}</tspan>
+            <tspan x="20" y="130">Bandwidth: ${link.bandwidth}</tspan>
+            <tspan x="20" y="160">Status: ${link.status.toUpperCase()}</tspan>
         `;
         
+        // Calculate link midpoint
         const x = (parseFloat(event.target.getAttribute('x1')) + parseFloat(event.target.getAttribute('x2'))) / 2;
         const y = (parseFloat(event.target.getAttribute('y1')) + parseFloat(event.target.getAttribute('y2'))) / 2;
         
-        hoverInfo.setAttribute('transform', `translate(${x - 100}, ${y - 120})`);
+        // Position tooltip offset from link center to avoid cursor overlap
+        const tooltipX = x + 30; // 30px to the right of link center
+        const tooltipY = y - 30; // 30px above link center
+        
+        hoverInfo.setAttribute('transform', `translate(${tooltipX}, ${tooltipY})`);
         hoverInfo.style.display = 'block';
+        
+        // Make tooltip non-interactive to prevent mouse events
+        hoverInfo.style.pointerEvents = 'none';
     }
 }
 
@@ -484,6 +518,8 @@ function hideDeviceHover() {
     const hoverInfo = document.getElementById('hoverInfo');
     if (hoverInfo) {
         hoverInfo.style.display = 'none';
+        // Reset pointer events when hiding (though it should remain 'none' for tooltips)
+        hoverInfo.style.pointerEvents = 'none';
     }
 }
 
