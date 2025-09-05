@@ -8,5 +8,6 @@ RUN go build -o topo
 FROM saichler/probler-security:latest AS final
 COPY --from=build /home/src/github.com/saichler/build/topo /home/run/topo
 COPY worldcities.csv /home/run/worldcities.csv
+COPY worldcities.csv /home/run/world-cities.csv
 COPY world.svg /home/run/world.svg
 ENTRYPOINT ["/home/run/topo"]
