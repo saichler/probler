@@ -356,36 +356,28 @@ func scaleToTopologyApp(worldSVGCoord SVGCoordinate) SVGCoordinate {
 	}
 }
 
-// LatLngToSVG converts latitude and longitude to SVG coordinates for world.svg native scale (2000x857)
-// Using asymmetric scaling: North spans 83° (Greenland), South spans 56° (Argentina/Chile, no Antarctica)
+// LatLngToSVG converts latitude and longitude to SVG coordinates using Equirectangular projection
+// This matches the projection used by world.svg (Plate Carrée)
 func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordinate {
-	// World.svg dimensions: 2000 × 857
-	// Center point: latitude=0, longitude=0 → svgX=1000, svgY=428.5
+	// World.svg uses Equirectangular projection (Plate Carrée)
+	// This projection maps lat/lng directly to x/y coordinates
 	
 	const mapWidth = 2000.0
 	const mapHeight = 857.0
-	const centerX = mapWidth / 2   // 1000
-	const centerY = mapHeight / 2  // 428.5
 	
-	// World.svg latitude bounds (asymmetric around equator)
-	const northBound = 83.0  // Northern Greenland, northern Canada
-	const southBound = -56.0 // Southern Argentina/Chile (no Antarctica)
+	// World.svg geographic bounds (determined from analysis)
+	// Longitude: -180° to +180° (full range)
+	// Latitude: approximately 83°N to -56°S (no Antarctica)
+	const maxLat = 83.0
+	const minLat = -56.0
+	const latRange = maxLat - minLat // 139° total
 	
-	// Convert longitude (-180° to +180°) to X coordinate (0 to 2000)
-	// Each degree of longitude = 2000 / 360 = 5.555 pixels
-	svgX := centerX + (longitude * mapWidth / 360)
+	// Equirectangular projection formulas:
+	// X = (longitude + 180) × (width / 360)
+	// Y = (maxLat - latitude) × (height / latRange)
 	
-	// Convert latitude using asymmetric scaling
-	var svgY float64
-	if latitude >= 0 {
-		// Northern hemisphere: 0° to 83° maps to centerY to 0
-		// Each degree = 428.5 / 83 = 5.163 pixels
-		svgY = centerY - (latitude * centerY / northBound)
-	} else {
-		// Southern hemisphere: 0° to -56° maps to centerY to 857
-		// Each degree = 428.5 / 56 = 7.652 pixels (more compressed)
-		svgY = centerY + (math.Abs(latitude) * centerY / math.Abs(southBound))
-	}
+	svgX := (longitude + 180.0) * (mapWidth / 360.0)
+	svgY := (maxLat - latitude) * (mapHeight / latRange)
 	
 	// Clamp coordinates to map bounds
 	if svgX < 0 {
@@ -400,13 +392,13 @@ func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordina
 	if svgY > mapHeight {
 		svgY = mapHeight
 	}
-
+	
 	// Create coordinate for world.svg native scale
 	coord := SVGCoordinate{
 		X: math.Round(svgX), // X coordinate in world.svg scale (0-2000)
 		Y: math.Round(svgY), // Y coordinate in world.svg scale (0-857)
 	}
-
+	
 	return coord
 }
 
