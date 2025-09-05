@@ -357,40 +357,37 @@ func scaleToTopologyApp(worldSVGCoord SVGCoordinate) SVGCoordinate {
 }
 
 // LatLngToSVG converts latitude and longitude to SVG coordinates for world.svg native scale (2000x857)
-// The client-side will handle aspect ratio scaling to fit the display panel
+// Using the center point (lat=0, lng=0) → (svgX=1000, svgY=428.5) as reference
 func (wcd *WorldCitiesData) LatLngToSVG(latitude, longitude float64) SVGCoordinate {
-	// Use Web Mercator projection for world.svg native 2000x857 scale
-	// World.svg covers approximately 83°N to -56°S (not full pole to pole)
-
-	// Convert longitude (-180 to 180) to SVG X coordinate (0 to 2000)
-	// X = ((longitude + 180) / 360) * 2000
-	svgX := ((longitude + 180) / 360) * 2000
-
-	// Convert latitude using Web Mercator projection adjusted for world.svg bounds
-	// World maps typically cover ~83°N to ~-56°S instead of full ±90°
-
-	// Clamp latitude to world.svg bounds
-	const northBound = 83.0  // Northern Greenland, northern Canada
-	const southBound = -56.0 // Southern tip of South America, southern Africa
-
-	// Calculate Web Mercator Y for the bounds
-	//northRad := northBound * math.Pi / 180
-	//southRad := southBound * math.Pi / 180
-	//northMercator := math.Log(math.Tan(math.Pi/4 + northRad/2))
-	//southMercator := math.Log(math.Tan(math.Pi/4 + southRad/2))
-
-	// Current latitude in Mercator
-	//latRad := latitude * math.Pi / 180
-	//mercatorY := math.Log(math.Tan(math.Pi/4 + latRad/2))
-
-	// Map mercator range to 857px height (Y=0 at north, Y=857 at south)
-	//mercatorRange := southMercator - northMercator
-	//svgY := ((mercatorY - northMercator) / mercatorRange) * 857
-	var svgY float64
-	if latitude > 0 {
-		svgY = (857 / 2) - (857 / 2 * (latitude / 83))
-	} else {
-		svgY = (857 / 2) + (857 / 2 * (latitude * (-1) / 83))
+	// World.svg dimensions: 2000 × 857
+	// Center point: latitude=0, longitude=0 → svgX=1000, svgY=428.5
+	
+	const mapWidth = 2000.0
+	const mapHeight = 857.0
+	const centerX = mapWidth / 2   // 1000
+	const centerY = mapHeight / 2  // 428.5
+	
+	// Convert longitude (-180° to +180°) to X coordinate (0 to 2000)
+	// Each degree of longitude = 2000 / 360 = 5.555 pixels
+	svgX := centerX + (longitude * mapWidth / 360)
+	
+	// Convert latitude (-90° to +90°) to Y coordinate (0 to 857)  
+	// Each degree of latitude = 857 / 180 = 4.761 pixels
+	// Note: Y increases downward, so positive latitude decreases Y
+	svgY := centerY - (latitude * mapHeight / 180)
+	
+	// Clamp coordinates to map bounds
+	if svgX < 0 {
+		svgX = 0
+	}
+	if svgX > mapWidth {
+		svgX = mapWidth
+	}
+	if svgY < 0 {
+		svgY = 0
+	}
+	if svgY > mapHeight {
+		svgY = mapHeight
 	}
 
 	// Create coordinate for world.svg native scale
