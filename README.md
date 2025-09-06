@@ -101,9 +101,10 @@ The web interface provides comprehensive network monitoring and management:
 #### 🗺️ **Network Topology** 
 - Interactive world map with device visualization
 - Click-able network links with detailed properties
-- Geographic device positioning with precise coordinates
+- Geographic device positioning with precise coordinates using world-cities database
 - Real-time link status and bandwidth utilization
-- Zoom, pan, and link toggle controls
+- Enhanced topology rendering with improved stability and performance
+- Zoom, pan, and link toggle controls with optimized responsiveness
 
 #### 🖥️ **Device Management**
 - Comprehensive device inventory
@@ -199,7 +200,8 @@ probler/
 │   │   ├── inv_box/            # Network inventory
 │   │   ├── inv_k8s/            # K8s inventory
 │   │   ├── orm/                # ORM service
-│   │   ├── vnet/               # Virtual network & web UI
+│   │   ├── vnet/               # Virtual network & web UI  
+│   │   ├── topology/           # Enhanced network topology service with world-cities integration
 │   │   ├── te_app/             # Traffic Engineering application
 │   │   ├── security/           # Security service
 │   │   └── prctl/              # CLI control tool
@@ -212,8 +214,8 @@ probler/
 │   └── *.yaml                 # Service configurations
 ├── proto/                      # Protocol buffer definitions
 ├── builder/                    # Docker build configurations
-├── coordinate_calculator.py    # Device geographic positioning utility
-├── coordinate_validator.py     # Position validation & verification
+├── coordinate_calculator.py    # Device geographic positioning utility  
+├── coordinate_validator.py     # Position validation & verification using world-cities database
 ├── deploy-script.sh            # Automated deployment script
 └── README.md                  # This file
 ```
@@ -243,9 +245,11 @@ Services are configured through:
 - **Service health endpoints** on all services
 - **Kubernetes readiness and liveness probes**
 - **Automatic leader election** for stateful services
+- **Configurable timeout settings** for improved reliability
 
 ### Logging
 - **Structured logging** with configurable levels
+- **Enhanced startup logging** with detailed initialization info
 - **Centralized log aggregation** via Kubernetes
 - **Request tracing** across service boundaries
 
