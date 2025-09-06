@@ -114,7 +114,7 @@ func (this *TopologyService) Failed(elements ifs.IElements, vnic ifs.IVNic, mess
 }
 
 // TransactionMethod implements ifs.IServiceHandler
-func (this *TopologyService) TransactionMethod() ifs.ITransactionMethod {
+func (this *TopologyService) TransactionConfig() ifs.ITransactionConfig {
 	return nil
 }
 
