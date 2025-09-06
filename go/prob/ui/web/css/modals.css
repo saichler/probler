@@ -397,6 +397,33 @@
     padding-right: 8px;
 }
 
+/* Physical Inventory Panel Specific Scrolling */
+#inventoryContent {
+    max-height: 450px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+}
+
+/* Custom scrollbar for Physical Inventory panel */
+#inventoryContent::-webkit-scrollbar {
+    width: 8px;
+}
+
+#inventoryContent::-webkit-scrollbar-track {
+    background: rgba(0, 129, 194, 0.1);
+    border-radius: 4px;
+}
+
+#inventoryContent::-webkit-scrollbar-thumb {
+    background: rgba(0, 129, 194, 0.3);
+    border-radius: 4px;
+}
+
+#inventoryContent::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 129, 194, 0.5);
+}
+
 /* Custom scrollbar for tree view */
 .tree-view::-webkit-scrollbar {
     width: 8px;

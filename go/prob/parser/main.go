@@ -15,6 +15,7 @@ import (
 
 func main() {
 	resources := common2.CreateResources("parser-" + os.Getenv("HOSTNAME"))
+	resources.Logger().SetLogLevel(ifs.Info_Level)
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Start()
@@ -44,6 +45,6 @@ func main() {
 		}
 	}
 	ps.Add(boot.CreateK8sBootPolls(), true)
-
+	resources.Logger().SetLogLevel(ifs.Error_Level)
 	common2.WaitForSignal(resources)
 }

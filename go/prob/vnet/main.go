@@ -14,5 +14,6 @@ func main() {
 	net := vnet.NewVNet(resources)
 	net.Start()
 	resources.Logger().Info("vnet started!")
+	resources.Logger().SetLogLevel(ifs.Error_Level)
 	common2.WaitForSignal(resources)
 }

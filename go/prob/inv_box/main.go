@@ -14,6 +14,7 @@ import (
 
 func main() {
 	res := common2.CreateResources("box-" + os.Getenv("HOSTNAME"))
+	res.Logger().SetLogLevel(ifs.Info_Level)
 	res.Logger().Info("Starting box")
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
@@ -34,5 +35,6 @@ func main() {
 		res.Logger().Error(err)
 	}
 
+	res.Logger().SetLogLevel(ifs.Error_Level)
 	common2.WaitForSignal(nic.Resources())
 }
