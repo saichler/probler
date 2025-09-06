@@ -61,7 +61,7 @@ func (this *TopologyService) Put(elements ifs.IElements, vnic ifs.IVNic) ifs.IEl
 		}
 
 		pq := q.PQuery()
-		data := vnic.ProximityRequest(common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX, ifs.GET, pq)
+		data := vnic.ProximityRequest(common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX, ifs.GET, pq, 30)
 
 		if data.Error() != nil {
 			return object.New(vnic.Resources().Logger().Error("Data error: ", data.Error().Error()), nil)
