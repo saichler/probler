@@ -43,5 +43,8 @@ func main() {
 		}
 	}
 	ps.Add(boot.CreateK8sBootPolls(), true)
+
+	res.Logger().SetLogLevel(ifs.Error_Level)
+
 	common2.WaitForSignal(res)
 }
