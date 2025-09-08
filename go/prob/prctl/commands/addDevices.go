@@ -16,7 +16,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 	defer time.Sleep(time.Second)
 
 	if cmd == "all" || cmd == "cluster" {
-		cluster := creates.CreateCluster("/home/saichler/lab.conf", "lab", 0)
+		cluster := creates.CreateCluster("./lab.conf", "lab", 0)
 		rc.POST("0/"+devices.ServiceName, "Device", "", "", cluster)
 		time.Sleep(time.Second * 2)
 	}
