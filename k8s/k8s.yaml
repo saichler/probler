@@ -8,13 +8,15 @@ metadata:
 ---
 
 apiVersion: apps/v1
-kind: DaemonSet
+kind: StatefulSet
 metadata:
   namespace: probler-k8s
   name: probler-k8s
   labels:
     app: probler-k8s
 spec:
+  serviceName: probler-k8s
+  replicas: 3
   selector:
     matchLabels:
       app: probler-k8s

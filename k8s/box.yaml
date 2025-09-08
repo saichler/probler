@@ -8,13 +8,15 @@ metadata:
 ---
 
 apiVersion: apps/v1
-kind: DaemonSet
+kind: StatefulSet 
 metadata:
   namespace: probler-box
   name: probler-box
   labels:
     app: probler-box
 spec:
+  serviceName: probler-box
+  replicas: 3
   selector:
     matchLabels:
       app: probler-box
