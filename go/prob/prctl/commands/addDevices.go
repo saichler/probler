@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -15,26 +14,17 @@ import (
 func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
 
+	deviceList := &types.DeviceList{List: make([]*types.Device, 0)}
+
 	if cmd == "all" || cmd == "cluster" {
 		cluster := creates.CreateCluster("./lab.conf", "lab", 0)
-		rc.POST("0/"+devices.ServiceName, "Device", "", "", cluster)
-		time.Sleep(time.Second * 2)
+		deviceList.List = append(deviceList.List, cluster)
 	}
 
 	if cmd == "all" || cmd == "base" {
 		for i := 1; i <= 19; i++ {
 			device := creates.CreateDevice("10.20.30."+strconv.Itoa(i), 0)
-			resp, err := rc.POST("0/"+devices.ServiceName, "Device",
-				"", "", device)
-			if err != nil {
-				fmt.Println(err.Error())
-				//return
-			}
-			_, ok := resp.(*types.Device)
-			if ok {
-				fmt.Println("Added ", device.DeviceId, " Successfully")
-			}
-			//time.Sleep(time.Millisecond * 100)
+			deviceList.List = append(deviceList.List, device)
 		}
 	}
 
@@ -43,14 +33,9 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		sub := 10
 		for i := 1; i <= 1000; i++ {
 			device := creates.CreateDevice("30.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
-			err := addSingleDevice(i, device, rc, resources)
-			for err != nil {
-				err = addSingleDevice(i, device, rc, resources)
-			}
-			fmt.Println(i, " Added ", device.DeviceId, " Successfully")
-			//time.Sleep(time.Millisecond * 500)
+			deviceList.List = append(deviceList.List, device)
 			ip++
-			if ip >= 255 {
+			if ip >= 254 {
 				sub++
 				ip = 0
 			}
@@ -62,14 +47,9 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		sub := 10
 		for i := 1; i <= 1000; i++ {
 			device := creates.CreateDevice("40.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
-			err := addSingleDevice(i, device, rc, resources)
-			for err != nil {
-				err = addSingleDevice(i, device, rc, resources)
-			}
-			fmt.Println(i, " Added ", device.DeviceId, " Successfully")
-			//time.Sleep(time.Millisecond * 500)
+			deviceList.List = append(deviceList.List, device)
 			ip++
-			if ip >= 255 {
+			if ip >= 254 {
 				sub++
 				ip = 0
 			}
@@ -81,33 +61,15 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		sub := 10
 		for i := 1; i <= 1000; i++ {
 			device := creates.CreateDevice("50.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
-			err := addSingleDevice(i, device, rc, resources)
-			for err != nil {
-				err = addSingleDevice(i, device, rc, resources)
-			}
-			fmt.Println(i, " Added ", device.DeviceId, " Successfully")
-			//time.Sleep(time.Millisecond * 500)
+			deviceList.List = append(deviceList.List, device)
 			ip++
-			if ip >= 255 {
+			if ip >= 254 {
 				sub++
 				ip = 0
 			}
 		}
 	}
-}
 
-func addSingleDevice(i int, device *types.Device, rc *client.RestClient, resources common2.IResources) error {
-	resp, err := rc.POST("0/"+devices.ServiceName, "Device", "", "", device)
-	if err != nil {
-		fmt.Println(err.Error())
-		//return
-	}
-	_, ok := resp.(*types.Device)
-	if ok {
-		fmt.Println(i, " Added ", device.DeviceId, " Successfully")
-		return nil
-	}
-	fmt.Println(i, " Addeding ", device.DeviceId, " failed")
-	time.Sleep(time.Second)
-	return err
+	rc.POST("0/"+devices.ServiceName, "Device", "", "", deviceList)
+	time.Sleep(time.Second * 2)
 }
