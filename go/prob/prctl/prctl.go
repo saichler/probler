@@ -44,6 +44,7 @@ func main() {
 	resources := common.CreateResources2("client", "./")
 	resources.Introspector().Inspect(&types.Pollaris{})
 	resources.Introspector().Inspect(&types.Device{})
+	resources.Introspector().Inspect(&types.DeviceList{})
 	resources.Introspector().Inspect(&types2.Health{})
 	resources.Introspector().Inspect(&types2.Top{})
 	resources.Introspector().Inspect(&types3.K8SCluster{})
