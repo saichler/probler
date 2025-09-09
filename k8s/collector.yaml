@@ -8,14 +8,13 @@ metadata:
 ---
 
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   namespace: probler-collector
   name: probler-collector
   labels:
     app: probler-collector
 spec:
-  serviceName: probler-collector
   replicas: 12
   selector:
     matchLabels:
