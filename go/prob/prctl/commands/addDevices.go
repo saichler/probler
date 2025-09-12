@@ -36,7 +36,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 			device := creates.CreateDevice("30.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
 			deviceList.List = append(deviceList.List, device)
 			ip++
-			if ip >= 254 {
+			if ip > 254 {
 				sub++
 				ip = 0
 			}
@@ -50,7 +50,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 			device := creates.CreateDevice("40.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
 			deviceList.List = append(deviceList.List, device)
 			ip++
-			if ip >= 254 {
+			if ip > 254 {
 				sub++
 				ip = 0
 			}
@@ -64,7 +64,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 			device := creates.CreateDevice("50.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
 			deviceList.List = append(deviceList.List, device)
 			ip++
-			if ip >= 254 {
+			if ip > 254 {
 				sub++
 				ip = 0
 			}
@@ -78,7 +78,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 			device := creates.CreateDevice("50.40."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
 			deviceList.List = append(deviceList.List, device)
 			ip++
-			if ip >= 254 {
+			if ip > 254 {
 				sub++
 				ip = 0
 			}
@@ -92,7 +92,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 			device := creates.CreateDevice("50.40."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
 			deviceList.List = append(deviceList.List, device)
 			ip++
-			if ip >= 254 {
+			if ip > 254 {
 				sub++
 				ip = 0
 			}

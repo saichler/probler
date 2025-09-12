@@ -8,6 +8,7 @@ import (
 	"github.com/saichler/l8utils/go/utils/web"
 	common2 "github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/types"
+	"github.com/saichler/reflect/go/reflect/introspecting"
 )
 
 const (
@@ -23,9 +24,10 @@ type TopologyService struct {
 // Activate implements ifs.IServiceHandler
 func (this *TopologyService) Activate(serviceName string, serviceArea byte,
 	r ifs.IResources, l ifs.IServiceCacheListener, args ...interface{}) error {
-	r.Introspector().Inspect(&types.NetworkTopology{})
+	node, _ := r.Introspector().Inspect(&types.NetworkTopology{})
+	introspecting.AddPrimaryKeyDecorator(node, "TopologyId")
 	r.Introspector().Inspect(&types.NetworkDevice{})
-	this.cache = dcache.NewDistributedCache(ServiceName, ServiceArea, "NetworkTopology", "TopologyId", l, r)
+	this.cache = dcache.NewDistributedCache(ServiceName, ServiceArea, &types.NetworkTopology{}, nil, l, r)
 	r.Logger().Info("Activated Topology on ", serviceName, " area ", serviceArea)
 	return nil
 }
@@ -41,7 +43,7 @@ func (this *TopologyService) Post(elements ifs.IElements, vnic ifs.IVNic) ifs.IE
 	if !ok {
 		return nil
 	}
-	_, err := this.cache.Put(t.TopologyId, t, elements.Notification())
+	_, err := this.cache.Put(t, elements.Notification())
 	if err != nil {
 		vnic.Resources().Logger().Error("Post failed with ", err.Error())
 	} else {
@@ -52,7 +54,8 @@ func (this *TopologyService) Post(elements ifs.IElements, vnic ifs.IVNic) ifs.IE
 
 // Put implements ifs.IServiceHandler
 func (this *TopologyService) Put(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
-	gen := this.cache.Get("topo")
+	filter := &types.NetworkTopology{TopologyId: "topo"}
+	gen, _ := this.cache.Get(filter)
 	if gen == nil {
 		vnic.Resources().Logger().Info("Requesting Device Data")
 		q, e := object.NewQuery("select * from NetworkDevice where Id=*", vnic.Resources())
@@ -76,7 +79,7 @@ func (this *TopologyService) Put(elements ifs.IElements, vnic ifs.IVNic) ifs.IEl
 		vnic.Resources().Logger().Info("Generating Network Topology")
 		topo := generateTopology(list)
 		topo.TopologyId = "topo"
-		_, err := this.cache.Put("topo", topo, false)
+		_, err := this.cache.Put(topo, false)
 		if err != nil {
 			vnic.Resources().Logger().Error("Cache error: ", err.Error())
 		}
@@ -101,7 +104,8 @@ func (this *TopologyService) GetCopy(elements ifs.IElements, vnic ifs.IVNic) ifs
 
 // Get implements ifs.IServiceHandler
 func (this *TopologyService) Get(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
-	topo := this.cache.Get("topo")
+	filter := &types.NetworkTopology{TopologyId: "topo"}
+	topo, _ := this.cache.Get(filter)
 	if topo == nil {
 		vnic.Resources().Logger().Error("No Topology")
 	}
