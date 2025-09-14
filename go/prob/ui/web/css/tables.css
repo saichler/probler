@@ -383,10 +383,18 @@ tbody tr:hover td {
     min-height: auto;
 }
 
+.devices-section .section-content {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    overflow: auto !important;
+    position: relative;
+}
+
 .devices-section .table-container {
     max-height: none;
     height: auto;
     overflow-y: visible;
+    position: relative;
 }
 
 /* Ensure sticky headers work in device table */
