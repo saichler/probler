@@ -55,6 +55,9 @@ func Online(any interface{}) bool {
 		return false
 	}
 	nd := any.(*types2.NetworkDevice)
+	if nd.Equipmentinfo == nil {
+		return false
+	}
 	if nd.Equipmentinfo.DeviceStatus == types2.DeviceStatus_DEVICE_STATUS_ONLINE {
 		return true
 	}
