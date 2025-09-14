@@ -383,17 +383,24 @@ tbody tr:hover td {
     min-height: auto;
 }
 
+/* Ensure main content doesn't scroll when viewing devices */
+#devices-app .main-content {
+    overflow-y: visible !important;
+    overflow: visible !important;
+}
+
 .devices-section .section-content {
-    max-height: calc(100vh - 200px);
-    overflow-y: auto;
-    overflow: auto !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+    overflow: visible !important;
     position: relative;
 }
 
 .devices-section .table-container {
-    max-height: none;
-    height: auto;
-    overflow-y: visible;
+    max-height: none !important;
+    height: auto !important;
+    overflow-y: visible !important;
+    overflow: visible !important;
     position: relative;
 }
 
@@ -546,9 +553,10 @@ tbody tr:hover td {
     }
 
     .devices-section .table-container {
-        max-height: none;
-        height: auto;
-        overflow-y: visible;
+        max-height: none !important;
+        height: auto !important;
+        overflow-y: visible !important;
+        overflow: visible !important;
     }
 
     .performance-metrics {
@@ -569,9 +577,10 @@ tbody tr:hover td {
     }
 
     .devices-section .table-container {
-        max-height: none;
-        height: auto;
-        overflow-y: visible;
+        max-height: none !important;
+        height: auto !important;
+        overflow-y: visible !important;
+        overflow: visible !important;
     }
 
     .table-controls-row {

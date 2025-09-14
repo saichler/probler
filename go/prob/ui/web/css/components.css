@@ -91,7 +91,7 @@
 .app-header {
     background: linear-gradient(135deg, var(--crm-white) 0%, var(--crm-gray-50) 100%);
     border-radius: var(--crm-border-radius);
-    padding: 24px;
+    padding: 19px;
     margin-bottom: 24px;
     margin-top: 0;
     border: 1px solid var(--crm-gray-200);
