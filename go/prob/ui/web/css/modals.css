@@ -728,6 +728,61 @@
     display: none;
 }
 
+.network-decoration {
+    position: absolute;
+    font-size: 48px;
+    color: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+    animation: float 6s ease-in-out infinite;
+    z-index: 1;
+}
+
+.network-decoration:nth-child(2) {
+    top: 15%;
+    left: 10%;
+    animation-delay: -1s;
+}
+
+.network-decoration:nth-child(3) {
+    top: 25%;
+    right: 15%;
+    animation-delay: -2s;
+}
+
+.network-decoration:nth-child(4) {
+    bottom: 30%;
+    left: 8%;
+    animation-delay: -3s;
+}
+
+.network-decoration:nth-child(5) {
+    bottom: 20%;
+    right: 12%;
+    animation-delay: -4s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateY(-20px);
+        opacity: 0.5;
+    }
+}
+
+.login-screen .version-info {
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 300;
+    z-index: 10;
+    text-align: right;
+}
+
 .login-container {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);

@@ -384,7 +384,19 @@ tbody tr:hover td {
 }
 
 .devices-section .table-container {
-    max-height: 800px;
+    max-height: none;
+    height: auto;
+    overflow-y: visible;
+}
+
+/* Ensure sticky headers work in device table */
+#devicesTable th {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background: linear-gradient(135deg, var(--crm-gray-50) 0%, var(--crm-white) 100%);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--crm-gray-200);
 }
 
 /* Services Table Container - No scrolling, show all rows */
@@ -525,6 +537,12 @@ tbody tr:hover td {
         max-height: 600px;
     }
 
+    .devices-section .table-container {
+        max-height: none;
+        height: auto;
+        overflow-y: visible;
+    }
+
     .performance-metrics {
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 16px;
@@ -540,6 +558,12 @@ tbody tr:hover td {
     .table-container {
         border-radius: var(--crm-border-radius-sm);
         max-height: 500px;
+    }
+
+    .devices-section .table-container {
+        max-height: none;
+        height: auto;
+        overflow-y: visible;
     }
 
     .table-controls-row {
