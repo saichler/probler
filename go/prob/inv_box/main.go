@@ -31,10 +31,26 @@ func main() {
 	_, err := nic.Resources().Services().Activate(inventory.ServiceType, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX,
 		nic.Resources(), nic, "Id", &types2.NetworkDevice{}, &types.DeviceServiceInfo{ServiceName: common2.ORM_SERVICE, ServiceArea: 0})
 
+	invCenter := inventory.Inventory(res, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX)
+	invCenter.AddStats("Total", Total)
+	invCenter.AddStats("Online", Online)
+
 	if err != nil {
 		res.Logger().Error(err)
 	}
 
 	res.Logger().SetLogLevel(ifs.Error_Level)
 	common2.WaitForSignal(nic.Resources())
+}
+
+func Total(any interface{}) bool {
+	return true
+}
+
+func Online(any interface{}) bool {
+	nd := any.(*types2.NetworkDevice)
+	if nd.Equipmentinfo.DeviceStatus == types2.DeviceStatus_DEVICE_STATUS_ONLINE {
+		return true
+	}
+	return false
 }

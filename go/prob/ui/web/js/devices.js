@@ -311,6 +311,9 @@ async function loadDevices(page = 1) {
             const apiData = await response.json();
             console.log('Successfully fetched device data from API:', apiData);
 
+            // Store the API response globally for dashboard stats access
+            window.lastApiResponse = apiData;
+
             // Convert API response to expected format if needed
             if (apiData && apiData.list && Array.isArray(apiData.list)) {
                 devicesData = convertApiDataToDeviceFormat(apiData.list);
@@ -319,11 +322,15 @@ async function loadDevices(page = 1) {
                     device.originalApiData = apiData.list[index];
                 });
 
-                // Update pagination info from server response
-                totalPages = apiData.totalPages || 1;
+                // Update pagination info using stats.Total instead of totalPages
+                if (apiData.stats && apiData.stats.Total) {
+                    totalPages = Math.ceil(apiData.stats.Total / 25);
+                } else {
+                    totalPages = apiData.totalPages || 1;
+                }
                 currentPage = page;
 
-                console.log(`Loaded ${devicesData.length} devices from API, Page ${page} of ${totalPages}`);
+                console.log(`Loaded ${devicesData.length} devices from API, Page ${page} of ${totalPages} (Total devices: ${apiData.stats?.Total || 'unknown'})`);
                 renderDevicesTable();
                 // Update dashboard stats with new device data
                 if (typeof loadDashboardStats === 'function') {
@@ -912,7 +919,14 @@ function createPageButton(pageNumber) {
 function updateDeviceCountDisplay() {
     const startIndex = (currentPage - 1) * devicesPerPage;
     const endIndex = Math.min(startIndex + filteredDevicesData.length, startIndex + devicesPerPage);
-    const totalDevices = totalPages * devicesPerPage; // Approximate total
+
+    // Use stats.Total if available, otherwise fall back to estimation
+    let totalDevices;
+    if (window.lastApiResponse && window.lastApiResponse.stats && window.lastApiResponse.stats.Total) {
+        totalDevices = window.lastApiResponse.stats.Total;
+    } else {
+        totalDevices = totalPages * devicesPerPage; // Approximate total fallback
+    }
 
     // Remove existing count display if it exists
     const existingCount = document.querySelector('.devices-count');
@@ -923,8 +937,9 @@ function updateDeviceCountDisplay() {
     // Create count display
     const countDisplay = document.createElement('div');
     countDisplay.className = 'devices-count';
+    const totalIndicator = window.lastApiResponse && window.lastApiResponse.stats && window.lastApiResponse.stats.Total ? '' : '~';
     countDisplay.innerHTML = `
-        <span>Showing ${startIndex + 1}-${endIndex} of ~${totalDevices} devices (Page ${currentPage} of ${totalPages})</span>
+        <span>Showing ${startIndex + 1}-${endIndex} of ${totalIndicator}${totalDevices} devices (Page ${currentPage} of ${totalPages})</span>
     `;
 
     // Insert count display before the table

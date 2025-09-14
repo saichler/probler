@@ -126,7 +126,29 @@ async function loadDashboardStats() {
 }
 
 function calculateDeviceStats() {
-    // Access devicesData from devices.js - if not available, return zeros
+    // Check if we have server stats from the API response
+    if (typeof window.lastApiResponse !== 'undefined' && window.lastApiResponse && window.lastApiResponse.stats) {
+        const serverStats = window.lastApiResponse.stats;
+        const totalDevices = serverStats.Total || 0;
+        const onlineDevices = serverStats.Online || 0;
+        const offlineDevices = totalDevices - onlineDevices;
+
+        console.log(`Dashboard Stats from server: Total=${totalDevices}, Online=${onlineDevices}, Offline=${offlineDevices}`);
+
+        return {
+            totalDevices: totalDevices,
+            onlineDevices: onlineDevices,
+            offlineDevices: offlineDevices,
+            warningDevices: 0, // Keep for compatibility
+            criticalDevices: 0, // Keep for compatibility
+            partialDevices: 0, // Keep for compatibility
+            maintenanceDevices: 0, // Keep for compatibility
+            criticalAlarms: 2, // Keep existing alarm data for now
+            totalAlarms: 15
+        };
+    }
+
+    // Fallback: Access devicesData from devices.js - if not available, return zeros
     if (typeof devicesData === 'undefined' || !Array.isArray(devicesData)) {
         console.warn('devicesData not available, returning default stats');
         return {
@@ -138,7 +160,7 @@ function calculateDeviceStats() {
         };
     }
 
-    // With server-side paging, calculate total devices as 25 * totalPages
+    // With server-side paging, calculate total devices as 25 * totalPages (fallback method)
     const totalDevicesEstimate = (typeof totalPages !== 'undefined' && totalPages > 0) ? 25 * totalPages : devicesData.length;
     let onlineDevices = 0;
     let offlineDevices = 0;
@@ -173,7 +195,7 @@ function calculateDeviceStats() {
         }
     });
 
-    console.log(`Dashboard Stats: Total=${totalDevicesEstimate}, Online=${onlineDevices}, Offline=${offlineDevices}, Warning=${warningDevices}, Critical=${criticalDevices}, Partial=${partialDevices}, Maintenance=${maintenanceDevices}`);
+    console.log(`Dashboard Stats (fallback): Total=${totalDevicesEstimate}, Online=${onlineDevices}, Offline=${offlineDevices}, Warning=${warningDevices}, Critical=${criticalDevices}, Partial=${partialDevices}, Maintenance=${maintenanceDevices}`);
 
     return {
         totalDevices: totalDevicesEstimate,
