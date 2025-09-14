@@ -5,6 +5,7 @@ let devicesData = [];
 let filteredDevicesData = [];
 let currentPage = 1;
 let devicesPerPage = 25;
+let totalPages = 1;
 let currentSortColumn = null;
 let currentSortDirection = 'asc';
 let columnFilters = {};
@@ -283,21 +284,22 @@ function getComponentStatus(status) {
     return statusMap[status] || 'unknown';
 }
 
-async function loadDevices() {
+async function loadDevices(page = 1) {
     showLoading('devicesLoading');
-    
+
     try {
         // Try to fetch data from the REST API endpoint first
         const apiEndpoint = '/probler/0/NetDev';
-        const bodyParam = '{"text":"select * from NetworkDevice where Id=*", "rootType":"networkdevice", "properties":["*"], "criteria":{"condition":{"comparator":{"left":"id", "oper":"=", "right":"*"}}}, "matchCase":true}';
+        const serverPage = page - 1; // Convert UI page (1-based) to server page (0-based)
+        const bodyParam = `{"text":"select * from NetworkDevice where Id=* limit 25 page ${serverPage}", "rootType":"networkdevice", "properties":["*"], "criteria":{"condition":{"comparator":{"left":"id", "oper":"=", "right":"*"}}}, "limit":25, "page":${serverPage}, "matchCase":true}`;
 
-        console.log('Attempting to fetch devices from API:', apiEndpoint);
-        
+        console.log('Attempting to fetch devices from API:', apiEndpoint, 'Page:', page);
+
         // Pass the body parameter as URL query parameter for GET request
         const queryParams = new URLSearchParams({
             body: bodyParam
         });
-        
+
         const response = await fetch(`${apiEndpoint}?${queryParams}`, {
             method: 'GET',
             headers: {
@@ -308,7 +310,7 @@ async function loadDevices() {
         if (response.ok) {
             const apiData = await response.json();
             console.log('Successfully fetched device data from API:', apiData);
-            
+
             // Convert API response to expected format if needed
             if (apiData && apiData.list && Array.isArray(apiData.list)) {
                 devicesData = convertApiDataToDeviceFormat(apiData.list);
@@ -316,7 +318,12 @@ async function loadDevices() {
                 devicesData.forEach((device, index) => {
                     device.originalApiData = apiData.list[index];
                 });
-                console.log(`Loaded ${devicesData.length} devices from API`);
+
+                // Update pagination info from server response
+                totalPages = apiData.total_pages || 1;
+                currentPage = page;
+
+                console.log(`Loaded ${devicesData.length} devices from API, Page ${page} of ${totalPages}`);
                 renderDevicesTable();
                 // Update dashboard stats with new device data
                 if (typeof loadDashboardStats === 'function') {
@@ -717,19 +724,15 @@ async function loadDevices() {
 }
 
 function renderDevicesTable() {
-    // Apply filters and sorting
+    // For server-side paging, we don't need client-side pagination slicing
+    // Apply filters and sorting (but server handles pagination)
     applyFiltersAndSorting();
-    
+
     const tbody = document.getElementById('devicesTableBody');
     tbody.innerHTML = '';
 
-    // Calculate pagination
-    const startIndex = (currentPage - 1) * devicesPerPage;
-    const endIndex = startIndex + devicesPerPage;
-    const pageDevices = filteredDevicesData.slice(startIndex, endIndex);
-
-    // Render devices for current page
-    pageDevices.forEach(device => {
+    // Render all devices from server response (already paginated)
+    filteredDevicesData.forEach(device => {
         const row = document.createElement('tr');
         row.className = 'device-row';
         row.onclick = () => showDeviceDetails(device);
@@ -824,7 +827,7 @@ function applyFiltersAndSorting() {
 }
 
 function updatePaginationControls() {
-    const totalPages = Math.ceil(filteredDevicesData.length / devicesPerPage);
+    // Use totalPages from server response instead of calculating from client data
     
     // Remove existing pagination if it exists
     const existingPagination = document.querySelector('.devices-pagination');
@@ -843,8 +846,7 @@ function updatePaginationControls() {
     prevButton.disabled = currentPage === 1;
     prevButton.onclick = () => {
         if (currentPage > 1) {
-            currentPage--;
-            renderDevicesTable();
+            loadDevices(currentPage - 1);
         }
     };
     paginationContainer.appendChild(prevButton);
@@ -887,8 +889,7 @@ function updatePaginationControls() {
     nextButton.disabled = currentPage === totalPages;
     nextButton.onclick = () => {
         if (currentPage < totalPages) {
-            currentPage++;
-            renderDevicesTable();
+            loadDevices(currentPage + 1);
         }
     };
     paginationContainer.appendChild(nextButton);
@@ -903,31 +904,29 @@ function createPageButton(pageNumber) {
     button.className = `pagination-btn ${pageNumber === currentPage ? 'active' : ''}`;
     button.textContent = pageNumber;
     button.onclick = () => {
-        currentPage = pageNumber;
-        renderDevicesTable();
+        loadDevices(pageNumber);
     };
     return button;
 }
 
 function updateDeviceCountDisplay() {
     const startIndex = (currentPage - 1) * devicesPerPage;
-    const endIndex = Math.min(startIndex + devicesPerPage, filteredDevicesData.length);
-    
+    const endIndex = Math.min(startIndex + filteredDevicesData.length, startIndex + devicesPerPage);
+    const totalDevices = totalPages * devicesPerPage; // Approximate total
+
     // Remove existing count display if it exists
     const existingCount = document.querySelector('.devices-count');
     if (existingCount) {
         existingCount.remove();
     }
-    
+
     // Create count display
     const countDisplay = document.createElement('div');
     countDisplay.className = 'devices-count';
     countDisplay.innerHTML = `
-        <span>Showing ${startIndex + 1}-${endIndex} of ${filteredDevicesData.length} devices</span>
-        ${filteredDevicesData.length !== devicesData.length ? 
-            `<span class="filter-info">(filtered from ${devicesData.length} total)</span>` : ''}
+        <span>Showing ${startIndex + 1}-${endIndex} of ~${totalDevices} devices (Page ${currentPage} of ${totalPages})</span>
     `;
-    
+
     // Insert count display before the table
     const tableContainer = document.querySelector('.devices-section .table-container');
     tableContainer.insertBefore(countDisplay, tableContainer.firstChild);
@@ -946,11 +945,8 @@ function sortDevicesByColumn(column) {
     // Update sort indicators in table headers
     updateSortIndicators(column);
     
-    // Reset to first page when sorting
-    currentPage = 1;
-    
-    // Re-render table
-    renderDevicesTable();
+    // Reset to first page when sorting and reload data
+    loadDevices(1);
 }
 
 function updateSortIndicators(activeColumn) {
@@ -979,11 +975,8 @@ function filterDevicesByColumn(column, value) {
         columnFilters[column] = value;
     }
     
-    // Reset to first page when filtering
-    currentPage = 1;
-    
-    // Re-render table
-    renderDevicesTable();
+    // Reset to first page when filtering and reload data
+    loadDevices(1);
 }
 
 function showDeviceDetails(device) {
@@ -1174,20 +1167,17 @@ function refreshDevices() {
 }
 
 function changeDevicesPerPage(value) {
-    if (value === 'all') {
-        devicesPerPage = filteredDevicesData.length || devicesData.length;
-    } else {
+    // Note: Server-side paging currently uses fixed page size of 25
+    // This function is kept for UI compatibility but doesn't change server behavior
+    if (value !== 'all') {
         const newPerPage = parseInt(value);
         if (newPerPage > 0) {
             devicesPerPage = newPerPage;
         }
     }
-    
-    // Reset to first page when changing page size
-    currentPage = 1;
-    
-    // Re-render table
-    renderDevicesTable();
+
+    // Reset to first page when changing page size and reload
+    loadDevices(1);
 }
 
 function clearAllFilters() {
@@ -1199,16 +1189,13 @@ function clearAllFilters() {
         input.value = '';
     });
     
-    // Reset current page
-    currentPage = 1;
-    
     // Reset per page selector to default
     const perPageSelect = document.getElementById('devicesPerPageSelect');
     if (perPageSelect) {
         perPageSelect.value = '25';
         devicesPerPage = 25;
     }
-    
-    // Re-render table
-    renderDevicesTable();
+
+    // Reset to first page and reload data
+    loadDevices(1);
 }
