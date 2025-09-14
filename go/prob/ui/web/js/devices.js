@@ -320,7 +320,7 @@ async function loadDevices(page = 1) {
                 });
 
                 // Update pagination info from server response
-                totalPages = apiData.total_pages || 1;
+                totalPages = apiData.totalPages || 1;
                 currentPage = page;
 
                 console.log(`Loaded ${devicesData.length} devices from API, Page ${page} of ${totalPages}`);

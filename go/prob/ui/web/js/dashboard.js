@@ -138,7 +138,8 @@ function calculateDeviceStats() {
         };
     }
 
-    const totalDevices = devicesData.length;
+    // With server-side paging, calculate total devices as 25 * totalPages
+    const totalDevicesEstimate = (typeof totalPages !== 'undefined' && totalPages > 0) ? 25 * totalPages : devicesData.length;
     let onlineDevices = 0;
     let offlineDevices = 0;
     let warningDevices = 0;
@@ -172,10 +173,10 @@ function calculateDeviceStats() {
         }
     });
 
-    console.log(`Dashboard Stats: Total=${totalDevices}, Online=${onlineDevices}, Offline=${offlineDevices}, Warning=${warningDevices}, Critical=${criticalDevices}, Partial=${partialDevices}, Maintenance=${maintenanceDevices}`);
+    console.log(`Dashboard Stats: Total=${totalDevicesEstimate}, Online=${onlineDevices}, Offline=${offlineDevices}, Warning=${warningDevices}, Critical=${criticalDevices}, Partial=${partialDevices}, Maintenance=${maintenanceDevices}`);
 
     return {
-        totalDevices: totalDevices,
+        totalDevices: totalDevicesEstimate,
         onlineDevices: onlineDevices,
         offlineDevices: offlineDevices,
         warningDevices: warningDevices,
