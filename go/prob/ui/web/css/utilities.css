@@ -1,82 +1,94 @@
 /* =============================================================================
-   UTILITIES - Status colors, loading states, animations, keyframes
+   UTILITIES - Modern CRM Dashboard Utility Classes
    ============================================================================= */
 
-/* Wabi-Sabi Organic Status Colors */
-.status-online { 
-    color: #6b8471; 
+/* Modern CRM Status Colors */
+.status-online {
+    color: var(--crm-success);
+    font-weight: 600;
 }
 
-.status-offline { 
-    color: #b85c47; 
+.status-offline {
+    color: var(--crm-danger);
+    font-weight: 600;
 }
 
-.status-warning { 
-    color: #937a54; 
+.status-warning {
+    color: var(--crm-warning);
+    font-weight: 600;
 }
 
-.status-critical { 
-    color: #b85c47; 
+.status-critical {
+    color: var(--crm-danger);
+    font-weight: 700;
 }
 
-.status-info { 
-    color: #6b8471; 
+.status-info {
+    color: var(--crm-info);
+    font-weight: 600;
 }
 
-.status-ok { 
-    color: #6b8471; 
+.status-ok {
+    color: var(--crm-success);
+    font-weight: 600;
 }
 
-.status-error { 
-    color: #b85c47; 
+.status-error {
+    color: var(--crm-danger);
+    font-weight: 600;
 }
 
-.status-unknown { 
-    color: #847b72; 
+.status-unknown {
+    color: var(--crm-gray-500);
+    font-weight: 500;
 }
 
-/* Wabi-Sabi Organic Alarm Severity Colors */
-.severity-critical { 
-    color: #b85c47; 
-    font-weight: bold; 
+/* Modern CRM Alarm Severity Colors */
+.severity-critical {
+    color: var(--crm-danger);
+    font-weight: 700;
 }
 
-.severity-major { 
-    color: #b85c47; 
-    font-weight: bold; 
+.severity-major {
+    color: #dc2626;
+    font-weight: 700;
 }
 
-.severity-minor { 
-    color: #937a54; 
+.severity-minor {
+    color: var(--crm-warning);
+    font-weight: 600;
 }
 
-.severity-warning { 
-    color: #937a54; 
+.severity-warning {
+    color: var(--crm-warning);
+    font-weight: 600;
 }
 
-.severity-info { 
-    color: #6b8471; 
+.severity-info {
+    color: var(--crm-info);
+    font-weight: 500;
 }
 
-/* Wabi-Sabi Organic Loading States */
+/* Modern CRM Loading States */
 .loading {
     display: none;
     text-align: center;
-    padding: 39px 41px 40px 39px;
-    color: #6b8471;
+    padding: 48px 40px;
+    color: var(--crm-gray-600);
+    font-weight: 500;
 }
 
 .spinner {
-    border: 4px solid rgba(107, 132, 113, 0.1);
-    border-radius: 51%;
-    border-top: 4px solid #6b8471;
-    width: 39px;
-    height: 41px;
-    animation: spin 1.1s linear infinite;
-    margin: 0 auto 19px;
+    border: 4px solid var(--crm-gray-200);
+    border-radius: 50%;
+    border-top: 4px solid var(--crm-primary);
+    width: 48px;
+    height: 48px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 24px;
 }
 
-/* Component Type Icons */
+/* Modern Component Type Icons */
 .icon-chassis::before { content: '🏢'; }
 .icon-module::before { content: '📦'; }
 .icon-port::before { content: '🔌'; }
@@ -87,59 +99,68 @@
 .icon-sensor::before { content: '🌡️'; }
 .icon-cable::before { content: '🔗'; }
 
-/* Topology Controls */
+/* Modern CRM Topology Controls */
 .topology-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--crm-white);
+    border-radius: var(--crm-border-radius);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--crm-gray-200);
+    box-shadow: var(--crm-shadow);
 }
 
 .control-group {
     display: flex;
-    gap: 10px;
+    gap: 12px;
+    align-items: center;
 }
 
 .zoom-controls {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 5px 10px;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--crm-gray-50);
+    border-radius: var(--crm-border-radius);
+    padding: 8px 16px;
+    border: 1px solid var(--crm-gray-200);
+    box-shadow: var(--crm-shadow-sm);
 }
 
 .zoom-level {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #0081c2;
-    min-width: 45px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--crm-primary);
+    min-width: 60px;
     text-align: center;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: 1px solid rgba(0, 129, 194, 0.3);
+    background: var(--crm-white);
+    padding: 8px 12px;
+    border-radius: var(--crm-border-radius-sm);
+    border: 1px solid var(--crm-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
 }
 
 .topology-legend {
     display: flex;
-    gap: 20px;
+    gap: 24px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .legend-item {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.85rem;
-    color: #333;
+    font-size: 14px;
+    color: var(--crm-gray-700);
+    font-weight: 500;
+    background: var(--crm-gray-50);
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--crm-gray-200);
 }
 
 .device-icon {
@@ -147,247 +168,407 @@
     height: 12px;
     border-radius: 50%;
     border: 2px solid;
+    flex-shrink: 0;
 }
 
 .device-icon.router {
-    background: #28a745;
-    border-color: #1e7e34;
+    background: var(--crm-success);
+    border-color: #059669;
 }
 
 .device-icon.switch {
-    background: #007bff;
-    border-color: #0056b3;
+    background: var(--crm-primary);
+    border-color: var(--crm-primary-dark);
 }
 
 .device-icon.server {
-    background: #6f42c1;
-    border-color: #59339d;
+    background: var(--crm-secondary);
+    border-color: #4f46e5;
 }
 
 .device-icon.firewall {
-    background: #dc3545;
-    border-color: #bd2130;
+    background: var(--crm-danger);
+    border-color: #dc2626;
 }
 
-/* Topology Container */
+/* Modern CRM Topology Container */
 .topology-container {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 129, 194, 0.1);
+    background: var(--crm-white);
+    border-radius: var(--crm-border-radius);
+    box-shadow: var(--crm-shadow-lg);
     overflow: hidden;
+    border: 1px solid var(--crm-gray-200);
 }
 
 .topology-info {
     display: flex;
     justify-content: space-around;
-    padding: 15px;
-    background: linear-gradient(135deg, rgba(0, 129, 194, 0.05), rgba(0, 90, 135, 0.1));
-    border-bottom: 1px solid rgba(0, 129, 194, 0.2);
+    padding: 20px;
+    background: linear-gradient(135deg, var(--crm-gray-50) 0%, var(--crm-white) 100%);
+    border-bottom: 1px solid var(--crm-gray-200);
 }
 
 .info-item {
     text-align: center;
+    padding: 12px;
+    border-radius: var(--crm-border-radius-sm);
+    background: var(--crm-white);
+    border: 1px solid var(--crm-gray-200);
+    box-shadow: var(--crm-shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--crm-shadow);
 }
 
 .info-label {
     display: block;
-    font-size: 0.8rem;
-    color: #666;
-    margin-bottom: 5px;
+    font-size: 12px;
+    color: var(--crm-gray-500);
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .info-value {
     display: block;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #0081c2;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--crm-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
 }
 
 .info-value.health-good {
-    color: #28a745;
+    color: var(--crm-success);
 }
 
 .info-value.health-warning {
-    color: #ffc107;
+    color: var(--crm-warning);
 }
 
 .info-value.health-critical {
-    color: #dc3545;
+    color: var(--crm-danger);
 }
 
-/* World Map Styles */
+/* Modern CRM World Map Styles */
 .world-map-container {
     position: relative;
     width: 100%;
-    height: 500px;
-    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    height: 600px;
+    background: linear-gradient(135deg, var(--crm-gray-50) 0%, var(--crm-white) 100%);
     overflow: hidden;
+    border-radius: var(--crm-border-radius);
+    border: 1px solid var(--crm-gray-200);
+    box-shadow: var(--crm-shadow);
 }
 
 .world-map {
     width: 100%;
     height: 100%;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     transform-origin: center center;
 }
 
 .continent {
     transition: all 0.3s ease;
+    fill: var(--crm-gray-200);
 }
 
 .continent:hover {
-    fill: rgba(0, 129, 194, 0.2);
+    fill: rgba(59, 130, 246, 0.2);
+    stroke: var(--crm-primary);
+    stroke-width: 1;
 }
 
 .ocean {
-    animation: oceanWave 10s ease-in-out infinite;
+    animation: oceanWave 15s ease-in-out infinite;
 }
 
-/* Network Device Styles */
+/* Modern CRM Network Device Styles */
 .network-device {
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .network-device:hover {
-    filter: url(#glow);
+    filter: url(#glow) brightness(1.2);
     stroke-width: 4;
+    transform: scale(1.1);
 }
 
 .device-router {
-    fill: #28a745;
-    stroke: #1e7e34;
+    fill: var(--crm-success);
+    stroke: #059669;
     stroke-width: 2;
 }
 
 .device-switch {
-    fill: #007bff;
-    stroke: #0056b3;
+    fill: var(--crm-primary);
+    stroke: var(--crm-primary-dark);
     stroke-width: 2;
 }
 
 .device-server {
-    fill: #6f42c1;
-    stroke: #59339d;
+    fill: var(--crm-secondary);
+    stroke: #4f46e5;
     stroke-width: 2;
 }
 
 .device-firewall {
-    fill: #dc3545;
-    stroke: #bd2130;
+    fill: var(--crm-danger);
+    stroke: #dc2626;
     stroke-width: 2;
 }
 
 .device-status-online {
-    filter: brightness(1.2);
+    filter: brightness(1.2) saturate(1.3);
+    animation: pulse 3s ease-in-out infinite;
 }
 
 .device-status-offline {
-    opacity: 0.5;
-    filter: grayscale(1);
+    opacity: 0.4;
+    filter: grayscale(1) brightness(0.8);
 }
 
 .device-status-warning {
-    fill: #ffc107;
-    stroke: #e0a800;
+    fill: var(--crm-warning);
+    stroke: #d97706;
+    animation: warningPulse 2s ease-in-out infinite;
 }
 
-/* Network Link Styles */
+/* Modern CRM Network Link Styles */
 .network-link {
-    stroke-width: 2;
+    stroke-width: 3;
     fill: none;
-    opacity: 0.7;
-    transition: all 0.3s ease;
+    opacity: 0.8;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .network-link.active {
-    stroke: #28a745;
+    stroke: var(--crm-success);
     animation: dataFlow 2s linear infinite;
-}
-
-.network-link.inactive {
-    stroke: #dc3545;
-    stroke-dasharray: 5,5;
-}
-
-.network-link.warning {
-    stroke: #ffc107;
-    stroke-dasharray: 3,3;
-}
-
-.network-link:hover {
-    stroke-width: 3;
     opacity: 1;
 }
 
-/* Hover Info Styles */
-.hover-info text {
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 11px;
+.network-link.inactive {
+    stroke: var(--crm-danger);
+    stroke-dasharray: 8,4;
+    opacity: 0.6;
 }
 
-/* Notification System - Compact top-right style */
+.network-link.warning {
+    stroke: var(--crm-warning);
+    stroke-dasharray: 6,3;
+    animation: warningFlow 1.5s ease-in-out infinite;
+}
+
+.network-link:hover {
+    stroke-width: 4;
+    opacity: 1;
+    filter: brightness(1.2);
+}
+
+/* Modern CRM Hover Info Styles */
+.hover-info text {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    fill: var(--crm-gray-800);
+}
+
+/* Modern CRM Notification System */
 .notification {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(0, 129, 194, 0.95);
-    color: white;
-    padding: 10px 16px;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 12px rgba(0, 129, 194, 0.3);
-    backdrop-filter: blur(10px);
-    z-index: 1000;
+    top: 24px;
+    right: 24px;
+    background: var(--crm-white);
+    color: var(--crm-gray-900);
+    padding: 16px 24px;
+    border-radius: var(--crm-border-radius);
+    border: 1px solid var(--crm-gray-200);
+    box-shadow: var(--crm-shadow-lg);
+    backdrop-filter: blur(20px);
+    z-index: 2000;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.85rem;
+    gap: 12px;
+    font-size: 14px;
     font-weight: 500;
-    max-width: 300px;
-    min-width: auto;
-    width: auto;
-    animation: slideInRight 0.3s ease;
+    max-width: 400px;
+    min-width: 320px;
+    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .notification button {
     background: none;
     border: none;
-    color: white;
-    font-size: 1rem;
+    color: var(--crm-gray-500);
+    font-size: 20px;
     cursor: pointer;
-    padding: 0;
-    margin-left: 6px;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-    line-height: 1;
+    padding: 4px;
+    margin-left: 8px;
+    border-radius: var(--crm-border-radius-sm);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .notification button:hover {
-    opacity: 1;
+    background: var(--crm-gray-100);
+    color: var(--crm-gray-700);
 }
 
 .notification-info {
-    background: rgba(0, 129, 194, 0.95);
-    border-color: rgba(0, 129, 194, 0.3);
+    border-left: 4px solid var(--crm-info);
 }
 
 .notification-success {
-    background: rgba(40, 167, 69, 0.95);
-    border-color: rgba(40, 167, 69, 0.3);
+    border-left: 4px solid var(--crm-success);
 }
 
 .notification-warning {
-    background: rgba(255, 193, 7, 0.95);
-    border-color: rgba(255, 193, 7, 0.3);
-    color: #333;
+    border-left: 4px solid var(--crm-warning);
 }
 
 .notification-error {
-    background: rgba(220, 53, 69, 0.95);
-    border-color: rgba(220, 53, 69, 0.3);
+    border-left: 4px solid var(--crm-danger);
 }
 
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.font-medium { font-weight: 500; }
+.font-normal { font-weight: 400; }
+
+.text-primary { color: var(--crm-primary); }
+.text-success { color: var(--crm-success); }
+.text-warning { color: var(--crm-warning); }
+.text-danger { color: var(--crm-danger); }
+.text-info { color: var(--crm-info); }
+
+.bg-primary { background-color: var(--crm-primary); }
+.bg-success { background-color: var(--crm-success); }
+.bg-warning { background-color: var(--crm-warning); }
+.bg-danger { background-color: var(--crm-danger); }
+.bg-info { background-color: var(--crm-info); }
+
+.border-primary { border-color: var(--crm-primary); }
+.border-success { border-color: var(--crm-success); }
+.border-warning { border-color: var(--crm-warning); }
+.border-danger { border-color: var(--crm-danger); }
+.border-info { border-color: var(--crm-info); }
+
+.rounded { border-radius: var(--crm-border-radius); }
+.rounded-sm { border-radius: var(--crm-border-radius-sm); }
+.rounded-lg { border-radius: var(--crm-border-radius-lg); }
+
+.shadow { box-shadow: var(--crm-shadow); }
+.shadow-sm { box-shadow: var(--crm-shadow-sm); }
+.shadow-lg { box-shadow: var(--crm-shadow-lg); }
+.shadow-xl { box-shadow: var(--crm-shadow-xl); }
+
+.hidden { display: none; }
+.visible { display: block; }
+
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.grid { display: grid; }
+
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+
+.gap-1 { gap: 4px; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.gap-6 { gap: 24px; }
+
+.p-1 { padding: 4px; }
+.p-2 { padding: 8px; }
+.p-3 { padding: 12px; }
+.p-4 { padding: 16px; }
+.p-6 { padding: 24px; }
+
+.m-1 { margin: 4px; }
+.m-2 { margin: 8px; }
+.m-3 { margin: 12px; }
+.m-4 { margin: 16px; }
+.m-6 { margin: 24px; }
+
+/* MODERN CRM KEYFRAME ANIMATIONS */
+
+/* Enhanced Spin Animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Modern Shine Animation */
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+/* Smooth Modal Slide In */
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Enhanced Tab Fade In */
+@keyframes fadeInTab {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Smooth Tree Expand Animation */
+@keyframes expandTree {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        max-height: 2000px;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced Slide Up Animation */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modern Slide In Right Animation */
 @keyframes slideInRight {
     from {
         transform: translateX(100%);
@@ -399,110 +580,137 @@
     }
 }
 
-@keyframes slideInLeft {
-    from {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-/* KEYFRAME ANIMATIONS */
-
-/* Spin Animation */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Shine Animation */
-@keyframes shine {
-    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-}
-
-/* Modal Slide In */
-@keyframes modalSlideIn {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-/* Tab Fade In */
-@keyframes fadeInTab {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Tree Expand Animation */
-@keyframes expandTree {
-    from {
-        opacity: 0;
-        max-height: 0;
-    }
-    to {
-        opacity: 1;
-        max-height: 1000px;
-    }
-}
-
-/* Float Animation (Login Background) */
-@keyframes float {
-    0%, 100% { transform: translateX(0px) translateY(0px); }
-    33% { transform: translateX(20px) translateY(-20px); }
-    66% { transform: translateX(-10px) translateY(10px); }
-}
-
-/* Slide Up Animation (Login Container) */
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Slide In Right Animation (Notifications) */
-@keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-/* Pulse Animation (Network Decorations) */
+/* Enhanced Pulse Animation */
 @keyframes pulse {
-    0%, 100% { opacity: 0.1; transform: scale(1); }
-    50% { opacity: 0.2; transform: scale(1.1); }
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.02);
+    }
 }
 
-/* Shake Animation (Error) */
+/* Warning Pulse Animation */
+@keyframes warningPulse {
+    0%, 100% {
+        opacity: 1;
+        filter: brightness(1);
+    }
+    50% {
+        opacity: 0.7;
+        filter: brightness(1.3);
+    }
+}
+
+/* Modern Shake Animation */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-    20%, 40%, 60%, 80% { transform: translateX(5px); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
 }
 
-/* Ocean Wave Animation */
+/* Enhanced Ocean Wave Animation */
 @keyframes oceanWave {
-    0%, 100% { fill: url(#oceanPattern); }
-    50% { fill: rgba(0, 129, 194, 0.05); }
+    0%, 100% {
+        fill: rgba(59, 130, 246, 0.1);
+    }
+    50% {
+        fill: rgba(59, 130, 246, 0.2);
+    }
 }
 
-/* Data Flow Animation */
+/* Modern Data Flow Animation */
 @keyframes dataFlow {
-    0% { stroke-dasharray: 0,20; }
-    100% { stroke-dasharray: 20,0; }
+    0% {
+        stroke-dasharray: 0,30;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dasharray: 30,0;
+        stroke-dashoffset: -30;
+    }
 }
 
-/* Responsive Utilities */
-@media (max-width: 768px) {
+/* Warning Flow Animation */
+@keyframes warningFlow {
+    0%, 100% {
+        stroke-dasharray: 6,3;
+        opacity: 0.8;
+    }
+    50% {
+        stroke-dasharray: 8,2;
+        opacity: 1;
+    }
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Scale In Animation */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Bounce In Animation */
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Modern CRM Responsive Design */
+@media (max-width: 1200px) {
     .topology-controls {
         flex-direction: column;
-        gap: 15px;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .control-group {
+        justify-content: center;
+    }
+
+    .topology-legend {
+        justify-content: center;
+    }
+
+    .world-map-container {
+        height: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    .topology-controls {
+        gap: 12px;
+        padding: 12px;
     }
 
     .control-group {
@@ -513,32 +721,90 @@
     .zoom-controls {
         order: -1;
         justify-content: center;
+        padding: 6px 12px;
     }
 
     .zoom-btn {
         padding: 8px 10px !important;
-        font-size: 0.8rem !important;
-        min-width: 35px;
+        font-size: 12px !important;
+        min-width: 32px;
     }
 
     .zoom-level {
-        font-size: 0.8rem;
-        min-width: 40px;
-        padding: 6px;
+        font-size: 12px;
+        min-width: 50px;
+        padding: 6px 8px;
     }
 
     .topology-legend {
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
         justify-content: center;
+    }
+
+    .legend-item {
+        font-size: 12px;
+        padding: 6px 10px;
     }
 
     .topology-info {
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .info-item {
+        padding: 8px;
+    }
+
+    .info-value {
+        font-size: 1.25rem;
+    }
+
+    .world-map-container {
+        height: 400px;
+    }
+
+    .notification {
+        min-width: 280px;
+        max-width: 320px;
+        right: 16px;
+        top: 16px;
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .topology-controls {
+        padding: 8px;
+    }
+
+    .topology-info {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .info-item {
+        padding: 6px;
+    }
+
+    .info-value {
+        font-size: 1.125rem;
     }
 
     .world-map-container {
         height: 300px;
+    }
+
+    .notification {
+        min-width: 260px;
+        max-width: calc(100vw - 32px);
+        font-size: 13px;
+    }
+
+    .spinner {
+        width: 32px;
+        height: 32px;
+        border-width: 3px;
     }
 }

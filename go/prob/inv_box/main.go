@@ -44,10 +44,16 @@ func main() {
 }
 
 func Total(any interface{}) bool {
+	if any == nil {
+		return false
+	}
 	return true
 }
 
 func Online(any interface{}) bool {
+	if any == nil {
+		return false
+	}
 	nd := any.(*types2.NetworkDevice)
 	if nd.Equipmentinfo.DeviceStatus == types2.DeviceStatus_DEVICE_STATUS_ONLINE {
 		return true
