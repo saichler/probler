@@ -9,6 +9,7 @@ option go_package = "./types";
 
 message NetworkDeviceList {
   repeated NetworkDevice list = 1;
+  int32 total_pages = 2;
 }
 
 message NetworkDevice {
