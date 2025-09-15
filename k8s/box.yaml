@@ -16,7 +16,7 @@ metadata:
     app: probler-box
 spec:
   serviceName: probler-box
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: probler-box
