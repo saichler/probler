@@ -1,6 +1,7 @@
 FROM golang:1.24-alpine AS build
 RUN apk update
 RUN apk upgrade
+RUN apk add net-snmp-dev
 RUN apk add gcc
 RUN apk add build-base
 RUN apk add git
