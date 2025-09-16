@@ -13,4 +13,5 @@ FROM saichler/probler-security:latest AS final
 COPY --from=build /home/src/github.com/saichler/build/prctl /home/run/prctl
 COPY lab.conf /home/run/lab.conf
 COPY add-devices /home/run/add-devices
+COPY probler.crt /home/run/probler.crt
 #ENTRYPOINT ["/home/run/vnet"]

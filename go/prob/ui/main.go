@@ -19,15 +19,16 @@ import (
 func main() {
 	resources := common2.CreateResources("vnet-" + os.Getenv("HOSTNAME"))
 	resources.Logger().SetLogLevel(ifs.Info_Level)
-	startWebServer()
+	go startWebServer(2443, "/data/probler-dev")
+	startWebServer(443, "/data/probler")
 }
 
-func startWebServer() {
+func startWebServer(port int, cert string) {
 	serverConfig := &server.RestServerConfig{
 		Host:           protocol.MachineIP,
-		Port:           443,
+		Port:           port,
 		Authentication: false,
-		CertName:       "/data/probler",
+		CertName:       cert,
 		Prefix:         common2.PREFIX,
 	}
 	svr, err := server.NewRestServer(serverConfig)
