@@ -19,7 +19,6 @@ import (
 func main() {
 	resources := common2.CreateResources("vnet-" + os.Getenv("HOSTNAME"))
 	resources.Logger().SetLogLevel(ifs.Info_Level)
-	go startWebServer(2443, "/data/probler-dev")
 	startWebServer(443, "/data/probler")
 }
 

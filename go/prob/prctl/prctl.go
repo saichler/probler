@@ -36,11 +36,10 @@ func main() {
 		cmd4 = os.Args[5]
 	}
 	clientConfig := &client.RestClientConfig{
-		Host:         host,
-		Port:         443,
-		Https:        true,
-		CertFileName: "probler.crt",
-		Prefix:       common.PREFIX,
+		Host:   host,
+		Port:   2443,
+		Https:  true,
+		Prefix: common.PREFIX,
 	}
 	resources := common.CreateResources2("client", "./")
 	resources.Introspector().Inspect(&types.Pollaris{})
