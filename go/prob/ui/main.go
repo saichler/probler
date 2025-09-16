@@ -27,7 +27,7 @@ func startWebServer() {
 		Host:           protocol.MachineIP,
 		Port:           443,
 		Authentication: false,
-		CertName:       "probler",
+		CertName:       "/data/probler",
 		Prefix:         common2.PREFIX,
 	}
 	svr, err := server.NewRestServer(serverConfig)
