@@ -58,7 +58,7 @@ func (this *TopologyService) Put(elements ifs.IElements, vnic ifs.IVNic) ifs.IEl
 	gen, _ := this.cache.Get(filter)
 	if gen == nil {
 		vnic.Resources().Logger().Info("Requesting Device Data")
-		q, e := object.NewQuery("select * from NetworkDevice where Id=*", vnic.Resources())
+		q, e := object.NewQuery("select * from NetworkDevice where Id=* limit 3000", vnic.Resources())
 		if e != nil {
 			return object.New(vnic.Resources().Logger().Error("Query error: ", e.Error()), nil)
 		}
