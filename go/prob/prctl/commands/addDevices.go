@@ -134,6 +134,9 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 
 	fmt.Println("Adding ", len(deviceList.List), " devices")
 
-	rc.POST("0/"+devices.ServiceName, "Devices", "", "", deviceList)
-	time.Sleep(time.Second * 2)
+	resp, err := rc.POST("0/"+devices.ServiceName, "Devices", "", "", deviceList)
+	if err != nil {
+		fmt.Println("Error", err)
+	}
+	fmt.Println("Response=", resp)
 }
