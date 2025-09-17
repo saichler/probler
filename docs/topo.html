@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probler Network Topology Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: #667eea;
+            color: white;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+        }
+
+        .btn.secondary:hover {
+            background: #5a6169;
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        #topology {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .node {
+            cursor: pointer;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            transition: all 0.3s ease;
+        }
+
+        .node:hover {
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+            transform: scale(1.1);
+        }
+
+        .node-vnet {
+            fill: #667eea;
+            stroke: #4c63d2;
+            stroke-width: 3;
+        }
+
+        .node-vnic {
+            fill: #48bb78;
+            stroke: #38a169;
+            stroke-width: 2;
+        }
+
+        .node-service {
+            fill: #ed8936;
+            stroke: #dd6b20;
+            stroke-width: 2;
+        }
+
+        .link {
+            stroke-opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .link-mesh {
+            stroke: #667eea;
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+            opacity: 0.6;
+        }
+
+        .link-vnic {
+            stroke: #48bb78;
+            stroke-width: 3;
+        }
+
+        .link-service {
+            stroke: #ed8936;
+            stroke-width: 2;
+        }
+
+        .link:hover {
+            stroke-opacity: 1;
+            stroke-width: 4;
+        }
+
+        .node-label {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            text-anchor: middle;
+            fill: #2d3748;
+            pointer-events: none;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 10000;
+            max-width: 300px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .legend {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .legend h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid;
+        }
+
+        .info-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .service-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .service-tag {
+            background: #ed8936;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .node.active {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            <div class="logo">🕸️</div>
+            Probler Network Topology
+        </h1>
+        <div class="controls">
+            <div class="stats" id="stats">Loading...</div>
+            <button class="btn" onclick="resetView()">Reset View</button>
+            <button class="btn secondary" onclick="togglePhysics()">Toggle Physics</button>
+        </div>
+    </div>
+
+    <div id="topology"></div>
+
+    <div class="legend">
+        <h3>Node Types</h3>
+        <div class="legend-item">
+            <div class="legend-color node-vnet" style="background: #667eea; border-color: #4c63d2;"></div>
+            <span>vNet (Virtual Network)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color node-vnic" style="background: #48bb78; border-color: #38a169;"></div>
+            <span>vNic (Virtual Interface)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color node-service" style="background: #ed8936; border-color: #dd6b20;"></div>
+            <span>Service</span>
+        </div>
+    </div>
+
+    <div class="info-panel" id="info-panel">
+        <h3>Topology Information</h3>
+        <p>Click on nodes to view detailed information. Hover to see connections.</p>
+    </div>
+
+    <div class="tooltip" id="tooltip" style="display: none;"></div>
+
+    <script>
+        // Health data - In a real implementation, this would be loaded from the server
+        const healthData = {"healths":{"01b83c26-e0f6-4826-872b-31ce4b2af56e":{"aUuid":"01b83c26-e0f6-4826-872b-31ce4b2af56e","zUuid":"28f2b29c-d464-4c0a-86f2-d1b0a7619766","alias":"web-node3","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}}}},"status":1,"startTime":"1758060727385"},"0adbc9c5-d034-4151-a69f-e1e16e86cb2a":{"aUuid":"0adbc9c5-d034-4151-a69f-e1e16e86cb2a","zUuid":"79be94f4-a20e-4604-9b8f-95d9586003aa","alias":"web-node1","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"WebService":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061274682","txMsgCount":"17","txDataCount":"6708","rxMsgCount":"8679","rxDataCont":"6669604","memoryUsage":"2253880","cpuUsage":0.18408134642356241},"startTime":"1758060726776"},"12971cb8-3a62-4025-ad04-a674b61a6933":{"aUuid":"12971cb8-3a62-4025-ad04-a674b61a6933","zUuid":"20241f8d-13b5-491d-a06d-d2016cba312a","alias":"collector-probler-collector-87dd4d7c5-t5n85","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061322747","txMsgCount":"246","txDataCount":"630956","rxMsgCount":"20010","rxDataCont":"18788756","memoryUsage":"4424496","cpuUsage":0.646756705345254},"startTime":"1758060714527"},"13f2efde-a12c-4391-b7e2-0bcae690e7de":{"aUuid":"13f2efde-a12c-4391-b7e2-0bcae690e7de","alias":"vnet-node5","services":{"serviceToAreas":{"Health":{"areas":{"0":true}}}},"status":1,"isVnet":true},"1bc68d4d-ae5d-4cc3-a40c-2784ab1a90bb":{"aUuid":"1bc68d4d-ae5d-4cc3-a40c-2784ab1a90bb","zUuid":"da8ea9f2-a0d0-4130-95da-3458b9eda8ec","alias":"topo-probler-topo-9tftw","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Topol":{"areas":{"0":true}}}},"status":1,"startTime":"1758060729244"},"20241f8d-13b5-491d-a06d-d2016cba312a":{"aUuid":"20241f8d-13b5-491d-a06d-d2016cba312a","alias":"vnet-node6","services":{"serviceToAreas":{"Health":{"areas":{"0":true}}}},"status":1,"isVnet":true},"253facad-93da-4e21-8e60-db5daccac55d":{"aUuid":"253facad-93da-4e21-8e60-db5daccac55d","zUuid":"79be94f4-a20e-4604-9b8f-95d9586003aa","alias":"parser-probler-parser-67b66669c5-d5nfd","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061322957","txMsgCount":"100","txDataCount":"198304","rxMsgCount":"15855","rxDataCont":"12601296","memoryUsage":"2403624","cpuUsage":0.22787028921998245},"startTime":"1758060712376"},"264d8030-d965-4dc0-9897-8d1c04bfc0dd":{"aUuid":"264d8030-d965-4dc0-9897-8d1c04bfc0dd","zUuid":"942c2bf7-3976-46b1-82a3-50ce3d40baa3","alias":"collector-probler-collector-87dd4d7c5-m6vtb","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061322855","txMsgCount":"2205","txDataCount":"2163104","rxMsgCount":"12600","rxDataCont":"11488428","memoryUsage":"8586712","cpuUsage":0.867597133157299},"startTime":"1758060714481"},"26c718be-ee2c-4126-ba35-d6b777fe172f":{"aUuid":"26c718be-ee2c-4126-ba35-d6b777fe172f","zUuid":"da8ea9f2-a0d0-4130-95da-3458b9eda8ec","alias":"orm-probler-orm-x85lc","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"R-orm":{"areas":{"0":true,"1":true}},"orm":{"areas":{"0":true,"1":true}}}},"status":1,"startTime":"1758060724257"},"28f2b29c-d464-4c0a-86f2-d1b0a7619766":{"aUuid":"28f2b29c-d464-4c0a-86f2-d1b0a7619766","alias":"vnet-node3","services":{"serviceToAreas":{"Health":{"areas":{"0":true}}}},"status":1,"isVnet":true},"2b6ea506-2cf8-41c2-b2d2-8c55ad1752be":{"aUuid":"2b6ea506-2cf8-41c2-b2d2-8c55ad1752be","zUuid":"da8ea9f2-a0d0-4130-95da-3458b9eda8ec","alias":"collector-probler-collector-87dd4d7c5-kwkw8","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"startTime":"1758060715448"},"44cdaef3-6c3e-4563-b7fb-c31ea77b822e":{"aUuid":"44cdaef3-6c3e-4563-b7fb-c31ea77b822e","zUuid":"13f2efde-a12c-4391-b7e2-0bcae690e7de","alias":"collector-probler-collector-87dd4d7c5-p8kfx","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"startTime":"1758060715066"},"4a5c5c04-10e4-4da9-be38-e19da7991e79":{"aUuid":"4a5c5c04-10e4-4da9-be38-e19da7991e79","zUuid":"20241f8d-13b5-491d-a06d-d2016cba312a","alias":"topo-probler-topo-7m55r","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Topol":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061335199","txMsgCount":"32","txDataCount":"13020","rxMsgCount":"8005","rxDataCont":"6719584","memoryUsage":"4151152","cpuUsage":0.3424657534246575},"startTime":"1758060727556"},"4c500937-65f9-44ab-a272-828272df602b":{"aUuid":"4c500937-65f9-44ab-a272-828272df602b","zUuid":"942c2bf7-3976-46b1-82a3-50ce3d40baa3","alias":"orm-probler-orm-bpnpc","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"R-orm":{"areas":{"0":true,"1":true}},"orm":{"areas":{"0":true,"1":true}}}},"status":1,"stats":{"lastMsgTime":"1758061328962","txMsgCount":"156","txDataCount":"71312","rxMsgCount":"8449","rxDataCont":"6513904","memoryUsage":"2183488","cpuUsage":0.3011481272350838},"startTime":"1758060722228"},"542caa34-ea8a-4323-bce4-1bade61a28ca":{"aUuid":"542caa34-ea8a-4323-bce4-1bade61a28ca","zUuid":"942c2bf7-3976-46b1-82a3-50ce3d40baa3","alias":"k8s-probler-k8s-2","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"K8sClr":{"areas":{"1":true}},"Plugin":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061330303","txMsgCount":"30","txDataCount":"12224","rxMsgCount":"7494","rxDataCont":"5808444","memoryUsage":"2985912","cpuUsage":0.30126153266804745},"startTime":"1758060723567"},"5bf10321-355a-43e6-a1a6-ace410fc3ed6":{"aUuid":"5bf10321-355a-43e6-a1a6-ace410fc3ed6","zUuid":"28f2b29c-d464-4c0a-86f2-d1b0a7619766","alias":"orm-probler-orm-sdc94","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"R-orm":{"areas":{"0":true,"1":true}},"orm":{"areas":{"0":true,"1":true}}}},"status":1,"startTime":"1758060723435"},"60881ae7-8f1a-4e67-9baf-b1c3a5f0c1c8":{"aUuid":"60881ae7-8f1a-4e67-9baf-b1c3a5f0c1c8","zUuid":"13f2efde-a12c-4391-b7e2-0bcae690e7de","alias":"collector-probler-collector-87dd4d7c5-m4lfm","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"startTime":"1758060714478"},"64957efe-c3ed-453b-8d6a-8873137772a6":{"aUuid":"64957efe-c3ed-453b-8d6a-8873137772a6","zUuid":"20241f8d-13b5-491d-a06d-d2016cba312a","alias":"box-probler-box-0","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061357143","txMsgCount":"4080","txDataCount":"4192892","rxMsgCount":"18837","rxDataCont":"15671564","memoryUsage":"5816672","cpuUsage":0.3412322274881517},"startTime":"1758060720910"},"6e79d06e-d5d2-4d79-bd4a-6875ef652290":{"aUuid":"6e79d06e-d5d2-4d79-bd4a-6875ef652290","zUuid":"28f2b29c-d464-4c0a-86f2-d1b0a7619766","alias":"collector-probler-collector-87dd4d7c5-44r7d","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"startTime":"1758060715345"},"72446730-e8ce-4da9-899f-fcbcdabac889":{"aUuid":"72446730-e8ce-4da9-899f-fcbcdabac889","zUuid":"20241f8d-13b5-491d-a06d-d2016cba312a","alias":"collector-probler-collector-87dd4d7c5-zlnlq","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061323812","txMsgCount":"261","txDataCount":"634988","rxMsgCount":"19509","rxDataCont":"18117408","memoryUsage":"5133896","cpuUsage":0.6268996960486323},"startTime":"1758060715224"},"758696e4-0576-47a5-878e-0e98996f98a9":{"aUuid":"758696e4-0576-47a5-878e-0e98996f98a9","zUuid":"942c2bf7-3976-46b1-82a3-50ce3d40baa3","alias":"parser-probler-parser-67b66669c5-qhrfw","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061318851","txMsgCount":"156","txDataCount":"379092","rxMsgCount":"11712","rxDataCont":"11296640","memoryUsage":"2133048","cpuUsage":0.3009781790820165},"startTime":"1758060712035"},"79be94f4-a20e-4604-9b8f-95d9586003aa":{"aUuid":"79be94f4-a20e-4604-9b8f-95d9586003aa","alias":"vnet-node1","services":{"serviceToAreas":{"Health":{"areas":{"0":true}}}},"status":1,"isVnet":true},"7a88c7cd-6f93-4293-9b63-a9185f8f852b":{"aUuid":"7a88c7cd-6f93-4293-9b63-a9185f8f852b","zUuid":"942c2bf7-3976-46b1-82a3-50ce3d40baa3","alias":"topo-probler-topo-kpz2g","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Topol":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061333977","txMsgCount":"33","txDataCount":"1101056","rxMsgCount":"4920","rxDataCont":"4802268","memoryUsage":"3952040","cpuUsage":0.3009215723152154},"startTime":"1758060727295"},"7fc94d76-65cf-46b3-9ba0-92ce35726aa8":{"aUuid":"7fc94d76-65cf-46b3-9ba0-92ce35726aa8","zUuid":"13f2efde-a12c-4391-b7e2-0bcae690e7de","alias":"topo-probler-topo-rj5cp","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Topol":{"areas":{"0":true}}}},"status":1,"startTime":"1758060727328"},"81991b71-1a89-47ce-8724-990a73194501":{"aUuid":"81991b71-1a89-47ce-8724-990a73194501","zUuid":"20241f8d-13b5-491d-a06d-d2016cba312a","alias":"parser-probler-parser-67b66669c5-gl5b9","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061320634","txMsgCount":"220","txDataCount":"562788","rxMsgCount":"19381","rxDataCont":"19031368","memoryUsage":"3218328","cpuUsage":0.3607366622365673},"startTime":"1758060712737"},"8a974671-7b12-439c-bb2f-de79874da8cf":{"aUuid":"8a974671-7b12-439c-bb2f-de79874da8cf","zUuid":"942c2bf7-3976-46b1-82a3-50ce3d40baa3","alias":"collector-probler-collector-87dd4d7c5-q8jcr","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061323572","txMsgCount":"233","txDataCount":"940040","rxMsgCount":"12337","rxDataCont":"10918040","memoryUsage":"7238112","cpuUsage":0.9405568096313018},"startTime":"1758060715128"},"8bba278e-97b4-4938-8d11-167894e9f456":{"aUuid":"8bba278e-97b4-4938-8d11-167894e9f456","zUuid":"13f2efde-a12c-4391-b7e2-0bcae690e7de","alias":"parser-probler-parser-67b66669c5-zdbtl","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"startTime":"1758060712057"},"920c4d22-b30c-430d-ae47-115b8edb6cce":{"aUuid":"920c4d22-b30c-430d-ae47-115b8edb6cce","zUuid":"28f2b29c-d464-4c0a-86f2-d1b0a7619766","alias":"collector-probler-collector-87dd4d7c5-ftkf2","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"startTime":"1758060714672"},"942c2bf7-3976-46b1-82a3-50ce3d40baa3":{"aUuid":"942c2bf7-3976-46b1-82a3-50ce3d40baa3","alias":"vnet-node4","services":{"serviceToAreas":{"Health":{"areas":{"0":true}}}},"status":1,"isVnet":true},"945d543e-7248-4947-8a37-158735ec111a":{"aUuid":"945d543e-7248-4947-8a37-158735ec111a","zUuid":"20241f8d-13b5-491d-a06d-d2016cba312a","alias":"orm-probler-orm-xqh9q","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"R-orm":{"areas":{"0":true,"1":true}},"orm":{"areas":{"0":true,"1":true}}}},"status":1,"stats":{"lastMsgTime":"1758061330194","txMsgCount":"162","txDataCount":"73584","rxMsgCount":"13291","rxDataCont":"10279684","memoryUsage":"3145656","cpuUsage":0.30377824188342506},"startTime":"1758060722638"},"965c109e-8896-4de6-a146-47a1286a23d2":{"aUuid":"965c109e-8896-4de6-a146-47a1286a23d2","zUuid":"28f2b29c-d464-4c0a-86f2-d1b0a7619766","alias":"k8s-probler-k8s-0","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"K8sClr":{"areas":{"1":true}},"Plugin":{"areas":{"0":true}}}},"status":1,"startTime":"1758060719418"},"99081c29-4bbd-4708-b614-99e0fb8166e2":{"aUuid":"99081c29-4bbd-4708-b614-99e0fb8166e2","zUuid":"13f2efde-a12c-4391-b7e2-0bcae690e7de","alias":"orm-probler-orm-qgmjz","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"R-orm":{"areas":{"0":true,"1":true}},"orm":{"areas":{"0":true,"1":true}}}},"status":1,"startTime":"1758060722120"},"992e9257-b9de-4bf6-882c-131a07a04165":{"aUuid":"992e9257-b9de-4bf6-882c-131a07a04165","zUuid":"28f2b29c-d464-4c0a-86f2-d1b0a7619766","alias":"parser-probler-parser-67b66669c5-w48rm","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"startTime":"1758060712688"},"9bc01594-c251-4311-8694-0d250f42f50b":{"aUuid":"9bc01594-c251-4311-8694-0d250f42f50b","zUuid":"20241f8d-13b5-491d-a06d-d2016cba312a","alias":"parser-probler-parser-67b66669c5-ljjnq","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061320082","txMsgCount":"286","txDataCount":"896560","rxMsgCount":"20027","rxDataCont":"20484560","memoryUsage":"2954344","cpuUsage":0.38044512079132586},"startTime":"1758060712097"},"acd790e7-c014-466b-9a65-40d3e90f4ff0":{"aUuid":"acd790e7-c014-466b-9a65-40d3e90f4ff0","zUuid":"13f2efde-a12c-4391-b7e2-0bcae690e7de","alias":"web-node5","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"WebService":{"areas":{"0":true}}}},"status":1,"startTime":"1758060724873"},"aecc4cd0-fc17-4a79-b6df-bbed5bde1402":{"aUuid":"aecc4cd0-fc17-4a79-b6df-bbed5bde1402","zUuid":"13f2efde-a12c-4391-b7e2-0bcae690e7de","alias":"parser-probler-parser-67b66669c5-mmmmp","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"startTime":"1758060712667"},"b6f6d4bc-5e78-4a39-aa2c-8f90866344a0":{"aUuid":"b6f6d4bc-5e78-4a39-aa2c-8f90866344a0","zUuid":"20241f8d-13b5-491d-a06d-d2016cba312a","alias":"web-node6","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"WebService":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061272223","txMsgCount":"18","txDataCount":"7060","rxMsgCount":"10751","rxDataCont":"8184848","memoryUsage":"3175680","cpuUsage":0.33012639124693455},"startTime":"1758060725243"},"b8e213ef-4e02-4be9-b2c5-2fc4d4fa85a4":{"aUuid":"b8e213ef-4e02-4be9-b2c5-2fc4d4fa85a4","zUuid":"79be94f4-a20e-4604-9b8f-95d9586003aa","alias":"topo-probler-topo-p4vdh","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Topol":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061337464","txMsgCount":"27","txDataCount":"11164","rxMsgCount":"4704","rxDataCont":"4274480","memoryUsage":"3485120","cpuUsage":0.21074815595363539},"startTime":"1758060729747"},"bbff9f23-bd80-46b8-a119-4daab91d022a":{"aUuid":"bbff9f23-bd80-46b8-a119-4daab91d022a","zUuid":"79be94f4-a20e-4604-9b8f-95d9586003aa","alias":"orm-probler-orm-6jd8d","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"R-orm":{"areas":{"0":true,"1":true}},"orm":{"areas":{"0":true,"1":true}}}},"status":1,"stats":{"lastMsgTime":"1758061333934","txMsgCount":"152","txDataCount":"66740","rxMsgCount":"11069","rxDataCont":"8625948","memoryUsage":"2218152","cpuUsage":0.17556179775280897},"startTime":"1758060724283"},"bef83b58-5ae9-49eb-88ec-eb1070d19c0a":{"aUuid":"bef83b58-5ae9-49eb-88ec-eb1070d19c0a","zUuid":"942c2bf7-3976-46b1-82a3-50ce3d40baa3","alias":"web-node4","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"WebService":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061326783","txMsgCount":"33","txDataCount":"222120","rxMsgCount":"7456","rxDataCont":"6417616","memoryUsage":"5567664","cpuUsage":0.420954162768943},"startTime":"1758060724584"},"c296efd3-0d0c-4e0b-8979-d49a3be4cfee":{"aUuid":"c296efd3-0d0c-4e0b-8979-d49a3be4cfee","zUuid":"28f2b29c-d464-4c0a-86f2-d1b0a7619766","alias":"parser-probler-parser-67b66669c5-pszcf","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"startTime":"1758060712012"},"caac7ce2-bc1a-4827-a076-7bfa0f1e4896":{"aUuid":"caac7ce2-bc1a-4827-a076-7bfa0f1e4896","zUuid":"28f2b29c-d464-4c0a-86f2-d1b0a7619766","alias":"topo-probler-topo-vpffk","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}}}},"status":1,"startTime":"1758060730503"},"ce457244-7083-4117-afa7-e9a1f881e353":{"aUuid":"ce457244-7083-4117-afa7-e9a1f881e353","zUuid":"da8ea9f2-a0d0-4130-95da-3458b9eda8ec","alias":"k8s-probler-k8s-1","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"K8sClr":{"areas":{"1":true}},"Plugin":{"areas":{"0":true}}}},"status":1,"startTime":"1758060721586"},"d2db5bd9-3d2d-4422-bb57-2e6c8dbf88e1":{"aUuid":"d2db5bd9-3d2d-4422-bb57-2e6c8dbf88e1","zUuid":"79be94f4-a20e-4604-9b8f-95d9586003aa","alias":"collector-probler-collector-87dd4d7c5-9m7th","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061325247","txMsgCount":"85","txDataCount":"112648","rxMsgCount":"15796","rxDataCont":"12423540","memoryUsage":"1264752","cpuUsage":0.1929824561403509},"startTime":"1758060714906"},"da8ea9f2-a0d0-4130-95da-3458b9eda8ec":{"aUuid":"da8ea9f2-a0d0-4130-95da-3458b9eda8ec","alias":"vnet-node2","services":{"serviceToAreas":{"Health":{"areas":{"0":true}}}},"status":1,"isVnet":true},"de2cd893-471d-49c4-bd99-1419ea0d57aa":{"aUuid":"de2cd893-471d-49c4-bd99-1419ea0d57aa","zUuid":"942c2bf7-3976-46b1-82a3-50ce3d40baa3","alias":"parser-probler-parser-67b66669c5-k9plb","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061319460","txMsgCount":"163","txDataCount":"848812","rxMsgCount":"11859","rxDataCont":"12725684","memoryUsage":"3487176","cpuUsage":0.2634054562558796},"startTime":"1758060712607"},"df61cc1e-1476-4ecb-8e9e-d3e05f60b945":{"aUuid":"df61cc1e-1476-4ecb-8e9e-d3e05f60b945","zUuid":"79be94f4-a20e-4604-9b8f-95d9586003aa","alias":"collector-probler-collector-87dd4d7c5-pd9fq","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061326225","txMsgCount":"85","txDataCount":"112656","rxMsgCount":"15793","rxDataCont":"12422172","memoryUsage":"3687016","cpuUsage":0.1929824561403509},"startTime":"1758060715614"},"e8af514c-75f8-4142-beee-d32578dd78e2":{"aUuid":"e8af514c-75f8-4142-beee-d32578dd78e2","zUuid":"da8ea9f2-a0d0-4130-95da-3458b9eda8ec","alias":"web-node2","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"WebService":{"areas":{"0":true}}}},"status":1,"startTime":"1758060726711"},"ecb5e0a2-8a93-4167-9aca-b213f452ba8d":{"aUuid":"ecb5e0a2-8a93-4167-9aca-b213f452ba8d","zUuid":"da8ea9f2-a0d0-4130-95da-3458b9eda8ec","alias":"parser-probler-parser-67b66669c5-2np9v","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"startTime":"1758060712773"},"f9f34575-4113-4c46-ace4-effc6d9a773c":{"aUuid":"f9f34575-4113-4c46-ace4-effc6d9a773c","zUuid":"da8ea9f2-a0d0-4130-95da-3458b9eda8ec","alias":"collector-probler-collector-87dd4d7c5-tn7dw","services":{"serviceToAreas":{"Collector":{"areas":{"0":true}},"Devices":{"areas":{"0":true}},"Health":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}},"exec":{"areas":{"0":true}}}},"status":1,"startTime":"1758060714808"},"fae061f0-b3d3-487a-a940-192893976f73":{"aUuid":"fae061f0-b3d3-487a-a940-192893976f73","zUuid":"79be94f4-a20e-4604-9b8f-95d9586003aa","alias":"parser-probler-parser-67b66669c5-wb9v7","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"stats":{"lastMsgTime":"1758061323840","txMsgCount":"100","txDataCount":"198296","rxMsgCount":"15857","rxDataCont":"12605116","memoryUsage":"2978968","cpuUsage":0.1926782273603083},"startTime":"1758060713160"},"fb99c122-4df4-44f2-9cd5-4711511c41e6":{"aUuid":"fb99c122-4df4-44f2-9cd5-4711511c41e6","zUuid":"da8ea9f2-a0d0-4130-95da-3458b9eda8ec","alias":"parser-probler-parser-67b66669c5-wrvms","services":{"serviceToAreas":{"Health":{"areas":{"0":true}},"P-K8sClr":{"areas":{"1":true}},"P-NetDev":{"areas":{"0":true}},"Plugin":{"areas":{"0":true}},"Pollaris":{"areas":{"0":true}}}},"status":1,"startTime":"1758060712127"}}};
+
+        // Global variables
+        let simulation;
+        let svg;
+        let nodes = [];
+        let links = [];
+        let physicsEnabled = true;
+        let tooltipTimeout = null;
+        let currentTooltipNode = null;
+
+        // Initialize the visualization
+        function init() {
+            processData();
+            createVisualization();
+            updateStats();
+        }
+
+        // Process health data into nodes and links
+        function processData() {
+            const vnets = [];
+            const vnics = [];
+            const services = [];
+
+            // First pass: identify vNets and vNics
+            Object.entries(healthData.healths).forEach(([id, health]) => {
+                if (health.isVnet) {
+                    vnets.push({
+                        id: health.aUuid,
+                        type: 'vnet',
+                        alias: health.alias,
+                        data: health
+                    });
+                } else {
+                    vnics.push({
+                        id: health.aUuid,
+                        type: 'vnic',
+                        alias: health.alias,
+                        zUuid: health.zUuid,
+                        data: health
+                    });
+                }
+            });
+
+            // Position vNets in a perfect circle
+            const centerX = window.innerWidth / 2;
+            const centerY = (window.innerHeight - 70) / 2;
+            const vnetRadius = 100; // Radius for vNet circle
+
+            vnets.forEach((vnet, i) => {
+                const angle = (2 * Math.PI * i) / vnets.length;
+                vnet.fx = centerX + vnetRadius * Math.cos(angle);
+                vnet.fy = centerY + vnetRadius * Math.sin(angle);
+                vnet.x = vnet.fx;
+                vnet.y = vnet.fy;
+                // Store angle for vNic positioning
+                vnet.angle = angle;
+            });
+
+            // Pre-position vNics along lines extending from vNets towards screen edges
+            const vnicsByVnet = new Map();
+            vnics.forEach(vnic => {
+                const connectedVnet = vnets.find(v => v.id === vnic.zUuid);
+                if (connectedVnet) {
+                    if (!vnicsByVnet.has(connectedVnet.id)) {
+                        vnicsByVnet.set(connectedVnet.id, []);
+                    }
+                    vnicsByVnet.get(connectedVnet.id).push(vnic);
+                    vnic.targetAngle = connectedVnet.angle;
+                    vnic.connectedVnet = connectedVnet;
+                }
+            });
+
+            // Position vNics in clusters along radial lines
+            vnicsByVnet.forEach((vnicList, vnetId) => {
+                const vnet = vnets.find(v => v.id === vnetId);
+                if (!vnet) return;
+
+                const angle = vnet.angle;
+                const baseRadius = 220; // Starting distance from center
+                const spacing = 40; // Space between vNics on the same line
+
+                vnicList.forEach((vnic, index) => {
+                    const radius = baseRadius + (index * spacing);
+                    vnic.x = centerX + radius * Math.cos(angle);
+                    vnic.y = centerY + radius * Math.sin(angle);
+                    vnic.targetRadius = radius;
+                });
+            });
+
+            // Second pass: create service nodes
+            vnics.forEach(vnic => {
+                if (vnic.data.services && vnic.data.services.serviceToAreas) {
+                    Object.keys(vnic.data.services.serviceToAreas).forEach(serviceName => {
+                        services.push({
+                            id: `${vnic.id}_${serviceName}`,
+                            type: 'service',
+                            alias: serviceName,
+                            parentId: vnic.id,
+                            data: vnic.data
+                        });
+                    });
+                }
+            });
+
+            nodes = [...vnets, ...vnics, ...services];
+
+            // Create links
+            links = [];
+
+            // Mesh topology for vNets
+            for (let i = 0; i < vnets.length; i++) {
+                for (let j = i + 1; j < vnets.length; j++) {
+                    links.push({
+                        source: vnets[i].id,
+                        target: vnets[j].id,
+                        type: 'mesh'
+                    });
+                }
+            }
+
+            // vNic to vNet connections
+            vnics.forEach(vnic => {
+                if (vnic.zUuid) {
+                    const vnet = vnets.find(v => v.id === vnic.zUuid);
+                    if (vnet) {
+                        links.push({
+                            source: vnic.id,
+                            target: vnet.id,
+                            type: 'vnic'
+                        });
+                    }
+                }
+            });
+
+            // Service to vNic connections
+            services.forEach(service => {
+                links.push({
+                    source: service.id,
+                    target: service.parentId,
+                    type: 'service'
+                });
+            });
+        }
+
+        // Create the D3 visualization
+        function createVisualization() {
+            const container = d3.select('#topology');
+            const width = window.innerWidth;
+            const height = window.innerHeight - 70;
+
+            svg = container.append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            // Create zoom behavior
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on('zoom', (event) => {
+                    g.attr('transform', event.transform);
+                });
+
+            svg.call(zoom);
+
+            const g = svg.append('g');
+
+            // Create force simulation with hierarchical layout
+            simulation = d3.forceSimulation(nodes)
+                .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+                    if (d.type === 'mesh') return null;      // No force for mesh connections
+                    if (d.type === 'vnic') return 150;       // vNics closer to their vNet
+                    if (d.type === 'service') return 60;     // Services orbit around vNics
+                    return 100;
+                }).strength(d => {
+                    if (d.type === 'mesh') return 0;         // No force for mesh links (visual only)
+                    if (d.type === 'vnic') return 1.0;       // Very strong vNic to vNet
+                    if (d.type === 'service') return 1.0;    // Very strong service to vNic
+                    return 0.5;
+                }))
+                .force('charge', d3.forceManyBody().strength(d => {
+                    if (d.type === 'vnet') return 0;         // vNets have fixed positions
+                    if (d.type === 'vnic') return -150;      // vNics have moderate repulsion
+                    if (d.type === 'service') return -30;    // Services have weak repulsion
+                    return -100;
+                }))
+                .force('center', d3.forceCenter(width / 2, height / 2).strength(0.01))
+                // Custom force to maintain radial line positioning
+                .force('radialLine', () => {
+                    nodes.forEach(d => {
+                        if (d.type === 'vnic' && d.targetAngle !== undefined && d.targetRadius !== undefined) {
+                            // Calculate ideal position on the radial line
+                            const idealX = width / 2 + d.targetRadius * Math.cos(d.targetAngle);
+                            const idealY = height / 2 + d.targetRadius * Math.sin(d.targetAngle);
+
+                            // Apply gentle force towards ideal position
+                            const strength = 0.1;
+                            d.vx += (idealX - d.x) * strength;
+                            d.vy += (idealY - d.y) * strength;
+                        }
+                        if (d.type === 'service' && d.parentId) {
+                            // Keep services close to their parent vNic
+                            const parent = nodes.find(n => n.id === d.parentId);
+                            if (parent) {
+                                const angle = parent.targetAngle || 0;
+                                const serviceRadius = (parent.targetRadius || 250) + 80;
+                                const idealX = width / 2 + serviceRadius * Math.cos(angle);
+                                const idealY = height / 2 + serviceRadius * Math.sin(angle);
+
+                                const strength = 0.05;
+                                d.vx += (idealX - d.x) * strength;
+                                d.vy += (idealY - d.y) * strength;
+                            }
+                        }
+                    });
+                })
+                .force('collision', d3.forceCollide().radius(d => {
+                    if (d.type === 'vnet') return 35;
+                    if (d.type === 'vnic') return 25;
+                    if (d.type === 'service') return 18;
+                    return 20;
+                }).strength(0.8))
+                // Anti-overlap force for vNics on the same radial line
+                .force('vnicSeparation', () => {
+                    nodes.forEach(d => {
+                        if (d.type === 'vnic' && d.targetAngle !== undefined) {
+                            nodes.forEach(other => {
+                                if (other.type === 'vnic' && other !== d &&
+                                    other.targetAngle !== undefined &&
+                                    Math.abs(other.targetAngle - d.targetAngle) < 0.1) {
+                                    // Same radial line - maintain spacing
+                                    const dx = other.x - d.x;
+                                    const dy = other.y - d.y;
+                                    const distance = Math.sqrt(dx * dx + dy * dy);
+                                    const minDistance = 50;
+
+                                    if (distance < minDistance && distance > 0) {
+                                        const strength = 0.02;
+                                        const force = (minDistance - distance) / distance * strength;
+                                        d.vx -= dx * force;
+                                        d.vy -= dy * force;
+                                        other.vx += dx * force;
+                                        other.vy += dy * force;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+
+            // Create links
+            const link = g.append('g')
+                .selectAll('line')
+                .data(links)
+                .enter().append('line')
+                .attr('class', d => `link link-${d.type}`)
+                .style('stroke-width', d => {
+                    if (d.type === 'mesh') return 2;
+                    if (d.type === 'vnic') return 3;
+                    if (d.type === 'service') return 2;
+                    return 2;
+                });
+
+            // Create node groups to separate hover area from drag area
+            const nodeGroup = g.append('g')
+                .selectAll('g.node-group')
+                .data(nodes)
+                .enter().append('g')
+                .attr('class', 'node-group');
+
+            // Create nodes
+            const node = nodeGroup.append('circle')
+                .attr('class', d => `node node-${d.type}`)
+                .attr('r', d => {
+                    if (d.type === 'vnet') return 20;
+                    if (d.type === 'vnic') return 15;
+                    if (d.type === 'service') return 10;
+                    return 15;
+                })
+                .on('mouseenter', function(event, d) {
+                    event.stopPropagation();
+                    handleMouseOver(event, d);
+                })
+                .on('mouseleave', function(event, d) {
+                    event.stopPropagation();
+                    handleMouseOut();
+                })
+                .on('click', handleNodeClick)
+                .call(d3.drag()
+                    .on('start', dragstarted)
+                    .on('drag', dragged)
+                    .on('end', dragended));
+
+            // Create labels
+            const label = g.append('g')
+                .selectAll('text')
+                .data(nodes)
+                .enter().append('text')
+                .attr('class', 'node-label')
+                .text(d => d.alias)
+                .style('font-size', d => {
+                    if (d.type === 'vnet') return '14px';
+                    if (d.type === 'vnic') return '12px';
+                    if (d.type === 'service') return '10px';
+                    return '12px';
+                });
+
+            // Update positions on simulation tick
+            simulation.on('tick', () => {
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+
+                nodeGroup
+                    .attr('transform', d => `translate(${d.x}, ${d.y})`);
+
+                label
+                    .attr('x', d => d.x)
+                    .attr('y', d => d.y + (d.type === 'vnet' ? 35 : d.type === 'vnic' ? 30 : 25));
+            });
+        }
+
+        // Event handlers
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            // Don't override fixed positions for vNets unless explicitly dragging
+            if (d.type !== 'vnet' || !d.fx) {
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            // Keep vNets fixed, release others
+            if (d.type !== 'vnet') {
+                d.fx = null;
+                d.fy = null;
+            } else {
+                // Optionally snap vNets back to circle
+                const vnets = nodes.filter(n => n.type === 'vnet');
+                const index = vnets.indexOf(d);
+                if (index !== -1) {
+                    const centerX = window.innerWidth / 2;
+                    const centerY = (window.innerHeight - 70) / 2;
+                    const angle = (2 * Math.PI * index) / vnets.length;
+                    d.fx = centerX + 100 * Math.cos(angle);
+                    d.fy = centerY + 100 * Math.sin(angle);
+                }
+            }
+        }
+
+        function handleNodeClick(event, d) {
+            updateInfoPanel(d);
+
+            // Remove active class from all nodes
+            d3.selectAll('.node').classed('active', false);
+            // Add active class to clicked node
+            d3.select(this).classed('active', true);
+        }
+
+        function handleMouseOver(event, d) {
+            // Clear any pending hide timeout
+            if (tooltipTimeout) {
+                clearTimeout(tooltipTimeout);
+                tooltipTimeout = null;
+            }
+
+            // Only show tooltip if it's a different node or no node is currently shown
+            if (currentTooltipNode !== d.id) {
+                currentTooltipNode = d.id;
+                showTooltip(event, d);
+            }
+        }
+
+        function handleMouseOut() {
+            // Delay hiding to prevent flicker
+            if (tooltipTimeout) {
+                clearTimeout(tooltipTimeout);
+            }
+            tooltipTimeout = setTimeout(() => {
+                hideTooltip();
+                currentTooltipNode = null;
+            }, 100);
+        }
+
+        function showTooltip(event, d) {
+            const tooltip = document.getElementById('tooltip');
+            let content = `<strong>${d.alias}</strong><br>`;
+            content += `Type: ${d.type}<br>`;
+            content += `ID: ${d.id.substring(0, 8)}...`; // Shorten ID for readability
+
+            if (d.data && d.data.stats) {
+                content += `<br><br><strong>Statistics:</strong><br>`;
+                content += `CPU: ${(d.data.stats.cpuUsage * 100).toFixed(1)}%<br>`;
+                content += `Memory: ${(d.data.stats.memoryUsage / 1024 / 1024).toFixed(1)} MB<br>`;
+                content += `TX Messages: ${d.data.stats.txMsgCount}<br>`;
+                content += `RX Messages: ${d.data.stats.rxMsgCount}`;
+            }
+
+            tooltip.innerHTML = content;
+
+            // Better positioning to avoid cursor
+            const xOffset = 25;
+            const yOffset = 25;
+            tooltip.style.left = (event.pageX + xOffset) + 'px';
+            tooltip.style.top = (event.pageY - yOffset) + 'px';
+            tooltip.style.display = 'block';
+
+            // Smooth fade in
+            requestAnimationFrame(() => {
+                tooltip.classList.add('visible');
+            });
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.classList.remove('visible');
+            // Wait for transition to complete before hiding
+            setTimeout(() => {
+                if (!tooltip.classList.contains('visible')) {
+                    tooltip.style.display = 'none';
+                }
+            }, 200);
+        }
+
+        function updateInfoPanel(d) {
+            const panel = document.getElementById('info-panel');
+            let content = `<h3>${d.alias}</h3>`;
+            content += `<p><strong>Type:</strong> ${d.type.toUpperCase()}</p>`;
+            content += `<p><strong>UUID:</strong> ${d.id}</p>`;
+
+            if (d.zUuid) {
+                content += `<p><strong>Connected to:</strong> ${d.zUuid}</p>`;
+            }
+
+            if (d.data && d.data.services && d.data.services.serviceToAreas) {
+                const services = Object.keys(d.data.services.serviceToAreas);
+                content += `<p><strong>Services:</strong></p>`;
+                content += `<div class="service-list">`;
+                services.forEach(service => {
+                    content += `<span class="service-tag">${service}</span>`;
+                });
+                content += `</div>`;
+            }
+
+            if (d.data && d.data.stats) {
+                content += `<p><strong>Performance:</strong></p>`;
+                content += `<p>CPU: ${(d.data.stats.cpuUsage * 100).toFixed(1)}% | Memory: ${(d.data.stats.memoryUsage / 1024 / 1024).toFixed(1)} MB</p>`;
+            }
+
+            panel.innerHTML = content;
+        }
+
+        function updateStats() {
+            const vnetCount = nodes.filter(n => n.type === 'vnet').length;
+            const vnicCount = nodes.filter(n => n.type === 'vnic').length;
+            const serviceCount = nodes.filter(n => n.type === 'service').length;
+
+            document.getElementById('stats').textContent =
+                `vNets: ${vnetCount} | vNics: ${vnicCount} | Services: ${serviceCount}`;
+        }
+
+        // Control functions
+        function resetView() {
+            svg.transition().duration(750).call(
+                d3.zoom().transform,
+                d3.zoomIdentity
+            );
+        }
+
+        function togglePhysics() {
+            physicsEnabled = !physicsEnabled;
+            if (physicsEnabled) {
+                simulation.alphaTarget(0.3).restart();
+            } else {
+                simulation.stop();
+            }
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight - 70;
+            svg.attr('width', width).attr('height', height);
+            simulation.force('center', d3.forceCenter(width / 2, height / 2));
+        });
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
