@@ -3,7 +3,11 @@ package main
 import (
 	"os"
 
+	"github.com/saichler/l8pollaris/go/types/l8poll"
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/types/l8api"
+	"github.com/saichler/l8types/go/types/l8health"
+	"github.com/saichler/l8types/go/types/l8web"
 	"github.com/saichler/l8web/go/web/server"
 	"github.com/saichler/layer8/go/overlay/health"
 	"github.com/saichler/layer8/go/overlay/protocol"
@@ -46,17 +50,17 @@ func startWebServer(port int, cert string) {
 	nic.Start()
 	nic.WaitForConnection()
 
-	nic.Resources().Registry().Register(&types4.Pollaris{})
-	nic.Resources().Registry().Register(&types4.Device{})
-	nic.Resources().Registry().Register(&types4.DeviceList{})
+	nic.Resources().Registry().Register(&l8poll.L8Pollaris{})
+	nic.Resources().Registry().Register(&l8poll.L8C_Target{})
+	nic.Resources().Registry().Register(&l8poll.L8C_TargetList{})
 	nic.Resources().Registry().Register(&types.NetworkDevice{})
 	nic.Resources().Registry().Register(&types.NetworkDeviceList{})
 	nic.Resources().Registry().Register(&types2.K8SCluster{})
 	nic.Resources().Registry().Register(&types2.K8SClusterList{})
-	nic.Resources().Registry().Register(&types3.Query{})
-	nic.Resources().Registry().Register(&types3.Top{})
-	nic.Resources().Registry().Register(&types3.Empty{})
-	nic.Resources().Registry().Register(&types4.CJob{})
+	nic.Resources().Registry().Register(&l8api.L8Query{})
+	nic.Resources().Registry().Register(&l8health.L8Top{})
+	nic.Resources().Registry().Register(&l8web.L8Empty{})
+	nic.Resources().Registry().Register(&l8poll.CJob{})
 	nic.Resources().Registry().Register(&types2.NetworkTopology{})
 
 	hs, ok := nic.Resources().Services().ServiceHandler(health.ServiceName, 0)

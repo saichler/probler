@@ -3,34 +3,36 @@ package commands
 import (
 	"bytes"
 	"fmt"
+	"sort"
+	"strconv"
+	"time"
+
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/types/l8health"
 	"github.com/saichler/l8web/go/web/client"
 	health2 "github.com/saichler/layer8/go/overlay/health"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
-	"sort"
-	"strconv"
-	"time"
 )
 
 func Top(rc *client.RestClient, resources ifs.IResources) {
 	defer time.Sleep(time.Second)
-	health := &types2.Health{}
+	health := &l8health.L8Health{}
 	resp, err := rc.GET("0/"+health2.ServiceName, "Top",
 		"", "", health)
 	if err != nil {
 		resources.Logger().Error(err.Error())
 		return
 	}
-	top, ok := resp.(*types2.Top)
+	top, ok := resp.(*l8health.L8Top)
 	if ok {
 		fmt.Println(FormatTop(top))
 	}
 }
 
-func buildTop(top *types2.Top) string {
+func buildTop(top *l8health.L8Top) string {
 
-	points := make([]*types2.Health, 0)
+	points := make([]*l8health.L8Health, 0)
 	for _, hp := range top.Healths {
 		points = append(points, hp)
 	}
@@ -109,7 +111,7 @@ func (this *Column) writeNumber(str string, buff *bytes.Buffer) {
 }
 
 type Row struct {
-	hp *types2.Health
+	hp *l8health.L8Health
 }
 
 func (this *Row) Name() string {

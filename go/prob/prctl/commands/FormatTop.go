@@ -5,6 +5,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/saichler/l8types/go/types/l8health"
 )
 
 func formatMemory(bytes uint64) string {
@@ -28,7 +30,7 @@ func centerString(s string, width int) string {
 	return strings.Repeat(" ", leftPad) + s + strings.Repeat(" ", rightPad)
 }
 
-func FormatTop(top *types.Top) string {
+func FormatTop(top *l8health.L8Top) string {
 	if top == nil || len(top.Healths) == 0 {
 		return "No processes running"
 	}
@@ -36,21 +38,21 @@ func FormatTop(top *types.Top) string {
 	var sb strings.Builder
 
 	type processInfo struct {
-		pid     string
-		user    string
-		virt    uint64
-		res     uint64
-		shr     uint64
-		status  string
-		cpu     float64
-		mem     float64
-		time    string
-		command string
-		rxCount int64
+		pid         string
+		user        string
+		virt        uint64
+		res         uint64
+		shr         uint64
+		status      string
+		cpu         float64
+		mem         float64
+		time        string
+		command     string
+		rxCount     int64
 		rxDataCount int64
-		txCount int64
+		txCount     int64
 		txDataCount int64
-		lastPulse string
+		lastPulse   string
 	}
 
 	var processes []processInfo
@@ -81,9 +83,9 @@ func FormatTop(top *types.Top) string {
 
 		var status string
 		switch health.Status {
-		case types.HealthState_Up:
+		case l8health.L8HealthState_Up:
 			status = "R"
-		case types.HealthState_Down:
+		case l8health.L8HealthState_Down:
 			status = "T"
 		default:
 			status = "S"
@@ -150,9 +152,9 @@ func FormatTop(top *types.Top) string {
 	var totalMem uint64
 	for _, health := range top.Healths {
 		switch health.Status {
-		case types.HealthState_Up:
+		case l8health.L8HealthState_Up:
 			running++
-		case types.HealthState_Down:
+		case l8health.L8HealthState_Down:
 			stopped++
 		default:
 			sleeping++
@@ -230,9 +232,9 @@ func FormatTop(top *types.Top) string {
 	sb.WriteString("\n")
 
 	// Print header with dynamic widths (centered when smaller than column width)
-	headerFormat := fmt.Sprintf("%%-%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds\n", 
+	headerFormat := fmt.Sprintf("%%-%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds\n",
 		maxCommandWidth, maxRxWidth, maxRxDataWidth, maxTxWidth, maxTxDataWidth, maxMemoryWidth, maxStatusWidth, maxCpuWidth, maxUpTimeWidth, maxLastPulseWidth)
-	sb.WriteString(fmt.Sprintf(headerFormat, 
+	sb.WriteString(fmt.Sprintf(headerFormat,
 		centerString("COMMAND", maxCommandWidth),
 		centerString("RX", maxRxWidth),
 		centerString("RX DATA", maxRxDataWidth),
@@ -245,23 +247,23 @@ func FormatTop(top *types.Top) string {
 		centerString("LAST PULSE", maxLastPulseWidth)))
 
 	// Print separator line
-	separatorFormat := fmt.Sprintf("%%-%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds\n", 
+	separatorFormat := fmt.Sprintf("%%-%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds  %%%ds\n",
 		maxCommandWidth, maxRxWidth, maxRxDataWidth, maxTxWidth, maxTxDataWidth, maxMemoryWidth, maxStatusWidth, maxCpuWidth, maxUpTimeWidth, maxLastPulseWidth)
-	sb.WriteString(fmt.Sprintf(separatorFormat, 
-		strings.Repeat("-", maxCommandWidth), 
-		strings.Repeat("-", maxRxWidth), 
-		strings.Repeat("-", maxRxDataWidth), 
-		strings.Repeat("-", maxTxWidth), 
-		strings.Repeat("-", maxTxDataWidth), 
-		strings.Repeat("-", maxMemoryWidth), 
-		strings.Repeat("-", maxStatusWidth), 
-		strings.Repeat("-", maxCpuWidth), 
-		strings.Repeat("-", maxUpTimeWidth), 
+	sb.WriteString(fmt.Sprintf(separatorFormat,
+		strings.Repeat("-", maxCommandWidth),
+		strings.Repeat("-", maxRxWidth),
+		strings.Repeat("-", maxRxDataWidth),
+		strings.Repeat("-", maxTxWidth),
+		strings.Repeat("-", maxTxDataWidth),
+		strings.Repeat("-", maxMemoryWidth),
+		strings.Repeat("-", maxStatusWidth),
+		strings.Repeat("-", maxCpuWidth),
+		strings.Repeat("-", maxUpTimeWidth),
 		strings.Repeat("-", maxLastPulseWidth)))
 
 	// Print data with dynamic widths
 	cpuFormatStr := fmt.Sprintf("%%%d.1f", maxCpuWidth)
-	dataFormat := fmt.Sprintf("%%-%ds  %%%dd  %%%ds  %%%dd  %%%ds  %%%ds  %%%ds  %s  %%%ds  %%%ds\n", 
+	dataFormat := fmt.Sprintf("%%-%ds  %%%dd  %%%ds  %%%dd  %%%ds  %%%ds  %%%ds  %s  %%%ds  %%%ds\n",
 		maxCommandWidth, maxRxWidth, maxRxDataWidth, maxTxWidth, maxTxDataWidth, maxMemoryWidth, maxStatusWidth, cpuFormatStr, maxUpTimeWidth, maxLastPulseWidth)
 
 	for _, proc := range processes {
