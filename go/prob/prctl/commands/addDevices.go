@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/saichler/l8collector/go/collector/devices"
-	"github.com/saichler/l8pollaris/go/types"
+	"github.com/saichler/l8collector/go/collector/targets"
+	"github.com/saichler/l8pollaris/go/types/l8poll"
 	common2 "github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8web/go/web/client"
 	"github.com/saichler/probler/go/prob/prctl/creates"
@@ -15,7 +15,7 @@ import (
 func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
 
-	deviceList := &types.DeviceList{List: make([]*types.Device, 0)}
+	deviceList := &l8poll.L8C_TargetList{List: make([]*l8poll.L8C_Target, 0)}
 
 	if cmd == "all" || cmd == "cluster" {
 		cluster := creates.CreateCluster("./lab.conf", "lab", 0)
@@ -134,7 +134,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 
 	fmt.Println("Adding ", len(deviceList.List), " devices")
 
-	resp, err := rc.POST("0/"+devices.ServiceName, "DeviceList", "", "", deviceList)
+	resp, err := rc.POST("0/"+targets.ServiceName, "DeviceList", "", "", deviceList)
 	if err != nil {
 		fmt.Println("Error", err)
 	}

@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/saichler/l8inventory/go/inv/service"
-	"github.com/saichler/l8pollaris/go/types"
+	"github.com/saichler/l8pollaris/go/types/l8poll"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
@@ -29,7 +29,7 @@ func main() {
 	//Activate the box inventory service with the primary key & sample model instance
 	res.Services().RegisterServiceHandlerType(&inventory.InventoryService{})
 	_, err := nic.Resources().Services().Activate(inventory.ServiceType, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX,
-		nic.Resources(), nic, "Id", &types2.NetworkDevice{}, &types.DeviceServiceInfo{ServiceName: common2.ORM_SERVICE, ServiceArea: 0})
+		nic.Resources(), nic, "Id", &types2.NetworkDevice{}, &l8poll.L8ServiceInfo{ServiceName: common2.ORM_SERVICE, ServiceArea: 0})
 
 	invCenter := inventory.Inventory(res, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX)
 	invCenter.AddStats("Total", Total)

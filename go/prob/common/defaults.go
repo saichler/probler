@@ -8,6 +8,7 @@ import (
 	"github.com/saichler/l8collector/go/collector/common"
 	"github.com/saichler/l8services/go/services/manager"
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/types/l8sysconfig"
 	"github.com/saichler/l8utils/go/utils/logger"
 	"github.com/saichler/l8utils/go/utils/registry"
 	"github.com/saichler/l8utils/go/utils/resources"
@@ -45,7 +46,7 @@ func CreateResources2(alias string, path string) ifs.IResources {
 	}
 	res.Set(sec)
 
-	conf := &types.SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
+	conf := &l8sysconfig.L8SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize:              resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize:              resources.DEFAULT_QUEUE_SIZE,
 		LocalAlias:               alias,

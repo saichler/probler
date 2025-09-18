@@ -6,7 +6,7 @@ import (
 
 	boot "github.com/saichler/l8parser/go/parser/boot"
 	"github.com/saichler/l8pollaris/go/pollaris"
-	"github.com/saichler/l8pollaris/go/types"
+	"github.com/saichler/l8pollaris/go/types/l8poll"
 	common2 "github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8web/go/web/client"
 )
@@ -21,7 +21,7 @@ func AddPollConfigs(rc *client.RestClient, resources common2.IResources) {
 			resources.Logger().Error(err.Error())
 			return
 		}
-		_, ok := resp.(*types.Pollaris)
+		_, ok := resp.(*l8poll.L8Pollaris)
 		if ok {
 			resources.Logger().Info("Added ", snmpPollaris.Name, " Successfully")
 		}
@@ -36,7 +36,7 @@ func AddPollConfigs(rc *client.RestClient, resources common2.IResources) {
 		resources.Logger().Error(err.Error())
 		return
 	}
-	_, ok := resp.(*types.Pollaris)
+	_, ok := resp.(*l8poll.L8Pollaris)
 	if ok {
 		resources.Logger().Info("Added ", k8sPollaris.Name, " Successfully")
 	}

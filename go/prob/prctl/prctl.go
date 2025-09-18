@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/saichler/l8pollaris/go/types"
+	"github.com/saichler/l8pollaris/go/types/l8poll"
+	"github.com/saichler/l8types/go/types/l8api"
+	"github.com/saichler/l8types/go/types/l8health"
+	"github.com/saichler/l8types/go/types/l8web"
 	"github.com/saichler/l8web/go/web/client"
 	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/prob/prctl/commands"
@@ -41,17 +44,17 @@ func main() {
 		Prefix: common.PREFIX,
 	}
 	resources := common.CreateResources2("client", "./")
-	resources.Introspector().Inspect(&types.Pollaris{})
-	resources.Introspector().Inspect(&types.Device{})
-	resources.Introspector().Inspect(&types.DeviceList{})
-	resources.Introspector().Inspect(&types2.Health{})
-	resources.Introspector().Inspect(&types2.Top{})
+	resources.Introspector().Inspect(&l8poll.L8Pollaris{})
+	resources.Introspector().Inspect(&l8poll.L8C_Target{})
+	resources.Introspector().Inspect(&l8poll.L8C_TargetList{})
+	resources.Introspector().Inspect(&l8health.L8Health{})
+	resources.Introspector().Inspect(&l8health.L8Top{})
 	resources.Introspector().Inspect(&types3.K8SCluster{})
 	resources.Introspector().Inspect(&types3.K8SClusterList{})
 	resources.Introspector().Inspect(&types5.NetworkDevice{})
 	resources.Introspector().Inspect(&types5.NetworkDeviceList{})
-	resources.Introspector().Inspect(&types2.Empty{})
-	resources.Introspector().Inspect(&types2.Query{})
+	resources.Introspector().Inspect(&l8web.L8Empty{})
+	resources.Introspector().Inspect(&l8api.L8Query{})
 	resources.Introspector().Inspect(&types5.NetworkTopology{})
 
 	rc, err := client.NewRestClient(clientConfig, resources)

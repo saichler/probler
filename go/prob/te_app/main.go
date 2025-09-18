@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/saichler/probler/go/types"
-	types4 "github.com/saichler/l8pollaris/go/types"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8web/go/web/server"
 	"github.com/saichler/layer8/go/overlay/health"
