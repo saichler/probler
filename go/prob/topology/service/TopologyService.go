@@ -4,6 +4,7 @@ import (
 	"github.com/saichler/l8services/go/services/dcache"
 	"github.com/saichler/l8srlz/go/serialize/object"
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/types/l8web"
 	"github.com/saichler/l8utils/go/utils/web"
 	common2 "github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/types"
@@ -83,7 +84,7 @@ func (this *TopologyService) Put(elements ifs.IElements, vnic ifs.IVNic) ifs.IEl
 			vnic.Resources().Logger().Error("Cache error: ", err.Error())
 		}
 	}
-	return object.New(nil, &types2.Empty{})
+	return object.New(nil, &l8web.L8Empty{})
 }
 
 // Patch implements ifs.IServiceHandler
@@ -124,7 +125,7 @@ func (this *TopologyService) TransactionConfig() ifs.ITransactionConfig {
 // WebService implements ifs.IServiceHandler
 func (this *TopologyService) WebService() ifs.IWebService {
 	ws := web.New(ServiceName, ServiceArea, nil,
-		nil, &types2.Empty{}, &types2.Empty{}, nil, nil, nil, nil,
-		&types2.Empty{}, &types.NetworkTopology{})
+		nil, &l8web.L8Empty{}, &l8web.L8Empty{}, nil, nil, nil, nil,
+		&l8web.L8Empty{}, &types.NetworkTopology{})
 	return ws
 }

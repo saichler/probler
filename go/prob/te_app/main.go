@@ -7,6 +7,10 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/saichler/l8pollaris/go/types/l8poll"
+	"github.com/saichler/l8types/go/types/l8api"
+	"github.com/saichler/l8types/go/types/l8health"
+	"github.com/saichler/l8types/go/types/l8web"
 	"github.com/saichler/probler/go/types"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8web/go/web/server"
@@ -138,16 +142,16 @@ func (app *TeApp) startWebServer() {
 }
 
 func (app *TeApp) registerTypes() {
-	app.nic.Resources().Registry().Register(&types4.Pollaris{})
-	app.nic.Resources().Registry().Register(&types4.Device{})
+	app.nic.Resources().Registry().Register(&l8poll.L8Pollaris{})
+	app.nic.Resources().Registry().Register(&l8poll.L8C_Target{})
 	app.nic.Resources().Registry().Register(&types.NetworkDevice{})
 	app.nic.Resources().Registry().Register(&types.NetworkDeviceList{})
 	app.nic.Resources().Registry().Register(&types2.K8SCluster{})
 	app.nic.Resources().Registry().Register(&types2.K8SClusterList{})
-	app.nic.Resources().Registry().Register(&types3.Query{})
-	app.nic.Resources().Registry().Register(&types3.Top{})
-	app.nic.Resources().Registry().Register(&types3.Empty{})
-	app.nic.Resources().Registry().Register(&types4.CJob{})
+	app.nic.Resources().Registry().Register(&l8api.L8Query{})
+	app.nic.Resources().Registry().Register(&l8health.L8Top{})
+	app.nic.Resources().Registry().Register(&l8web.L8Empty{})
+	app.nic.Resources().Registry().Register(&l8poll.CJob{})
 
 	node, _ := app.resources.Introspector().Inspect(&types.NetworkDevice{})
 	introspecting.AddPrimaryKeyDecorator(node, "Id")

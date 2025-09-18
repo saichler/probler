@@ -68,8 +68,8 @@ func updateDeviceCoordinates(list *types.NetworkDeviceList, worldCities *WorldCi
 			if lat, lng, svgX, svgY, found := worldCities.SmartCityLookupWithSVG(location); found {
 				device.Equipmentinfo.Latitude = lat
 				device.Equipmentinfo.Longitude = lng
-				
-				fmt.Printf("Updated %s coordinates: lat=%.4f, lng=%.4f, svgX=%.2f, svgY=%.2f (from location: %s)\n", 
+
+				fmt.Printf("Updated %s coordinates: lat=%.4f, lng=%.4f, svgX=%.2f, svgY=%.2f (from location: %s)\n",
 					device.Id, lat, lng, svgX, svgY, location)
 			} else {
 				fmt.Printf("Warning: Could not find coordinates for location: %s\n", location)
@@ -154,7 +154,7 @@ func generateNetworkNodes(list *types.NetworkDeviceList, worldCities *WorldCitie
 				}
 				fmt.Printf("Generated SVG coordinates for node %s: x=%.2f, y=%.2f (source: %s)\n", device.Id, svgX, svgY, source)
 			} else {
-				fmt.Printf("No coordinates available for node %s (location: '%s', lat/lng: %.4f,%.4f)\n", 
+				fmt.Printf("No coordinates available for node %s (location: '%s', lat/lng: %.4f,%.4f)\n",
 					device.Id, device.Equipmentinfo.Location, device.Equipmentinfo.Latitude, device.Equipmentinfo.Longitude)
 			}
 		}
@@ -172,10 +172,10 @@ func generateNetworkNodes(list *types.NetworkDeviceList, worldCities *WorldCitie
 				Longitude: device.Equipmentinfo.Longitude,
 			},
 			Capabilities: &types.NodeCapabilities{
-				RoutingCapable:       device.Equipmentinfo.DeviceType == l8poll.L8C_TargetType_DEVICE_TYPE_ROUTER,
-				SwitchingCapable:     device.Equipmentinfo.DeviceType == l8poll.L8C_TargetType_DEVICE_TYPE_SWITCH,
-				FirewallCapable:      device.Equipmentinfo.DeviceType == l8poll.L8C_TargetType_DEVICE_TYPE_FIREWALL,
-				LoadBalancingCapable: device.Equipmentinfo.DeviceType == l8poll.L8C_TargetType_DEVICE_TYPE_LOAD_BALANCER,
+				RoutingCapable:       device.Equipmentinfo.DeviceType == types.DeviceType_DEVICE_TYPE_ROUTER,
+				SwitchingCapable:     device.Equipmentinfo.DeviceType == types.DeviceType_DEVICE_TYPE_SWITCH,
+				FirewallCapable:      device.Equipmentinfo.DeviceType == types.DeviceType_DEVICE_TYPE_FIREWALL,
+				LoadBalancingCapable: device.Equipmentinfo.DeviceType == types.DeviceType_DEVICE_TYPE_LOAD_BALANCER,
 			},
 			RenderingInfo: renderingInfo, // Set SVG coordinates for topology visualization
 		}
@@ -310,36 +310,36 @@ func generateNetworkLinksForDevices(list *types.NetworkDeviceList) {
 }
 
 // Helper functions
-func convertDeviceTypeToNodeType(deviceType l8poll.L8C_TargetType) types.NetworkNodeType {
+func convertDeviceTypeToNodeType(deviceType types.DeviceType) types.NetworkNodeType {
 	switch deviceType {
-	case l8poll.L8C_TargetType_DEVICE_TYPE_ROUTER:
+	case types.DeviceType_DEVICE_TYPE_ROUTER:
 		return types.NetworkNodeType_NETWORK_NODE_TYPE_ROUTER
-	case l8poll.L8C_TargetType_DEVICE_TYPE_SWITCH:
+	case types.DeviceType_DEVICE_TYPE_SWITCH:
 		return types.NetworkNodeType_NETWORK_NODE_TYPE_SWITCH
-	case l8poll.L8C_TargetType_DEVICE_TYPE_FIREWALL:
+	case types.DeviceType_DEVICE_TYPE_FIREWALL:
 		return types.NetworkNodeType_NETWORK_NODE_TYPE_FIREWALL
-	case l8poll.L8C_TargetType_DEVICE_TYPE_SERVER:
+	case types.DeviceType_DEVICE_TYPE_SERVER:
 		return types.NetworkNodeType_NETWORK_NODE_TYPE_SERVER
-	case l8poll.L8C_TargetType_DEVICE_TYPE_LOAD_BALANCER:
+	case types.DeviceType_DEVICE_TYPE_LOAD_BALANCER:
 		return types.NetworkNodeType_NETWORK_NODE_TYPE_LOAD_BALANCER
-	case l8poll.L8C_TargetType_DEVICE_TYPE_GATEWAY:
+	case types.DeviceType_DEVICE_TYPE_GATEWAY:
 		return types.NetworkNodeType_NETWORK_NODE_TYPE_GATEWAY
 	default:
 		return types.NetworkNodeType_NETWORK_NODE_TYPE_UNKNOWN
 	}
 }
 
-func convertDeviceStatusToNodeStatus(deviceStatus l8poll.L8C_TargetStatus) types.NetworkNodeStatus {
+func convertDeviceStatusToNodeStatus(deviceStatus types.DeviceStatus) types.NetworkNodeStatus {
 	switch deviceStatus {
-	case l8poll.L8C_TargetStatus_DEVICE_STATUS_ONLINE:
+	case types.DeviceStatus_DEVICE_STATUS_ONLINE:
 		return types.NetworkNodeStatus_NODE_STATUS_ONLINE
-	case l8poll.L8C_TargetStatus_DEVICE_STATUS_OFFLINE:
+	case types.DeviceStatus_DEVICE_STATUS_OFFLINE:
 		return types.NetworkNodeStatus_NODE_STATUS_OFFLINE
-	case l8poll.L8C_TargetStatus_DEVICE_STATUS_WARNING:
+	case types.DeviceStatus_DEVICE_STATUS_WARNING:
 		return types.NetworkNodeStatus_NODE_STATUS_WARNING
-	case l8poll.L8C_TargetStatus_DEVICE_STATUS_CRITICAL:
+	case types.DeviceStatus_DEVICE_STATUS_CRITICAL:
 		return types.NetworkNodeStatus_NODE_STATUS_CRITICAL
-	case l8poll.L8C_TargetStatus_DEVICE_STATUS_MAINTENANCE:
+	case types.DeviceStatus_DEVICE_STATUS_MAINTENANCE:
 		return types.NetworkNodeStatus_NODE_STATUS_MAINTENANCE
 	default:
 		return types.NetworkNodeStatus_NODE_STATUS_UNKNOWN
@@ -383,7 +383,7 @@ func generateTopologyStatistics(list *types.NetworkDeviceList) *types.TopologySt
 	activeNodes := uint32(0)
 
 	for _, device := range list.List {
-		if device.Equipmentinfo != nil && device.Equipmentinfo.DeviceStatus == l8poll.L8C_TargetStatus_DEVICE_STATUS_ONLINE {
+		if device.Equipmentinfo != nil && device.Equipmentinfo.DeviceStatus == types.DeviceStatus_DEVICE_STATUS_ONLINE {
 			activeNodes++
 		}
 	}
@@ -402,7 +402,7 @@ func generateTopologyHealthStatus(list *types.NetworkDeviceList) *types.Topology
 	totalCount := len(list.List)
 
 	for _, device := range list.List {
-		if device.Equipmentinfo != nil && device.Equipmentinfo.DeviceStatus == l8poll.L8C_TargetStatus_DEVICE_STATUS_ONLINE {
+		if device.Equipmentinfo != nil && device.Equipmentinfo.DeviceStatus == types.DeviceStatus_DEVICE_STATUS_ONLINE {
 			healthyCount++
 		}
 	}
