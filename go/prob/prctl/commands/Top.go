@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/saichler/l8types/go/ifs"
-	types2 "github.com/saichler/l8types/go/types"
 	"github.com/saichler/l8web/go/web/client"
 	health2 "github.com/saichler/layer8/go/overlay/health"
 	"golang.org/x/text/language"

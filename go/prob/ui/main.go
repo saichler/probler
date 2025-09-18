@@ -5,7 +5,6 @@ import (
 
 	types4 "github.com/saichler/l8pollaris/go/types"
 	"github.com/saichler/l8types/go/ifs"
-	types3 "github.com/saichler/l8types/go/types"
 	"github.com/saichler/l8web/go/web/server"
 	"github.com/saichler/layer8/go/overlay/health"
 	"github.com/saichler/layer8/go/overlay/protocol"

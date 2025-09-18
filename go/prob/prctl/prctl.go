@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/saichler/l8pollaris/go/types"
-	types2 "github.com/saichler/l8types/go/types"
 	"github.com/saichler/l8web/go/web/client"
 	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/prob/prctl/commands"

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	common2 "github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/l8types/go/types"
 	"github.com/saichler/l8web/go/web/client"
 	"github.com/saichler/probler/go/prob/topology/service"
 	"google.golang.org/protobuf/encoding/protojson"

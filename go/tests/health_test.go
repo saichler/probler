@@ -5,7 +5,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/saichler/l8types/go/types"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
