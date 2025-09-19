@@ -40,7 +40,7 @@ func generateMockEquipmentInfo(deviceID, deviceType string) *types.EquipmentInfo
 		Location:     "Data Center A - Rack 42",
 		Latitude:     37.7749,
 		Longitude:    -122.4194,
-		DeviceStatus: l8poll.L8C_TargetStatus_DEVICE_STATUS_ONLINE,
+		DeviceStatus: types.DeviceStatus_DEVICE_STATUS_ONLINE,
 		LastSeen:     now,
 		Uptime:       "45d 12h 30m",
 		IpAddress:    fmt.Sprintf("192.168.1.%d", len(deviceID)%254+1),
@@ -56,7 +56,7 @@ func generateMockEquipmentInfo(deviceID, deviceType string) *types.EquipmentInfo
 		info.Version = "16.12.04"
 		info.SerialNumber = fmt.Sprintf("SW%s001", deviceID)
 		info.FirmwareVersion = "16.12.04"
-		info.DeviceType = l8poll.L8C_TargetType_DEVICE_TYPE_SWITCH
+		info.DeviceType = types.DeviceType_DEVICE_TYPE_SWITCH
 	case "router":
 		info.Vendor = "Cisco"
 		info.Series = "ISR"
@@ -66,7 +66,7 @@ func generateMockEquipmentInfo(deviceID, deviceType string) *types.EquipmentInfo
 		info.Version = "16.09.05"
 		info.SerialNumber = fmt.Sprintf("RT%s001", deviceID)
 		info.FirmwareVersion = "16.09.05"
-		info.DeviceType = l8poll.L8C_TargetType_DEVICE_TYPE_ROUTER
+		info.DeviceType = types.DeviceType_DEVICE_TYPE_ROUTER
 	case "firewall":
 		info.Vendor = "Cisco"
 		info.Series = "ASA"
@@ -76,7 +76,7 @@ func generateMockEquipmentInfo(deviceID, deviceType string) *types.EquipmentInfo
 		info.Version = "9.8.4"
 		info.SerialNumber = fmt.Sprintf("FW%s001", deviceID)
 		info.FirmwareVersion = "9.8.4"
-		info.DeviceType = l8poll.L8C_TargetType_DEVICE_TYPE_FIREWALL
+		info.DeviceType = types.DeviceType_DEVICE_TYPE_FIREWALL
 	default:
 		info.Vendor = "Generic"
 		info.Series = "Unknown"
@@ -86,7 +86,7 @@ func generateMockEquipmentInfo(deviceID, deviceType string) *types.EquipmentInfo
 		info.Version = "1.0.0"
 		info.SerialNumber = fmt.Sprintf("GN%s001", deviceID)
 		info.FirmwareVersion = "1.0.0"
-		info.DeviceType = l8poll.L8C_TargetType_DEVICE_TYPE_UNKNOWN
+		info.DeviceType = types.DeviceType_DEVICE_TYPE_UNKNOWN
 	}
 
 	return info
@@ -1012,32 +1012,32 @@ func getExactDeviceMockData() []deviceMockData {
 }
 
 // convertDeviceTypeToProto converts string device type to protobuf enum
-func convertDeviceTypeToProto(deviceType string) l8poll.L8C_TargetType {
+func convertDeviceTypeToProto(deviceType string) types.DeviceType {
 	switch deviceType {
 	case "Router":
-		return l8poll.L8C_TargetType_DEVICE_TYPE_ROUTER
+		return types.DeviceType_DEVICE_TYPE_ROUTER
 	case "Switch":
-		return l8poll.L8C_TargetType_DEVICE_TYPE_SWITCH
+		return types.DeviceType_DEVICE_TYPE_SWITCH
 	case "Firewall":
-		return l8poll.L8C_TargetType_DEVICE_TYPE_FIREWALL
+		return types.DeviceType_DEVICE_TYPE_FIREWALL
 	case "Server":
-		return l8poll.L8C_TargetType_DEVICE_TYPE_SERVER
+		return types.DeviceType_DEVICE_TYPE_SERVER
 	default:
-		return l8poll.L8C_TargetType_DEVICE_TYPE_UNKNOWN
+		return types.DeviceType_DEVICE_TYPE_UNKNOWN
 	}
 }
 
 // convertStatusToProto converts string status to protobuf enum
-func convertStatusToProto(status string) l8poll.L8C_TargetStatus {
+func convertStatusToProto(status string) types.DeviceStatus {
 	switch status {
 	case "online":
-		return l8poll.L8C_TargetStatus_DEVICE_STATUS_ONLINE
+		return types.DeviceStatus_DEVICE_STATUS_ONLINE
 	case "offline":
-		return l8poll.L8C_TargetStatus_DEVICE_STATUS_OFFLINE
+		return types.DeviceStatus_DEVICE_STATUS_OFFLINE
 	case "warning":
-		return l8poll.L8C_TargetStatus_DEVICE_STATUS_WARNING
+		return types.DeviceStatus_DEVICE_STATUS_WARNING
 	default:
-		return l8poll.L8C_TargetStatus_DEVICE_STATUS_UNKNOWN
+		return types.DeviceStatus_DEVICE_STATUS_UNKNOWN
 	}
 }
 

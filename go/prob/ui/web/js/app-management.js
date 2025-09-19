@@ -31,6 +31,11 @@ function switchApp(appName) {
         setTimeout(() => {
             initializeZoomControls();
         }, 100);
+    } else if (appName === 'gpu-dashboard') {
+        // Initialize GPU Dashboard app
+        if (typeof initGpuDashboard === 'function') {
+            initGpuDashboard();
+        }
     } else if (appName === 'health') {
         // Initialize System Health app
         console.log('Switching to health app, checking for initServicesApp function...');
@@ -92,6 +97,7 @@ function switchApp(appName) {
     if (appName !== 'dashboard') {
         const appMap = {
             'devices': 'Network Devices Manager',
+            'gpu-dashboard': 'GPU Dashboard',
             'topology': 'Network Topology Viewer',
             'bandwidth': 'Bandwidth Monitor',
             'config': 'Configuration Manager',

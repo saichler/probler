@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/modals.css">
     <link rel="stylesheet" href="css/utilities.css">
     <link rel="stylesheet" href="css/traffic-engineering.css">
+    <link rel="stylesheet" href="css/gpu-dashboard.css">
 </head>
 <body>
     <!-- Login Screen -->
@@ -93,6 +94,10 @@
                 <button class="app-tab-button" onclick="switchApp('devices')" title="Network Devices">
                     <span class="app-tab-icon">🖥️</span>
                     <span class="app-tab-text">Devices</span>
+                </button>
+                <button class="app-tab-button" onclick="switchApp('gpu-dashboard')" title="GPU Dashboard">
+                    <span class="app-tab-icon">🎮</span>
+                    <span class="app-tab-text">GPU Dashboard</span>
                 </button>
                 <button class="app-tab-button" onclick="switchApp('topology')" title="Network Topology">
                     <span class="app-tab-icon">🗺️</span>
@@ -345,6 +350,153 @@
                                         <tbody id="devicesTableBody">
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GPU Dashboard Application -->
+                <div class="app-content" id="gpu-dashboard-app">
+                    <div class="app-header">
+                        <h1 class="app-title">🎮 GPU Dashboard</h1>
+                        <p class="app-subtitle">Professional datacenter GPU monitoring and management for NVIDIA GPUs</p>
+                    </div>
+
+                    <div class="gpu-dashboard-container">
+                        <!-- GPU Statistics -->
+                        <div class="gpu-stats-grid">
+                            <div class="gpu-stat-card">
+                                <div class="gpu-stat-header">
+                                    <div class="gpu-stat-icon">🖥️</div>
+                                    <div class="gpu-stat-label">Total GPUs</div>
+                                </div>
+                                <div class="gpu-stat-value" id="totalGpus">0</div>
+                                <div class="gpu-stat-trend">Across all datacenters</div>
+                            </div>
+                            <div class="gpu-stat-card">
+                                <div class="gpu-stat-header">
+                                    <div class="gpu-stat-icon">✅</div>
+                                    <div class="gpu-stat-label">Healthy</div>
+                                </div>
+                                <div class="gpu-stat-value" id="healthyGpus">0</div>
+                                <div class="gpu-stat-trend">Operating normally</div>
+                            </div>
+                            <div class="gpu-stat-card">
+                                <div class="gpu-stat-header">
+                                    <div class="gpu-stat-icon">⚠️</div>
+                                    <div class="gpu-stat-label">Warning</div>
+                                </div>
+                                <div class="gpu-stat-value" id="warningGpus">0</div>
+                                <div class="gpu-stat-trend">Attention needed</div>
+                            </div>
+                            <div class="gpu-stat-card">
+                                <div class="gpu-stat-header">
+                                    <div class="gpu-stat-icon">🔴</div>
+                                    <div class="gpu-stat-label">Critical</div>
+                                </div>
+                                <div class="gpu-stat-value" id="criticalGpus">0</div>
+                                <div class="gpu-stat-trend">Immediate action</div>
+                            </div>
+                            <div class="gpu-stat-card">
+                                <div class="gpu-stat-header">
+                                    <div class="gpu-stat-icon">📊</div>
+                                    <div class="gpu-stat-label">Avg. Utilization</div>
+                                </div>
+                                <div class="gpu-stat-value" id="avgUtilization">0%</div>
+                                <div class="gpu-stat-trend">Compute capacity</div>
+                            </div>
+                            <div class="gpu-stat-card">
+                                <div class="gpu-stat-header">
+                                    <div class="gpu-stat-icon">🌡️</div>
+                                    <div class="gpu-stat-label">Avg. Temperature</div>
+                                </div>
+                                <div class="gpu-stat-value" id="avgTemperature">0°C</div>
+                                <div class="gpu-stat-trend">Thermal status</div>
+                            </div>
+                            <div class="gpu-stat-card">
+                                <div class="gpu-stat-header">
+                                    <div class="gpu-stat-icon">⚡</div>
+                                    <div class="gpu-stat-label">Total Power</div>
+                                </div>
+                                <div class="gpu-stat-value" id="totalPower">0 kW</div>
+                                <div class="gpu-stat-trend">Power consumption</div>
+                            </div>
+                            <div class="gpu-stat-card">
+                                <div class="gpu-stat-header">
+                                    <div class="gpu-stat-icon">💯</div>
+                                    <div class="gpu-stat-label">Efficiency</div>
+                                </div>
+                                <div class="gpu-stat-value" id="gpuEfficiency">0%</div>
+                                <div class="gpu-stat-trend">Performance ratio</div>
+                            </div>
+                        </div>
+
+                        <!-- GPU Controls -->
+                        <div class="gpu-controls">
+                            <div class="gpu-control-group">
+                                <button class="gpu-filter-btn active" onclick="filterGpus('all')" title="Show all GPUs">
+                                    All GPUs
+                                </button>
+                                <button class="gpu-filter-btn" onclick="filterGpus('healthy')" title="Show healthy GPUs">
+                                    Healthy
+                                </button>
+                                <button class="gpu-filter-btn" onclick="filterGpus('warning')" title="Show warning GPUs">
+                                    Warning
+                                </button>
+                                <button class="gpu-filter-btn" onclick="filterGpus('critical')" title="Show critical GPUs">
+                                    Critical
+                                </button>
+                                <button class="gpu-filter-btn" onclick="filterGpus('high-util')" title="High utilization">
+                                    High Util (>80%)
+                                </button>
+                                <button class="gpu-filter-btn" onclick="filterGpus('high-temp')" title="High temperature">
+                                    High Temp (>75°C)
+                                </button>
+                            </div>
+                            <div class="gpu-control-group">
+                                <input type="text" class="gpu-search-input" placeholder="Search GPUs..." onkeyup="searchGpus(this.value)">
+                                <button class="gpu-action-btn" onclick="refreshGpuData()" title="Refresh GPU data">
+                                    🔄 Refresh
+                                </button>
+                                <button class="gpu-action-btn" onclick="toggleGpuAutoRefresh()" id="gpuAutoRefreshBtn" title="Toggle auto-refresh">
+                                    ▶️ Auto Update
+                                </button>
+                                <button class="gpu-action-btn" onclick="exportGpuData()" title="Export GPU data">
+                                    💾 Export
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Loading state -->
+                        <div class="loading" id="gpuLoading" style="display: none;">
+                            <div class="spinner"></div>
+                            <div>Loading GPU data...</div>
+                        </div>
+
+                        <!-- GPU Table View -->
+                        <div class="gpu-table-container" id="gpuTableContainer">
+                            <!-- GPU table will be dynamically inserted here -->
+                        </div>
+
+                        <!-- GPU Charts Section -->
+                        <div class="gpu-charts-section">
+                            <div class="gpu-chart-container">
+                                <h3 class="gpu-chart-title">Utilization Heatmap</h3>
+                                <div id="utilizationHeatmap">
+                                    <!-- Heatmap will be rendered here -->
+                                </div>
+                            </div>
+                            <div class="gpu-chart-container">
+                                <h3 class="gpu-chart-title">Power Consumption by Datacenter</h3>
+                                <div id="powerChart">
+                                    <!-- Power chart will be rendered here -->
+                                </div>
+                            </div>
+                            <div class="gpu-chart-container">
+                                <h3 class="gpu-chart-title">Temperature Distribution</h3>
+                                <div id="temperatureChart">
+                                    <!-- Temperature chart will be rendered here -->
                                 </div>
                             </div>
                         </div>
@@ -800,6 +952,21 @@
         </div>
     </div>
 
+    <!-- GPU Details Modal -->
+    <div id="gpuDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="gpuModalTitle">GPU Details</h2>
+                <span class="close" onclick="closeGpuDetailsModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="gpuModalContent">
+                    <!-- GPU details will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Context Menu for Pod Actions -->
     <div id="podContextMenu" class="context-menu" style="display: none; position: absolute; z-index: 1001;">
         <div class="context-menu-item" id="detailsMenuItem">
@@ -898,6 +1065,7 @@
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/devices.js"></script>
+    <script src="js/gpu-dashboard.js"></script>
     <script src="js/alarms.js"></script>
     <script src="js/topology.js"></script>
     <script src="js/traffic-engineering.js"></script>
