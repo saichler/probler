@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/saichler/l8pollaris/go/types/l8poll"
+	"github.com/saichler/l8types/go/types/l8services"
 	"github.com/saichler/probler/go/prob/common"
 )
 
@@ -12,10 +13,10 @@ func CreateCluster(kubeconfig, context string, serviceArea int32) *l8poll.L8C_Ta
 
 	device := &l8poll.L8C_Target{}
 	device.TargetId = context
-	device.InventoryService = &l8poll.L8ServiceInfo{ServiceName: common.INVENTORY_SERVICE_K8S,
-		ServiceArea: common.INVENTORY_AREA_K8S}
-	device.ParsingService = &l8poll.L8ServiceInfo{ServiceName: common.PARSER_SERVICE_K8s,
-		ServiceArea: common.PARSER_AREA_K8S}
+	device.LinkD = &l8services.L8ServiceLink{ZsideServiceName: common.INVENTORY_SERVICE_K8S,
+		ZsideServiceArea: common.INVENTORY_AREA_K8S}
+	device.LinkP = &l8services.L8ServiceLink{ZsideServiceName: common.PARSER_SERVICE_K8s,
+		ZsideServiceArea: common.PARSER_AREA_K8S}
 	device.Hosts = make(map[string]*l8poll.L8C_Host)
 	host := &l8poll.L8C_Host{}
 	host.TargetId = device.TargetId

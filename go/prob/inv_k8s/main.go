@@ -4,8 +4,8 @@ import (
 	"os"
 
 	"github.com/saichler/l8inventory/go/inv/service"
-	"github.com/saichler/l8pollaris/go/types/l8poll"
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/types/l8services"
 	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
@@ -29,7 +29,7 @@ func main() {
 	//Activate the box inventory service with the primary key & sample model instance
 	res.Services().RegisterServiceHandlerType(&inventory.InventoryService{})
 	_, err := nic.Resources().Services().Activate(inventory.ServiceType, common2.INVENTORY_SERVICE_K8S, common2.INVENTORY_AREA_K8S, nic.Resources(),
-		nic, "Name", &types2.K8SCluster{}, &l8poll.L8ServiceInfo{ServiceName: common2.ORM_SERVICE, ServiceArea: 1})
+		nic, "Name", &types2.K8SCluster{}, &l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 1})
 
 	if err != nil {
 		res.Logger().Error(err)

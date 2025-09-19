@@ -3,15 +3,16 @@ package creates
 import (
 	common2 "github.com/saichler/l8collector/go/collector/common"
 	"github.com/saichler/l8pollaris/go/types/l8poll"
+	"github.com/saichler/l8types/go/types/l8services"
 	"github.com/saichler/probler/go/prob/common"
 )
 
 func CreateDevice(ip string, serviceArea byte) *l8poll.L8C_Target {
 	device := &l8poll.L8C_Target{}
 	device.TargetId = ip
-	device.InventoryService = &l8poll.L8ServiceInfo{ServiceName: common.INVENTORY_SERVICE_BOX, ServiceArea: int32(serviceArea)}
-	device.ParsingService = &l8poll.L8ServiceInfo{ServiceName: common2.ParserServicePrefix + common.INVENTORY_SERVICE_BOX,
-		ServiceArea: int32(serviceArea)}
+	device.LinkD = &l8services.L8ServiceLink{ZsideServiceName: common.INVENTORY_SERVICE_BOX, ZsideServiceArea: int32(serviceArea)}
+	device.LinkP = &l8services.L8ServiceLink{ZsideServiceName: common2.ParserServicePrefix + common.INVENTORY_SERVICE_BOX,
+		ZsideServiceArea: int32(serviceArea)}
 	device.Hosts = make(map[string]*l8poll.L8C_Host)
 	host := &l8poll.L8C_Host{}
 	host.TargetId = device.TargetId
