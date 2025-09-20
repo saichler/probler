@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/layer8/go/overlay/vnet"
+	"github.com/saichler/l8bus/go/overlay/vnet"
 	common2 "github.com/saichler/probler/go/prob/common"
 )
 

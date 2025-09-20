@@ -127,6 +127,20 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		}
 	}
 
+	if cmd == "500" {
+		ip := 1
+		sub := 40
+		for i := 1; i <= 500; i++ {
+			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			deviceList.List = append(deviceList.List, device)
+			ip++
+			if ip > 254 {
+				sub++
+				ip = 1
+			}
+		}
+	}
+
 	if len(deviceList.List) == 0 {
 		fmt.Println("No devices in list")
 		return

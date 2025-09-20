@@ -3,13 +3,13 @@ package main
 import (
 	"os"
 
+	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8collector/go/collector/common"
 	"github.com/saichler/l8collector/go/collector/service"
 	"github.com/saichler/l8collector/go/collector/targets"
 	"github.com/saichler/l8parser/go/parser/boot"
 	"github.com/saichler/l8pollaris/go/pollaris"
 	"github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/layer8/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
 )
 

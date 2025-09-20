@@ -10,7 +10,7 @@ import (
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8health"
 	"github.com/saichler/l8web/go/web/client"
-	health2 "github.com/saichler/layer8/go/overlay/health"
+	health2 "github.com/saichler/l8bus/go/overlay/health"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
