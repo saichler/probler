@@ -3,13 +3,12 @@ package main
 import (
 	"os"
 
-	"github.com/saichler/l8inventory/go/inv/service"
-	"github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/l8types/go/types/l8services"
 	"github.com/saichler/l8bus/go/overlay/vnic"
+	"github.com/saichler/l8inventory/go/inv/service"
+	"github.com/saichler/l8reflect/go/reflect/introspecting"
+	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
-	"github.com/saichler/l8reflect/go/reflect/introspecting"
 )
 
 func main() {
@@ -26,10 +25,12 @@ func main() {
 	introspecting.AddPrimaryKeyDecorator(inventoryNode, "Id")
 	nic.Resources().Registry().Register(&types2.NetworkDeviceList{})
 
+	/*&l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 0}*/
+
 	//Activate the box inventory service with the primary key & sample model instance
 	res.Services().RegisterServiceHandlerType(&inventory.InventoryService{})
 	_, err := nic.Resources().Services().Activate(inventory.ServiceType, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX,
-		nic.Resources(), nic, "Id", &types2.NetworkDevice{}, &l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 0})
+		nic.Resources(), nic, "Id", &types2.NetworkDevice{})
 
 	invCenter := inventory.Inventory(res, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX)
 	invCenter.AddStats("Total", Total)

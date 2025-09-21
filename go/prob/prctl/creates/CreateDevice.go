@@ -27,7 +27,7 @@ func CreateDevice(ip string, serviceArea byte) *l8poll.L8C_Target {
 	sshConfig.Username = "simadmin"
 	sshConfig.Password = "simadmin"
 	sshConfig.Terminal = "vt100"
-	sshConfig.Timeout = 15
+	sshConfig.Timeout = 60
 
 	host.Configs[int32(sshConfig.Protocol)] = sshConfig
 
@@ -35,7 +35,7 @@ func CreateDevice(ip string, serviceArea byte) *l8poll.L8C_Target {
 	snmpConfig.Protocol = l8poll.L8C_Protocol_L8P_PSNMPV2
 	snmpConfig.Addr = ip
 	snmpConfig.Port = 161
-	snmpConfig.Timeout = 15
+	snmpConfig.Timeout = 60
 	snmpConfig.ReadCommunity = "public"
 
 	host.Configs[int32(snmpConfig.Protocol)] = snmpConfig

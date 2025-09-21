@@ -3,13 +3,12 @@ package main
 import (
 	"os"
 
-	"github.com/saichler/l8inventory/go/inv/service"
-	"github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/l8types/go/types/l8services"
 	"github.com/saichler/l8bus/go/overlay/vnic"
+	"github.com/saichler/l8inventory/go/inv/service"
+	"github.com/saichler/l8reflect/go/reflect/introspecting"
+	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
-	"github.com/saichler/l8reflect/go/reflect/introspecting"
 )
 
 func main() {
@@ -26,10 +25,12 @@ func main() {
 	clusterNode, _ := nic.Resources().Introspector().Inspect(&types2.K8SCluster{})
 	introspecting.AddPrimaryKeyDecorator(clusterNode, "Name")
 
+	//&l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 1}
+
 	//Activate the box inventory service with the primary key & sample model instance
 	res.Services().RegisterServiceHandlerType(&inventory.InventoryService{})
 	_, err := nic.Resources().Services().Activate(inventory.ServiceType, common2.INVENTORY_SERVICE_K8S, common2.INVENTORY_AREA_K8S, nic.Resources(),
-		nic, "Name", &types2.K8SCluster{}, &l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 1})
+		nic, "Name", &types2.K8SCluster{})
 
 	if err != nil {
 		res.Logger().Error(err)
