@@ -31,18 +31,15 @@ func main() {
 	nic.Resources().Services().Activate(service.ServiceType, common.CollectorService, 0, nic.Resources(), nic)
 	nic.Resources().Services().Activate(targets.ServiceType, targets.ServiceName, 0, nic.Resources(), nic)
 
+	initData := []interface{}{}
+	for _, p := range boot.GetAllPolarisModels() {
+		initData = append(initData, p)
+	}
+	initData = append(initData, boot.CreateK8sBootPolls())
+
 	//The polling config, e.g. what to poll per protocol, is also agnostic to the model, hence always on service are 0
 	nic.Resources().Services().Activate(pollaris.ServiceType, pollaris.ServiceName,
-		pollaris.ServiceArea, nic.Resources(), nic)
-
-	ps := pollaris.Pollaris(nic.Resources())
-	for _, p := range boot.GetAllPolarisModels() {
-		err := ps.Add(p, true)
-		if err != nil {
-			panic(err)
-		}
-	}
-	ps.Add(boot.CreateK8sBootPolls(), true)
+		pollaris.ServiceArea, nic.Resources(), nic, initData)
 
 	res.Logger().SetLogLevel(ifs.Error_Level)
 
