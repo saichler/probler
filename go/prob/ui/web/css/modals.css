@@ -966,6 +966,239 @@
     }
 }
 
+/* Pod Details Modal Tabs */
+.pod-details-tabs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.pod-details-tab-nav {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 2px solid var(--crm-gray-200);
+    margin-bottom: 20px;
+    background: var(--crm-gray-50);
+    padding: 8px 8px 0 8px;
+    border-radius: var(--crm-border-radius) var(--crm-border-radius) 0 0;
+    overflow-x: auto;
+}
+
+.pod-details-tab-button {
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--crm-gray-600);
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    margin-right: 8px;
+    border-radius: var(--crm-border-radius) var(--crm-border-radius) 0 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pod-details-tab-button:hover {
+    background: rgba(59, 130, 246, 0.05);
+    color: var(--crm-primary);
+}
+
+.pod-details-tab-button.active {
+    background: var(--crm-white);
+    color: var(--crm-primary);
+    border-bottom: 3px solid var(--crm-primary);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.pod-details-tab-content {
+    flex: 1;
+    overflow: hidden;
+    padding: 0;
+}
+
+.pod-details-tab-pane {
+    display: none;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.pod-details-tab-pane.active {
+    display: block;
+}
+
+/* Pod Labels and Annotations */
+.pod-labels,
+.pod-annotations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.pod-label,
+.pod-annotation {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--crm-gray-100);
+    border: 1px solid var(--crm-gray-300);
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--crm-gray-700);
+    transition: all 0.3s ease;
+}
+
+.pod-label:hover,
+.pod-annotation:hover {
+    background: var(--crm-primary);
+    color: var(--crm-white);
+    border-color: var(--crm-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--crm-shadow-sm);
+}
+
+/* Pod Conditions */
+.pod-conditions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pod-condition {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--crm-gray-50);
+    border-radius: var(--crm-border-radius);
+    border: 1px solid var(--crm-gray-200);
+    transition: all 0.3s ease;
+}
+
+.pod-condition:hover {
+    background: var(--crm-white);
+    box-shadow: var(--crm-shadow-sm);
+}
+
+.pod-condition-type {
+    flex: 1;
+    font-weight: 600;
+    color: var(--crm-gray-800);
+}
+
+.pod-condition-time {
+    font-size: 12px;
+    color: var(--crm-gray-500);
+}
+
+/* Pod Containers */
+.pod-containers {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.pod-container {
+    background: var(--crm-gray-50);
+    border: 1px solid var(--crm-gray-200);
+    border-radius: var(--crm-border-radius);
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.pod-container:hover {
+    background: var(--crm-white);
+    box-shadow: var(--crm-shadow);
+    transform: translateY(-2px);
+}
+
+.pod-container-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--crm-gray-200);
+}
+
+.pod-container-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--crm-gray-900);
+}
+
+/* Environment Variables */
+.env-vars-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: var(--crm-gray-100);
+    padding: 12px;
+    border-radius: var(--crm-border-radius-sm);
+    border: 1px solid var(--crm-gray-200);
+}
+
+.env-var-item {
+    display: inline-block;
+    padding: 4px 8px;
+    background: var(--crm-white);
+    border: 1px solid var(--crm-gray-300);
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--crm-gray-700);
+}
+
+/* Pod Volumes */
+.pod-volumes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+}
+
+.pod-volume {
+    background: var(--crm-gray-50);
+    border: 1px solid var(--crm-gray-200);
+    border-radius: var(--crm-border-radius);
+    padding: 16px;
+    transition: all 0.3s ease;
+}
+
+.pod-volume:hover {
+    background: var(--crm-white);
+    box-shadow: var(--crm-shadow-sm);
+    transform: translateY(-1px);
+}
+
+.pod-volume-name {
+    font-weight: 600;
+    color: var(--crm-gray-900);
+    margin-bottom: 8px;
+}
+
+.pod-volume-type {
+    font-size: 12px;
+    color: var(--crm-gray-600);
+}
+
+/* Fade in animation for tab content */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Modern CRM Responsive Design */
 @media (max-width: 1200px) {
     .modal-content {

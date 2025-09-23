@@ -66,6 +66,322 @@ function getDeviceStatusString(deviceStatus) {
     return statusMap[deviceStatus] || 'unknown';
 }
 
+// Generate Logical Inventory Tree data from NetworkDevice.logicals
+function generateLogicalInventoryData(device) {
+    // If we have original API data with logicals, use it
+    if (device.originalApiData && device.originalApiData.logicals) {
+        const logicals = device.originalApiData.logicals;
+
+        // Create root device node
+        const rootNode = {
+            name: device.name,
+            type: 'device',
+            details: `Logical Configuration - ${device.ipAddress}`,
+            status: device.status === 'online' ? 'ok' : 'error',
+            children: []
+        };
+
+        // Process each logical component (e.g., "logical-0")
+        Object.keys(logicals).forEach(logicalKey => {
+            const logical = logicals[logicalKey];
+
+            // Add VLANs
+            if (logical.vlans && logical.vlans.length > 0) {
+                const vlanNode = {
+                    name: 'VLANs',
+                    type: 'vlan_group',
+                    details: `${logical.vlans.length} VLANs configured`,
+                    status: 'ok',
+                    children: []
+                };
+
+                logical.vlans.forEach(vlan => {
+                    vlanNode.children.push({
+                        name: `VLAN ${vlan.id}`,
+                        type: 'vlan',
+                        details: `${vlan.name || 'Unnamed'} - ${vlan.description || 'No description'}`,
+                        status: vlan.status === 'active' ? 'ok' : 'warning',
+                        children: vlan.interfaces ? vlan.interfaces.map(iface => ({
+                            name: iface.name || `Interface ${iface.id}`,
+                            type: 'interface',
+                            details: `${iface.type || 'Unknown'} - ${iface.ip_address || 'No IP'}`,
+                            status: iface.status === 'up' ? 'ok' : 'error'
+                        })) : []
+                    });
+                });
+
+                rootNode.children.push(vlanNode);
+            }
+
+            // Add Routing Instances
+            if (logical.routing_instances && logical.routing_instances.length > 0) {
+                const routingNode = {
+                    name: 'Routing Instances',
+                    type: 'routing_group',
+                    details: `${logical.routing_instances.length} routing instances`,
+                    status: 'ok',
+                    children: []
+                };
+
+                logical.routing_instances.forEach(instance => {
+                    const instanceNode = {
+                        name: instance.name || `Routing Instance ${instance.id}`,
+                        type: 'routing_instance',
+                        details: `Type: ${instance.type || 'Unknown'}, VRF: ${instance.vrf || 'default'}`,
+                        status: instance.status === 'active' ? 'ok' : 'warning',
+                        children: []
+                    };
+
+                    // Add routes
+                    if (instance.routes && instance.routes.length > 0) {
+                        instanceNode.children.push({
+                            name: 'Routes',
+                            type: 'routes',
+                            details: `${instance.routes.length} routes configured`,
+                            status: 'ok',
+                            children: instance.routes.map(route => ({
+                                name: route.destination || 'Unknown',
+                                type: 'route',
+                                details: `Next-hop: ${route.next_hop || 'N/A'}, Metric: ${route.metric || '0'}`,
+                                status: route.active ? 'ok' : 'inactive'
+                            }))
+                        });
+                    }
+
+                    routingNode.children.push(instanceNode);
+                });
+
+                rootNode.children.push(routingNode);
+            }
+
+            // Add Logical Interfaces
+            if (logical.interfaces && logical.interfaces.length > 0) {
+                const interfacesNode = {
+                    name: 'Logical Interfaces',
+                    type: 'interfaces_group',
+                    details: `${logical.interfaces.length} logical interfaces`,
+                    status: 'ok',
+                    children: []
+                };
+
+                logical.interfaces.forEach(iface => {
+                    const ifaceNode = {
+                        name: iface.name || `Interface ${iface.id}`,
+                        type: 'logical_interface',
+                        details: `${iface.description || 'No description'}`,
+                        status: iface.admin_status === 'up' ? 'ok' : 'error',
+                        children: []
+                    };
+
+                    // Add IP addresses
+                    if (iface.ip_addresses && iface.ip_addresses.length > 0) {
+                        iface.ip_addresses.forEach(ip => {
+                            ifaceNode.children.push({
+                                name: ip.address || 'Unknown',
+                                type: 'ip_address',
+                                details: `${ip.type || 'IPv4'} - ${ip.subnet_mask || 'No mask'}`,
+                                status: 'ok'
+                            });
+                        });
+                    }
+
+                    interfacesNode.children.push(ifaceNode);
+                });
+
+                rootNode.children.push(interfacesNode);
+            }
+
+            // Add Services/Protocols
+            if (logical.services && logical.services.length > 0) {
+                const servicesNode = {
+                    name: 'Services & Protocols',
+                    type: 'services_group',
+                    details: `${logical.services.length} services configured`,
+                    status: 'ok',
+                    children: []
+                };
+
+                logical.services.forEach(service => {
+                    servicesNode.children.push({
+                        name: service.name || 'Unknown Service',
+                        type: 'service',
+                        details: `Port: ${service.port || 'N/A'}, Protocol: ${service.protocol || 'N/A'}`,
+                        status: service.enabled ? 'ok' : 'disabled'
+                    });
+                });
+
+                rootNode.children.push(servicesNode);
+            }
+        });
+
+        return rootNode;
+    }
+
+    // Fallback mock data if no logical data is available
+    return {
+        name: device.name,
+        type: 'device',
+        details: `Logical Configuration - ${device.ipAddress}`,
+        status: device.status === 'online' ? 'ok' : 'error',
+        children: [
+            {
+                name: 'VLANs',
+                type: 'vlan_group',
+                details: '3 VLANs configured',
+                status: 'ok',
+                children: [
+                    {
+                        name: 'VLAN 10',
+                        type: 'vlan',
+                        details: 'Management - Admin Network',
+                        status: 'ok',
+                        children: [
+                            {
+                                name: 'ge-0/0/1.10',
+                                type: 'interface',
+                                details: 'Tagged - 192.168.10.1/24',
+                                status: 'ok'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'VLAN 20',
+                        type: 'vlan',
+                        details: 'Production - User Network',
+                        status: 'ok',
+                        children: [
+                            {
+                                name: 'ge-0/0/2.20',
+                                type: 'interface',
+                                details: 'Tagged - 192.168.20.1/24',
+                                status: 'ok'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'VLAN 30',
+                        type: 'vlan',
+                        details: 'Guest - Isolated Network',
+                        status: 'ok',
+                        children: []
+                    }
+                ]
+            },
+            {
+                name: 'Routing Instances',
+                type: 'routing_group',
+                details: '2 routing instances',
+                status: 'ok',
+                children: [
+                    {
+                        name: 'Default',
+                        type: 'routing_instance',
+                        details: 'Type: Virtual-Router, VRF: default',
+                        status: 'ok',
+                        children: [
+                            {
+                                name: 'Routes',
+                                type: 'routes',
+                                details: '5 routes configured',
+                                status: 'ok',
+                                children: [
+                                    {
+                                        name: '0.0.0.0/0',
+                                        type: 'route',
+                                        details: 'Next-hop: 10.0.0.1, Metric: 1',
+                                        status: 'ok'
+                                    },
+                                    {
+                                        name: '192.168.0.0/16',
+                                        type: 'route',
+                                        details: 'Next-hop: Local, Metric: 0',
+                                        status: 'ok'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: 'MGMT-VRF',
+                        type: 'routing_instance',
+                        details: 'Type: VRF, VRF: management',
+                        status: 'ok',
+                        children: []
+                    }
+                ]
+            },
+            {
+                name: 'Logical Interfaces',
+                type: 'interfaces_group',
+                details: '4 logical interfaces',
+                status: 'ok',
+                children: [
+                    {
+                        name: 'lo0',
+                        type: 'logical_interface',
+                        details: 'Loopback Interface',
+                        status: 'ok',
+                        children: [
+                            {
+                                name: '10.0.0.5/32',
+                                type: 'ip_address',
+                                details: 'IPv4 - Primary',
+                                status: 'ok'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'ge-0/0/0',
+                        type: 'logical_interface',
+                        details: 'Uplink to Core',
+                        status: 'ok',
+                        children: [
+                            {
+                                name: '10.1.1.2/30',
+                                type: 'ip_address',
+                                details: 'IPv4 - Point-to-Point',
+                                status: 'ok'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: 'Services & Protocols',
+                type: 'services_group',
+                details: '4 services configured',
+                status: 'ok',
+                children: [
+                    {
+                        name: 'OSPF',
+                        type: 'service',
+                        details: 'Area: 0.0.0.0, Protocol: IGP',
+                        status: 'ok'
+                    },
+                    {
+                        name: 'BGP',
+                        type: 'service',
+                        details: 'AS: 65001, Protocol: EGP',
+                        status: 'ok'
+                    },
+                    {
+                        name: 'SNMP',
+                        type: 'service',
+                        details: 'Port: 161, Protocol: UDP',
+                        status: 'ok'
+                    },
+                    {
+                        name: 'SSH',
+                        type: 'service',
+                        details: 'Port: 22, Protocol: TCP',
+                        status: 'ok'
+                    }
+                ]
+            }
+        ]
+    };
+}
+
 // Generate Physical Tree data from NetworkDevice.physicals
 function generatePhysicalInventoryData(device) {
     // If we have original API data with physicals, use it
@@ -297,7 +613,7 @@ async function loadDevices(page = 1) {
         // Try to fetch data from the REST API endpoint first
         const apiEndpoint = '/probler/0/NetDev';
         const serverPage = page - 1; // Convert UI page (1-based) to server page (0-based)
-        const bodyParam = `{"text":"select * from NetworkDevice where Id=* limit 25 page ${serverPage}", "rootType":"networkdevice", "properties":["*"], "criteria":{"condition":{"comparator":{"left":"id", "oper":"=", "right":"*"}}}, "limit":25, "page":${serverPage}, "matchCase":true}`;
+        const bodyParam = `{"text":"select * from NetworkDevice limit 25 page ${serverPage}", "rootType":"networkdevice", "properties":["*"], "limit":25, "page":${serverPage}, "matchCase":true}`;
 
         console.log('Attempting to fetch devices from API:', apiEndpoint, 'Page:', page);
 
@@ -791,7 +1107,12 @@ function showDeviceDetails(device) {
     const inventoryData = generatePhysicalInventoryData(device);
     const treeHtml = `<ul class="tree-node">${createTreeNode(inventoryData)}</ul>`;
     document.getElementById('inventoryContent').innerHTML = treeHtml;
-    
+
+    // Populate Logical Inventory tab using NetworkDevice.logicals data
+    const logicalInventoryData = generateLogicalInventoryData(device);
+    const logicalTreeHtml = `<ul class="tree-node">${createTreeNode(logicalInventoryData)}</ul>`;
+    document.getElementById('logicalInventoryContent').innerHTML = logicalTreeHtml;
+
     document.getElementById('deviceModal').style.display = 'block';
 }
 

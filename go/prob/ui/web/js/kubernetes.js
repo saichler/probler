@@ -244,18 +244,9 @@ function initKubernetesApp() {
 // Fetch Kubernetes data from API
 async function fetchK8sData() {
     const bodyData = {
-        "text": "select * from k8scluster where Name=*",
+        "text": "select * from k8scluster",
         "rootType": "k8scluster",
         "properties": ["*"],
-        "criteria": {
-            "condition": {
-                "comparator": {
-                    "left": "name",
-                    "oper": "=",
-                    "right": "*"
-                }
-            }
-        },
         "matchCase": true
     };
 
@@ -974,7 +965,7 @@ async function fetchPodLogs() {
     if (outputElement) outputElement.textContent = '';
     
     const requestBody = {
-        "deviceId": currentClusterName,
+        "targetId": currentClusterName,
         "hostId": currentClusterName,
         "pollarisName": "kubernetes",
         "jobName": "logs",
@@ -1140,7 +1131,7 @@ async function fetchPodDetails() {
     if (contentElement) contentElement.innerHTML = '';
     
     const requestBody = {
-        "deviceId": currentClusterName,
+        "targetId": currentClusterName,
         "hostId": currentClusterName,
         "pollarisName": "kubernetes",
         "jobName": "details",

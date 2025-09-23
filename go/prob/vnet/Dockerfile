@@ -1,4 +1,4 @@
-FROM saichler/probler-builder:latest AS build
+FROM saichler/builder:latest AS build
 
 ENV CGO_ENABLED 1
 COPY main.go /home/src/github.com/saichler/build/main.go

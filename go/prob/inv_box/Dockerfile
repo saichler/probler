@@ -1,4 +1,4 @@
-FROM saichler/probler-builder:latest AS build
+FROM saichler/builder:latest AS build
 
 COPY main.go /home/src/github.com/saichler/build/main.go
 RUN go mod init

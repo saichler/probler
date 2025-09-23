@@ -1,7 +1,6 @@
 set -e
-cd ./prob/security
-./build.sh
-cd ../collector
+cd prob
+cd ./collector
 ./build.sh
 cd ../parser
 ./build.sh
