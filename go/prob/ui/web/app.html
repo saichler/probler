@@ -25,11 +25,11 @@
         <div class="network-decoration">⚡</div>
 
         <div class="login-container">
-            <div class="login-header">
-                <div class="logo-login">
-                    🕸️
+            <div class="login-header" style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                <img src="logo.gif" alt="Logo" style="height: 135px; width: auto;">
+                <div>
+                    <h1 class="app-title" style="margin: 0;">Open Network Automation</h1>
                 </div>
-                <h1 class="app-title">Open Network Automation</h1>
             </div>
 
             <form class="login-form" id="loginForm">
@@ -69,9 +69,12 @@
             <div class="header-content">
                 <div class="header-logo-left">
                 </div>
-                <div class="header-center">
-                    <h1 class="main-title">Open Network Automation <span style="font-size: 0.8rem; color: #999; font-weight: normal; margin-left: 10px;">Powered by Layer 8 Ecosystem & AI</span></h1>
-                    <div class="subtitle">Network Operations Center - Real-time Monitoring & Management</div>
+                <div class="header-center" style="display: flex; align-items: center; justify-content: flex-start; gap: 15px;">
+                    <img src="logo.gif" alt="Logo" style="height: 135px; width: auto;">
+                    <div>
+                        <h1 class="main-title">Open Network Automation <span style="font-size: 0.8rem; color: #999; font-weight: normal; margin-left: 10px;">Powered by Layer 8 Ecosystem & AI</span></h1>
+                        <div class="subtitle">Network Operations Center - Real-time Monitoring & Management</div>
+                    </div>
                 </div>
                 <div class="header-right">
                     <div class="user-info">
@@ -81,7 +84,7 @@
                         </div>
                     </div>
                     <div class="logo" onclick="toggleDashboard()" title="Toggle Dashboard">
-                        🕸️
+                        <img src="logo.gif" alt="Logo" style="height: 40px; width: auto;">
                     </div>
                 </div>
             </div>
@@ -156,7 +159,7 @@
                     <div class="dashboard visible" id="dashboardSection">
                         <div class="stat-card" onclick="filterDevices('all')">
                             <div class="stat-card-header">
-                                <div class="stat-icon">🕸️</div>
+                                <div class="stat-icon"><img src="logo.gif" alt="Total" style="height: 30px; width: auto;"></div>
                                 <div class="stat-label">Total Devices</div>
                             </div>
                             <div class="stat-value" id="totalDevices">0</div>
