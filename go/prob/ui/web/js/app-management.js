@@ -1,5 +1,63 @@
 // Application Management Functions
 
+// GPU Management Functions for Dashboard
+function toggleGPUSection() {
+    const content = document.getElementById('gpuContent');
+    const icon = document.getElementById('gpuToggleIcon');
+
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        icon.textContent = '−';
+    } else {
+        content.style.display = 'none';
+        icon.textContent = '+';
+    }
+}
+
+function refreshGPUStats() {
+    // Simulate refreshing GPU stats
+    console.log('Refreshing GPU statistics...');
+
+    // Add a temporary loading effect
+    const gpuContent = document.getElementById('gpuContent');
+    if (gpuContent) {
+        const originalContent = gpuContent.innerHTML;
+        gpuContent.style.opacity = '0.5';
+
+        setTimeout(() => {
+            gpuContent.style.opacity = '1';
+            // In a real application, you would fetch new data here
+            updateGPUMetrics();
+        }, 500);
+    }
+}
+
+function updateGPUMetrics() {
+    // Simulate updating GPU metrics with slight variations
+    const onlineGPUs = document.querySelector('#gpuOverviewSection .stat-value.status-online');
+    if (onlineGPUs) {
+        const current = parseInt(onlineGPUs.textContent.replace(',', ''));
+        const variance = Math.floor(Math.random() * 10) - 5;
+        const newValue = Math.max(2150, Math.min(2165, current + variance));
+        onlineGPUs.textContent = newValue.toLocaleString();
+    }
+
+    const inUse = document.querySelector('#gpuOverviewSection .stat-value[style*="#76b900"]');
+    if (inUse) {
+        const current = parseInt(inUse.textContent.replace(',', ''));
+        const variance = Math.floor(Math.random() * 20) - 10;
+        const newValue = Math.max(1880, Math.min(1910, current + variance));
+        inUse.textContent = newValue.toLocaleString();
+
+        // Update utilization percentage
+        const utilization = ((newValue / 2158) * 100).toFixed(1);
+        const utilizationElement = inUse.parentElement.querySelector('.stat-trend');
+        if (utilizationElement) {
+            utilizationElement.textContent = `${utilization}% utilization`;
+        }
+    }
+}
+
 // Switch between applications
 function switchApp(appName) {
     // Hide all app content
