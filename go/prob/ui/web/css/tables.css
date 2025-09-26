@@ -389,7 +389,8 @@ tbody tr:hover td {
     overflow: visible !important;
 }
 
-.devices-section .section-content {
+.devices-section .section-content,
+.gpu-section .section-content {
     max-height: none !important;
     overflow-y: visible !important;
     overflow: visible !important;

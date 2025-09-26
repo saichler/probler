@@ -1,5 +1,56 @@
 // NVIDIA GPU Data Center Dashboard JavaScript
 
+// GPU Pagination Variables (exactly matching devices.js structure)
+let gpuCurrentPage = 1;
+let gpuPerPage = 25;
+let gpuTotalPages = 90; // 2,240 GPUs / 25 per page = ~90 pages
+let gpuTotalCount = 2240;
+const allGPUData = [];
+
+// Generate mock GPU data for all 2,240 GPUs
+function generateAllGPUData() {
+    const gpuTypes = ['H100 80GB', 'A100 40GB', 'RTX 4090', 'RTX 6000', 'RTX 5900', 'RTX 5800'];
+    const statuses = ['online', 'online', 'online', 'online', 'idle', 'warning', 'critical'];
+    const jobs = ['LLM-Training', 'AI-Research', 'Data-Analysis', 'Image-Processing', 'Video-Rendering', 'Idle', 'ML-Training', 'NLP-Research'];
+    const teams = ['ai_research', 'ml_team', 'data_science', 'graphics_team', 'compute_team', 'dev_team'];
+
+    const allGPUs = [];
+
+    for (let i = 0; i < gpuTotalCount; i++) {
+        const rackNum = Math.floor(i / 70) + 1; // 70 GPUs per rack
+        const nodeNum = Math.floor(i / 8) + 1; // 8 GPUs per node
+        const gpuNum = i % 8;
+        const gpuType = gpuTypes[Math.floor(Math.random() * gpuTypes.length)];
+        const status = statuses[Math.floor(Math.random() * statuses.length)];
+        const utilization = status === 'idle' ? 0 : Math.floor(Math.random() * 60) + 40;
+        const memory = gpuType.includes('80GB') ? 80 : gpuType.includes('40GB') ? 40 : gpuType.includes('32GB') ? 32 : 24;
+        const memoryUsed = status === 'idle' ? Math.random() * 2 : (utilization / 100) * memory;
+        const temp = status === 'idle' ? 35 + Math.random() * 10 : 60 + Math.random() * 30;
+        const job = status === 'idle' ? 'Idle' : jobs[Math.floor(Math.random() * jobs.length)];
+        const team = status === 'idle' ? 'Available' : teams[Math.floor(Math.random() * teams.length)];
+
+        allGPUs.push({
+            id: `R${String(rackNum).padStart(2, '0')}N${String(nodeNum).padStart(3, '0')}G${gpuNum}`,
+            rack: rackNum,
+            node: nodeNum,
+            gpu: gpuNum,
+            type: gpuType,
+            status: status,
+            utilization: utilization,
+            memory: memory,
+            memoryUsed: memoryUsed.toFixed(1),
+            temperature: Math.round(temp),
+            job: job,
+            team: team
+        });
+    }
+
+    return allGPUs;
+}
+
+// Initialize GPU data
+allGPUData.push(...generateAllGPUData());
+
 // Tab switching functionality
 document.addEventListener('DOMContentLoaded', function() {
     initializeNavigation();
@@ -311,193 +362,374 @@ function exportGPUData() {
     linkElement.click();
 }
 
-// Pagination functionality
-let currentPage = 1;
-let pageSize = 25;
-let totalPages = Math.ceil(2240 / pageSize); // 90 pages for 2,240 GPUs
-
+// GPU Pagination functionality (exactly matching devices.js structure)
 function initializePagination() {
-    // Add event listeners for pagination controls
-    document.getElementById('pageSizeSelect')?.addEventListener('change', handlePageSizeChange);
-    document.getElementById('firstPageBtn')?.addEventListener('click', () => goToPage(1));
-    document.getElementById('prevPageBtn')?.addEventListener('click', () => goToPage(currentPage - 1));
-    document.getElementById('nextPageBtn')?.addEventListener('click', () => goToPage(currentPage + 1));
-    document.getElementById('lastPageBtn')?.addEventListener('click', () => goToPage(totalPages));
-    document.getElementById('pageJumpBtn')?.addEventListener('click', handlePageJump);
+    // Initialize GPU table with first page
+    loadGPUsInternal(1);
+}
 
-    // Add event listeners for page number buttons
-    document.querySelectorAll('.page-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const page = parseInt(e.target.getAttribute('data-page'));
-            goToPage(page);
-        });
+function loadGPUsInternal(page) {
+    gpuCurrentPage = page;
+
+    // Calculate which GPUs to show for this page
+    const startIndex = (page - 1) * gpuPerPage;
+    const endIndex = Math.min(startIndex + gpuPerPage, allGPUData.length);
+    const pageGPUs = allGPUData.slice(startIndex, endIndex);
+
+    // Update the GPU table with the page data
+    updateGPUTable(pageGPUs);
+
+    // Update pagination controls
+    updateGPUPagination();
+
+    // Update count display
+    updateGPUCountDisplay();
+}
+
+// Make the internal function available
+window.loadGPUsInternal = loadGPUsInternal;
+
+function updateGPUTable(gpus) {
+    const tbody = document.getElementById('gpusTableBody');
+    if (!tbody) return;
+
+    // Clear existing content
+    tbody.innerHTML = '';
+
+    // Add GPU rows
+    gpus.forEach(gpu => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                <strong>Rack ${String(gpu.rack).padStart(2, '0')}, Node ${String(gpu.node).padStart(3, '0')}, GPU ${gpu.gpu}</strong><br>
+                <span style="color: var(--crm-gray-500);">${gpu.id}</span>
+            </td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                <span class="status-indicator status-${gpu.status}"></span>
+                ${gpu.status.toUpperCase()}
+            </td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">${gpu.type}</td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">${gpu.utilization}%</td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">${gpu.memoryUsed}GB / ${gpu.memory}GB</td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">${gpu.temperature}°C</td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">${gpu.job}</td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('${gpu.id}')">
+                    View
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
     });
+}
 
-    // Add enter key support for page jump input
-    document.getElementById('pageJumpInput')?.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            handlePageJump();
+function updateGPUPagination() {
+    // Update existing static pagination buttons - DON'T clear the container
+    const paginationContainer = document.querySelector('#gpuPaginationContainer');
+    if (!paginationContainer) {
+        console.error('GPU pagination container not found!');
+        return;
+    }
+    console.log('Found GPU pagination container, updating buttons...');
+
+    // Update the existing buttons instead of rebuilding
+    updateExistingGPUButtons();
+}
+
+function updateExistingGPUButtons() {
+    // Update Previous button state
+    const prevBtn = document.getElementById('gpuPrevBtn');
+    if (prevBtn) {
+        prevBtn.disabled = gpuCurrentPage === 1;
+        prevBtn.style.opacity = gpuCurrentPage === 1 ? '0.5' : '1';
+        prevBtn.onclick = () => {
+            if (gpuCurrentPage > 1) {
+                loadGPUs(gpuCurrentPage - 1);
+            }
+        };
+    }
+
+    // Update Next button state
+    const nextBtn = document.getElementById('gpuNextBtn');
+    if (nextBtn) {
+        nextBtn.disabled = gpuCurrentPage === gpuTotalPages;
+        nextBtn.style.opacity = gpuCurrentPage === gpuTotalPages ? '0.5' : '1';
+        nextBtn.onclick = () => {
+            if (gpuCurrentPage < gpuTotalPages) {
+                loadGPUs(gpuCurrentPage + 1);
+            }
+        };
+    }
+
+    // Update page button states
+    [1, 2, 3, 90].forEach(pageNum => {
+        const btn = document.getElementById('gpuPage' + pageNum);
+        if (btn) {
+            if (pageNum === gpuCurrentPage) {
+                btn.classList.add('active');
+                btn.style.background = 'var(--crm-primary)';
+                btn.style.borderColor = 'var(--crm-primary)';
+                btn.style.color = 'white';
+            } else {
+                btn.classList.remove('active');
+                btn.style.background = 'white';
+                btn.style.borderColor = 'var(--crm-gray-300)';
+                btn.style.color = 'var(--crm-gray-700)';
+            }
+            btn.onclick = () => loadGPUs(pageNum);
         }
     });
-
-    updatePaginationDisplay();
 }
 
-function handlePageSizeChange(e) {
-    pageSize = parseInt(e.target.value);
-    totalPages = Math.ceil(2240 / pageSize);
-    currentPage = 1; // Reset to first page when changing page size
-    updatePaginationDisplay();
-    loadPageData(currentPage);
+function createGPUPageButton(pageNumber) {
+    const button = document.createElement('button');
+    button.className = `pagination-btn ${pageNumber === gpuCurrentPage ? 'active' : ''}`;
+    button.textContent = pageNumber;
+    button.onclick = () => {
+        loadGPUs(pageNumber);
+    };
+    return button;
 }
 
-function handlePageJump() {
-    const pageInput = document.getElementById('pageJumpInput');
-    const targetPage = parseInt(pageInput.value);
-    if (targetPage >= 1 && targetPage <= totalPages) {
-        goToPage(targetPage);
-    } else {
-        pageInput.value = currentPage; // Reset to current page if invalid
+function updateGPUCountDisplay() {
+    const startIndex = (gpuCurrentPage - 1) * gpuPerPage;
+    const endIndex = Math.min(startIndex + gpuPerPage, gpuTotalCount);
+
+    // Remove existing count display
+    const existingCount = document.querySelector('#gpus-app .devices-count');
+    if (existingCount) {
+        existingCount.remove();
+    }
+
+    // Create count display
+    const countDisplay = document.createElement('div');
+    countDisplay.className = 'devices-count';
+    countDisplay.innerHTML = `
+        <span>Showing ${startIndex + 1}-${endIndex} of ${gpuTotalCount} GPUs (Page ${gpuCurrentPage} of ${gpuTotalPages})</span>
+    `;
+
+    // Insert count display before the table
+    const tableContainer = document.querySelector('#gpus-app .table-container');
+    if (tableContainer && tableContainer.firstChild) {
+        tableContainer.insertBefore(countDisplay, tableContainer.firstChild);
     }
 }
 
-function goToPage(page) {
-    if (page < 1 || page > totalPages || page === currentPage) return;
+// Make functions available globally - DO THIS IMMEDIATELY
+window.gpuCurrentPage = 1;
 
-    currentPage = page;
-    updatePaginationDisplay();
-    loadPageData(page);
-}
+window.changeGPUPage = function(page) {
+    console.log('changeGPUPage called with:', page);
 
-function updatePaginationDisplay() {
-    // Update page info
-    const startRecord = (currentPage - 1) * pageSize + 1;
-    const endRecord = Math.min(currentPage * pageSize, 2240);
+    let newPage = window.gpuCurrentPage;
 
-    document.getElementById('pageStart').textContent = startRecord;
-    document.getElementById('pageEnd').textContent = endRecord;
-    document.getElementById('pageJumpInput').value = currentPage;
-
-    // Update button states
-    document.getElementById('firstPageBtn').disabled = currentPage === 1;
-    document.getElementById('prevPageBtn').disabled = currentPage === 1;
-    document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-    document.getElementById('lastPageBtn').disabled = currentPage === totalPages;
-
-    // Update page jump input max value
-    document.getElementById('pageJumpInput').setAttribute('max', totalPages);
-
-    // Update page number buttons
-    updatePageNumberButtons();
-}
-
-function updatePageNumberButtons() {
-    const pageNumbersDiv = document.getElementById('pageNumbers');
-    if (!pageNumbersDiv) return;
-
-    let html = '';
-
-    // Always show first page
-    if (currentPage === 1) {
-        html += '<button class="btn btn-primary page-btn active" data-page="1" style="padding: 0.25rem 0.5rem; min-width: 32px;">1</button>';
+    if (page === 'prev') {
+        newPage = Math.max(1, window.gpuCurrentPage - 1);
+    } else if (page === 'next') {
+        newPage = Math.min(90, window.gpuCurrentPage + 1);
     } else {
-        html += '<button class="btn btn-secondary page-btn" data-page="1" style="padding: 0.25rem 0.5rem; min-width: 32px;">1</button>';
+        newPage = parseInt(page);
     }
 
-    // Add ellipsis if needed
-    if (currentPage > 4) {
-        html += '<span style="padding: 0.25rem;">...</span>';
+    if (newPage !== window.gpuCurrentPage) {
+        window.gpuCurrentPage = newPage;
+        updateGPUTableDirectly(newPage);
+        updateDynamicGPUPagination(newPage);
+        console.log('Changed to page:', newPage);
+    }
+};
+
+// Make it available immediately
+console.log('changeGPUPage function defined:', typeof window.changeGPUPage);
+
+function updateGPUTableDirectly(page) {
+    const tbody = document.getElementById('gpusTableBody');
+    if (!tbody) return;
+
+    // Clear current content
+    tbody.innerHTML = '';
+
+    // Calculate range for this page
+    const startGPU = (page - 1) * 25 + 1;
+
+    // Add 25 GPU rows for this page
+    for (let i = 0; i < 25; i++) {
+        const gpuNum = startGPU + i;
+        const rackNum = Math.ceil(gpuNum / 70);
+        const nodeNum = Math.ceil(gpuNum / 8);
+        const gpuId = (gpuNum - 1) % 8;
+
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                <strong>Rack ${String(rackNum).padStart(2, '0')}, Node ${String(nodeNum).padStart(3, '0')}, GPU ${gpuId}</strong><br>
+                <span style="color: var(--crm-gray-500);">Page ${page} - GPU #${gpuNum}</span>
+            </td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                <span class="status-indicator status-online"></span>
+                ONLINE
+            </td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">H100 80GB</td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">85%</td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">68GB / 80GB</td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">72°C</td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">ML-Training</td>
+            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;">View</button>
+            </td>
+        `;
+    }
+}
+
+function updateDynamicGPUPagination(currentPage) {
+    // Find the pagination container by ID (we know it exists)
+    const paginationContainer = document.getElementById('gpuPaginationContainer');
+    if (!paginationContainer) {
+        console.error('GPU pagination container not found!');
+        return;
+    }
+
+    // Clear and rebuild pagination with dynamic page numbers (exactly like devices.js)
+    paginationContainer.innerHTML = '';
+
+    const totalPages = 90;
+
+    // Previous button
+    const prevButton = document.createElement('button');
+    prevButton.className = 'pagination-btn';
+    prevButton.textContent = '‹ Previous';
+    prevButton.disabled = currentPage === 1;
+    prevButton.onclick = () => window.changeGPUPage('prev');
+    paginationContainer.appendChild(prevButton);
+
+    // Dynamic page numbers (current page ± 2 pages)
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+
+    // Show first page if not in range
+    if (startPage > 1) {
+        const firstButton = createGPUPageButtonDynamic(1, currentPage);
+        paginationContainer.appendChild(firstButton);
+        if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.className = 'pagination-ellipsis';
+            ellipsis.textContent = '...';
+            paginationContainer.appendChild(ellipsis);
+        }
     }
 
     // Show pages around current page
-    const startPage = Math.max(2, currentPage - 2);
-    const endPage = Math.min(totalPages - 1, currentPage + 2);
-
     for (let i = startPage; i <= endPage; i++) {
-        if (i === 1 || i === totalPages) continue; // Skip first and last as they're handled separately
-
-        const isActive = i === currentPage;
-        const btnClass = isActive ? 'btn-primary active' : 'btn-secondary';
-        html += `<button class="btn ${btnClass} page-btn" data-page="${i}" style="padding: 0.25rem 0.5rem; min-width: 32px;">${i}</button>`;
+        const pageButton = createGPUPageButtonDynamic(i, currentPage);
+        paginationContainer.appendChild(pageButton);
     }
 
-    // Add ellipsis if needed
-    if (currentPage < totalPages - 3) {
-        html += '<span style="padding: 0.25rem;">...</span>';
+    // Show last page if not in range
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.className = 'pagination-ellipsis';
+            ellipsis.textContent = '...';
+            paginationContainer.appendChild(ellipsis);
+        }
+        const lastButton = createGPUPageButtonDynamic(totalPages, currentPage);
+        paginationContainer.appendChild(lastButton);
     }
 
-    // Always show last page (if more than 1 page)
-    if (totalPages > 1) {
-        if (currentPage === totalPages) {
-            html += `<button class="btn btn-primary page-btn active" data-page="${totalPages}" style="padding: 0.25rem 0.5rem; min-width: 32px;">${totalPages}</button>`;
-        } else {
-            html += `<button class="btn btn-secondary page-btn" data-page="${totalPages}" style="padding: 0.25rem 0.5rem; min-width: 32px;">${totalPages}</button>`;
+    // Next button
+    const nextButton = document.createElement('button');
+    nextButton.className = 'pagination-btn';
+    nextButton.textContent = 'Next ›';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.onclick = () => window.changeGPUPage('next');
+    paginationContainer.appendChild(nextButton);
+}
+
+function createGPUPageButtonDynamic(pageNumber, currentPage) {
+    const button = document.createElement('button');
+    button.className = pageNumber === currentPage ? 'pagination-btn active' : 'pagination-btn';
+    button.textContent = pageNumber;
+    button.onclick = () => window.changeGPUPage(pageNumber);
+    return button;
+}
+
+function updateDynamicGPUPagination(currentPage) {
+    const paginationContainer = document.getElementById('gpuPaginationContainer');
+    if (!paginationContainer) {
+        console.error('GPU pagination container not found!');
+        return;
+    }
+
+    // Clear and rebuild pagination with dynamic page numbers
+    paginationContainer.innerHTML = '';
+    // Container styling is now handled by CSS
+
+    const totalPages = 90;
+
+    // Previous button
+    const prevButton = document.createElement('button');
+    prevButton.textContent = '‹ Previous';
+    prevButton.disabled = currentPage === 1;
+    prevButton.onclick = () => window.changeGPUPage('prev');
+    paginationContainer.appendChild(prevButton);
+
+    // Dynamic page numbers (current page ± 2 pages)
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+
+    // Show first page if not in range
+    if (startPage > 1) {
+        const firstButton = createDynamicPageButton(1, currentPage);
+        paginationContainer.appendChild(firstButton);
+        if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            paginationContainer.appendChild(ellipsis);
         }
     }
 
-    pageNumbersDiv.innerHTML = html;
+    // Show pages around current page
+    for (let i = startPage; i <= endPage; i++) {
+        const pageButton = createDynamicPageButton(i, currentPage);
+        paginationContainer.appendChild(pageButton);
+    }
 
-    // Re-attach event listeners to new buttons
-    pageNumbersDiv.querySelectorAll('.page-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const page = parseInt(e.target.getAttribute('data-page'));
-            goToPage(page);
-        });
-    });
+    // Show last page if not in range
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            paginationContainer.appendChild(ellipsis);
+        }
+        const lastButton = createDynamicPageButton(totalPages, currentPage);
+        paginationContainer.appendChild(lastButton);
+    }
+
+    // Next button
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next ›';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.onclick = () => window.changeGPUPage('next');
+    paginationContainer.appendChild(nextButton);
 }
 
-function loadPageData(page) {
-    console.log(`Loading data for page ${page}`);
-    // In a real implementation, this would make an API call to load GPU data for the specific page
-    // For now, we'll simulate loading different GPUs
+function createDynamicPageButton(pageNumber, currentPage) {
+    const button = document.createElement('button');
+    button.textContent = pageNumber;
 
-    // Update the view stats for the current page
-    updateViewStats(page);
+    // Use CSS class for active state, no inline styles needed
+    if (pageNumber === currentPage) {
+        button.className = 'gpu-active';
+    }
+
+    button.onclick = () => window.changeGPUPage(pageNumber);
+    return button;
 }
 
-function updateViewStats(page) {
-    // Calculate approximate stats for current page view
-    const startGPU = (page - 1) * pageSize + 1;
-    const endGPU = Math.min(page * pageSize, 2240);
-    const gpusInView = endGPU - startGPU + 1;
+window.loadGPUs = function(page) {
+    window.changeGPUPage(page);
+};
 
-    // Simulate different stats per page - based on the 25 GPUs we're actually showing
-    // Looking at our mock data: 21 online working GPUs + 3 idle GPUs + 1 warning GPU + 0 offline = 25 total
-    const onlineInView = Math.floor(gpusInView * 0.84); // ~21/25 = 84% working GPUs
-    const warningInView = 1; // We have 1 GPU with temperature warning
-    const offlineInView = 0; // No offline GPUs in current view
-    const utilizationInView = Math.floor(Math.random() * 15) + 80; // 80-94% avg utilization
-
-    // Update the view stats
-    const viewOnlineElement = document.getElementById('viewOnline');
-    const viewWarningElement = document.getElementById('viewWarning');
-    const viewOfflineElement = document.getElementById('viewOffline');
-    const viewUtilizationElement = document.getElementById('viewUtilization');
-
-    if (viewOnlineElement) viewOnlineElement.textContent = onlineInView;
-    if (viewWarningElement) viewWarningElement.textContent = warningInView;
-    if (viewOfflineElement) viewOfflineElement.textContent = offlineInView;
-    if (viewUtilizationElement) viewUtilizationElement.textContent = `${utilizationInView}%`;
-}
-
-// Refresh functions
-function refreshGPUList() {
-    console.log('Refreshing GPU list');
-    updateMetrics();
-    loadPageData(currentPage); // Reload current page data
-}
-
-function refreshJobQueue() {
-    console.log('Refreshing job queue');
-    updateJobQueue();
-}
-
-function refreshAlerts() {
-    console.log('Refreshing alerts');
-    // Implementation would fetch new alerts from server
-}
-
-// Make functions available globally
 window.showGPUDetails = showGPUDetails;
 window.submitJob = submitJob;
 window.pauseJob = pauseJob;
@@ -520,3 +752,222 @@ window.refreshAlerts = refreshAlerts;
 window.goToPage = goToPage;
 window.handlePageSizeChange = handlePageSizeChange;
 window.handlePageJump = handlePageJump;
+
+// GPU Pagination Functions (copied exactly from devices.js)
+function updateGPUPaginationControls() {
+    // Remove existing pagination if it exists
+    const existingPagination = document.querySelector('.gpu-section .devices-pagination');
+    if (existingPagination) {
+        existingPagination.remove();
+    }
+
+    // Create pagination container
+    const paginationContainer = document.createElement('div');
+    paginationContainer.className = 'devices-pagination';
+
+    // Previous button
+    const prevButton = document.createElement('button');
+    prevButton.className = 'pagination-btn';
+    prevButton.textContent = '‹ Previous';
+    prevButton.disabled = gpuCurrentPage === 1;
+    prevButton.onclick = () => {
+        if (gpuCurrentPage > 1) {
+            loadGPUPage(gpuCurrentPage - 1);
+        }
+    };
+    paginationContainer.appendChild(prevButton);
+
+    // Page numbers
+    const startPage = Math.max(1, gpuCurrentPage - 2);
+    const endPage = Math.min(gpuTotalPages, gpuCurrentPage + 2);
+
+    if (startPage > 1) {
+        const firstButton = createGPUPageButton(1);
+        paginationContainer.appendChild(firstButton);
+        if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.className = 'pagination-ellipsis';
+            ellipsis.textContent = '...';
+            paginationContainer.appendChild(ellipsis);
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const pageButton = createGPUPageButton(i);
+        paginationContainer.appendChild(pageButton);
+    }
+
+    if (endPage < gpuTotalPages) {
+        if (endPage < gpuTotalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.className = 'pagination-ellipsis';
+            ellipsis.textContent = '...';
+            paginationContainer.appendChild(ellipsis);
+        }
+        const lastButton = createGPUPageButton(gpuTotalPages);
+        paginationContainer.appendChild(lastButton);
+    }
+
+    // Next button
+    const nextButton = document.createElement('button');
+    nextButton.className = 'pagination-btn';
+    nextButton.textContent = 'Next ›';
+    nextButton.disabled = gpuCurrentPage === gpuTotalPages;
+    nextButton.onclick = () => {
+        if (gpuCurrentPage < gpuTotalPages) {
+            loadGPUPage(gpuCurrentPage + 1);
+        }
+    };
+    paginationContainer.appendChild(nextButton);
+
+    // Insert pagination after the table
+    const tableContainer = document.querySelector('.gpu-section .table-container');
+    if (tableContainer) {
+        tableContainer.appendChild(paginationContainer);
+    }
+}
+
+function createGPUPageButton(pageNumber) {
+    const button = document.createElement('button');
+    button.className = `pagination-btn ${pageNumber === gpuCurrentPage ? 'active' : ''}`;
+    button.textContent = pageNumber;
+    button.onclick = () => {
+        loadGPUPage(pageNumber);
+    };
+    return button;
+}
+
+function loadGPUPage(pageNumber) {
+    if (pageNumber < 1 || pageNumber > gpuTotalPages) return;
+
+    gpuCurrentPage = pageNumber;
+
+    // Calculate the start and end indices for this page
+    const startIndex = (pageNumber - 1) * gpuPerPage;
+    const endIndex = Math.min(startIndex + gpuPerPage, gpuTotalCount);
+    const pageGPUs = allGPUData.slice(startIndex, endIndex);
+
+    // Update the table body with the new data
+    const tbody = document.getElementById('gpusTableBody');
+    if (tbody) {
+        tbody.innerHTML = ''; // Clear existing rows
+
+        pageGPUs.forEach(gpu => {
+            const row = document.createElement('tr');
+            row.className = 'gpu-row';
+            row.onclick = () => showGPUDetails(gpu.id);
+
+            // Determine status colors
+            const tempColor = gpu.temperature > 80 ? 'var(--crm-danger)' :
+                            gpu.temperature > 70 ? 'var(--crm-warning)' :
+                            'var(--crm-success)';
+            const statusColor = gpu.status === 'online' ? 'var(--crm-success)' :
+                              gpu.status === 'warning' ? 'var(--crm-warning)' :
+                              gpu.status === 'critical' ? 'var(--crm-danger)' :
+                              'var(--crm-gray-500)';
+
+            row.innerHTML = `
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.85rem;">
+                    <strong>Rack ${String(gpu.rack).padStart(2, '0')}, Node ${String(gpu.node).padStart(3, '0')}, GPU ${gpu.gpu}</strong><br>
+                    <span style="color: var(--crm-gray-500);">${gpu.type}</span>
+                </td>
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.85rem;">${gpu.type.split(' ')[0]}</td>
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.85rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span>${gpu.utilization}%</span>
+                        <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
+                            <div style="width: ${gpu.utilization}%; height: 100%; background: ${gpu.utilization > 90 ? 'var(--crm-danger)' : 'var(--crm-success)'}; border-radius: 2px;"></div>
+                        </div>
+                    </div>
+                </td>
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.85rem;">
+                    <span>${gpu.memoryUsed}GB</span><br>
+                    <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ ${gpu.memory}GB</span>
+                </td>
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.85rem; color: ${tempColor};">${gpu.temperature}°C</td>
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.85rem;">
+                    <span style="color: ${statusColor};">${gpu.job}</span><br>
+                    <span style="color: var(--crm-gray-500); font-size: 0.7rem;">${gpu.team}</span>
+                </td>
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.85rem;">
+                    <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('${gpu.id}')">
+                        View
+                    </button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    // Update pagination buttons
+    updatePaginationButtons();
+    console.log(`Loaded GPU page ${pageNumber} - showing GPUs ${startIndex + 1} to ${endIndex}`);
+}
+
+// Update pagination button states and visibility
+function updatePaginationButtons() {
+    // Update pagination control in the HTML
+    const paginationDiv = document.querySelector('#gpuPagination') || document.querySelector('.gpu-section .devices-pagination');
+    if (paginationDiv) {
+        paginationDiv.innerHTML = `
+            <div style="display: flex !important; justify-content: center !important; align-items: center !important; gap: 8px !important;">
+                <button style="padding: 8px 16px !important; border: 1px solid #ccc !important; background: #fff !important; color: #333 !important; border-radius: 6px !important; cursor: ${gpuCurrentPage === 1 ? 'not-allowed' : 'pointer'} !important; opacity: ${gpuCurrentPage === 1 ? '0.5' : '1'};" onclick="loadGPUPage(${gpuCurrentPage - 1})" ${gpuCurrentPage === 1 ? 'disabled' : ''}>‹ Previous</button>
+                ${generatePageButtons()}
+                <button style="padding: 8px 16px !important; border: 1px solid #ccc !important; background: #fff !important; color: #333 !important; border-radius: 6px !important; cursor: ${gpuCurrentPage === gpuTotalPages ? 'not-allowed' : 'pointer'} !important; opacity: ${gpuCurrentPage === gpuTotalPages ? '0.5' : '1'};" onclick="loadGPUPage(${gpuCurrentPage + 1})" ${gpuCurrentPage === gpuTotalPages ? 'disabled' : ''}>Next ›</button>
+            </div>
+        `;
+    }
+}
+
+// Generate page number buttons
+function generatePageButtons() {
+    let buttons = '';
+    const startPage = Math.max(1, gpuCurrentPage - 2);
+    const endPage = Math.min(gpuTotalPages, gpuCurrentPage + 2);
+
+    if (startPage > 1) {
+        buttons += `<button style="padding: 8px 16px !important; border: 1px solid #ccc !important; background: #fff !important; color: #333 !important; border-radius: 6px !important; cursor: pointer !important;" onclick="loadGPUPage(1)">1</button>`;
+        if (startPage > 2) {
+            buttons += `<span style="padding: 0 8px !important; color: #666 !important;">...</span>`;
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const isActive = i === gpuCurrentPage;
+        buttons += `<button style="padding: 8px 16px !important; border: 1px solid ${isActive ? '#007bff' : '#ccc'} !important; background: ${isActive ? '#007bff' : '#fff'} !important; color: ${isActive ? 'white' : '#333'} !important; border-radius: 6px !important; cursor: pointer !important;" onclick="loadGPUPage(${i})">${i}</button>`;
+    }
+
+    if (endPage < gpuTotalPages) {
+        if (endPage < gpuTotalPages - 1) {
+            buttons += `<span style="padding: 0 8px !important; color: #666 !important;">...</span>`;
+        }
+        buttons += `<button style="padding: 8px 16px !important; border: 1px solid #ccc !important; background: #fff !important; color: #333 !important; border-radius: 6px !important; cursor: pointer !important;" onclick="loadGPUPage(${gpuTotalPages})">${gpuTotalPages}</button>`;
+    }
+
+    return buttons;
+}
+
+// Make loadGPUPage available globally
+window.loadGPUPage = loadGPUPage;
+
+// Also make a simple test function
+window.testGPUPagination = function() {
+    console.log('Testing GPU pagination...');
+    console.log('Current page:', gpuCurrentPage);
+    console.log('Total pages:', gpuTotalPages);
+    console.log('Total GPUs:', gpuTotalCount);
+    console.log('GPU data loaded:', allGPUData ? allGPUData.length : 0);
+    return true;
+};
+
+// Initialize GPU pagination when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Add a small delay to ensure the DOM is fully ready
+    setTimeout(() => {
+        // Load the first page of GPU data on startup
+        if (document.getElementById('gpusTableBody')) {
+            loadGPUPage(1);
+        }
+    }, 500);
+});

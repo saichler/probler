@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/modals.css">
     <link rel="stylesheet" href="css/utilities.css">
     <link rel="stylesheet" href="css/traffic-engineering.css">
+    <link rel="stylesheet" href="css/gpu-pagination.css">
 </head>
 <body>
     <!-- Login Screen -->
@@ -497,822 +498,805 @@
                         <p class="app-subtitle">Comprehensive GPU fleet monitoring and detailed management</p>
                     </div>
 
+
                     <!-- GPU Management Content -->
                     <div class="content-grid">
                         <div class="section visible gpu-section" id="gpuDetailsSection">
                             <div class="section-content" id="gpuDetailsContent">
-                                <!-- Search and Filter Controls -->
-                                <div style="display: grid; grid-template-columns: 1fr auto auto auto; gap: 1rem; margin-bottom: 1.5rem; align-items: center;">
-                                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                                        <input type="text" id="gpuSearchInput" placeholder="Search by Rack, Node, GPU ID, or Job..."
-                                               style="flex: 1; padding: 0.5rem; background: #333; border: 1px solid #555; color: white; border-radius: 4px;">
-                                        <button class="btn btn-secondary" onclick="searchGPUs()">
-                                            🔍
-                                        </button>
-                                        <button class="btn btn-secondary" onclick="clearGPUSearch()">
-                                            ✖️
-                                        </button>
-                                    </div>
-                                    <select id="gpuStatusFilter" onchange="filterGPUs()"
-                                            style="padding: 0.5rem; background: #333; border: 1px solid #555; color: white; border-radius: 4px;">
-                                        <option value="all">All Status</option>
-                                        <option value="online">Online</option>
-                                        <option value="idle">Idle</option>
-                                        <option value="warning">Warning</option>
-                                        <option value="critical">Critical/Offline</option>
-                                    </select>
-                                    <select id="gpuTypeFilterApp" onchange="filterGPUs()"
-                                            style="padding: 0.5rem; background: #333; border: 1px solid #555; color: white; border-radius: 4px;">
-                                        <option value="all">All GPU Types</option>
-                                        <option value="H100">H100 80GB</option>
-                                        <option value="A100">A100 40GB</option>
-                                        <option value="RTX4090">RTX 4090</option>
-                                        <option value="RTX6000">RTX 6000</option>
-                                        <option value="RTX5900">RTX 5900</option>
-                                        <option value="RTX5800">RTX 5800</option>
-                                    </select>
-                                    <select id="rackFilterApp" onchange="filterGPUs()"
-                                            style="padding: 0.5rem; background: #333; border: 1px solid #555; color: white; border-radius: 4px;">
-                                        <option value="all">All Racks</option>
-                                        <option value="1-8">Racks 1-8</option>
-                                        <option value="9-16">Racks 9-16</option>
-                                        <option value="17-24">Racks 17-24</option>
-                                        <option value="25-32">Racks 25-32</option>
-                                    </select>
+                                <div class="loading" id="gpusLoading">
+                                    <div class="spinner"></div>
+                                    <div>Loading GPUs...</div>
                                 </div>
-
-                                <!-- Results Summary -->
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0.75rem; background: rgba(118, 185, 0, 0.1); border-radius: 6px; border-left: 3px solid #76b900;">
-                                    <div>
-                                        <span style="font-weight: bold;">Results: </span>
-                                        <span id="gpuResultCount">25 of 2,240 GPUs displayed</span>
-                                        <span style="margin-left: 1rem; color: #888;">|</span>
-                                        <span style="margin-left: 1rem;">
-                                            <span style="color: #00ff00;">●</span> Online: <span id="onlineCount">21</span>
-                                            <span style="margin-left: 1rem; color: #ffaa00;">●</span> Warning: <span id="warningCount">1</span>
-                                            <span style="margin-left: 1rem; color: #ff0000;">●</span> Offline: <span id="offlineCount">0</span>
-                                            <span style="margin-left: 1rem; color: #888;">●</span> Idle: <span id="idleCount">3</span>
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-primary" onclick="exportGPUData()" style="margin-right: 0.5rem;">
-                                            📊 Export
-                                        </button>
-                                        <button class="btn btn-secondary" onclick="refreshGPUList()">
-                                            🔄 Refresh
-                                        </button>
+                                <div class="devices-table-controls">
+                                    <div class="table-controls-row">
+                                        <div class="table-control-group">
+                                            <label>Show:</label>
+                                            <select id="gpusPerPageSelect" class="per-page-select" onchange="changeGPUsPerPage(this.value)">
+                                                <option value="25" selected>25</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                                <option value="all">All</option>
+                                            </select>
+                                            <span>GPUs per page</span>
+                                        </div>
+                                        <div class="table-control-group">
+                                            <button class="refresh-btn" onclick="refreshGPUList()" title="Refresh GPUs">
+                                                🔄 Refresh
+                                            </button>
+                                            <button class="clear-filters-btn" onclick="clearAllGPUFilters()" title="Clear all filters">
+                                                🗑️ Clear Filters
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- GPU Table Container -->
-                                <div style="background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%); border-radius: 12px; border: 1px solid #333; overflow: hidden;">
-                                    <!-- Table Header -->
-                                    <div class="gpu-table-header" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 1rem; background: #2a2a2a; font-weight: bold; color: #76b900; border-bottom: 2px solid #76b900;">
-                                        <div>GPU Information</div>
-                                        <div>Type</div>
-                                        <div>Utilization</div>
-                                        <div>Memory</div>
-                                        <div>Temperature</div>
-                                        <div>Current Job</div>
-                                        <div>Actions</div>
-                                    </div>
-
-                                    <!-- Scrollable GPU List -->
-                                    <div id="gpuAppTableBody" style="max-height: 500px; overflow-y: auto;">
+                                <div class="table-container" style="max-height: none; overflow-y: visible;">
+                                    <table id="gpusTable">
+                                        <thead>
+                                            <tr class="header-row">
+                                                <th class="sortable" onclick="sortGPUsByColumn('info')">
+                                                    GPU Information
+                                                </th>
+                                                <th class="sortable" onclick="sortGPUsByColumn('type')">
+                                                    Type
+                                                </th>
+                                                <th class="sortable" onclick="sortGPUsByColumn('utilization')">
+                                                    Utilization
+                                                </th>
+                                                <th class="sortable" onclick="sortGPUsByColumn('memory')">
+                                                    Memory
+                                                </th>
+                                                <th class="sortable" onclick="sortGPUsByColumn('temperature')">
+                                                    Temperature
+                                                </th>
+                                                <th class="sortable" onclick="sortGPUsByColumn('job')">
+                                                    Current Job
+                                                </th>
+                                                <th class="sortable" onclick="sortGPUsByColumn('actions')">
+                                                    Actions
+                                                </th>
+                                            </tr>
+                                            <tr class="filter-row">
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter GPU info..."
+                                                           oninput="filterGPUsByColumn('info', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter type..."
+                                                           oninput="filterGPUsByColumn('type', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter utilization..."
+                                                           oninput="filterGPUsByColumn('utilization', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter memory..."
+                                                           oninput="filterGPUsByColumn('memory', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter temp..."
+                                                           oninput="filterGPUsByColumn('temperature', this.value)">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="column-filter" placeholder="Filter job..."
+                                                           oninput="filterGPUsByColumn('job', this.value)">
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="gpusTableBody">
                                         <!-- Sample GPU rows -->
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 01, Node 001, GPU 0</strong><br>
-                                                <span style="color: #888;">H100 80GB HBM3</span>
-                                            </div>
-                                            <div>H100 80GB</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">H100 80GB HBM3</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">H100 80GB</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>98%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 98%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 98%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>78.4GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 80GB</span>
-                                            </div>
-                                            <div style="color: #ff6600;">78°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">LLM-Training</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">ai_research</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 80GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-warning);">78°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">LLM-Training</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">ai_research</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R01N001G0')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 02, Node 023, GPU 1</strong><br>
-                                                <span style="color: #888;">A100 40GB</span>
-                                            </div>
-                                            <div>A100 40GB</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">A100 40GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">A100 40GB</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>94%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 94%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 94%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>37.6GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 40GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">72°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Image-Classification</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">cv_team</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 40GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">72°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Image-Classification</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">cv_team</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R02N023G1')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 08, Node 067, GPU 4</strong><br>
-                                                <span style="color: #888;">RTX 4090 24GB</span>
-                                            </div>
-                                            <div>RTX 4090</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 4090 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 4090</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>0%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 0%; height: 100%; background: #888; border-radius: 2px;"></div>
+                                                        <div style="width: 0%; height: 100%; background: var(--crm-gray-500); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>1.2GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 24GB</span>
-                                            </div>
-                                            <div style="color: #00ff00;">45°C</div>
-                                            <div>
-                                                <span style="color: #888;">Idle</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">Available</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: #00ff00;">45°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-gray-500);">Idle</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">Available</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="assignJob('R08N067G4')">
                                                     Assign
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 03, Node 034, GPU 2</strong><br>
-                                                <span style="color: #888;">RTX 4090 24GB</span>
-                                            </div>
-                                            <div>RTX 4090</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 4090 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 4090</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>91%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 91%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 91%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>21.8GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 24GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">72°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">3D-Rendering</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">graphics_team</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">72°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">3D-Rendering</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">graphics_team</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R03N034G2')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 12, Node 089, GPU 4</strong><br>
-                                                <span style="color: #888;">A100 40GB</span>
-                                            </div>
-                                            <div>A100 40GB</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">A100 40GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">A100 40GB</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>88%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 88%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 88%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>35.2GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 40GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">68°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">NLP-Research</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">nlp_team</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 40GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">68°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">NLP-Research</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">nlp_team</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R12N089G4')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 07, Node 056, GPU 1</strong><br>
-                                                <span style="color: #888;">H100 80GB HBM3</span>
-                                            </div>
-                                            <div>H100 80GB</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">H100 80GB HBM3</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">H100 80GB</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>95%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 95%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 95%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>76.0GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 80GB</span>
-                                            </div>
-                                            <div style="color: #ff6600;">81°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Multimodal-AI</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">ai_research</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 80GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-warning);">81°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Multimodal-AI</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">ai_research</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R07N056G1')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 15, Node 113, GPU 0</strong><br>
-                                                <span style="color: #888;">RTX 6000 48GB</span>
-                                            </div>
-                                            <div>RTX 6000</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 6000 48GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 6000</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>67%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 67%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 67%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>32.2GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 48GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">65°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">CAD-Simulation</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">design_team</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 48GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">65°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">CAD-Simulation</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">design_team</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R15N113G0')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 02, Node 018, GPU 3</strong><br>
-                                                <span style="color: #888;">RTX 5900 32GB</span>
-                                            </div>
-                                            <div>RTX 5900</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 5900 32GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 5900</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>0%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 0%; height: 100%; background: #888; border-radius: 2px;"></div>
+                                                        <div style="width: 0%; height: 100%; background: var(--crm-gray-500); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>1.2GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 32GB</span>
-                                            </div>
-                                            <div style="color: #00ff00;">38°C</div>
-                                            <div>
-                                                <span style="color: #888;">Idle</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">Available</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 32GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: #00ff00;">38°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-gray-500);">Idle</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">Available</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="assignJob('R02N018G3')">
                                                     Assign
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 25, Node 178, GPU 2</strong><br>
-                                                <span style="color: #888;">RTX 5800 24GB</span>
-                                            </div>
-                                            <div>RTX 5800</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 5800 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 5800</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>84%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 84%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 84%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>20.2GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 24GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">70°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Video-Encoding</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">media_team</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">70°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Video-Encoding</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">media_team</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R25N178G2')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 09, Node 067, GPU 5</strong><br>
-                                                <span style="color: #888;">A100 40GB</span>
-                                            </div>
-                                            <div>A100 40GB</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">A100 40GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">A100 40GB</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>93%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 93%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 93%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>37.2GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 40GB</span>
-                                            </div>
-                                            <div style="color: #ff6600;">79°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Financial-ML</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">fintech_team</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 40GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-warning);">79°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Financial-ML</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">fintech_team</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R09N067G5')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 11, Node 081, GPU 0</strong><br>
-                                                <span style="color: #888;">H100 80GB HBM3</span>
-                                            </div>
-                                            <div>H100 80GB</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">H100 80GB HBM3</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">H100 80GB</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>89%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 89%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 89%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>71.2GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 80GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">73°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Drug-Discovery</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">pharma_lab</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 80GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">73°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Drug-Discovery</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">pharma_lab</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R11N081G0')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 28, Node 201, GPU 1</strong><br>
-                                                <span style="color: #888;">RTX 4090 24GB</span>
-                                            </div>
-                                            <div>RTX 4090</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 4090 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 4090</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>76%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 76%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 76%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>18.2GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 24GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">66°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Gaming-AI</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">gamedev_team</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">66°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Gaming-AI</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">gamedev_team</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R28N201G1')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 04, Node 029, GPU 3</strong><br>
-                                                <span style="color: #888;">RTX 6000 48GB</span>
-                                            </div>
-                                            <div>RTX 6000</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 6000 48GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 6000</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>0%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 0%; height: 100%; background: #888; border-radius: 2px;"></div>
+                                                        <div style="width: 0%; height: 100%; background: var(--crm-gray-500); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>2.1GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 48GB</span>
-                                            </div>
-                                            <div style="color: #00ff00;">41°C</div>
-                                            <div>
-                                                <span style="color: #888;">Idle</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">Available</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 48GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: #00ff00;">41°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-gray-500);">Idle</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">Available</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="assignJob('R04N029G3')">
                                                     Assign
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 18, Node 134, GPU 4</strong><br>
-                                                <span style="color: #888;">A100 40GB</span>
-                                            </div>
-                                            <div>A100 40GB</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">A100 40GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">A100 40GB</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>86%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 86%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 86%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>34.4GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 40GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">69°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Medical-Imaging</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">medical_research</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 40GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">69°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Medical-Imaging</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">medical_research</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R18N134G4')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 06, Node 041, GPU 2</strong><br>
-                                                <span style="color: #888;">RTX 5900 32GB</span>
-                                            </div>
-                                            <div>RTX 5900</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 5900 32GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 5900</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>92%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 92%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 92%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>29.4GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 32GB</span>
-                                            </div>
-                                            <div style="color: #ff6600;">77°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Crypto-Research</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">blockchain_team</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 32GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-warning);">77°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Crypto-Research</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">blockchain_team</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R06N041G2')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 22, Node 165, GPU 0</strong><br>
-                                                <span style="color: #888;">RTX 5800 24GB</span>
-                                            </div>
-                                            <div>RTX 5800</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 5800 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 5800</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>78%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 78%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 78%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>18.7GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 24GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">64°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Audio-Processing</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">audio_team</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">64°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Audio-Processing</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">audio_team</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R22N165G0')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 14, Node 102, GPU 6</strong><br>
-                                                <span style="color: #888;">H100 80GB HBM3</span>
-                                            </div>
-                                            <div>H100 80GB</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">H100 80GB HBM3</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">H100 80GB</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>87%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 87%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 87%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>69.6GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 80GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">74°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Weather-Modeling</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">weather_dept</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 80GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">74°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Weather-Modeling</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">weather_dept</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R14N102G6')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 30, Node 223, GPU 1</strong><br>
-                                                <span style="color: #888;">RTX 4090 24GB</span>
-                                            </div>
-                                            <div>RTX 4090</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 4090 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 4090</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>83%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 83%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 83%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>19.9GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 24GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">71°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Animation-Render</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">studio_render</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">71°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Animation-Render</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">studio_render</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R30N223G1')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 16, Node 120, GPU 5</strong><br>
-                                                <span style="color: #888;">RTX 6000 48GB</span>
-                                            </div>
-                                            <div>RTX 6000</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 6000 48GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 6000</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>74%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 74%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 74%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>35.5GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 48GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">67°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">VR-Content</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">vr_team</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 48GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">67°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">VR-Content</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">vr_team</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R16N120G5')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 13, Node 095, GPU 3</strong><br>
-                                                <span style="color: #888;">A100 40GB</span>
-                                            </div>
-                                            <div>A100 40GB</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">A100 40GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">A100 40GB</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>90%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 90%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 90%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>36.0GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 40GB</span>
-                                            </div>
-                                            <div style="color: #ff6600;">82°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Quantum-Sim</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">physics_team</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 40GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-warning);">82°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Quantum-Sim</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">physics_team</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R13N095G3')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 20, Node 147, GPU 0</strong><br>
-                                                <span style="color: #888;">RTX 5800 24GB</span>
-                                            </div>
-                                            <div>RTX 5800</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 5800 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 5800</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>0%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 0%; height: 100%; background: #888; border-radius: 2px;"></div>
+                                                        <div style="width: 0%; height: 100%; background: var(--crm-gray-500); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>0.9GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 24GB</span>
-                                            </div>
-                                            <div style="color: #00ff00;">39°C</div>
-                                            <div>
-                                                <span style="color: #888;">Idle</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">Available</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 24GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: #00ff00;">39°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-gray-500);">Idle</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">Available</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="assignJob('R20N147G0')">
                                                     Assign
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 19, Node 156, GPU 3</strong><br>
-                                                <span style="color: #888;">H100 80GB HBM3</span>
-                                            </div>
-                                            <div>H100 80GB</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">H100 80GB HBM3</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">H100 80GB</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>85%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
                                                         <div style="width: 85%; height: 100%; background: #ffaa00; border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>68.0GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 80GB</span>
-                                            </div>
-                                            <div style="color: #ff0000;">89°C</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 80GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: #ff0000;">89°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span style="color: #ffaa00;">AI-Training</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">ml_lab</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">ml_lab</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem; background: #ff0000;" onclick="diagnoseGPU('R19N156G3')">
                                                     Fix
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </td>
+                                        </tr>
 
-                                        <div class="gpu-row" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 100px; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; align-items: center;">
-                                            <div>
+                                        <tr class="gpu-row">
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <strong>Rack 26, Node 189, GPU 7</strong><br>
-                                                <span style="color: #888;">RTX 5900 32GB</span>
-                                            </div>
-                                            <div>RTX 5900</div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500);">RTX 5900 32GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">RTX 5900</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                                                     <span>73%</span>
                                                     <div style="flex: 1; height: 4px; background: #333; border-radius: 2px;">
-                                                        <div style="width: 73%; height: 100%; background: #76b900; border-radius: 2px;"></div>
+                                                        <div style="width: 73%; height: 100%; background: var(--crm-success); border-radius: 2px;"></div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <span>23.4GB</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">/ 32GB</span>
-                                            </div>
-                                            <div style="color: #76b900;">66°C</div>
-                                            <div>
-                                                <span style="color: #76b900;">Data-Analysis</span><br>
-                                                <span style="color: #888; font-size: 0.7rem;">data_science</span>
-                                            </div>
-                                            <div>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">/ 32GB</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem; color: var(--crm-success);">66°C</td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
+                                                <span style="color: var(--crm-success);">Data-Analysis</span><br>
+                                                <span style="color: var(--crm-gray-500); font-size: 0.7rem;">data_science</span>
+                                            </td>
+                                            <td style="padding: 0.75rem 1rem; border-bottom: 1px solid #333; font-size: 0.8rem;">
                                                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="showGPUDetails('R26N189G7')">
                                                     View
                                                 </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
 
-                                    <!-- Pagination Controls -->
-                                    <div id="gpuAppPaginationControls" style="padding: 1rem; text-align: center; color: #888; border-top: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
-                                        <div style="display: flex; align-items: center; gap: 1rem;">
-                                            <span>Showing <span id="gpuAppPageStart">1</span>-<span id="gpuAppPageEnd">25</span> of <span id="gpuAppTotalGPUs">2,240</span> GPUs</span>
-                                            <select id="gpuAppPageSizeSelect" style="padding: 0.25rem; background: #333; border: 1px solid #555; color: white; border-radius: 4px;">
-                                                <option value="25" selected>25 per page</option>
-                                                <option value="50">50 per page</option>
-                                                <option value="100">100 per page</option>
-                                            </select>
-                                        </div>
-
-                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                            <button id="gpuAppFirstPageBtn" class="btn btn-secondary" style="padding: 0.25rem 0.5rem;">
-                                                ⏮️
-                                            </button>
-                                            <button id="gpuAppPrevPageBtn" class="btn btn-secondary" style="padding: 0.25rem 0.5rem;">
-                                                ◀️
-                                            </button>
-
-                                            <div id="gpuAppPageNumbers" style="display: flex; gap: 0.25rem;">
-                                                <button class="btn btn-primary page-btn active" data-page="1" style="padding: 0.25rem 0.5rem; min-width: 32px;">1</button>
-                                                <button class="btn btn-secondary page-btn" data-page="2" style="padding: 0.25rem 0.5rem; min-width: 32px;">2</button>
-                                                <button class="btn btn-secondary page-btn" data-page="3" style="padding: 0.25rem 0.5rem; min-width: 32px;">3</button>
-                                                <span style="padding: 0.25rem;">...</span>
-                                                <button class="btn btn-secondary page-btn" data-page="90" style="padding: 0.25rem 0.5rem; min-width: 32px;">90</button>
-                                            </div>
-
-                                            <button id="gpuAppNextPageBtn" class="btn btn-secondary" style="padding: 0.25rem 0.5rem;">
-                                                ▶️
-                                            </button>
-                                            <button id="gpuAppLastPageBtn" class="btn btn-secondary" style="padding: 0.25rem 0.5rem;">
-                                                ⏭️
-                                            </button>
-                                        </div>
-
-                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                            <span>Go to page:</span>
-                                            <input id="gpuAppPageJumpInput" type="number" min="1" max="90" value="1" style="width: 60px; padding: 0.25rem; background: #333; border: 1px solid #555; color: white; border-radius: 4px; text-align: center;">
-                                            <button id="gpuAppPageJumpBtn" class="btn btn-secondary" style="padding: 0.25rem 0.5rem;">Go</button>
-                                        </div>
+                                    <!-- GPU Pagination - WORKING VERSION WITH DYNAMIC SUPPORT -->
+                                    <div id="gpuPaginationContainer" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 20px; padding: 16px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px;">
+                                        <button onclick="window.changeGPUPage && window.changeGPUPage('prev')" style="padding: 8px 12px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer;">‹ Previous</button>
+                                        <button onclick="window.changeGPUPage && window.changeGPUPage(1)" style="padding: 8px 12px; border: 1px solid #007bff; background: #007bff; color: white; border-radius: 4px; cursor: pointer;" id="gpuPageBtn1">1</button>
+                                        <button onclick="window.changeGPUPage && window.changeGPUPage(2)" style="padding: 8px 12px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer;" id="gpuPageBtn2">2</button>
+                                        <button onclick="window.changeGPUPage && window.changeGPUPage(3)" style="padding: 8px 12px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer;" id="gpuPageBtn3">3</button>
+                                        <span style="padding: 8px; color: #666;">...</span>
+                                        <button onclick="window.changeGPUPage && window.changeGPUPage(90)" style="padding: 8px 12px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer;" id="gpuPageBtn90">90</button>
+                                        <button onclick="window.changeGPUPage && window.changeGPUPage('next')" style="padding: 8px 12px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer;">Next ›</button>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Quick Stats moved back inside section structure -->
+                        <div class="section visible gpu-stats-section">
+                            <div class="section-content">
+
 
                                 <!-- Quick Stats for Current View -->
                                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1rem;">
@@ -1910,6 +1894,7 @@
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/devices.js"></script>
+    <script src="js/nvidia.js"></script>
     <script src="js/alarms.js"></script>
     <script src="js/topology.js"></script>
     <script src="js/traffic-engineering.js"></script>
