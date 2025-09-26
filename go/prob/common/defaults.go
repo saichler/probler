@@ -41,7 +41,7 @@ func CreateResources2(alias string, path string) ifs.IResources {
 
 	res.Set(registry.NewRegistry())
 
-	sec, err := ifs.LoadSecurityProvider()
+	sec, err := ifs.LoadSecurityProvider(res)
 	if err != nil {
 		time.Sleep(time.Second * 10)
 		panic(err.Error())
