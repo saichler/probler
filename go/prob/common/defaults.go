@@ -44,7 +44,7 @@ func CreateResources2(alias string, path string) ifs.IResources {
 	sec, err := ifs.LoadSecurityProvider()
 	if err != nil {
 		time.Sleep(time.Second * 10)
-		panic("Failed to load security provider")
+		panic(err.Error())
 	}
 	res.Set(sec)
 
