@@ -38,11 +38,14 @@ func main() {
 		cmd4 = os.Args[5]
 	}
 	clientConfig := &client.RestClientConfig{
-		Host:   host,
-		Port:   443,
-		Https:  true,
-		Prefix: common.PREFIX,
+		Host:          host,
+		Port:          443,
+		Https:         true,
+		Prefix:        common.PREFIX,
+		AuthPaths:     []string{"auth"},
+		TokenRequired: true,
 	}
+
 	resources := common.CreateResources2("client", "./")
 	resources.Introspector().Inspect(&l8poll.L8Pollaris{})
 	resources.Introspector().Inspect(&l8poll.L8C_Target{})
@@ -61,6 +64,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	err = rc.Auth("admin", "Admin123!")
+	if err != nil {
+		panic(err)
+	}
+
 	if cmd1 == "get" {
 		if cmd2 == "topo" {
 			commands.GetTopo(cmd3, rc, resources)

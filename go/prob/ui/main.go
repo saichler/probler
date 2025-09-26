@@ -3,19 +3,19 @@ package main
 import (
 	"os"
 
+	"github.com/saichler/l8bus/go/overlay/health"
+	"github.com/saichler/l8bus/go/overlay/protocol"
+	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8pollaris/go/types/l8poll"
+	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8api"
 	"github.com/saichler/l8types/go/types/l8health"
 	"github.com/saichler/l8types/go/types/l8web"
 	"github.com/saichler/l8web/go/web/server"
-	"github.com/saichler/l8bus/go/overlay/health"
-	"github.com/saichler/l8bus/go/overlay/protocol"
-	"github.com/saichler/l8bus/go/overlay/vnic"
 	common2 "github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/types"
 	types2 "github.com/saichler/probler/go/types"
-	"github.com/saichler/l8reflect/go/reflect/introspecting"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func startWebServer(port int, cert string) {
 	serverConfig := &server.RestServerConfig{
 		Host:           protocol.MachineIP,
 		Port:           port,
-		Authentication: false,
+		Authentication: true,
 		CertName:       cert,
 		Prefix:         common2.PREFIX,
 	}
