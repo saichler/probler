@@ -16,11 +16,8 @@ async function loadTopologyData() {
     try {
         showNotification('🔄 Loading topology data...', 'info');
         
-        const response = await fetch('/probler/0/Topol', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+        const response = await authenticatedFetch('/probler/0/Topol', {
+            method: 'GET'
         });
         
         if (!response.ok) {

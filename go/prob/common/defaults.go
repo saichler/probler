@@ -4,15 +4,16 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/saichler/l8collector/go/collector/common"
+	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8services/go/services/manager"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8sysconfig"
 	"github.com/saichler/l8utils/go/utils/logger"
 	"github.com/saichler/l8utils/go/utils/registry"
 	"github.com/saichler/l8utils/go/utils/resources"
-	"github.com/saichler/l8reflect/go/reflect/introspecting"
 )
 
 const (
@@ -42,6 +43,7 @@ func CreateResources2(alias string, path string) ifs.IResources {
 
 	sec, err := ifs.LoadSecurityProvider()
 	if err != nil {
+		time.Sleep(time.Second * 10)
 		panic("Failed to load security provider")
 	}
 	res.Set(sec)

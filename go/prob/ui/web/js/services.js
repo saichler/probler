@@ -31,10 +31,9 @@ async function refreshServices() {
     
     try {
         console.log('Making fetch request to /probler/0/Health...');
-        const response = await fetch('/probler/0/Health', {
+        const response = await authenticatedFetch('/probler/0/Health', {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 'Accept': 'application/json'
             }
         });
@@ -432,7 +431,7 @@ window.forceRefreshServices = function() {
         } else {
             console.error('No refreshServices function found, attempting manual fetch...');
             // Direct fetch as last resort
-            fetch('/probler/0/Health')
+            authenticatedFetch('/probler/0/Health')
                 .then(response => response.json())
                 .then(data => {
                     console.log('Direct fetch successful:', data);

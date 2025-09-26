@@ -254,11 +254,8 @@ async function fetchK8sData() {
     const url = `/probler/1/K8sClr?body=${encodeURIComponent(JSON.stringify(bodyData))}`;
 
     try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
+        const response = await authenticatedFetch(url, {
+            method: 'GET'
         });
 
         if (!response.ok) {
@@ -976,11 +973,8 @@ async function fetchPodLogs() {
     };
     
     try {
-        const response = await fetch('/probler/0/exec', {
+        const response = await authenticatedFetch('/probler/0/exec', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(requestBody)
         });
         
@@ -1142,11 +1136,8 @@ async function fetchPodDetails() {
     };
     
     try {
-        const response = await fetch('/probler/0/exec', {
+        const response = await authenticatedFetch('/probler/0/exec', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(requestBody)
         });
         

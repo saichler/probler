@@ -622,11 +622,8 @@ async function loadDevices(page = 1) {
             body: bodyParam
         });
 
-        const response = await fetch(`${apiEndpoint}?${queryParams}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
+        const response = await authenticatedFetch(`${apiEndpoint}?${queryParams}`, {
+            method: 'GET'
         });
 
         if (response.ok) {

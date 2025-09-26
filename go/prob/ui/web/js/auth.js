@@ -1,13 +1,60 @@
 // Authentication and Login Management
 
+// Helper function to get authorization headers for API calls
+function getAuthHeaders() {
+    const token = sessionStorage.getItem('authToken');
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return headers;
+}
+
+// Helper function to make authenticated API calls
+async function authenticatedFetch(url, options = {}) {
+    // Merge auth headers with any provided headers
+    const headers = {
+        ...getAuthHeaders(),
+        ...(options.headers || {})
+    };
+
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers
+        });
+
+        // Check if token is expired or invalid (401 Unauthorized)
+        if (response.status === 401) {
+            // Clear session and redirect to login
+            sessionStorage.removeItem('authenticated');
+            sessionStorage.removeItem('username');
+            sessionStorage.removeItem('authToken');
+            showLoginScreen();
+            showNotification('⚠️ Session expired. Please login again.', 'warning');
+            throw new Error('Authentication required');
+        }
+
+        return response;
+    } catch (error) {
+        console.error('API call error:', error);
+        throw error;
+    }
+}
+
 function logout() {
     // Clear session storage
     sessionStorage.removeItem('authenticated');
     sessionStorage.removeItem('username');
-    
+    sessionStorage.removeItem('authToken');
+
     // Show logout notification
     showNotification('🚪 Logging out...', 'info');
-    
+
     // Show login screen after a short delay
     setTimeout(() => {
         showLoginScreen();
@@ -26,46 +73,78 @@ function hideLoginScreen() {
     document.getElementById('loginScreen').classList.add('hidden');
 }
 
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
-    
+
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     const errorMessage = document.getElementById('errorMessage');
     const loginBtn = document.getElementById('loginBtn');
-    
+
     // Clear previous error
     errorMessage.style.display = 'none';
-    
+
     // Add loading state
     loginBtn.classList.add('loading');
-    
-    // Simulate authentication delay
-    setTimeout(() => {
-        // Check credentials
-        if (username === 'admin' && password === 'Admin123!') {
-            // Success - hide login screen
+
+    try {
+        // Make authentication request to REST API
+        const response = await fetch('/auth', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user: username,
+                pass: password
+            })
+        });
+
+        const data = await response.json();
+
+        // Check if authentication was successful
+        if (data.token) {
+            // Success - store token and user info
             sessionStorage.setItem('authenticated', 'true');
             sessionStorage.setItem('username', username);
-            
+            sessionStorage.setItem('authToken', data.token);
+
             // Show success and hide login
             showLoginSuccessAndHide();
         } else {
-            // Failed authentication
+            // Failed authentication - empty response means failure
             loginBtn.classList.remove('loading');
             errorMessage.style.display = 'block';
-            
+            errorMessage.textContent = 'Invalid username or password. Please try again.';
+
             // Shake animation for error
             errorMessage.style.animation = 'shake 0.5s ease-in-out';
             setTimeout(() => {
                 errorMessage.style.animation = '';
             }, 500);
-            
+
             // Clear password field
             document.getElementById('password').value = '';
             document.getElementById('password').focus();
         }
-    }, 1500); // 1.5 second delay to simulate server authentication
+    } catch (error) {
+        // Network or server error
+        loginBtn.classList.remove('loading');
+        errorMessage.style.display = 'block';
+        errorMessage.textContent = 'Authentication service unavailable. Please try again later.';
+
+        // Shake animation for error
+        errorMessage.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+            errorMessage.style.animation = '';
+        }, 500);
+
+        console.error('Login error:', error);
+
+        // Clear password field
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+    }
 }
 
 function showLoginSuccessAndHide() {

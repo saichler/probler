@@ -111,7 +111,7 @@ class TrafficEngineeringApp {
 
     async loadTopologyData() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/topology`);
+            const response = await authenticatedFetch(`${this.apiBaseUrl}/topology`);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
@@ -646,7 +646,7 @@ class TrafficEngineeringApp {
 
     async loadNodeBgpInfo(nodeId) {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/bgp-sessions`);
+            const response = await authenticatedFetch(`${this.apiBaseUrl}/bgp-sessions`);
             const sessions = await response.json();
             
             const container = document.getElementById('node-bgp-info');
@@ -682,7 +682,7 @@ class TrafficEngineeringApp {
 
     async loadNodeMplsInfo(nodeId) {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/mpls-labels`);
+            const response = await authenticatedFetch(`${this.apiBaseUrl}/mpls-labels`);
             const labels = await response.json();
             
             const container = document.getElementById('node-mpls-info');
@@ -1041,7 +1041,7 @@ class TrafficEngineeringApp {
 
     async showSrPoliciesView() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/sr-policies`);
+            const response = await authenticatedFetch(`${this.apiBaseUrl}/sr-policies`);
             const policies = await response.json();
             
             // Render SR policies overlay
