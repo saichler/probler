@@ -59,6 +59,7 @@ func main() {
 	resources.Introspector().Inspect(&l8web.L8Empty{})
 	resources.Introspector().Inspect(&l8api.L8Query{})
 	resources.Introspector().Inspect(&types5.NetworkTopology{})
+	resources.Introspector().Inspect(&l8api.AuthToken{})
 
 	rc, err := client.NewRestClient(clientConfig, resources)
 	if err != nil {

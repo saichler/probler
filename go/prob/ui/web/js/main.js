@@ -1,18 +1,20 @@
 // Main Application Initialization
 
 // Initialize the application
-function initializeApp() {
+async function initializeApp() {
     loadUsername(); // Load and display current username
     loadDashboardPreference(); // Load saved preference first
     loadSectionPreferences(); // Load section preferences
+
+    // Load devices first, then dashboard stats (which depends on device data)
+    await loadDevices();
     loadDashboardStats();
-    loadDevices();
     loadAlarms();
-    
+
     // Set up auto-refresh every 5 minutes
-    setInterval(() => {
+    setInterval(async () => {
+        await loadDevices();
         loadDashboardStats();
-        loadDevices();
         loadAlarms();
     }, 300000);
 }
