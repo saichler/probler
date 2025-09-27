@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
             color: #333;
             overflow: hidden;
         }
@@ -46,7 +46,7 @@
         .logo {
             width: 32px;
             height: 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -69,14 +69,15 @@
             font-size: 14px;
             font-weight: 500;
             transition: all 0.3s ease;
-            background: #667eea;
-            color: white;
+            background: linear-gradient(135deg, #d4af37 0%, #b8960f 100%);
+            color: #1a1f2e;
+            font-weight: 600;
         }
 
         .btn:hover {
-            background: #5a6fd8;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, #e6c157 0%, #d4af37 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
         }
 
         .btn.secondary {
@@ -102,7 +103,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #2d3748 0%, #1a1f2e 100%);
         }
 
         .node {
@@ -117,8 +118,8 @@
         }
 
         .node-vnet {
-            fill: #667eea;
-            stroke: #4c63d2;
+            fill: #d4af37;
+            stroke: #b8960f;
             stroke-width: 3;
         }
 
@@ -140,7 +141,7 @@
         }
 
         .link-mesh {
-            stroke: #667eea;
+            stroke: #d4af37;
             stroke-width: 2;
             stroke-dasharray: 5,5;
             opacity: 0.6;
@@ -166,9 +167,9 @@
             font-size: 12px;
             font-weight: 600;
             text-anchor: middle;
-            fill: #2d3748;
+            fill: #ffffff;
             pointer-events: none;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
         }
 
         .tooltip {
@@ -282,7 +283,7 @@
     <div class="legend">
         <h3>Node Types</h3>
         <div class="legend-item">
-            <div class="legend-color node-vnet" style="background: #667eea; border-color: #4c63d2;"></div>
+            <div class="legend-color node-vnet" style="background: #d4af37; border-color: #b8960f;"></div>
             <span>vNet (Virtual Network)</span>
         </div>
         <div class="legend-item">
