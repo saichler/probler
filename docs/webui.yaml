@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: layer8-webui
+  labels:
+    name: layer8-webui
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: layer8-webui
+  name: layer8-webui
+  labels:
+    app: layer8-webui
+spec:
+  selector:
+    matchLabels:
+      app: layer8-webui
+  template:
+    metadata:
+      labels:
+        app: layer8-webui
+    spec:
+      hostNetwork: true
+      containers:
+        - name: layer8-webui
+          image: saichler/layer8-webui:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate
