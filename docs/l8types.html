@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layer 8 Types - Advanced Distributed Networking Library</title>
+    <link rel="icon" type="image/gif" href="Layer8Logo.gif">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #00b4d8;
+            --secondary-color: #ff6b35;
+            --dark-color: #0a1628;
+            --light-color: #f7f9fb;
+            --accent-color: #06ffa5;
+            --gradient-1: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+            --gradient-2: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+            --gradient-3: linear-gradient(135deg, #0a1628 0%, #1e3a5f 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            overflow-x: hidden;
+        }
+
+        /* Parallax Container */
+        .parallax-container {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .parallax-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .parallax-layer-back {
+            transform: translateZ(-2px) scale(3);
+            background: var(--gradient-1);
+        }
+
+        .parallax-layer-mid {
+            transform: translateZ(-1px) scale(2);
+        }
+
+        .parallax-layer-front {
+            transform: translateZ(0);
+        }
+
+        /* Full Page Header */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: linear-gradient(135deg, #00b4d8 0%, #0077b6 50%, #0a1628 100%);
+            overflow: hidden;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 4px 8px rgba(0,0,0,0.3);
+            letter-spacing: -2px;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: var(--accent-color);
+            margin-bottom: 2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .hero-description {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+        }
+
+        /* Network Animation Background */
+        .network-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 22, 40, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.2);
+        }
+
+        .nav-container.scrolled {
+            background: rgba(10, 22, 40, 0.98);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            fill: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .github-link {
+            background: var(--gradient-2);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            color: white !important;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .github-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+        }
+
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .cta-primary {
+            background: var(--gradient-2);
+            color: white;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.4);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid var(--accent-color);
+        }
+
+        .cta-secondary:hover {
+            background: var(--accent-color);
+            color: var(--dark-color);
+            transform: translateY(-3px);
+        }
+
+        /* Sections */
+        .section {
+            padding: 100px 5%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-dark {
+            background: var(--gradient-3);
+            color: white;
+        }
+
+        .section-light {
+            background: var(--light-color);
+        }
+
+        .section-gradient {
+            background: linear-gradient(135deg, #f7f9fb 0%, #e3f2fd 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 900;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-2);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.25rem;
+            margin-bottom: 3rem;
+            opacity: 0.8;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Feature Cards with Parallax */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--gradient-1);
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* Code Section */
+        .code-showcase {
+            background: var(--dark-color);
+            padding: 100px 5%;
+            position: relative;
+        }
+
+        .code-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(90deg, #ff6b35, #00b4d8);
+            opacity: 0.1;
+        }
+
+        .code-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff6b35;
+        }
+
+        .code-dot:nth-child(2) {
+            background: #ffdd00;
+        }
+
+        .code-dot:nth-child(3) {
+            background: #00b4d8;
+        }
+
+        .code-title {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-left: auto;
+            margin-right: 1rem;
+        }
+
+        pre {
+            margin: 0;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            color: #e6edf3;
+        }
+
+        /* Syntax Highlighting */
+        .syntax-keyword { color: #ff7b72; }
+        .syntax-string { color: #a5d6ff; }
+        .syntax-comment { color: #8b949e; font-style: italic; }
+        .syntax-function { color: #d2a8ff; }
+        .syntax-type { color: #79c0ff; }
+        .syntax-number { color: #ff9e64; }
+
+        /* Stats Section */
+        .stats-section {
+            background: var(--gradient-1);
+            padding: 80px 5%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #fff, var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Architecture Visualization */
+        .architecture-visual {
+            margin: 4rem 0;
+            padding: 3rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .layer-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .layer {
+            padding: 1.5rem;
+            background: var(--gradient-1);
+            color: white;
+            border-radius: 15px;
+            font-weight: 600;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .layer:nth-child(2) {
+            background: var(--gradient-2);
+            transform: translateX(20px);
+        }
+
+        .layer:nth-child(3) {
+            background: linear-gradient(135deg, #06ffa5 0%, #00b4d8 100%);
+            transform: translateX(40px);
+        }
+
+        .layer:nth-child(4) {
+            background: var(--gradient-3);
+            transform: translateX(60px);
+        }
+
+        .layer:hover {
+            transform: translateX(0) scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 4rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: var(--gradient-1);
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            flex: 1;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 4rem 5% 2rem;
+            position: relative;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .footer-section p {
+            line-height: 1.8;
+            opacity: 0.8;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+            transform: translateX(5px);
+            display: inline-block;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .code-container {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                flex-direction: column !important;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .layer {
+                transform: translateX(0) !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-container" id="navbar">
+        <nav>
+            <a href="#" class="logo">
+                <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="50" cy="30" r="8" fill="currentColor"/>
+                    <circle cx="30" cy="50" r="8" fill="currentColor"/>
+                    <circle cx="70" cy="50" r="8" fill="currentColor"/>
+                    <circle cx="50" cy="70" r="8" fill="currentColor"/>
+                    <line x1="50" y1="30" x2="30" y2="50" stroke="currentColor" stroke-width="2"/>
+                    <line x1="50" y1="30" x2="70" y2="50" stroke="currentColor" stroke-width="2"/>
+                    <line x1="30" y1="50" x2="50" y2="70" stroke="currentColor" stroke-width="2"/>
+                    <line x1="70" y1="50" x2="50" y2="70" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Layer 8 Types
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#examples">Code</a></li>
+                <li><a href="#install">Install</a></li>
+                <li><a href="https://github.com/saichler/l8types" class="github-link">GitHub</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Hero Section with Parallax -->
+    <section class="hero-section">
+        <!-- Animated Network Background -->
+        <svg class="network-bg" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+                    <circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.3)"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)"/>
+            <g class="animate-float">
+                <circle cx="200" cy="200" r="3" fill="#00b4d8" opacity="0.8"/>
+                <circle cx="400" cy="300" r="3" fill="#ff6b35" opacity="0.8"/>
+                <circle cx="600" cy="250" r="3" fill="#06ffa5" opacity="0.8"/>
+                <line x1="200" y1="200" x2="400" y2="300" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <line x1="400" y1="300" x2="600" y2="250" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+            </g>
+            <g class="animate-float" style="animation-delay: 2s">
+                <circle cx="1200" cy="400" r="3" fill="#00b4d8" opacity="0.8"/>
+                <circle cx="1400" cy="350" r="3" fill="#ff6b35" opacity="0.8"/>
+                <circle cx="1300" cy="500" r="3" fill="#06ffa5" opacity="0.8"/>
+                <line x1="1200" y1="400" x2="1400" y2="350" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <line x1="1400" y1="350" x2="1300" y2="500" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <line x1="1300" y1="500" x2="1200" y2="400" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+            </g>
+        </svg>
+
+        <div class="hero-content">
+            <img src="Layer8Logo.gif" alt="Layer 8 Logo" style="height: 80px; margin-bottom: 2rem;">
+            <h1 class="hero-title">Layer 8 Types</h1>
+            <p class="hero-subtitle">Advanced Distributed Networking Library</p>
+            <p class="hero-description">
+                Build sophisticated distributed systems with Protocol Buffer-based type definitions,
+                virtual networking, service discovery, and real-time health monitoring.
+                Now with enhanced authentication and security features.
+            </p>
+            <div class="cta-container">
+                <a href="#install" class="cta-button cta-primary">Get Started</a>
+                <a href="https://github.com/saichler/l8types" class="cta-button cta-secondary">View on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section section-gradient fade-in" id="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <p class="section-subtitle">Everything you need for building distributed systems at scale</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="25" cy="25" r="8" fill="#00b4d8"/>
+                        <circle cx="75" cy="25" r="8" fill="#00b4d8"/>
+                        <circle cx="25" cy="75" r="8" fill="#00b4d8"/>
+                        <circle cx="75" cy="75" r="8" fill="#00b4d8"/>
+                        <circle cx="50" cy="50" r="12" fill="#ff6b35"/>
+                        <line x1="50" y1="50" x2="25" y2="25" stroke="#00b4d8" stroke-width="2"/>
+                        <line x1="50" y1="50" x2="75" y2="25" stroke="#00b4d8" stroke-width="2"/>
+                        <line x1="50" y1="50" x2="25" y2="75" stroke="#00b4d8" stroke-width="2"/>
+                        <line x1="50" y1="50" x2="75" y2="75" stroke="#00b4d8" stroke-width="2"/>
+                    </svg>
+                    <h3>Virtual Network Interface</h3>
+                    <p>Advanced VNic abstraction with multiple communication patterns: Unicast, Multicast, Round-robin, Proximity-based routing, and Leader selection for optimal message distribution.</p>
+                </div>
+
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="20" y="30" width="60" height="40" rx="5" fill="#00b4d8" opacity="0.3"/>
+                        <rect x="25" y="35" width="50" height="30" rx="3" fill="#00b4d8" opacity="0.5"/>
+                        <rect x="30" y="40" width="40" height="20" rx="2" fill="#00b4d8"/>
+                        <circle cx="50" cy="50" r="15" fill="#ff6b35"/>
+                        <path d="M 45 50 L 48 53 L 55 46" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h3>Token Authentication</h3>
+                    <p>Secure token-based authentication system with validation, activation mechanisms, and comprehensive error handling for robust security operations.</p>
+                </div>
+
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="30" fill="none" stroke="#00b4d8" stroke-width="3"/>
+                        <circle cx="50" cy="20" r="5" fill="#ff6b35"/>
+                        <circle cx="70" cy="35" r="5" fill="#06ffa5"/>
+                        <circle cx="70" cy="65" r="5" fill="#ff6b35"/>
+                        <circle cx="50" cy="80" r="5" fill="#06ffa5"/>
+                        <circle cx="30" cy="65" r="5" fill="#ff6b35"/>
+                        <circle cx="30" cy="35" r="5" fill="#06ffa5"/>
+                    </svg>
+                    <h3>Service Discovery</h3>
+                    <p>Built-in service registration and discovery with area-based routing, health monitoring, and intelligent endpoint selection for resilient systems.</p>
+                </div>
+
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="20" y="40" width="60" height="5" rx="2" fill="#00b4d8"/>
+                        <rect x="20" y="50" width="45" height="5" rx="2" fill="#ff6b35"/>
+                        <rect x="20" y="60" width="55" height="5" rx="2" fill="#06ffa5"/>
+                        <rect x="20" y="70" width="35" height="5" rx="2" fill="#00b4d8"/>
+                        <circle cx="50" cy="25" r="8" fill="#ff6b35"/>
+                        <text x="50" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="bold">%</text>
+                    </svg>
+                    <h3>Health Monitoring</h3>
+                    <p>Real-time system health tracking with Unix top-style output, CPU/memory usage statistics, message flow metrics, and comprehensive logging.</p>
+                </div>
+
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 30 50 L 40 40 L 50 45 L 60 35 L 70 50" stroke="#00b4d8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="40" cy="40" r="3" fill="#ff6b35"/>
+                        <circle cx="50" cy="45" r="3" fill="#ff6b35"/>
+                        <circle cx="60" cy="35" r="3" fill="#ff6b35"/>
+                        <rect x="25" y="60" width="50" height="20" rx="3" fill="#06ffa5" opacity="0.3"/>
+                        <line x1="30" y1="65" x2="70" y2="65" stroke="#00b4d8" stroke-width="2"/>
+                        <line x1="30" y1="70" x2="60" y2="70" stroke="#ff6b35" stroke-width="2"/>
+                        <line x1="30" y1="75" x2="65" y2="75" stroke="#06ffa5" stroke-width="2"/>
+                    </svg>
+                    <h3>Transaction Management</h3>
+                    <p>Distributed transaction support with state tracking, commit/rollback operations, error handling, and comprehensive transaction lifecycle management.</p>
+                </div>
+
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="30" y="20" width="40" height="60" rx="5" fill="#00b4d8" opacity="0.3"/>
+                        <rect x="35" y="25" width="30" height="8" rx="2" fill="#ff6b35"/>
+                        <rect x="35" y="37" width="30" height="8" rx="2" fill="#06ffa5"/>
+                        <rect x="35" y="49" width="30" height="8" rx="2" fill="#00b4d8"/>
+                        <rect x="35" y="61" width="30" height="8" rx="2" fill="#ff6b35"/>
+                        <circle cx="70" cy="70" r="12" fill="#06ffa5"/>
+                        <text x="70" y="75" text-anchor="middle" fill="white" font-size="14" font-weight="bold">✓</text>
+                    </svg>
+                    <h3>Protocol Buffers</h3>
+                    <p>Comprehensive type definitions with multi-language support, efficient serialization, cross-platform compatibility, and extensible schema system.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">Project Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">7+</div>
+                    <div class="stat-label">Protocol Schemas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Priority Levels</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">15+</div>
+                    <div class="stat-label">Core Interfaces</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">Test Coverage</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="section section-light fade-in" id="architecture">
+        <div class="container">
+            <h2 class="section-title">System Architecture</h2>
+            <p class="section-subtitle">Layered approach for maximum flexibility and performance</p>
+
+            <div class="architecture-visual">
+                <div class="layer-stack">
+                    <div class="layer">Application Layer - User Applications & Services</div>
+                    <div class="layer">Service Layer - Business Logic with Service Areas</div>
+                    <div class="layer">VNet Protocol - Message Routing & Service Discovery</div>
+                    <div class="layer">Physical Network - TCP/UDP Transport Layer</div>
+                </div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3>Message Creation</h3>
+                        <p>Applications create messages with service targets using type-safe Protocol Buffer definitions</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3>Intelligent Routing</h3>
+                        <p>VNic determines optimal destination based on service topology and communication patterns</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3>Secure Transport</h3>
+                        <p>Messages are serialized, encrypted with AES, and sent via network protocols with authentication</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3>Processing & Response</h3>
+                        <p>Receiving VNic deserializes, validates, and routes to appropriate handlers with full transaction support</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Examples Section -->
+    <section class="code-showcase fade-in" id="examples">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">Code Examples</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.8);">See how easy it is to build distributed systems</p>
+
+            <div class="code-container">
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-dot"></span>
+                        <span class="code-dot"></span>
+                        <span class="code-dot"></span>
+                        <span class="code-title">Service Configuration</span>
+                    </div>
+                    <pre><code><span class="syntax-comment">// Create system configuration</span>
+<span class="syntax-keyword">config</span> := &<span class="syntax-type">types.SysConfig</span>{
+    <span class="syntax-keyword">LocalUuid</span>: <span class="syntax-string">"node-123"</span>,
+    <span class="syntax-keyword">VnetPort</span>: <span class="syntax-number">8080</span>,
+    <span class="syntax-keyword">MaxDataSize</span>: <span class="syntax-number">1024</span>*<span class="syntax-number">1024</span>,
+    <span class="syntax-keyword">TxQueueSize</span>: <span class="syntax-number">1000</span>,
+    <span class="syntax-keyword">RxQueueSize</span>: <span class="syntax-number">1000</span>,
+    <span class="syntax-keyword">AuthToken</span>: <span class="syntax-string">"secure-token"</span>,
+}
+
+<span class="syntax-comment">// Add services with authentication</span>
+<span class="syntax-function">ifs.AddService</span>(config, <span class="syntax-string">"user-service"</span>, <span class="syntax-number">1</span>)
+<span class="syntax-function">ifs.AddService</span>(config, <span class="syntax-string">"auth-service"</span>, <span class="syntax-number">2</span>)
+
+<span class="syntax-comment">// Initialize VNic with security</span>
+<span class="syntax-keyword">vnic</span> := <span class="syntax-function">NewVNic</span>(config, resources)
+vnic.<span class="syntax-function">EnableAuthentication</span>(<span class="syntax-keyword">true</span>)
+vnic.<span class="syntax-function">Start</span>()</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-dot"></span>
+                        <span class="code-dot"></span>
+                        <span class="code-dot"></span>
+                        <span class="code-title">Communication Patterns</span>
+                    </div>
+                    <pre><code><span class="syntax-comment">// Secure unicast with authentication</span>
+<span class="syntax-keyword">err</span> := vnic.<span class="syntax-function">SecureUnicast</span>(
+    <span class="syntax-string">"node-456"</span>,
+    <span class="syntax-string">"user-service"</span>,
+    <span class="syntax-number">1</span>,
+    ifs.<span class="syntax-keyword">POST</span>,
+    userData,
+    authToken
+)
+
+<span class="syntax-comment">// Load-balanced round-robin</span>
+<span class="syntax-keyword">dest</span>, <span class="syntax-keyword">err</span> := vnic.<span class="syntax-function">RoundRobin</span>(
+    <span class="syntax-string">"auth-service"</span>,
+    <span class="syntax-number">2</span>,
+    ifs.<span class="syntax-keyword">GET</span>,
+    request
+)
+
+<span class="syntax-comment">// Request with timeout</span>
+<span class="syntax-keyword">ctx</span> := <span class="syntax-function">context.WithTimeout</span>(
+    context.<span class="syntax-function">Background</span>(),
+    <span class="syntax-number">5</span>*time.<span class="syntax-keyword">Second</span>
+)
+<span class="syntax-keyword">response</span> := vnic.<span class="syntax-function">RequestWithContext</span>(
+    ctx,
+    <span class="syntax-string">"node-789"</span>,
+    <span class="syntax-string">"data-service"</span>,
+    query
+)</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section class="section section-gradient fade-in" id="install">
+        <div class="container">
+            <h2 class="section-title">Quick Start Guide</h2>
+            <p class="section-subtitle">Get up and running in minutes</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>1. Clone Repository</h3>
+                    <pre style="background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><code>git clone https://github.com/saichler/l8types
+cd l8types</code></pre>
+                </div>
+
+                <div class="feature-card">
+                    <h3>2. Install Dependencies</h3>
+                    <pre style="background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><code>cd go
+go mod download</code></pre>
+                </div>
+
+                <div class="feature-card">
+                    <h3>3. Generate Bindings</h3>
+                    <pre style="background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><code>cd proto
+./make-bindings.sh</code></pre>
+                </div>
+
+                <div class="feature-card">
+                    <h3>4. Run Tests</h3>
+                    <pre style="background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><code>cd go
+go test -v -cover ./...</code></pre>
+                </div>
+
+                <div class="feature-card">
+                    <h3>5. Build Your App</h3>
+                    <pre style="background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><code>import "github.com/saichler/l8types/go/ifs"
+// Start building!</code></pre>
+                </div>
+
+                <div class="feature-card">
+                    <h3>6. Deploy</h3>
+                    <pre style="background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><code>docker build -t myapp .
+docker run myapp</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Layer 8 Types</h3>
+                <p>Advanced distributed networking library for Go, providing Protocol Buffer-based type definitions and utilities for building resilient, secure distributed applications.</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/saichler/l8types">GitHub Repository</a></li>
+                    <li><a href="https://github.com/saichler/l8types/blob/main/README.md">Documentation</a></li>
+                    <li><a href="https://github.com/saichler/l8types/issues">Report Issues</a></li>
+                    <li><a href="https://github.com/saichler/l8types/releases">Releases</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Features</h3>
+                <ul class="footer-links">
+                    <li><a href="#features">Virtual Networking</a></li>
+                    <li><a href="#features">Token Authentication</a></li>
+                    <li><a href="#features">Service Discovery</a></li>
+                    <li><a href="#features">Health Monitoring</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="#examples">Code Examples</a></li>
+                    <li><a href="#architecture">Architecture</a></li>
+                    <li><a href="#install">Installation</a></li>
+                    <li><a href="https://github.com/saichler/l8types/wiki">Wiki</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2024 Layer 8 Types. Open source distributed networking library for Go.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Parallax scrolling effect
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.hero-section');
+            if (parallax) {
+                parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.offsetTop - 80;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Animate stats numbers
+        const animateValue = (element, start, end, duration) => {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = value + (element.textContent.includes('%') ? '%' : element.textContent.includes('+') ? '+' : '');
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        };
+
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(stat => {
+                        const finalValue = stat.textContent;
+                        const numericValue = parseInt(finalValue.replace(/\D/g, ''));
+                        if (!isNaN(numericValue)) {
+                            animateValue(stat, 0, numericValue, 2000);
+                        }
+                    });
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const statsSection = document.querySelector('.stats-grid');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+
+        // Add parallax effect to feature cards
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.feature-card');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            cards.forEach((card, index) => {
+                const rect = card.getBoundingClientRect();
+                const cardX = rect.left + rect.width / 2;
+                const cardY = rect.top + rect.height / 2;
+                const angleX = (e.clientY - cardY) * 0.01;
+                const angleY = (e.clientX - cardX) * -0.01;
+
+                if (Math.abs(angleX) < 10 && Math.abs(angleY) < 10) {
+                    card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateZ(10px)`;
+                }
+            });
+        });
+
+        // Reset card transform on mouse leave
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+            });
+        });
+    </script>
+</body>
+</html>

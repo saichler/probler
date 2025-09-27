@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layer 8 Quality - Professional Testing Infrastructure</title>
+    <link rel="icon" type="image/gif" href="Layer8Logo.gif">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #1a1a2e;
+            background: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Parallax Container */
+        .parallax-container {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f4c75 0%, #3282b8 50%, #00a8cc 100%);
+        }
+
+        /* Parallax Layers */
+        .parallax-layer {
+            position: absolute;
+            width: 110%;
+            height: 110%;
+            top: -5%;
+            left: -5%;
+        }
+
+        .layer-bg {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,112C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            transform: translateZ(-1px) scale(1.5);
+        }
+
+        .layer-mid {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            transform: translateZ(-0.5px) scale(1.25);
+        }
+
+        /* Animated network grid illustration */
+        .network-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-move 20s linear infinite;
+        }
+
+        @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header Navigation */
+        header {
+            background: rgba(15, 76, 117, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: rgba(15, 76, 117, 0.98);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00a8cc 0%, #3282b8 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #00a8cc;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 80%;
+        }
+
+        /* Full-page Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-content {
+            transform: translateZ(0);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out;
+            letter-spacing: -1px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            animation: fadeInUp 1s ease-out 0.2s both;
+            font-weight: 300;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #00d4ff 0%, #00a8cc 100%);
+            color: white;
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,168,204,0.3);
+        }
+
+        .cta-button-secondary {
+            background: transparent;
+            border: 2px solid white;
+            box-shadow: none;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0,168,204,0.4);
+        }
+
+        .cta-button-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Quality metrics floating cards */
+        .floating-cards {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .metric-card {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .metric-card:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .metric-card:nth-child(2) {
+            top: 25%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .metric-card:nth-child(3) {
+            bottom: 30%;
+            left: 8%;
+            animation-delay: 4s;
+        }
+
+        .metric-card:nth-child(4) {
+            bottom: 35%;
+            right: 10%;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Sections */
+        .section {
+            padding: 5rem 0;
+            position: relative;
+            background: white;
+        }
+
+        .section-alt {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .section h2 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            color: #0f4c75;
+            position: relative;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, #00a8cc 0%, #3282b8 100%);
+            border-radius: 2px;
+        }
+
+        /* Features Grid with custom illustrations */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(135deg, #00a8cc 0%, #3282b8 100%);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        /* Custom SVG illustrations */
+        .feature-illustration {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #00a8cc 0%, #3282b8 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,168,204,0.3);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #0f4c75;
+        }
+
+        .feature-card p {
+            color: #6c757d;
+            line-height: 1.8;
+        }
+
+        /* Architecture Diagram Section */
+        .architecture-section {
+            background: linear-gradient(135deg, #0f4c75 0%, #3282b8 100%);
+            color: white;
+            padding: 5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .architecture-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="1" fill="white" opacity="0.2"/><circle cx="75" cy="25" r="1" fill="white" opacity="0.2"/><circle cx="25" cy="75" r="1" fill="white" opacity="0.2"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.2"/></svg>');
+            background-size: 100px 100px;
+            opacity: 0.1;
+        }
+
+        .architecture-section h2 {
+            color: white;
+        }
+
+        .architecture-section h2::after {
+            background: white;
+        }
+
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .arch-component {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .arch-component:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-5px);
+        }
+
+        .arch-component h3 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .arch-component p {
+            color: rgba(255,255,255,0.9);
+            line-height: 1.6;
+        }
+
+        /* Stats Section with parallax */
+        .stats-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            position: relative;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00a8cc 0%, #3282b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* Code Demo Section */
+        .code-section {
+            padding: 5rem 0;
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .code-block {
+            background: #0f0f1e;
+            color: #f8f8f2;
+            padding: 2rem;
+            border-radius: 15px;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 2rem 0;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .code-block::before {
+            content: 'Terminal';
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(135deg, #00a8cc 0%, #3282b8 100%);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+            border-radius: 15px 0 10px 0;
+            font-weight: 600;
+        }
+
+        .code-block code {
+            display: block;
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+
+        .highlight-line {
+            background: rgba(0,168,204,0.1);
+            display: block;
+            margin: 0 -2rem;
+            padding: 0 2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #0f0f1e;
+            color: white;
+            padding: 3rem 0 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .footer-section h4 {
+            color: #00a8cc;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            line-height: 2;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #00a8cc;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 2rem;
+            padding-top: 2rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Scroll Progress Bar */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #00a8cc, #3282b8);
+            transform-origin: left;
+            transform: scaleX(0);
+            z-index: 9999;
+            transition: transform 0.1s ease;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        /* Mobile Responsive */
+        .mobile-menu-toggle {
+            display: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-indicator" id="scrollIndicator"></div>
+
+    <header id="header">
+        <div class="container">
+            <nav>
+                <a href="#home" class="logo">
+                    <div class="logo-icon">L8</div>
+                    Layer 8 Quality
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#architecture">Architecture</a></li>
+                    <li><a href="#quickstart">Quick Start</a></li>
+                    <li><a href="#components">Components</a></li>
+                    <li><a href="#docs">Documentation</a></li>
+                </ul>
+                <div class="mobile-menu-toggle">☰</div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Full-page Hero with Parallax -->
+    <div class="parallax-container" id="home">
+        <div class="parallax-layer layer-bg"></div>
+        <div class="parallax-layer layer-mid"></div>
+        <div class="network-grid"></div>
+
+        <div class="floating-cards">
+            <div class="metric-card">
+                <strong>100%</strong> Go
+            </div>
+            <div class="metric-card">
+                <strong>80%+</strong> Coverage
+            </div>
+            <div class="metric-card">
+                <strong>Zero</strong> Downtime
+            </div>
+            <div class="metric-card">
+                <strong>Real-time</strong> Metrics
+            </div>
+        </div>
+
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <img src="Layer8Logo.gif" alt="Layer 8 Logo" style="width: 75px; height: 75px; margin-bottom: 2rem; border-radius: 50%; box-shadow: 0 8px 25px rgba(0,0,0,0.3);">
+                    <h1>Layer 8 Quality</h1>
+                    <p class="subtitle">Enterprise-Grade Testing Infrastructure for Network Excellence</p>
+                    <div class="cta-buttons">
+                        <a href="#quickstart" class="cta-button">Get Started</a>
+                        <a href="https://github.com/saichler/l8test" class="cta-button cta-button-secondary">View on GitHub</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <h2>Comprehensive Testing Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-illustration">🌐</div>
+                    <h3>Network Topology Testing</h3>
+                    <p>Create and manage complex network topologies with multiple nodes, automatic port allocation, and complete network isolation for comprehensive testing scenarios.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-illustration">⚡</div>
+                    <h3>Service Orchestration</h3>
+                    <p>Full REST API testing support with comprehensive handlers for GET, POST, PUT, PATCH, and DELETE operations including error simulation and performance metrics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-illustration">🔌</div>
+                    <h3>Plugin Architecture</h3>
+                    <p>Extensible plugin system supporting dynamic loading, registry services, and custom component integration with automated build and deployment pipelines.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-illustration">💾</div>
+                    <h3>Transaction Management</h3>
+                    <p>Advanced transaction support with distributed replication, consistency verification, and automated rollback mechanisms for enterprise reliability.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-illustration">🔒</div>
+                    <h3>Security Validation</h3>
+                    <p>Integrated security testing framework with vulnerability scanning, penetration testing support, and compliance verification tools.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-illustration">📊</div>
+                    <h3>Quality Metrics</h3>
+                    <p>Real-time coverage reporting, performance benchmarking, and detailed quality metrics with beautiful HTML reports and CI/CD integration.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-illustration">🔍</div>
+                    <h3>System Fingerprinting</h3>
+                    <p>Machine fingerprinting and environment detection ensures test reproducibility across different platforms and configurations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-illustration">🚀</div>
+                    <h3>Performance Testing</h3>
+                    <p>Load testing, stress testing, and performance regression detection with automated benchmarking and trend analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-illustration">🔄</div>
+                    <h3>CI/CD Integration</h3>
+                    <p>Seamless integration with popular CI/CD platforms including GitHub Actions, Jenkins, and GitLab CI with automated test execution.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="stats-section">
+        <div class="container">
+            <h2>Quality by the Numbers</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number">10+</span>
+                    <div class="stat-label">Core Components</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">80%+</span>
+                    <div class="stat-label">Test Coverage</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1.23.8</span>
+                    <div class="stat-label">Go Version</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">Zero</span>
+                    <div class="stat-label">Dependencies Vulnerabilities</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">4</span>
+                    <div class="stat-label">Default Test Nodes</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">Apache 2.0</span>
+                    <div class="stat-label">Open Source License</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="architecture-section">
+        <div class="container">
+            <h2>Architecture Overview</h2>
+            <div class="architecture-grid">
+                <div class="arch-component">
+                    <h3>🔧 sysinfo/</h3>
+                    <p>System information gathering and machine fingerprinting for reproducible test environments</p>
+                </div>
+                <div class="arch-component">
+                    <h3>🔌 t_plugin/</h3>
+                    <p>Dynamic plugin system with registry and service discovery components</p>
+                </div>
+                <div class="arch-component">
+                    <h3>📦 t_resources/</h3>
+                    <p>Resource management and allocation for test environments</p>
+                </div>
+                <div class="arch-component">
+                    <h3>⚙️ t_service/</h3>
+                    <p>Core service implementations with transaction and replication support</p>
+                </div>
+                <div class="arch-component">
+                    <h3>🌐 t_topology/</h3>
+                    <p>Network topology creation and management for distributed testing</p>
+                </div>
+                <div class="arch-component">
+                    <h3>🧪 tests/</h3>
+                    <p>Comprehensive test suites with initialization and validation frameworks</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section id="quickstart" class="section">
+        <div class="container">
+            <h2>Quick Start Guide</h2>
+
+            <h3 style="margin: 2rem 0 1rem; color: #0f4c75;">Prerequisites</h3>
+            <ul style="margin: 1rem 0; padding-left: 2rem; line-height: 2;">
+                <li>Go 1.23.8 or later</li>
+                <li>Access to Layer 8 ecosystem repositories</li>
+                <li>Git for version control</li>
+                <li>Linux, macOS, or Windows with WSL2</li>
+            </ul>
+
+            <h3 style="margin: 2rem 0 1rem; color: #0f4c75;">Installation</h3>
+            <div class="code-block">
+                <code>
+<span class="highlight-line"># Clone the repository</span>
+$ git clone https://github.com/saichler/l8test.git
+$ cd l8test/go
+
+<span class="highlight-line"># Run the automated test suite</span>
+$ ./test.sh
+
+<span class="highlight-line"># Or run tests manually with coverage</span>
+$ go mod init
+$ GOPROXY=direct GOPRIVATE=github.com go mod tidy
+$ go mod vendor
+$ go test -tags=unit -v -coverpkg=./infra/... -coverprofile=cover.html ./...
+                </code>
+            </div>
+        </div>
+    </section>
+
+    <!-- Components Section -->
+    <section id="components" class="section section-alt">
+        <div class="container">
+            <h2>Quality Assurance Components</h2>
+
+            <h3 style="margin: 2rem 0 1rem; color: #0f4c75;">Service Handlers</h3>
+            <div class="architecture-grid" style="background: transparent;">
+                <div class="arch-component" style="background: white;">
+                    <h3>TestServiceHandler</h3>
+                    <p>Basic service operations testing without transaction overhead</p>
+                </div>
+                <div class="arch-component" style="background: white;">
+                    <h3>TestServiceTransactionHandler</h3>
+                    <p>Full transaction support with ACID compliance verification</p>
+                </div>
+                <div class="arch-component" style="background: white;">
+                    <h3>TestServiceReplicationHandler</h3>
+                    <p>Distributed replication and cache consistency testing</p>
+                </div>
+            </div>
+
+            <h3 style="margin: 3rem 0 1rem; color: #0f4c75;">Configuration Parameters</h3>
+            <ul style="margin: 1rem 0; padding-left: 2rem; line-height: 2;">
+                <li><strong>Node Count:</strong> Configurable test nodes (default: 4)</li>
+                <li><strong>Port Ranges:</strong> Service ports [20000, 30000, 40000]</li>
+                <li><strong>Log Levels:</strong> Trace, Debug, Info, Warn, Error</li>
+                <li><strong>Replication Factor:</strong> Configurable replicas (default: 2)</li>
+                <li><strong>Timeout Settings:</strong> Customizable per-operation timeouts</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Code Demo Section -->
+    <section class="code-section">
+        <div class="container">
+            <h2 style="color: white; text-align: center; margin-bottom: 3rem;">Example Test Implementation</h2>
+            <div class="code-block">
+                <code>
+<span style="color: #66d9ef;">package</span> tests
+
+<span style="color: #66d9ef;">import</span> (
+    <span style="color: #e6db74;">"testing"</span>
+    <span style="color: #e6db74;">"github.com/saichler/l8test/go/infra/t_topology"</span>
+    <span style="color: #e6db74;">"github.com/saichler/l8test/go/infra/t_service"</span>
+)
+
+<span style="color: #66d9ef;">func</span> <span style="color: #a6e22e;">TestDistributedService</span>(t *testing.T) {
+    <span class="highlight-line">    <span style="color: #75715e;">// Create test topology with 4 nodes</span></span>
+    topology := t_topology.NewTestTopology(<span style="color: #ae81ff;">4</span>)
+    <span style="color: #66d9ef;">defer</span> topology.Cleanup()
+
+    <span class="highlight-line">    <span style="color: #75715e;">// Initialize service with transaction support</span></span>
+    service := t_service.NewTestServiceTransactionHandler()
+    service.Start(topology.GetNodes())
+
+    <span class="highlight-line">    <span style="color: #75715e;">// Run distributed transaction test</span></span>
+    result := service.TestDistributedTransaction()
+
+    <span style="color: #66d9ef;">if</span> !result.Success {
+        t.Errorf(<span style="color: #e6db74;">"Distributed transaction failed: %v"</span>, result.Error)
+    }
+}
+                </code>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Layer 8 Quality</h4>
+                    <p style="color: rgba(255,255,255,0.7); line-height: 1.8;">
+                        Professional testing infrastructure ensuring the highest quality standards for Layer 8 network ecosystem.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#architecture">Architecture</a></li>
+                        <li><a href="#quickstart">Quick Start</a></li>
+                        <li><a href="#components">Components</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/saichler/l8test">GitHub Repository</a></li>
+                        <li><a href="https://github.com/saichler/l8test/issues">Report Issues</a></li>
+                        <li><a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 License</a></li>
+                        <li><a href="#docs">Documentation</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Layer 8 Ecosystem</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/saichler/layer8">Layer 8 Core</a></li>
+                        <li><a href="https://github.com/saichler/l8services">L8 Services</a></li>
+                        <li><a href="https://github.com/saichler/l8types">L8 Types</a></li>
+                        <li><a href="https://github.com/saichler/l8utils">L8 Utils</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Layer 8 Quality. All rights reserved. Licensed under Apache 2.0.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const headerHeight = document.getElementById('header').offsetHeight;
+                    const targetPosition = target.offsetTop - headerHeight;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Parallax scrolling effect
+        let ticking = false;
+        function updateParallax() {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.parallax-layer');
+
+            parallaxElements.forEach((element, index) => {
+                const speed = index === 0 ? 0.5 : 0.8;
+                const yPos = -(scrolled * speed);
+                element.style.transform = `translateY(${yPos}px)`;
+            });
+
+            // Update scroll indicator
+            const scrollPercentage = (scrolled / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            document.getElementById('scrollIndicator').style.transform = `scaleX(${scrollPercentage / 100})`;
+
+            ticking = false;
+        }
+
+        function requestTick() {
+            if (!ticking) {
+                window.requestAnimationFrame(updateParallax);
+                ticking = true;
+            }
+        }
+
+        window.addEventListener('scroll', requestTick);
+
+        // Header scroll effect
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-up');
+                    entry.target.style.opacity = '1';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.querySelectorAll('.feature-card, .stat-card, .arch-component').forEach(el => {
+            el.style.opacity = '0';
+            observer.observe(el);
+        });
+
+        // Interactive hover effects
+        document.querySelectorAll('.feature-card, .stat-card').forEach(card => {
+            card.addEventListener('mouseenter', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                this.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(0,168,204,0.05) 0%, white 50%)`;
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.background = 'white';
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileToggle = document.querySelector('.mobile-menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileToggle.addEventListener('click', () => {
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            navLinks.style.position = 'absolute';
+            navLinks.style.top = '100%';
+            navLinks.style.left = '0';
+            navLinks.style.right = '0';
+            navLinks.style.background = 'rgba(15, 76, 117, 0.98)';
+            navLinks.style.flexDirection = 'column';
+            navLinks.style.padding = '1rem 0';
+        });
+
+        // Performance optimization - throttle scroll events
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            if (scrollTimeout) {
+                window.cancelAnimationFrame(scrollTimeout);
+            }
+            scrollTimeout = window.requestAnimationFrame(requestTick);
+        });
+    </script>
+</body>
+</html>

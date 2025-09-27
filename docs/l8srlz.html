@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layer 8 Serialization - High-Performance Object Serialization Library</title>
+    <link rel="icon" type="image/gif" href="Layer8Logo.gif">
+    <meta name="description" content="Layer 8 Serialization - Cross-platform, high-performance object serialization library for microservices with Protocol Buffers integration, advanced filtering, and statistics support.">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #0ea5e9;
+            --secondary-color: #0284c7;
+            --accent-color: #38bdf8;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f8fafc;
+            --bg-dark: #1e293b;
+            --border-color: #e5e7eb;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --gradient-start: #0ea5e9;
+            --gradient-end: #0284c7;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header - Full-page style */
+        header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            transform: translateY(-100vh);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        header.full-page {
+            transform: translateY(0);
+        }
+
+        header.minimized {
+            height: auto;
+            transform: translateY(0);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .mobile-menu span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Hero Section - Full-page with parallax */
+        .hero {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Parallax background layers */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            animation: particleFloat 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border-color: white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: var(--bg-light);
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text-dark);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+        }
+
+        /* Code Example Section */
+        .code-examples {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .code-examples h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text-dark);
+        }
+
+        .code-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .code-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .code-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .code-content {
+            display: none;
+        }
+
+        .code-content.active {
+            display: block;
+        }
+
+        .code-block {
+            background: var(--bg-dark);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .code-header {
+            background: #374151;
+            padding: 1rem;
+            color: white;
+            font-weight: 600;
+            border-bottom: 1px solid #4b5563;
+        }
+
+        pre {
+            margin: 0;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        /* Performance Section */
+        .performance {
+            padding: 80px 0;
+            background: var(--bg-light);
+        }
+
+        .performance h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text-dark);
+        }
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .performance-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .performance-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--success-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .performance-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Installation Section */
+        .installation {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .installation h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text-dark);
+        }
+
+        .install-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .install-option {
+            background: var(--bg-light);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .install-option h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            color: var(--text-dark);
+        }
+
+        .language-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-dark);
+            color: white;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .footer-section a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #374151;
+            padding-top: 2rem;
+            text-align: center;
+            color: #9ca3af;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--primary-color);
+                flex-direction: column;
+                padding: 1rem 0;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .code-tabs {
+                flex-wrap: wrap;
+            }
+
+            .install-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+        }
+
+        .scroll-top:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="container">
+            <a href="#" class="logo">Layer 8 Serialization</a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#examples">Examples</a></li>
+                <li><a href="#performance">Performance</a></li>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#docs">Docs</a></li>
+            </ul>
+            <div class="mobile-menu" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-particles"></div>
+        <div class="container">
+            <div class="hero-content">
+                <img src="Layer8Logo.gif" alt="Layer 8 Logo" style="width: 75px; height: 75px; margin-bottom: 2rem; border-radius: 50%; box-shadow: 0 8px 25px rgba(0,0,0,0.3);">
+                <h1>Layer 8 Serialization</h1>
+                <p>High-Performance Object Serialization Library for Microservices</p>
+                <div class="custom-illustration">
+                    <svg width="400" height="200" viewBox="0 0 400 200" style="opacity: 0.8; margin: 2rem 0;">
+                        <!-- Data flow illustration -->
+                        <defs>
+                            <linearGradient id="dataGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#38bdf8;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Input data -->
+                        <rect x="20" y="50" width="60" height="40" rx="5" fill="url(#dataGradient)" opacity="0.8">
+                            <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+                        </rect>
+                        <text x="50" y="75" text-anchor="middle" fill="white" font-size="12">Data</text>
+
+                        <!-- Processing arrows -->
+                        <path d="M 85 70 L 125 70" stroke="white" stroke-width="2" opacity="0.8">
+                            <animate attributeName="stroke-dasharray" values="0,20;20,0" dur="1.5s" repeatCount="indefinite"/>
+                        </path>
+
+                        <!-- Serialization engine -->
+                        <circle cx="150" cy="70" r="25" fill="none" stroke="white" stroke-width="2" opacity="0.9">
+                            <animate attributeName="r" values="25;30;25" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <text x="150" y="75" text-anchor="middle" fill="white" font-size="10">L8S</text>
+
+                        <!-- Output arrows -->
+                        <path d="M 180 70 L 220 70" stroke="white" stroke-width="2" opacity="0.8">
+                            <animate attributeName="stroke-dasharray" values="0,20;20,0" dur="1.5s" repeatCount="indefinite"/>
+                        </path>
+
+                        <!-- Serialized output -->
+                        <rect x="240" y="50" width="60" height="40" rx="5" fill="url(#dataGradient)" opacity="0.8">
+                            <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+                        </rect>
+                        <text x="270" y="75" text-anchor="middle" fill="white" font-size="10">Binary</text>
+
+                        <!-- Network transmission -->
+                        <path d="M 305 70 L 345 70" stroke="white" stroke-width="2" opacity="0.8">
+                            <animate attributeName="stroke-dasharray" values="0,20;20,0" dur="1.5s" repeatCount="indefinite" begin="1s"/>
+                        </path>
+
+                        <!-- Destination -->
+                        <circle cx="370" cy="70" r="15" fill="white" opacity="0.8">
+                            <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+                        </circle>
+
+                        <!-- Feature indicators -->
+                        <text x="50" y="130" text-anchor="middle" fill="white" font-size="10" opacity="0.7">Cross-Platform</text>
+                        <text x="150" y="130" text-anchor="middle" fill="white" font-size="10" opacity="0.7">High Performance</text>
+                        <text x="270" y="130" text-anchor="middle" fill="white" font-size="10" opacity="0.7">Protocol Buffers</text>
+                        <text x="370" y="130" text-anchor="middle" fill="white" font-size="10" opacity="0.7">Microservices</text>
+                    </svg>
+                </div>
+                
+                <div class="badges">
+                    <span class="badge">Apache 2.0 License</span>
+                    <span class="badge">Go 1.23.8+</span>
+                    <span class="badge">Java 11+</span>
+                    <span class="badge">Cross-Platform</span>
+                </div>
+
+                <div class="cta-buttons">
+                    <a href="#installation" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Get Started
+                    </a>
+                    <a href="#examples" class="btn btn-secondary">
+                        <i class="fas fa-code"></i>
+                        View Examples
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="fade-in">Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>High Performance</h3>
+                    <p>Optimized binary encoding with minimal memory allocations for maximum throughput</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-cubes"></i>
+                    </div>
+                    <h3>Protocol Buffers</h3>
+                    <p>Seamless protobuf message serialization with automatic type detection</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Dynamic Registry</h3>
+                    <p>Runtime type resolution for complex object graphs and custom types</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Query Support</h3>
+                    <p>GSQL integration for selective data serialization and filtering</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-filter"></i>
+                    </div>
+                    <h3>Advanced Filtering</h3>
+                    <p>Multiple filter modes for data processing and selection with comprehensive filtering capabilities</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Statistics Integration</h3>
+                    <p>Built-in performance monitoring and data statistics for optimization insights</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Thread-Safe</h3>
+                    <p>Concurrent-safe operations designed for high-concurrency environments</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3>Microservices Ready</h3>
+                    <p>Built for distributed systems with delta data sharing capabilities</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Page-based Processing</h3>
+                    <p>Support for paginated data handling and efficient streaming operations</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Examples Section -->
+    <section class="code-examples" id="examples">
+        <div class="container">
+            <h2 class="fade-in">Code Examples</h2>
+            
+            <div class="code-tabs">
+                <button class="code-tab active" onclick="showCodeTab('go')">Go</button>
+                <button class="code-tab" onclick="showCodeTab('java')">Java</button>
+                <button class="code-tab" onclick="showCodeTab('protobuf')">Protocol Buffers</button>
+            </div>
+
+            <div id="go-code" class="code-content active">
+                <div class="code-block">
+                    <div class="code-header">Basic Serialization in Go</div>
+                    <pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "github.com/saichler/l8srlz/go/serialize/object"
+)
+
+func main() {
+    // Serialize any Go object
+    data := map[string]interface{}{
+        "name": "John Doe",
+        "age":  30,
+        "active": true,
+    }
+    
+    // Serialize to binary
+    serialized, err := object.DataOf(data)
+    if err != nil {
+        panic(err)
+    }
+    
+    fmt.Printf("Serialized %d bytes\n", len(serialized))
+    
+    // Deserialize back
+    deserialized, err := object.ElemOf(serialized, registry)
+    if err != nil {
+        panic(err)
+    }
+    
+    fmt.Printf("Deserialized: %+v\n", deserialized)
+}</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">Working with Elements</div>
+                    <pre><code class="language-go">// Create elements container
+elements := object.New(nil, myData)
+
+// Add multiple items
+elements.Add("item1", "key1", nil)
+elements.Add("item2", "key2", nil)
+
+// Serialize all elements
+data, err := elements.Serialize()
+if err != nil {
+    return err
+}
+
+// Deserialize elements
+newElements := &object.Elements{}
+err = newElements.Deserialize(data, registry)
+if err != nil {
+    return err
+}</code></pre>
+                </div>
+            </div>
+
+            <div id="java-code" class="code-content">
+                <div class="code-block">
+                    <div class="code-header">Java Implementation</div>
+                    <pre><code class="language-java">import com.saichler.l8srlz.serialize.object.*;
+
+public class SerializationExample {
+    public static void main(String[] args) {
+        // Create serialization object
+        SerializationObject obj = new SerializationObject();
+        
+        // Add data to serialize
+        obj.add("Hello World");
+        obj.add(42);
+        obj.add(true);
+        
+        // Serialize to byte array
+        byte[] data = obj.toByteArray();
+        
+        // Create deserializer
+        SerializationObject deserializer = new SerializationObject(data);
+        
+        // Read back the data
+        String text = (String) deserializer.get();
+        Integer number = (Integer) deserializer.get();
+        Boolean flag = (Boolean) deserializer.get();
+        
+        System.out.println("Text: " + text);
+        System.out.println("Number: " + number);
+        System.out.println("Flag: " + flag);
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <div id="protobuf-code" class="code-content">
+                <div class="code-block">
+                    <div class="code-header">Protocol Buffers Integration</div>
+                    <pre><code class="language-go">// Define your protobuf message
+message := &pb.UserProfile{
+    Name:  "Alice",
+    Email: "alice@example.com",
+    Age:   25,
+}
+
+// Register the type
+registry.Register("UserProfile", &pb.UserProfile{})
+
+// Serialize (automatically detects protobuf)
+data, err := object.DataOf(message)
+if err != nil {
+    return err
+}
+
+// Deserialize with type resolution
+result, err := object.ElemOf(data, registry)
+if err != nil {
+    return err
+}
+
+profile := result.(*pb.UserProfile)
+fmt.Printf("Name: %s, Email: %s\n", profile.Name, profile.Email)</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Section -->
+    <section class="performance" id="performance">
+        <div class="container">
+            <h2 class="fade-in">Performance Benchmarks</h2>
+            <div class="performance-grid">
+                <div class="performance-item fade-in">
+                    <div class="performance-number">2-4x</div>
+                    <div class="performance-label">Faster Serialization</div>
+                </div>
+                <div class="performance-item fade-in">
+                    <div class="performance-number">50-70%</div>
+                    <div class="performance-label">Memory Reduction</div>
+                </div>
+                <div class="performance-item fade-in">
+                    <div class="performance-number">μs</div>
+                    <div class="performance-label">Primitive Type Latency</div>
+                </div>
+                <div class="performance-item fade-in">
+                    <div class="performance-number">Linear</div>
+                    <div class="performance-label">Complexity Scaling</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section class="installation" id="installation">
+        <div class="container">
+            <h2 class="fade-in">Quick Installation</h2>
+            <div class="install-options">
+                <div class="install-option fade-in">
+                    <h3>
+                        <i class="fab fa-golang" style="color: #00ADD8;"></i>
+                        Go Installation
+                    </h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash">go get github.com/saichler/l8srlz/go</code></pre>
+                    </div>
+                </div>
+                
+                <div class="install-option fade-in">
+                    <h3>
+                        <i class="fab fa-java" style="color: #ED8B00;"></i>
+                        Java Installation
+                    </h3>
+                    <div class="code-block">
+                        <pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;com.saichler.l8srlz&lt;/groupId&gt;
+    &lt;artifactId&gt;java-serialization&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Layer 8 Serialization</h3>
+                    <p>High-performance object serialization library for modern microservices architectures with advanced filtering and statistics.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Documentation</h3>
+                    <ul style="list-style: none;">
+                        <li><a href="#examples">Getting Started</a></li>
+                        <li><a href="#examples">API Reference</a></li>
+                        <li><a href="#performance">Performance Guide</a></li>
+                        <li><a href="#examples">Examples</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul style="list-style: none;">
+                        <li><a href="#"><i class="fab fa-github"></i> GitHub</a></li>
+                        <li><a href="#"><i class="fas fa-bug"></i> Issues</a></li>
+                        <li><a href="#"><i class="fas fa-comments"></i> Discussions</a></li>
+                        <li><a href="#"><i class="fas fa-code-branch"></i> Contributing</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Related Projects</h3>
+                    <ul style="list-style: none;">
+                        <li><a href="#">L8Types</a></li>
+                        <li><a href="#">GSQL</a></li>
+                        <li><a href="#">L8Utils</a></li>
+                        <li><a href="#">Layer8</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Layer 8 Serialization. Licensed under Apache 2.0. Built for the microservices era.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script>
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+
+        // Code tab switching
+        function showCodeTab(language) {
+            // Hide all code content
+            document.querySelectorAll('.code-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.code-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected content and activate tab
+            document.getElementById(language + '-code').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Scroll animations and scroll-to-top button
+        function handleScroll() {
+            const scrollTop = window.pageYOffset;
+            const scrollTopButton = document.querySelector('.scroll-top');
+            
+            // Show/hide scroll to top button
+            if (scrollTop > 300) {
+                scrollTopButton.classList.add('visible');
+            } else {
+                scrollTopButton.classList.remove('visible');
+            }
+            
+            // Animate elements on scroll
+            document.querySelectorAll('.fade-in').forEach(element => {
+                const elementTop = element.offsetTop;
+                const elementHeight = element.offsetHeight;
+                const windowHeight = window.innerHeight;
+                
+                if (scrollTop + windowHeight > elementTop + elementHeight * 0.1) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Parallax scrolling effect
+        function updateParallax() {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            const heroHeight = hero.offsetHeight;
+
+            if (scrolled < heroHeight) {
+                const parallaxElements = hero.querySelectorAll('.hero::before, .custom-illustration');
+                const rate = scrolled * -0.5;
+                hero.style.transform = `translate3d(0, ${rate}px, 0)`;
+            }
+        }
+
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.hero-particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Header full-page behavior
+        function handleHeaderTransition() {
+            const header = document.querySelector('header');
+            const scrolled = window.pageYOffset;
+
+            if (scrolled > 100) {
+                header.classList.remove('full-page');
+                header.classList.add('minimized');
+            } else {
+                header.classList.add('full-page');
+                header.classList.remove('minimized');
+            }
+        }
+
+        // Event listeners
+        window.addEventListener('scroll', function() {
+            handleScroll();
+            updateParallax();
+            handleHeaderTransition();
+        });
+        window.addEventListener('load', function() {
+            handleScroll();
+            createParticles();
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const nav = document.querySelector('nav');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (!nav.contains(e.target) && navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Performance counter animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.performance-number');
+            
+            counters.forEach(counter => {
+                const target = counter.textContent;
+                const isNumeric = !isNaN(target.charAt(0));
+                
+                if (isNumeric) {
+                    const targetNum = parseInt(target);
+                    let current = 0;
+                    const increment = targetNum / 100;
+                    
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= targetNum) {
+                            current = targetNum;
+                            clearInterval(timer);
+                        }
+                        counter.textContent = Math.floor(current) + target.slice(-1);
+                    }, 20);
+                }
+            });
+        }
+
+        // Trigger counter animation when performance section is visible
+        const performanceSection = document.querySelector('.performance');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+
+        if (performanceSection) {
+            observer.observe(performanceSection);
+        }
+    </script>
+</body>
+</html>

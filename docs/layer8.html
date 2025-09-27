@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layer 8 Ecosystem - Transform AI Prototypes into Enterprise Reality</title>
+    <link rel="icon" type="image/gif" href="Layer8Logo.gif">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #d4af37;
+        }
+
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero .pitch {
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            opacity: 0.95;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #b8960f 100%);
+            color: #1a1f2e;
+            border: 2px solid transparent;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #e6c157 0%, #d4af37 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #d4af37;
+            border: 2px solid #d4af37;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #e6c157;
+            transform: translateY(-2px);
+            border-color: #e6c157;
+        }
+
+        .section {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+        }
+
+        .features {
+            background: #f8f9fa;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .ecosystem {
+            background: linear-gradient(135deg, #2d3748 0%, #1a1f2e 100%);
+            color: white;
+        }
+
+        .projects-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-group {
+            margin-bottom: 3rem;
+        }
+
+        .group-title {
+            font-size: 1.8rem;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .service-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255,255,255,0.18);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2d3748 0%, #1a1f2e 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            color: #d4af37;
+            border: 2px solid #d4af37;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .service-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .service-card p {
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .service-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.7rem 1.5rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .service-link:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .architecture {
+            background: white;
+        }
+
+        .arch-diagram {
+            background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 3rem 0;
+            color: white;
+            text-align: center;
+        }
+
+        .arch-layers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .arch-layer {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .arch-layer h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats {
+            background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #d4af37;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #d4af37;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: #d4af37;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #333;
+            padding-top: 1rem;
+            text-align: center;
+            color: #888;
+        }
+
+        .parallax {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section {
+                padding: 60px 0;
+            }
+        }
+
+        .custom-illustration {
+            width: 100%;
+            max-width: 600px;
+            margin: 2rem auto;
+            display: block;
+        }
+
+        .tech-stack {
+            background: #f8f9fa;
+            padding: 4rem 0;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .tech-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .tech-item img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <img src="Layer8Logo.gif" alt="Layer 8 Logo">
+                Layer 8 Ecosystem
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#ecosystem">Ecosystem</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#stats">Statistics</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <img src="Layer8Logo.gif" alt="Layer 8 Logo" style="width: 75px; height: 75px; margin-bottom: 2rem; border-radius: 50%; box-shadow: 0 8px 25px rgba(0,0,0,0.3);">
+            <h1>Layer 8 Ecosystem</h1>
+            <p class="subtitle">The Missing Layer That Turns AI Hype Into Enterprise Reality</p>
+            <p class="pitch">
+                In Layer 8, we've built a platform that transforms AI-generated prototypes into production-grade, scalable, and secure applications, without the armies of developers or endless patchwork. By providing enterprise-grade architectural guidance out of the box, Layer 8 reduces AI mistakes in backend development to almost nothing, and does all of this without binding you to expensive, offsite services. It's the missing layer that turns today's AI hype into tomorrow's enterprise reality. We've figured out the technical part, now we're looking for our leaders. And no, we don't have an army of developers in some hidden corner of the world, we just work with AI to build stuff for AI.
+            </p>
+            <div class="cta-buttons">
+                <a href="#ecosystem" class="btn btn-primary">Explore Ecosystem</a>
+                <a href="https://github.com/saichler" class="btn btn-secondary">View on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="section features">
+        <div class="container">
+            <h2 class="section-title fade-in">Enterprise-Grade Features</h2>
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🚀</div>
+                    <h3>AI-to-Production Pipeline</h3>
+                    <p>Transform AI prototypes into enterprise-ready applications with built-in scalability, security, and reliability patterns.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Zero-Trust Security</h3>
+                    <p>Built-in security framework with token-based authentication, AES encryption, and resource-based access control.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">⚡</div>
+                    <h3>High-Performance Architecture</h3>
+                    <p>Optimized for speed with lock-free operations, memory-efficient processing, and microsecond-level latency.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Model Agnostic Design</h3>
+                    <p>Work with any data model or framework through our advanced reflection and type system capabilities.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Distributed by Design</h3>
+                    <p>Native support for microservices, horizontal scaling, and deployment-agnostic serverless concepts.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">📊</div>
+                    <h3>Enterprise Monitoring</h3>
+                    <p>Built-in observability with health monitoring, performance metrics, and integration with Splunk & Elasticsearch.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ecosystem" class="section ecosystem parallax">
+        <div class="container">
+            <h2 class="section-title fade-in">The Complete Ecosystem</h2>
+            <p class="fade-in" style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem; opacity: 0.9;">
+                A comprehensive suite of interconnected technologies that work together to create enterprise-grade applications.
+            </p>
+
+            <div class="projects-section">
+                <!-- Core Layer 8 Projects -->
+                <div class="section-group fade-in">
+                    <h3 class="group-title">Core Layer 8 Projects</h3>
+                    <div class="projects-grid">
+                        <div class="service-card">
+                            <div class="service-icon">🛡️</div>
+                            <h4>Layer 8 Secure</h4>
+                            <p>Unique Core Technology - private for now, woven inside the bones of the ecosystem</p>
+                            <span class="service-link" style="opacity: 0.6; cursor: not-allowed;">Private</span>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🏗️</div>
+                            <h4>Layer 8 Types</h4>
+                            <p>Unique Core Technology architecture interfaces and structures that keep everything decoupled.</p>
+                            <a href="l8types.html" class="service-link">More Info</a>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🔧</div>
+                            <h4>Layer 8 Utils</h4>
+                            <p>Unique Core Technology utilities like logging with built in ability to send data to Splunk & elastic search.</p>
+                            <a href="l8utils.html" class="service-link">More Info</a>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🌐</div>
+                            <h4>Layer 8 Network BUS</h4>
+                            <p>Unique Core Technology to Secure Virtual Network, enabling deployment agnostic, serverless concepts and "pure" horizontal scaling.</p>
+                            <a href="l8bus.html" class="service-link">More Info</a>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">⚙️</div>
+                            <h4>Layer 8 Services</h4>
+                            <p>Unique Core Technology Abstracts API & Concurrency & Agnostic Distributed Caching as a Service.</p>
+                            <a href="l8services.html" class="service-link">More Info</a>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🪞</div>
+                            <h4>Layer 8 Model Agnostic Infra</h4>
+                            <p>Unique Core Technology Enabling model agnosticism, this is the core Magic, hard to explain.</p>
+                            <a href="l8reflect.html" class="service-link">More Info</a>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🔍</div>
+                            <h4>Layer 8 QL</h4>
+                            <p>Unique Core Technology query language for agnostic Service 2 Service API sharing and querying.</p>
+                            <a href="l8ql.html" class="service-link">More Info</a>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">📡</div>
+                            <h4>Layer 8 Serialization</h4>
+                            <p>Unique Core Technology to enable delta, over the wire, notification.</p>
+                            <a href="l8srlz.html" class="service-link">More Info</a>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🗄️</div>
+                            <h4>Layer 8 Distributed ORM</h4>
+                            <p>Unique Core Technology enabling datastore type agnostic persistence.</p>
+                            <a href="l8orm.html" class="service-link">More Info</a>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🌍</div>
+                            <h4>Layer 8 Web Services</h4>
+                            <p>Unique Core Technology of service agnostic web server that allows dynamic API exposure via metadata.</p>
+                            <a href="l8web.html" class="service-link">More Info</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Virtual Testing Environment -->
+                <div class="section-group fade-in">
+                    <h3 class="group-title">Virtual Testing Environment</h3>
+                    <div class="projects-grid">
+                        <div class="service-card">
+                            <div class="service-icon">🧪</div>
+                            <h4>Layer 8 Quality</h4>
+                            <p>So you can test it anywhere & everywhere.</p>
+                            <a href="l8test.html" class="service-link">More Info</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- For Data Mining Applications -->
+                <div class="section-group fade-in">
+                    <h3 class="group-title">For Data Mining Applications</h3>
+                    <div class="projects-grid">
+                        <div class="service-card">
+                            <div class="service-icon">⭐</div>
+                            <h4>Layer 8 Data Mining Models</h4>
+                            <p>Unique Technology infrastructure for model agnostic data mining.</p>
+                            <a href="l8pollaris.html" class="service-link">More Info</a>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">📊</div>
+                            <h4>Layer 8 Data Collection</h4>
+                            <p>Unique Technology of metadata, agnostic data collection via several protocols.</p>
+                            <a href="l8collector.html" class="service-link">More Info</a>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🔄</div>
+                            <h4>Layer 8 Model Agnostic Parsing</h4>
+                            <p>Very Unique Technology of model agnostic parsing & setting... Uses l8reflect to create model instances without "knowing" the model at compile time.</p>
+                            <a href="l8parser.html" class="service-link">More Info</a>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">💾</div>
+                            <h4>Layer 8 Agnostic Distributed Cache</h4>
+                            <p>Model Agnostic Distributed Cache</p>
+                            <a href="l8inventory.html" class="service-link">More Info</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orchestration -->
+                <div class="section-group fade-in">
+                    <h3 class="group-title">Orchestration</h3>
+                    <div class="projects-grid">
+                        <div class="service-card">
+                            <div class="service-icon">🎵</div>
+                            <h4>Layer 8 Vibe</h4>
+                            <p>Allows you to vibe user interface and "knows" how to create the L8 services to support your application without (near future) vibing in the back end.</p>
+                            <a href="l8vibe.html" class="service-link">More Info</a>
+                            <a href="https://www.layer8vibe.dev" class="service-link" style="margin-left: 1rem;">Live Demo</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Application -->
+                <div class="section-group fade-in">
+                    <h3 class="group-title">Sample Application</h3>
+                    <div class="projects-grid">
+                        <div class="service-card">
+                            <div class="service-icon">🌐</div>
+                            <h4>Network Automation & Monitoring Platform</h4>
+                            <p>This is a sample application for network management that was orchestrated using Layer 8 ecosystem.</p>
+                            <a href="probler.html" class="service-link">More Info</a>
+                            <a href="https://www.probler.dev" class="service-link" style="margin-left: 1rem;">Live Demo</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture" class="section architecture">
+        <div class="container">
+            <h2 class="section-title fade-in">Architecture Overview</h2>
+            <div class="arch-diagram fade-in">
+                <h3 style="margin-bottom: 2rem;">The Layer 8 Stack</h3>
+                <svg class="custom-illustration" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="layerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1a1f2e;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#2d3748;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Application Layer -->
+                    <rect x="50" y="50" width="700" height="60" fill="url(#layerGrad)" rx="10" opacity="0.9"/>
+                    <text x="400" y="85" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Application Layer (L8Vibe, Probler)</text>
+
+                    <!-- Service Layer -->
+                    <rect x="50" y="130" width="700" height="60" fill="url(#layerGrad)" rx="10" opacity="0.8"/>
+                    <text x="400" y="165" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Service Layer (L8Services, L8Web, L8ORM)</text>
+
+                    <!-- Data Layer -->
+                    <rect x="50" y="210" width="700" height="60" fill="url(#layerGrad)" rx="10" opacity="0.7"/>
+                    <text x="400" y="245" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Data Layer (L8SRLZ, L8QL, L8Inventory)</text>
+
+                    <!-- Core Layer -->
+                    <rect x="50" y="290" width="700" height="60" fill="url(#layerGrad)" rx="10" opacity="0.6"/>
+                    <text x="400" y="325" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Core Layer (L8Types, L8Utils, L8Bus, L8Reflect)</text>
+
+                    <!-- Arrows -->
+                    <path d="M 380 110 L 380 130" stroke="white" stroke-width="3" marker-end="url(#arrowhead)"/>
+                    <path d="M 420 110 L 420 130" stroke="white" stroke-width="3" marker-end="url(#arrowhead)"/>
+                    <path d="M 380 190 L 380 210" stroke="white" stroke-width="3" marker-end="url(#arrowhead)"/>
+                    <path d="M 420 190 L 420 210" stroke="white" stroke-width="3" marker-end="url(#arrowhead)"/>
+                    <path d="M 380 270 L 380 290" stroke="white" stroke-width="3" marker-end="url(#arrowhead)"/>
+                    <path d="M 420 270 L 420 290" stroke="white" stroke-width="3" marker-end="url(#arrowhead)"/>
+
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="white"/>
+                        </marker>
+                    </defs>
+                </svg>
+
+                <div class="arch-layers">
+                    <div class="arch-layer">
+                        <h4>Modular Design</h4>
+                        <p>Each component is independently deployable and swappable</p>
+                    </div>
+                    <div class="arch-layer">
+                        <h4>Service Mesh</h4>
+                        <p>Built-in networking with service discovery and security</p>
+                    </div>
+                    <div class="arch-layer">
+                        <h4>Data Agnostic</h4>
+                        <p>Works with any data model through reflection and typing</p>
+                    </div>
+                    <div class="arch-layer">
+                        <h4>Enterprise Ready</h4>
+                        <p>Production-grade with monitoring, security, and scaling</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="stats" class="section stats">
+        <div class="container">
+            <h2 class="section-title fade-in">Ecosystem Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item fade-in">
+                    <span class="stat-number" data-count="16">0</span>
+                    <div class="stat-label">Core Projects</div>
+                </div>
+                <div class="stat-item fade-in">
+                    <span class="stat-number" data-count="50000">0</span>
+                    <div class="stat-label">Lines of Code</div>
+                </div>
+                <div class="stat-item fade-in">
+                    <span class="stat-number" data-count="5">0</span>
+                    <div class="stat-label">Technology Stacks</div>
+                </div>
+                <div class="stat-item fade-in">
+                    <span class="stat-number" data-count="100">0</span>
+                    <div class="stat-label">% AI Enhanced</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section tech-stack">
+        <div class="container">
+            <h2 class="section-title fade-in">Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-item fade-in">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🐹</div>
+                    <h4>Go</h4>
+                    <p>Primary language for high-performance backend services</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">☕</div>
+                    <h4>Java</h4>
+                    <p>Cross-platform serialization and enterprise integration</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">⚡</div>
+                    <h4>Zig</h4>
+                    <p>Experimental bindings for system-level performance</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🐳</div>
+                    <h4>Docker</h4>
+                    <p>Containerized deployment and development environments</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">☸️</div>
+                    <h4>Kubernetes</h4>
+                    <p>Native orchestration and scaling capabilities</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🤖</div>
+                    <h4>AI/ML</h4>
+                    <p>Claude AI integration for intelligent development</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section cta-section">
+        <div class="container">
+            <h2>Ready to Transform Your AI Ideas?</h2>
+            <p>Join the Layer 8 ecosystem and turn your AI prototypes into enterprise-grade applications.</p>
+            <div class="cta-buttons">
+                <a href="https://github.com/saichler" class="btn btn-primary">Get Started</a>
+                <a href="https://www.layer8vibe.dev" class="btn btn-secondary">Try L8Vibe</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Core Infrastructure</h3>
+                    <ul>
+                        <li><a href="l8types.html">L8Types - Distributed Networking</a></li>
+                        <li><a href="l8utils.html">L8Utils - Microservices Utilities</a></li>
+                        <li><a href="l8bus.html">L8Bus - Virtual Network Overlay</a></li>
+                        <li><a href="l8services.html">L8Services - Service Framework</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Data & Web</h3>
+                    <ul>
+                        <li><a href="l8reflect.html">L8Reflect - Advanced Reflection</a></li>
+                        <li><a href="l8ql.html">L8QL - Query Language</a></li>
+                        <li><a href="l8srlz.html">L8SRLZ - Serialization</a></li>
+                        <li><a href="l8orm.html">L8ORM - Distributed ORM</a></li>
+                        <li><a href="l8web.html">L8Web - Web Services</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Data Mining</h3>
+                    <ul>
+                        <li><a href="l8pollaris.html">L8Pollaris - Data Mining Models</a></li>
+                        <li><a href="l8collector.html">L8Collector - Data Collection</a></li>
+                        <li><a href="l8parser.html">L8Parser - Model Agnostic Parsing</a></li>
+                        <li><a href="l8inventory.html">L8Inventory - Distributed Cache</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Applications</h3>
+                    <ul>
+                        <li><a href="l8vibe.html">L8Vibe - AI Platform</a></li>
+                        <li><a href="https://www.layer8vibe.dev">L8Vibe Live Demo</a></li>
+                        <li><a href="probler.html">Probler - Network Management</a></li>
+                        <li><a href="https://www.probler.dev">Probler Demo</a></li>
+                        <li><a href="l8test.html">L8Test - Quality Framework</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Layer 8 Ecosystem. Licensed under Apache 2.0. Built with AI for AI.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Fade in animation on scroll
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Counter animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-count'));
+                const current = parseInt(counter.textContent);
+
+                if (current < target) {
+                    const increment = Math.ceil(target / 100);
+                    counter.textContent = Math.min(current + increment, target);
+
+                    if (current + increment < target) {
+                        setTimeout(() => animateCounters(), 20);
+                    }
+                }
+            });
+        }
+
+        // Header background on scroll
+        function handleHeaderScroll() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+                header.style.boxShadow = '0 2px 20px rgba(0,0,0,0.1)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = 'none';
+            }
+        }
+
+        // Initialize animations
+        window.addEventListener('scroll', () => {
+            animateOnScroll();
+            handleHeaderScroll();
+        });
+
+        // Start counter animation when stats section is visible
+        let countersAnimated = false;
+        function checkStatsSection() {
+            const statsSection = document.querySelector('.stats');
+            const rect = statsSection.getBoundingClientRect();
+
+            if (rect.top < window.innerHeight && rect.bottom > 0 && !countersAnimated) {
+                animateCounters();
+                countersAnimated = true;
+            }
+        }
+
+        window.addEventListener('scroll', checkStatsSection);
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            animateOnScroll();
+            handleHeaderScroll();
+        });
+
+        // Parallax effect for hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            const rate = scrolled * -0.5;
+
+            if (hero) {
+                hero.style.transform = `translateY(${rate}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
