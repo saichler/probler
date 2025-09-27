@@ -1028,6 +1028,93 @@
             <div class="container">
                 <h1>Network Automation & Monitoring Platform</h1>
                 <p>A comprehensive microservices-based platform that implements a "data as a service" approach with the core philosophy: <strong>Poll → Parse → Model → Cache → Persist</strong></p>
+
+                <!-- Animated Network Illustration -->
+                <div style="margin: 3rem 0;">
+                    <svg width="600" height="300" viewBox="0 0 600 300" style="max-width: 100%; height: auto;">
+                        <defs>
+                            <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0284c7;stop-opacity:1" />
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- Network Connections -->
+                        <line x1="100" y1="100" x2="300" y2="50" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="300" y1="50" x2="500" y2="100" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="100" y1="100" x2="200" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="500" y1="100" x2="400" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="200" y1="200" x2="400" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="300" y1="50" x2="300" y2="150" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+
+                        <!-- Network Nodes -->
+                        <g filter="url(#glow)">
+                            <!-- Central Server -->
+                            <circle cx="300" cy="150" r="25" fill="url(#nodeGradient)" opacity="0.9">
+                                <animate attributeName="r" from="25" to="30" dur="2s" repeatCount="indefinite" begin="0s" values="25;30;25" />
+                            </circle>
+                            <text x="300" y="155" text-anchor="middle" fill="white" font-size="20">⚙️</text>
+
+                            <!-- Router 1 -->
+                            <circle cx="100" cy="100" r="20" fill="rgba(255,255,255,0.9)">
+                                <animate attributeName="opacity" from="0.9" to="0.5" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                            <text x="100" y="105" text-anchor="middle" fill="#0ea5e9" font-size="18">🔀</text>
+
+                            <!-- Router 2 -->
+                            <circle cx="500" cy="100" r="20" fill="rgba(255,255,255,0.9)">
+                                <animate attributeName="opacity" from="0.5" to="0.9" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                            <text x="500" y="105" text-anchor="middle" fill="#0ea5e9" font-size="18">🔀</text>
+
+                            <!-- Database -->
+                            <circle cx="300" cy="50" r="20" fill="rgba(255,255,255,0.9)"/>
+                            <text x="300" y="55" text-anchor="middle" fill="#0ea5e9" font-size="18">🗄️</text>
+
+                            <!-- Monitoring Nodes -->
+                            <circle cx="200" cy="200" r="18" fill="rgba(255,255,255,0.9)"/>
+                            <text x="200" y="205" text-anchor="middle" fill="#0ea5e9" font-size="16">📊</text>
+
+                            <circle cx="400" cy="200" r="18" fill="rgba(255,255,255,0.9)"/>
+                            <text x="400" y="205" text-anchor="middle" fill="#0ea5e9" font-size="16">📈</text>
+                        </g>
+
+                        <!-- Data Flow Particles -->
+                        <circle r="3" fill="#0ea5e9">
+                            <animateMotion dur="3s" repeatCount="indefinite">
+                                <mpath href="#path1"/>
+                            </animateMotion>
+                        </circle>
+                        <path id="path1" d="M 100 100 Q 200 75 300 50" fill="none"/>
+
+                        <circle r="3" fill="#06b6d4">
+                            <animateMotion dur="3s" repeatCount="indefinite" begin="1s">
+                                <mpath href="#path2"/>
+                            </animateMotion>
+                        </circle>
+                        <path id="path2" d="M 300 50 Q 400 75 500 100" fill="none"/>
+                    </svg>
+                </div>
+
                 <div class="hero-buttons">
                     <a href="#getting-started" class="btn-primary">🚀 Get Started</a>
                     <a href="https://github.com/saichler/probler" class="btn-secondary">📖 View on GitHub</a>
@@ -1099,37 +1186,129 @@
                 
                 <div class="arch-diagram">
                     <h3 style="text-align: center; margin-bottom: 2rem; color: #333;">Microservices Architecture</h3>
-                    
-                    <div style="text-align: center; font-family: monospace; background: #f8f9ff; padding: 2rem; border-radius: 10px;">
-                        <div style="margin-bottom: 1rem;">
-                            ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐<br>
-                            │    Collector    │───▶│     Parser      │───▶│   Inventory     │<br>
-                            │  (Data Polling) │    │ (Model-Agnostic)│    │ (Device State)  │<br>
-                            └─────────────────┘    └─────────────────┘    └─────────────────┘
-                        </div>
-                        <div style="margin-bottom: 1rem;">
-                                     │                       │                       │<br>
-                                     └───────────────────────┼───────────────────────┘<br>
-                                                             ▼
-                        </div>
-                        <div>
-                            ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐<br>
-                            │      VNet       │◀───│      ORM        │───▶│   PostgreSQL    │<br>
-                            │ (Web Interface) │    │ (Persistence)   │    │   (Database)    │<br>
-                            └─────────────────┘    └─────────────────┘    └─────────────────┘<br>
-                                     │<br>
-                                     ▼<br>
-                            ┌─────────────────┐    ┌─────────────────┐<br>
-                            │     TE App      │    │   Topology      │<br>
-                            │(Traffic Eng.)   │    │ (World Cities)  │<br>
-                            └─────────────────┘    └─────────────────┘<br>
-                                     │                       │<br>
-                                     ▼                       ▼<br>
-                            ┌─────────────────┐    ┌─────────────────┐<br>
-                            │    Security     │    │    Enhanced     │<br>
-                            │ (Auth & Authz)  │    │    Logging      │<br>
-                            └─────────────────┘    └─────────────────┘
-                        </div>
+
+                    <!-- Custom SVG Architecture Diagram -->
+                    <div style="text-align: center; background: #f8f9ff; padding: 2rem; border-radius: 10px;">
+                        <svg width="800" height="500" viewBox="0 0 800 500" style="max-width: 100%; height: auto;">
+                            <defs>
+                                <linearGradient id="boxGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#0284c7;stop-opacity:1" />
+                                </linearGradient>
+                                <linearGradient id="boxGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#0891b2;stop-opacity:1" />
+                                </linearGradient>
+                                <filter id="shadow">
+                                    <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.2"/>
+                                </filter>
+                            </defs>
+
+                            <!-- Top Layer Services -->
+                            <!-- Collector -->
+                            <rect x="50" y="50" width="150" height="80" rx="8" fill="url(#boxGradient1)" filter="url(#shadow)">
+                                <animate attributeName="opacity" from="0.8" to="1" dur="2s" repeatCount="indefinite"/>
+                            </rect>
+                            <text x="125" y="85" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Collector</text>
+                            <text x="125" y="105" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Data Polling)</text>
+
+                            <!-- Parser -->
+                            <rect x="300" y="50" width="150" height="80" rx="8" fill="url(#boxGradient1)" filter="url(#shadow)">
+                                <animate attributeName="opacity" from="0.9" to="1" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                            </rect>
+                            <text x="375" y="85" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Parser</text>
+                            <text x="375" y="105" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Model-Agnostic)</text>
+
+                            <!-- Inventory -->
+                            <rect x="550" y="50" width="150" height="80" rx="8" fill="url(#boxGradient1)" filter="url(#shadow)">
+                                <animate attributeName="opacity" from="1" to="0.8" dur="2s" begin="1s" repeatCount="indefinite"/>
+                            </rect>
+                            <text x="625" y="85" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Inventory</text>
+                            <text x="625" y="105" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Device State)</text>
+
+                            <!-- Middle Layer Services -->
+                            <!-- ORM -->
+                            <rect x="300" y="200" width="150" height="80" rx="8" fill="url(#boxGradient2)" filter="url(#shadow)"/>
+                            <text x="375" y="235" text-anchor="middle" fill="white" font-weight="bold" font-size="14">ORM</text>
+                            <text x="375" y="255" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Persistence)</text>
+
+                            <!-- VNet -->
+                            <rect x="50" y="200" width="150" height="80" rx="8" fill="url(#boxGradient2)" filter="url(#shadow)"/>
+                            <text x="125" y="235" text-anchor="middle" fill="white" font-weight="bold" font-size="14">VNet</text>
+                            <text x="125" y="255" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Web Interface)</text>
+
+                            <!-- PostgreSQL -->
+                            <rect x="550" y="200" width="150" height="80" rx="8" fill="url(#boxGradient2)" filter="url(#shadow)"/>
+                            <text x="625" y="235" text-anchor="middle" fill="white" font-weight="bold" font-size="14">PostgreSQL</text>
+                            <text x="625" y="255" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Database)</text>
+
+                            <!-- Bottom Layer Services -->
+                            <!-- TE App -->
+                            <rect x="50" y="350" width="150" height="80" rx="8" fill="#64748b" filter="url(#shadow)"/>
+                            <text x="125" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">TE App</text>
+                            <text x="125" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Traffic Eng.)</text>
+
+                            <!-- Topology -->
+                            <rect x="225" y="350" width="150" height="80" rx="8" fill="#64748b" filter="url(#shadow)"/>
+                            <text x="300" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Topology</text>
+                            <text x="300" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(World Cities)</text>
+
+                            <!-- Security -->
+                            <rect x="400" y="350" width="150" height="80" rx="8" fill="#64748b" filter="url(#shadow)"/>
+                            <text x="475" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Security</text>
+                            <text x="475" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Auth & Authz)</text>
+
+                            <!-- Logging -->
+                            <rect x="575" y="350" width="150" height="80" rx="8" fill="#64748b" filter="url(#shadow)"/>
+                            <text x="650" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Logging</text>
+                            <text x="650" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Enhanced)</text>
+
+                            <!-- Connection Arrows -->
+                            <!-- Top Layer Connections -->
+                            <path d="M 200 90 L 300 90" stroke="#0ea5e9" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+                                <animate attributeName="stroke-dasharray" from="0 10" to="10 0" dur="1s" repeatCount="indefinite"/>
+                            </path>
+                            <path d="M 450 90 L 550 90" stroke="#0ea5e9" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+                                <animate attributeName="stroke-dasharray" from="0 10" to="10 0" dur="1s" begin="0.5s" repeatCount="indefinite"/>
+                            </path>
+
+                            <!-- Vertical Connections -->
+                            <path d="M 125 130 L 125 200" stroke="#06b6d4" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            <path d="M 375 130 L 375 200" stroke="#06b6d4" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            <path d="M 625 130 L 625 200" stroke="#06b6d4" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+
+                            <!-- Middle Layer Connections -->
+                            <path d="M 200 240 L 300 240" stroke="#06b6d4" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                            <path d="M 450 240 L 550 240" stroke="#06b6d4" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+                            <!-- Bottom Connections -->
+                            <path d="M 125 280 L 125 350" stroke="#64748b" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            <path d="M 375 280 L 300 350" stroke="#64748b" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            <path d="M 375 280 L 475 350" stroke="#64748b" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            <path d="M 625 280 L 650 350" stroke="#64748b" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+
+                            <!-- Arrow marker -->
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#0ea5e9"/>
+                                </marker>
+                            </defs>
+
+                            <!-- Animated Data Flow Dots -->
+                            <circle r="4" fill="#0ea5e9">
+                                <animateMotion dur="3s" repeatCount="indefinite">
+                                    <mpath href="#flowPath1"/>
+                                </animateMotion>
+                            </circle>
+                            <path id="flowPath1" d="M 200 90 L 300 90 L 375 130 L 375 200" fill="none"/>
+
+                            <circle r="4" fill="#06b6d4">
+                                <animateMotion dur="3s" begin="1s" repeatCount="indefinite">
+                                    <mpath href="#flowPath2"/>
+                                </animateMotion>
+                            </circle>
+                            <path id="flowPath2" d="M 450 90 L 550 90 L 625 130 L 625 200" fill="none"/>
+                        </svg>
                     </div>
                 </div>
 
