@@ -6,17 +6,22 @@ async function initializeApp() {
     loadDashboardPreference(); // Load saved preference first
     loadSectionPreferences(); // Load section preferences
 
-    // Load devices first, then dashboard stats (which depends on device data)
-    await loadDevices();
-    loadDashboardStats();
-    loadAlarms();
-
-    // Set up auto-refresh every 5 minutes
-    setInterval(async () => {
+    // Only load data if user is authenticated
+    if (sessionStorage.getItem('authenticated') === 'true') {
+        // Load devices first, then dashboard stats (which depends on device data)
         await loadDevices();
         loadDashboardStats();
         loadAlarms();
-    }, 300000);
+
+        // Set up auto-refresh every 5 minutes (only if authenticated)
+        setInterval(async () => {
+            if (sessionStorage.getItem('authenticated') === 'true') {
+                await loadDevices();
+                loadDashboardStats();
+                loadAlarms();
+            }
+        }, 300000);
+    }
 }
 
 // Application startup when DOM is ready

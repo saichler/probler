@@ -152,11 +152,17 @@ function showLoginSuccessAndHide() {
     loginBtn.classList.remove('loading');
     loginBtn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
     loginBtn.innerHTML = '✓ Login Successful';
-    
-    setTimeout(() => {
+
+    setTimeout(async () => {
         hideLoginScreen();
         loadUsername(); // Update username display
         showNotification('✓ Welcome to Open Network Automation', 'success');
+
+        // Load application data after successful login
+        await loadDevices();
+        loadDashboardStats();
+        loadAlarms();
+
         // Reset login form
         document.getElementById('loginForm').reset();
         loginBtn.style.background = '';
