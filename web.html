@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probler - Network Automation & Monitoring Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            background-attachment: fixed;
+            font-weight: 400;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 32px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            margin-right: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #0ea5e9;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            background: #0ea5e9;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Emphasis animation for About link */
+        .about-emphasized {
+            position: relative;
+            font-weight: 600;
+            animation: gentle-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes gentle-pulse {
+            0%, 100% {
+                color: #333;
+                transform: scale(1);
+            }
+            50% {
+                color: #667eea;
+                transform: scale(1.1);
+            }
+        }
+
+        .about-emphasized::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+            animation: glow-line 2s ease-in-out infinite;
+        }
+
+        @keyframes glow-line {
+            0%, 100% {
+                opacity: 0.3;
+                box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                opacity: 0.8;
+                box-shadow: 0 0 10px rgba(102, 126, 234, 0.6);
+            }
+        }
+
+        .about-emphasized:hover {
+            animation: hover-bounce 0.6s ease-in-out;
+            color: #667eea !important;
+        }
+
+        @keyframes hover-bounce {
+            0%, 100% {
+                transform: scale(1.1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            border: none;
+            box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+            background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+        }
+
+        .demo-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: #4a5568;
+            border: 2px solid rgba(14, 165, 233, 0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .demo-button:hover {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0ea5e9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(14, 165, 233, 0.2);
+            border-color: #0ea5e9;
+        }
+
+        /* Hero Section - Full Page with Parallax */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            padding: 80px 0;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        /* Parallax Background Layers */
+        .parallax-layer {
+            position: absolute;
+            width: 110%;
+            height: 110%;
+            top: -5%;
+            left: -5%;
+            will-change: transform;
+        }
+
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            z-index: -1;
+        }
+
+        .parallax-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .floating-shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float-shape 20s infinite ease-in-out;
+        }
+
+        @keyframes float-shape {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-30px) rotate(120deg);
+            }
+            66% {
+                transform: translateY(30px) rotate(240deg);
+            }
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease-out;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.1;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 1s ease-out 0.2s both;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 400;
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        .scroll-indicator svg {
+            width: 30px;
+            height: 30px;
+            fill: rgba(255, 255, 255, 0.8);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #0284c7;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: white;
+            transform: translateY(-3px);
+            color: #0369a1;
+            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Features Section */
+        .features {
+            background: white;
+            padding: 0;
+        }
+
+        /* Full-width Section Headers with Parallax */
+        .section-header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+        }
+
+        .section-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 8s infinite;
+        }
+
+        /* Parallax content animation */
+        .parallax-content {
+            transform: translateZ(0);
+            will-change: transform;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-content {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 4rem;
+            color: #2d3748;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.3;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: #0ea5e9;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1.2rem;
+            color: #2d3748;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .feature-card p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        /* Architecture Section */
+        .architecture {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 0;
+        }
+
+        .arch-diagram {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            padding: 3rem;
+            margin: 3rem 0;
+            box-shadow: 0 3px 15px rgba(139, 116, 95, 0.08);
+            border: 1px solid rgba(139, 116, 95, 0.06);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .service-card {
+            background: linear-gradient(135deg, #a08873 0%, #8b745f 100%);
+            color: #f7f3e9;
+            padding: 1.8rem;
+            border-radius: 3px;
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(160, 136, 115, 0.2);
+        }
+
+        .service-card.clickable {
+            cursor: pointer;
+        }
+
+        .service-card.clickable:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 20px rgba(139, 116, 95, 0.25);
+        }
+
+        .service-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.7rem;
+            font-weight: normal;
+            font-family: 'Georgia', serif;
+        }
+
+        .service-card p {
+            font-size: 0.85rem;
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+
+        /* Getting Started Section */
+        .getting-started {
+            background: white;
+            padding: 0;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 2rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .command {
+            color: #569cd6;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .step-card {
+            background: #f8f9ff;
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            background: linear-gradient(135deg, #a08873 0%, #8b745f 100%);
+            color: #f7f3e9;
+            padding: 80px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 2.8rem;
+            margin-bottom: 0.7rem;
+            font-weight: normal;
+            font-family: 'Georgia', serif;
+        }
+
+        .stat-item p {
+            font-size: 1rem;
+            opacity: 0.95;
+            font-family: 'Georgia', serif;
+        }
+
+        /* Footer */
+        footer {
+            background: #3d3427;
+            color: #e8ddd4;
+            padding: 80px 0 40px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1.2rem;
+            color: #a08873;
+            font-weight: normal;
+            font-family: 'Georgia', serif;
+        }
+
+        .footer-section a {
+            color: #c7b8a8;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.7rem;
+            transition: color 0.4s ease;
+            line-height: 1.6;
+        }
+
+        .footer-section a:hover {
+            color: #a08873;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(160, 136, 115, 0.2);
+            padding-top: 2.5rem;
+            text-align: center;
+            color: #9a8a78;
+            line-height: 1.6;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Glass morphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        /* Gradient text effect */
+        .gradient-text {
+            background: linear-gradient(45deg, #0ea5e9, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                min-height: 100vh;
+                padding: 60px 20px;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .section-header p {
+                font-size: 1rem;
+                padding: 0 20px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Badge styles */
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(14, 165, 233, 0.1);
+            color: #0284c7;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 0.3rem;
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            font-family: 'Inter', sans-serif;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .close {
+            color: white;
+            float: right;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #f0f0f0;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 0 0 20px 20px;
+        }
+
+        .developer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .developer-intro {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            margin-bottom: 4rem;
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .developer-avatar {
+            flex-shrink: 0;
+        }
+
+        .avatar-placeholder {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+
+        .developer-gif {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3), 
+                        0 0 0 8px rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+            animation: gentle-glow 3s ease-in-out infinite;
+        }
+
+        .developer-gif:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4), 
+                        0 0 0 12px rgba(102, 126, 234, 0.15);
+        }
+
+        @keyframes gentle-glow {
+            0%, 100% {
+                box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3), 
+                            0 0 0 8px rgba(102, 126, 234, 0.1);
+            }
+            50% {
+                box-shadow: 0 8px 32px rgba(102, 126, 234, 0.5), 
+                            0 0 0 8px rgba(102, 126, 234, 0.2);
+            }
+        }
+
+        .developer-info h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .developer-title {
+            font-size: 1.3rem;
+            color: #0ea5e9;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .developer-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #666;
+        }
+
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .expertise-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .expertise-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .expertise-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .expertise-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .expertise-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .expertise-card li {
+            padding: 0.3rem 0;
+            color: #666;
+            border-left: 3px solid #0ea5e9;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .projects-showcase {
+            margin-bottom: 4rem;
+        }
+
+        .projects-showcase h3 {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .project-card h4 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .project-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tech-tag {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0ea5e9;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .philosophy-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 4rem;
+        }
+
+        .philosophy-section h3 {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .philosophy-content {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .philosophy-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background: #f8f9ff;
+        }
+
+        .philosophy-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .philosophy-item h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .philosophy-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .contact-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .contact-section h3 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .contact-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
+        }
+
+        .contact-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Responsive adjustments for About Developer */
+        @media (max-width: 768px) {
+            .developer-intro {
+                flex-direction: column;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .expertise-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .philosophy-item {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo" style="display: flex; flex-direction: column; align-items: flex-start;">
+                <div style="display: flex; align-items: center;">
+                    <img src="logo.gif" alt="Probler Logo" style="height: 40px; width: auto; margin-right: 10px; vertical-align: middle;" class="float-animation">
+                    <span class="gradient-text">Probler</span>
+                </div>
+                <div style="font-size: 0.6rem; color: #718096; margin-top: -5px; font-weight: normal;">Powered by <img src="Layer8Logo.gif" alt="Layer 8 Logo" style="height: 20px; width: 20px; vertical-align: middle; margin-left: 5px;"></div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#getting-started">Get Started</a></li>
+                <li><a href="#docs">Docs</a></li>
+                <li><a href="https://github.com/saichler/probler" target="_blank">View on GitHub</a></li>
+                <li><a href="#" onclick="openAboutModal()" class="about-emphasized">About</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="app.html" class="demo-button" target="_blank">Demo</a>
+                <a href="#getting-started" class="cta-button">Try Now</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <!-- Parallax Background Shapes -->
+            <div class="parallax-shapes">
+                <svg class="floating-shape" style="top: 10%; left: 10%; width: 100px; height: 100px;" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="#0ea5e9"/>
+                </svg>
+                <svg class="floating-shape" style="top: 60%; right: 15%; width: 150px; height: 150px;" viewBox="0 0 100 100">
+                    <rect x="20" y="20" width="60" height="60" fill="#06b6d4" transform="rotate(45 50 50)"/>
+                </svg>
+                <svg class="floating-shape" style="bottom: 20%; left: 20%; width: 80px; height: 80px;" viewBox="0 0 100 100">
+                    <polygon points="50,10 90,90 10,90" fill="#0284c7"/>
+                </svg>
+            </div>
+
+            <div class="container parallax-content">
+                <h1>Network Automation & Monitoring Platform</h1>
+                <p>A comprehensive microservices-based platform that implements a "data as a service" approach with the core philosophy: <strong>Poll → Parse → Model → Cache → Persist</strong></p>
+
+                <!-- Animated Network Illustration -->
+                <div style="margin: 3rem 0;">
+                    <svg width="600" height="300" viewBox="0 0 600 300" style="max-width: 100%; height: auto;">
+                        <defs>
+                            <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0284c7;stop-opacity:1" />
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- Network Connections -->
+                        <line x1="100" y1="100" x2="300" y2="50" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="300" y1="50" x2="500" y2="100" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="100" y1="100" x2="200" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="500" y1="100" x2="400" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="200" y1="200" x2="400" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="300" y1="50" x2="300" y2="150" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
+                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
+                        </line>
+
+                        <!-- Network Nodes -->
+                        <g filter="url(#glow)">
+                            <!-- Central Server -->
+                            <circle cx="300" cy="150" r="25" fill="url(#nodeGradient)" opacity="0.9">
+                                <animate attributeName="r" from="25" to="30" dur="2s" repeatCount="indefinite" begin="0s" values="25;30;25" />
+                            </circle>
+                            <text x="300" y="155" text-anchor="middle" fill="white" font-size="20">⚙️</text>
+
+                            <!-- Router 1 -->
+                            <circle cx="100" cy="100" r="20" fill="rgba(255,255,255,0.9)">
+                                <animate attributeName="opacity" from="0.9" to="0.5" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                            <text x="100" y="105" text-anchor="middle" fill="#0ea5e9" font-size="18">🔀</text>
+
+                            <!-- Router 2 -->
+                            <circle cx="500" cy="100" r="20" fill="rgba(255,255,255,0.9)">
+                                <animate attributeName="opacity" from="0.5" to="0.9" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                            <text x="500" y="105" text-anchor="middle" fill="#0ea5e9" font-size="18">🔀</text>
+
+                            <!-- Database -->
+                            <circle cx="300" cy="50" r="20" fill="rgba(255,255,255,0.9)"/>
+                            <text x="300" y="55" text-anchor="middle" fill="#0ea5e9" font-size="18">🗄️</text>
+
+                            <!-- Monitoring Nodes -->
+                            <circle cx="200" cy="200" r="18" fill="rgba(255,255,255,0.9)"/>
+                            <text x="200" y="205" text-anchor="middle" fill="#0ea5e9" font-size="16">📊</text>
+
+                            <circle cx="400" cy="200" r="18" fill="rgba(255,255,255,0.9)"/>
+                            <text x="400" y="205" text-anchor="middle" fill="#0ea5e9" font-size="16">📈</text>
+                        </g>
+
+                        <!-- Data Flow Particles -->
+                        <circle r="3" fill="#0ea5e9">
+                            <animateMotion dur="3s" repeatCount="indefinite">
+                                <mpath href="#path1"/>
+                            </animateMotion>
+                        </circle>
+                        <path id="path1" d="M 100 100 Q 200 75 300 50" fill="none"/>
+
+                        <circle r="3" fill="#06b6d4">
+                            <animateMotion dur="3s" repeatCount="indefinite" begin="1s">
+                                <mpath href="#path2"/>
+                            </animateMotion>
+                        </circle>
+                        <path id="path2" d="M 300 50 Q 400 75 500 100" fill="none"/>
+                    </svg>
+                </div>
+
+                <div class="hero-buttons">
+                    <a href="#getting-started" class="btn-primary">🚀 Get Started</a>
+                    <a href="https://github.com/saichler/probler" class="btn-secondary">📖 View on GitHub</a>
+                </div>
+                <div style="margin-top: 2rem;">
+                    <span class="badge">Go 1.23.8</span>
+                    <span class="badge">Kubernetes Ready</span>
+                    <span class="badge">Apache 2.0</span>
+                    <span class="badge">Microservices</span>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="scroll-indicator">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M7 10l5 5 5-5z"/>
+                    <path d="M7 6l5 5 5-5z" opacity="0.5"/>
+                </svg>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="section-header">
+                <h2>🎯 Why Choose Probler?</h2>
+                <p>Probler addresses the fundamental pain points of building scalable, maintainable microservices architectures for network operations.</p>
+            </div>
+            <div class="section-content">
+                <div class="container">
+                    <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h3>Model-Agnostic Services</h3>
+                        <p>Services that adapt to any data structure without requiring code changes, making your infrastructure future-proof.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <h3>Virtual Networking</h3>
+                        <p>Seamless service-to-service communication through intelligent virtual network overlay with built-in service discovery.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🛡️</div>
+                        <h3>Built-in Security</h3>
+                        <p>Comprehensive security layer with authentication, authorization, and built-in monitoring for all network operations.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>Horizontal Scaling</h3>
+                        <p>Scale collectors and parsers horizontally based on device count and data processing volume automatically.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔧</div>
+                        <h3>Platform Agnostic</h3>
+                        <p>Deploy on bare metal, Docker, or Kubernetes with the same configuration and management interface.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Real-time Monitoring</h3>
+                        <p>Interactive NOC dashboard with enhanced topology visualization using world-cities database, improved stability, alarm management, and performance metrics.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🚀</div>
+                        <h3>Traffic Engineering</h3>
+                        <p>Advanced MPLS & SR policy management with interactive global network visualization and BGP analytics.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💚</div>
+                        <h3>System Health</h3>
+                        <p>Comprehensive process monitoring with configurable timeouts, enhanced startup logging, and real-time performance metrics.</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="architecture" id="architecture">
+            <div class="section-header">
+                <h2>🏗️ Architecture Overview</h2>
+                <p>Comprehensive microservices architecture designed for scalability and maintainability</p>
+            </div>
+            <div class="section-content">
+                <div class="container">
+                
+                <div class="arch-diagram">
+                    <h3 style="text-align: center; margin-bottom: 2rem; color: #333;">Microservices Architecture</h3>
+
+                    <!-- Custom SVG Architecture Diagram -->
+                    <div style="text-align: center; background: #f8f9ff; padding: 2rem; border-radius: 10px;">
+                        <svg width="800" height="500" viewBox="0 0 800 500" style="max-width: 100%; height: auto;">
+                            <defs>
+                                <linearGradient id="boxGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#0284c7;stop-opacity:1" />
+                                </linearGradient>
+                                <linearGradient id="boxGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#0891b2;stop-opacity:1" />
+                                </linearGradient>
+                                <filter id="shadow">
+                                    <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.2"/>
+                                </filter>
+                            </defs>
+
+                            <!-- Top Layer Services -->
+                            <!-- Collector -->
+                            <rect x="50" y="50" width="150" height="80" rx="8" fill="url(#boxGradient1)" filter="url(#shadow)">
+                                <animate attributeName="opacity" from="0.8" to="1" dur="2s" repeatCount="indefinite"/>
+                            </rect>
+                            <text x="125" y="85" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Collector</text>
+                            <text x="125" y="105" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Data Polling)</text>
+
+                            <!-- Parser -->
+                            <rect x="300" y="50" width="150" height="80" rx="8" fill="url(#boxGradient1)" filter="url(#shadow)">
+                                <animate attributeName="opacity" from="0.9" to="1" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                            </rect>
+                            <text x="375" y="85" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Parser</text>
+                            <text x="375" y="105" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Model-Agnostic)</text>
+
+                            <!-- Inventory -->
+                            <rect x="550" y="50" width="150" height="80" rx="8" fill="url(#boxGradient1)" filter="url(#shadow)">
+                                <animate attributeName="opacity" from="1" to="0.8" dur="2s" begin="1s" repeatCount="indefinite"/>
+                            </rect>
+                            <text x="625" y="85" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Inventory</text>
+                            <text x="625" y="105" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Device State)</text>
+
+                            <!-- Middle Layer Services -->
+                            <!-- ORM -->
+                            <rect x="300" y="200" width="150" height="80" rx="8" fill="url(#boxGradient2)" filter="url(#shadow)"/>
+                            <text x="375" y="235" text-anchor="middle" fill="white" font-weight="bold" font-size="14">ORM</text>
+                            <text x="375" y="255" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Persistence)</text>
+
+                            <!-- VNet -->
+                            <rect x="50" y="200" width="150" height="80" rx="8" fill="url(#boxGradient2)" filter="url(#shadow)"/>
+                            <text x="125" y="235" text-anchor="middle" fill="white" font-weight="bold" font-size="14">VNet</text>
+                            <text x="125" y="255" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Web Interface)</text>
+
+                            <!-- PostgreSQL -->
+                            <rect x="550" y="200" width="150" height="80" rx="8" fill="url(#boxGradient2)" filter="url(#shadow)"/>
+                            <text x="625" y="235" text-anchor="middle" fill="white" font-weight="bold" font-size="14">PostgreSQL</text>
+                            <text x="625" y="255" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Database)</text>
+
+                            <!-- Bottom Layer Services -->
+                            <!-- TE App -->
+                            <rect x="50" y="350" width="150" height="80" rx="8" fill="#64748b" filter="url(#shadow)"/>
+                            <text x="125" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">TE App</text>
+                            <text x="125" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Traffic Eng.)</text>
+
+                            <!-- Topology -->
+                            <rect x="225" y="350" width="150" height="80" rx="8" fill="#64748b" filter="url(#shadow)"/>
+                            <text x="300" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Topology</text>
+                            <text x="300" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(World Cities)</text>
+
+                            <!-- Security -->
+                            <rect x="400" y="350" width="150" height="80" rx="8" fill="#64748b" filter="url(#shadow)"/>
+                            <text x="475" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Security</text>
+                            <text x="475" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Auth & Authz)</text>
+
+                            <!-- Logging -->
+                            <rect x="575" y="350" width="150" height="80" rx="8" fill="#64748b" filter="url(#shadow)"/>
+                            <text x="650" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Logging</text>
+                            <text x="650" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Enhanced)</text>
+
+                            <!-- Connection Arrows -->
+                            <!-- Top Layer Connections -->
+                            <path d="M 200 90 L 300 90" stroke="#0ea5e9" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+                                <animate attributeName="stroke-dasharray" from="0 10" to="10 0" dur="1s" repeatCount="indefinite"/>
+                            </path>
+                            <path d="M 450 90 L 550 90" stroke="#0ea5e9" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
+                                <animate attributeName="stroke-dasharray" from="0 10" to="10 0" dur="1s" begin="0.5s" repeatCount="indefinite"/>
+                            </path>
+
+                            <!-- Vertical Connections -->
+                            <path d="M 125 130 L 125 200" stroke="#06b6d4" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            <path d="M 375 130 L 375 200" stroke="#06b6d4" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            <path d="M 625 130 L 625 200" stroke="#06b6d4" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+
+                            <!-- Middle Layer Connections -->
+                            <path d="M 200 240 L 300 240" stroke="#06b6d4" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                            <path d="M 450 240 L 550 240" stroke="#06b6d4" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+                            <!-- Bottom Connections -->
+                            <path d="M 125 280 L 125 350" stroke="#64748b" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            <path d="M 375 280 L 300 350" stroke="#64748b" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            <path d="M 375 280 L 475 350" stroke="#64748b" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            <path d="M 625 280 L 650 350" stroke="#64748b" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+
+                            <!-- Arrow marker -->
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#0ea5e9"/>
+                                </marker>
+                            </defs>
+
+                            <!-- Animated Data Flow Dots -->
+                            <circle r="4" fill="#0ea5e9">
+                                <animateMotion dur="3s" repeatCount="indefinite">
+                                    <mpath href="#flowPath1"/>
+                                </animateMotion>
+                            </circle>
+                            <path id="flowPath1" d="M 200 90 L 300 90 L 375 130 L 375 200" fill="none"/>
+
+                            <circle r="4" fill="#06b6d4">
+                                <animateMotion dur="3s" begin="1s" repeatCount="indefinite">
+                                    <mpath href="#flowPath2"/>
+                                </animateMotion>
+                            </circle>
+                            <path id="flowPath2" d="M 450 90 L 550 90 L 625 130 L 625 200" fill="none"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="services-grid">
+                    <div class="service-card clickable" onclick="openCollectorDemo()">
+                        <h4>🔍 Collector</h4>
+                        <p>Network device polling & data collection with horizontal scaling</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openParserDemo()">
+                        <h4>⚙️ Parser</h4>
+                        <p>Model-agnostic data parsing & transformation with horizontal scaling</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openInventoryBoxDemo()">
+                        <h4>📦 Inventory Box</h4>
+                        <p>Network device inventory management with vertical scaling</p>
+                    </div>
+                    <div class="service-card">
+                        <h4>☸️ Inventory K8s</h4>
+                        <p>Kubernetes cluster inventory with vertical scaling</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openORMDemo()">
+                        <h4>🗄️ ORM</h4>
+                        <p>Object-relational mapping & persistence with vertical scaling</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openVNetDemo()">
+                        <h4>🌐 VNet</h4>
+                        <p>Virtual network overlay & web interface with vertical scaling</p>
+                    </div>
+                    <div class="service-card">
+                        <h4>🚀 TE App</h4>
+                        <p>Traffic Engineering & SR policies management with vertical scaling</p>
+                    </div>
+                    <div class="service-card">
+                        <h4>🗺️ Topology</h4>
+                        <p>Enhanced network topology service with world-cities integration for precise geographic positioning</p>
+                    </div>
+                    <div class="service-card">
+                        <h4>🛡️ Security</h4>
+                        <p>Authentication & authorization with vertical scaling</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openModelAgnosticServicesDemo()">
+                        <h4>🤖 Model-Agnostic Services</h4>
+                        <p>Universal services that adapt to any data structure with dynamic modeling</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openWebDemo()">
+                        <h4>🌐 Web Services</h4>
+                        <p>Web-based interfaces and services with modern UI components</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openGSQLDemo()">
+                        <h4>📊 GSQL</h4>
+                        <p>Graph SQL interface for querying and managing network topology data</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openReflectDemo()">
+                        <h4>🔍 Agnostic via Reflection</h4>
+                        <p>Dynamic type introspection and model adaptation using Go reflection capabilities</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openOpenSimulatorDemo()">
+                        <h4>🎮 Open Simulator</h4>
+                        <p>Advanced simulation framework for modeling and testing complex system behaviors</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openTestAndAutomationDemo()">
+                        <h4>🧪 Test and Automation</h4>
+                        <p>Comprehensive testing and automation framework for validation and quality assurance</p>
+                    </div>
+                    <div class="service-card clickable" onclick="openDistributedServicesDemo()">
+                        <h4>🔗 Distributed Services</h4>
+                        <p>Advanced distributed computing framework with service orchestration and load balancing</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h3>9</h3>
+                        <p>Microservices</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>100%</h3>
+                        <p>Go Language</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>K8s</h3>
+                        <p>Ready</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>∞</h3>
+                        <p>Scalable</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="getting-started" id="getting-started">
+            <div class="section-header" style="background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);">
+                <h2>🚀 Quick Start</h2>
+                <p>Get Probler up and running in minutes with our simple deployment process</p>
+            </div>
+            <div class="section-content">
+                <div class="container">
+                
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Clone Repository</h3>
+                        <p>Get the latest version of Probler from GitHub</p>
+                        <div class="code-block">
+<span class="comment"># Clone the repository</span>
+<span class="command">git clone</span> https://github.com/saichler/probler.git
+<span class="command">cd</span> probler
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Build Services</h3>
+                        <p>Build all microservices using the provided script</p>
+                        <div class="code-block">
+<span class="comment"># Build all services</span>
+<span class="command">cd</span> go && ./build-images.sh
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Deploy Platform</h3>
+                        <p>Choose your deployment method</p>
+                        <div class="code-block">
+<span class="comment"># Docker Compose (Development)</span>
+<span class="command">docker-compose up -d</span>
+
+<span class="comment"># Kubernetes (Production)</span>
+<span class="command">cd</span> k8s && ./apply-all.sh
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h3>Access Dashboard</h3>
+                        <p>Open the Network Operations Center</p>
+                        <div class="code-block">
+<span class="comment"># Local access</span>
+open https://localhost:443/probler/
+
+<span class="comment"># Default credentials: admin / admin</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 3rem; text-align: center;">
+                    <h3>Prerequisites</h3>
+                    <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-top: 1rem;">
+                        <span class="badge">Go 1.23.8+</span>
+                        <span class="badge">Docker & Docker Compose</span>
+                        <span class="badge">Kubernetes cluster</span>
+                        <span class="badge">PostgreSQL database</span>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="docs">
+            <div class="container">
+                <h2 class="section-title">📚 Documentation & Resources</h2>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📋</div>
+                        <h3>API Documentation</h3>
+                        <p>Comprehensive REST API and gRPC service documentation with examples and protocol buffer definitions.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌍</div>
+                        <h3>Network Operations Center</h3>
+                        <p>Interactive dashboard with enhanced topology visualization using world-cities database, device management, alarm correlation, real-time monitoring, and traffic engineering.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔧</div>
+                        <h3>Configuration Guide</h3>
+                        <p>Detailed configuration options for all services, environment variables, and deployment scenarios.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤝</div>
+                        <h3>Contributing</h3>
+                        <p>Development guidelines, testing procedures, and contribution workflow for the open-source community.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Use Cases</h3>
+                        <p>Real-world scenarios: Network Operations Centers, Service Provider Networks, Cloud Infrastructure Management, DevOps & SRE.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🆘</div>
+                        <h3>Support</h3>
+                        <p>GitHub Issues for bug reports, feature requests, community support, and detailed troubleshooting guides.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Modal -->
+        <div id="aboutModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>👨‍💻 About the Developer</h2>
+                    <span class="close" onclick="closeAboutModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="developer-content">
+                        <div class="developer-intro">
+                            <div class="developer-avatar">
+                                <img src="me.gif" alt="Sharon Aicler - Software Architect" class="developer-gif">
+                            </div>
+                            <div class="developer-info">
+                                <h3>Sharon Aicler (saichler@gmail.com)</h3>
+                                <p class="developer-title">Senior Software Architect & Network Automation Specialist</p>
+                                <p class="developer-description">
+                                    Visionary Software Architect and DevOps Leader with decades of delivering transformative, high-impact technology solutions that accelerate business growth and operational efficiency. Proven expertise in designing and orchestrating distributed, cloud-native architectures in Go and Java, enabling organizations to scale securely and reliably. Recognized for building high-performance, multi-tier frameworks that reduce time-to-market, improve developer productivity, and ensure long-term maintainability. Trusted advisor to executive leadership, bridging business objectives with technical execution through deep knowledge of Kubernetes ecosystems, virtualization, and DevOps automation. Passionate about driving innovation, optimizing systems, and creating cohesive architectures that endure and evolve.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="expertise-grid">
+                            <div class="expertise-card">
+                                <div class="expertise-icon">⚡</div>
+                                <h4>Core Technologies</h4>
+                                <ul>
+                                    <li>Go (Golang) - Advanced</li>
+                                    <li>Kubernetes & Docker</li>
+                                    <li>PostgreSQL & Database Design</li>
+                                    <li>gRPC & REST APIs</li>
+                                    <li>Network Protocols (SNMP, SSH)</li>
+                                </ul>
+                            </div>
+
+                            <div class="expertise-card">
+                                <div class="expertise-icon">🏗️</div>
+                                <h4>Architecture Patterns</h4>
+                                <ul>
+                                    <li>Microservices Architecture</li>
+                                    <li>Model-Agnostic Design</li>
+                                    <li>Horizontal & Vertical Scaling</li>
+                                    <li>Service Discovery & Mesh</li>
+                                    <li>Event-Driven Systems</li>
+                                </ul>
+                            </div>
+
+                            <div class="expertise-card">
+                                <div class="expertise-icon">🌐</div>
+                                <h4>Network Operations</h4>
+                                <ul>
+                                    <li>Network Device Management</li>
+                                    <li>Topology Discovery & Mapping</li>
+                                    <li>Performance Monitoring</li>
+                                    <li>Alarm Correlation & Analysis</li>
+                                    <li>Automation Workflows</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="projects-showcase">
+                            <h3>Featured Projects</h3>
+                            <div class="projects-grid">
+                                <div class="project-card" onclick="openProjectGitHub('probler')">
+                                    <h4><img src="logo.gif" alt="Probler" style="height: 30px; width: auto; vertical-align: middle; margin-right: 8px;">Probler</h4>
+                                    <p>Complete network automation and monitoring platform built with microservices architecture. Features horizontal scaling, model-agnostic services, and comprehensive NOC dashboard.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go</span>
+                                        <span class="tech-tag">Kubernetes</span>
+                                        <span class="tech-tag">PostgreSQL</span>
+                                        <span class="tech-tag">gRPC</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card" onclick="openProjectGitHub('layer8')">
+                                    <h4>🌐 Layer8</h4>
+                                    <p>Advanced network communication framework providing virtual network overlay, service discovery, and intelligent message routing for distributed systems.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go</span>
+                                        <span class="tech-tag">Networking</span>
+                                        <span class="tech-tag">Service Discovery</span>
+                                        <span class="tech-tag">Message Routing</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card" onclick="openProjectGitHub('l8services')">
+                                    <h4>🔧 L8Services</h4>
+                                    <p>Model-agnostic services framework enabling universal service adaptation to any data structure without code modifications. Core of the Layer8 ecosystem.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go</span>
+                                        <span class="tech-tag">Model-Agnostic</span>
+                                        <span class="tech-tag">Dynamic Adaptation</span>
+                                        <span class="tech-tag">Microservices</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card" onclick="openProjectGitHub('opensim')">
+                                    <h4>🎮 OpenSim</h4>
+                                    <p>Advanced simulation framework for modeling and testing complex system behaviors with comprehensive scenario management and performance analysis.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go</span>
+                                        <span class="tech-tag">Simulation</span>
+                                        <span class="tech-tag">Testing</span>
+                                        <span class="tech-tag">Modeling</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card" onclick="openProjectGitHub('reflect')">
+                                    <h4>🔍 Reflect</h4>
+                                    <p>Dynamic type introspection and model adaptation system using Go reflection capabilities for building truly agnostic services and applications.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go Reflection</span>
+                                        <span class="tech-tag">Dynamic Types</span>
+                                        <span class="tech-tag">Code Generation</span>
+                                        <span class="tech-tag">Type Safety</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card" onclick="openProjectGitHub('l8orm')">
+                                    <h4>🗄️ L8ORM</h4>
+                                    <p>Object-relational mapping framework with advanced caching, transaction management, and automatic schema generation for PostgreSQL databases.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go</span>
+                                        <span class="tech-tag">PostgreSQL</span>
+                                        <span class="tech-tag">ORM</span>
+                                        <span class="tech-tag">Caching</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card" onclick="openProjectGitHub('l8srlz')">
+                                    <h4>📦 L8Srlz</h4>
+                                    <p>High-performance serialization library providing efficient binary encoding/decoding with support for complex data structures and version compatibility.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go</span>
+                                        <span class="tech-tag">Serialization</span>
+                                        <span class="tech-tag">Binary Encoding</span>
+                                        <span class="tech-tag">Performance</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card" onclick="openProjectGitHub('l8web')">
+                                    <h4>🌐 L8Web</h4>
+                                    <p>Web services framework with modern UI components, REST APIs, and WebSocket support for building responsive network management interfaces.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go</span>
+                                        <span class="tech-tag">Web Services</span>
+                                        <span class="tech-tag">REST APIs</span>
+                                        <span class="tech-tag">WebSocket</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card" onclick="openProjectGitHub('l8test')">
+                                    <h4>🧪 L8Test</h4>
+                                    <p>Comprehensive testing and automation framework providing validation tools, quality assurance utilities, and continuous integration support.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go</span>
+                                        <span class="tech-tag">Testing</span>
+                                        <span class="tech-tag">Automation</span>
+                                        <span class="tech-tag">CI/CD</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card" onclick="openProjectGitHub('gsql')">
+                                    <h4>📊 GSQL</h4>
+                                    <p>Graph SQL interface for querying and managing network topology data with intuitive query capabilities and advanced visualization features.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Graph Databases</span>
+                                        <span class="tech-tag">SQL</span>
+                                        <span class="tech-tag">Data Visualization</span>
+                                        <span class="tech-tag">Query Engine</span>
+                                    </div>
+                                </div>
+
+                                <div class="project-card" onclick="openProjectGitHub('traffic')">
+                                    <h4>🚀 Traffic</h4>
+                                    <p>Advanced traffic engineering application with MPLS and Segment Routing policy management, BGP analytics, and interactive network visualization.</p>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">Go</span>
+                                        <span class="tech-tag">MPLS</span>
+                                        <span class="tech-tag">BGP</span>
+                                        <span class="tech-tag">Traffic Engineering</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="philosophy-section">
+                            <h3>Development Philosophy</h3>
+                            <div class="philosophy-content">
+                                <div class="philosophy-item">
+                                    <div class="philosophy-icon">🎯</div>
+                                    <div>
+                                        <h4>Simplicity Through Abstraction</h4>
+                                        <p>Complex problems deserve elegant solutions. I believe in creating abstractions that hide complexity while maintaining flexibility and performance.</p>
+                                    </div>
+                                </div>
+                                <div class="philosophy-item">
+                                    <div class="philosophy-icon">🔄</div>
+                                    <div>
+                                        <h4>Model-Agnostic Design</h4>
+                                        <p>Building systems that adapt to changing requirements without code modifications. Future-proofing through intelligent abstraction layers.</p>
+                                    </div>
+                                </div>
+                                <div class="philosophy-item">
+                                    <div class="philosophy-icon">📈</div>
+                                    <div>
+                                        <h4>Scalable by Design</h4>
+                                        <p>Every component should scale independently. Horizontal and vertical scaling capabilities built into the foundation, not added as an afterthought.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contact-section">
+                            <h3>Connect & Collaborate</h3>
+                            <div class="contact-links">
+                                <a href="https://github.com/saichler" class="contact-link" target="_blank">
+                                    <span class="contact-icon">📚</span>
+                                    <span>GitHub Portfolio</span>
+                                </a>
+                                <a href="https://github.com/saichler/probler" class="contact-link" target="_blank">
+                                    <img src="logo.gif" alt="Probler" class="contact-icon" style="height: 35px; width: auto; vertical-align: middle;">
+                                    <span>Probler Project</span>
+                                </a>
+                                <a href="https://github.com/saichler/probler/issues" class="contact-link" target="_blank">
+                                    <span class="contact-icon">💬</span>
+                                    <span>Discussions & Issues</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><img src="logo.gif" alt="Probler" style="height: 30px; width: auto; vertical-align: middle; margin-right: 8px;">Probler</h3>
+                    <p>Making microservices painless, one service at a time.</p>
+                    <p>Network Automation & Monitoring Platform</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <a href="#features">Features</a>
+                    <a href="#architecture">Architecture</a>
+                    <a href="#getting-started">Getting Started</a>
+                    <a href="https://github.com/saichler/probler">GitHub Repository</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Technology</h3>
+                    <a href="#">Go 1.23.8</a>
+                    <a href="#">Kubernetes</a>
+                    <a href="#">PostgreSQL</a>
+                    <a href="#">gRPC & REST APIs</a>
+                    <a href="#">SNMP & SSH</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Use Cases</h3>
+                    <a href="#">Network Operations Centers</a>
+                    <a href="#">Service Provider Networks</a>
+                    <a href="#">Cloud Infrastructure</a>
+                    <a href="#">DevOps & SRE</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Probler. Licensed under Apache License 2.0. Open source network automation platform.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Function to open collector demo
+        function openCollectorDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8collector/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open parser demo
+        function openParserDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8parser/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open inventory box demo
+        function openInventoryBoxDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8inventory/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open ORM demo
+        function openORMDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8orm/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open VNet demo
+        function openVNetDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/layer8/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open Model-Agnostic Services demo
+        function openModelAgnosticServicesDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8services/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open Web Services demo
+        function openWebDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8web/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open GSQL demo
+        function openGSQLDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/gsql/refs/heads/master/web.html', '_blank');
+        }
+
+        // Function to open Reflect demo
+        function openReflectDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/reflect/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open Open Simulator demo
+        function openOpenSimulatorDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/opensim/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open Test and Automation demo
+        function openTestAndAutomationDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8test/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open Distributed Services demo
+        function openDistributedServicesDemo() {
+            window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8services/refs/heads/main/web.html', '_blank');
+        }
+
+        // Function to open project GitHub repository
+        function openProjectGitHub(projectName) {
+            window.open(`https://github.com/saichler/${projectName}`, '_blank');
+        }
+
+        // Modal functions
+        function openAboutModal() {
+            document.getElementById('aboutModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeAboutModal() {
+            document.getElementById('aboutModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('aboutModal');
+            if (event.target === modal) {
+                closeAboutModal();
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAboutModal();
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add fade-in animation on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        });
+
+        document.querySelectorAll('.feature-card, .service-card, .step-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Add some interactive hover effects
+        document.querySelectorAll('.feature-card, .service-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Parallax Scrolling Effect
+        let ticking = false;
+        function updateParallax() {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.parallax-content');
+            const shapes = document.querySelectorAll('.floating-shape');
+            const heroSection = document.querySelector('.hero');
+            const sectionHeaders = document.querySelectorAll('.section-header');
+
+            // Hero parallax
+            if (heroSection) {
+                heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+
+            // Content parallax
+            parallaxElements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                const speed = el.dataset.speed || 0.8;
+                const yPos = -(scrolled * speed);
+                el.style.transform = `translateY(${yPos * 0.1}px)`;
+            });
+
+            // Floating shapes parallax
+            shapes.forEach((shape, index) => {
+                const speed = 0.5 + (index * 0.1);
+                const yPos = -(scrolled * speed);
+                const rotation = scrolled * 0.2;
+                shape.style.transform = `translateY(${yPos}px) rotate(${rotation}deg)`;
+            });
+
+            // Section headers parallax
+            sectionHeaders.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                const speed = 0.3;
+                if (rect.top <= window.innerHeight && rect.bottom >= 0) {
+                    const yPos = (rect.top - window.innerHeight / 2) * speed;
+                    header.style.backgroundPosition = `center ${yPos}px`;
+                }
+            });
+
+            ticking = false;
+        }
+
+        function requestTick() {
+            if (!ticking) {
+                window.requestAnimationFrame(updateParallax);
+                ticking = true;
+            }
+        }
+
+        // Listen for scroll events
+        window.addEventListener('scroll', requestTick);
+
+        // Initial call
+        updateParallax();
+
+        // Smooth reveal animation for elements
+        const revealElements = document.querySelectorAll('.section-header h2, .section-header p');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.transform = 'translateY(0)';
+                    entry.target.style.opacity = '1';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        revealElements.forEach(el => {
+            el.style.transform = 'translateY(50px)';
+            el.style.opacity = '0';
+            el.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            revealObserver.observe(el);
+        });
+
+        // Add parallax data attributes
+        document.querySelectorAll('.parallax-content').forEach((el, index) => {
+            el.setAttribute('data-speed', 0.5 + (index * 0.2));
+        });
+    </script>
+</body>
+</html>
