@@ -21,7 +21,7 @@ import (
 func main() {
 	resources := common2.CreateResources("vnet-" + os.Getenv("HOSTNAME"))
 	resources.Logger().SetLogLevel(ifs.Info_Level)
-	startWebServer(3443, "/data/layer-8")
+	startWebServer(4443, "/data/layer-8")
 }
 
 func startWebServer(port int, cert string) {
