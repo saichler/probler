@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sessionStorage.setItem('username', username);
 
             // Redirect to main application
-            window.location.href = 'index.html';
+            window.location.href = '';
         } else {
             alert('Please enter both username and password');
         }
