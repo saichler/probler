@@ -36,6 +36,12 @@ message K8sCluster {
   string name = 1;
   map<string, K8sNode> nodes = 2;
   map<string, K8sPod> pods = 3;
+  map<string, K8sDeployment> deployments = 4;
+  map<string, K8sStatefulSet> statefulsets = 5;
+  map<string, K8sDaemonSet> daemonsets = 6;
+  map<string, K8sService> services = 7;
+  map<string, K8sNamespace> namespaces = 8;
+  map<string, K8sNetworkPolicy> networkpolicies = 9;
 }
 
 message K8sPod {
@@ -62,4 +68,64 @@ message K8sNode {
   string os_image = 8;
   string kernel_version = 9;
   string container_runtime = 10;
+}
+
+message K8sDeployment {
+  string namespace = 1;
+  string name = 2;
+  string ready = 3;
+  string up_to_date = 4;
+  string available = 5;
+  string age = 6;
+  string containers = 7;
+  string images = 8;
+  string selector = 9;
+}
+
+message K8sStatefulSet {
+  string namespace = 1;
+  string name = 2;
+  string ready = 3;
+  string age = 4;
+  string containers = 5;
+  string images = 6;
+}
+
+message K8sDaemonSet {
+  string namespace = 1;
+  string name = 2;
+  string desired = 3;
+  string current = 4;
+  string ready = 5;
+  string up_to_date = 6;
+  string available = 7;
+  string node_selector = 8;
+  string age = 9;
+  string containers = 10;
+  string images = 11;
+  string selector = 12;
+}
+
+message K8sService {
+  string namespace = 1;
+  string name = 2;
+  string type = 3;
+  string cluster_ip = 4;
+  string external_ip = 5;
+  string port = 6;
+  string age = 7;
+  string selector = 8;
+}
+
+message K8sNamespace {
+  string name = 1;
+  string status = 2;
+  string age = 3;
+}
+
+message K8sNetworkPolicy {
+  string namespace = 1;
+  string name = 2;
+  string pod_selector = 3;
+  string age = 4;
 }

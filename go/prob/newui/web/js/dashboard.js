@@ -1,7 +1,61 @@
 // Dashboard Section Module
 
+// Fetch network device stats from API
+async function fetchNetworkDeviceStats() {
+    try {
+        const response = await makeAuthenticatedRequest('/probler/0/NetDev?body=' + encodeURIComponent(JSON.stringify({
+            text: 'select * from NetworkDevice where Id=* limit 1 page 0'
+        })), {
+            method: 'GET'
+        });
+
+        if (!response || !response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+        return data.stats || null;
+    } catch (error) {
+        return null;
+    }
+}
+
+// Update Network Devices card with actual data
+async function updateNetworkDevicesCard() {
+    const stats = await fetchNetworkDeviceStats();
+
+    if (stats) {
+        const totalDevices = stats.Total || 0;
+        const onlineDevices = stats.Online || 0;
+        const offlineDevices = totalDevices - onlineDevices;
+
+        // Update the card value (total)
+        const cardValue = document.querySelector('.metric-card .metric-card-value');
+        if (cardValue) {
+            cardValue.textContent = totalDevices.toLocaleString();
+        }
+
+        // Update the card details (online, offline)
+        const cardDetails = document.querySelector('.metric-card .metric-card-details');
+        if (cardDetails) {
+            cardDetails.innerHTML = `
+                <span class="metric-status">
+                    <span class="status-indicator status-operational"></span>
+                    <span>${onlineDevices.toLocaleString()} Online</span>
+                </span>
+                <span class="metric-status">
+                    <span class="status-indicator status-offline"></span>
+                    <span>${offlineDevices.toLocaleString()} Offline</span>
+                </span>
+            `;
+        }
+    }
+}
+
 // Initialize Dashboard
-function initializeDashboard() {
+async function initializeDashboard() {
+    // Update Network Devices card with actual data
+    await updateNetworkDevicesCard();
     // Add parallax scrolling effect to dashboard hero
     const sectionContainer = document.querySelector('.dashboard-section');
     const heroBackground = document.querySelector('.hero-background');

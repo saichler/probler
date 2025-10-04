@@ -46,12 +46,6 @@ function logout() {
     window.location.href = 'login.html';
 }
 
-// Add click logging to help identify elements
-document.body.addEventListener('click', function(e) {
-    const target = e.target;
-    const computedStyle = window.getComputedStyle(target);
-}, true);
-
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     // Check if user is logged in

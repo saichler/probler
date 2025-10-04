@@ -11,7 +11,10 @@ class ProblerTable {
             sortable: config.sortable !== false,
             filterable: config.filterable !== false,
             statusColumn: config.statusColumn || null,
-            onRowClick: config.onRowClick || null
+            onRowClick: config.onRowClick || null,
+            serverSide: config.serverSide || false,
+            totalCount: config.totalCount || 0,
+            onPageChange: config.onPageChange || null
         };
 
         this.currentPage = 1;
@@ -31,10 +34,14 @@ class ProblerTable {
         const container = document.getElementById(this.containerId);
         if (!container) return;
 
-        const totalPages = Math.ceil(this.filteredData.length / this.config.rowsPerPage);
+        // For server-side pagination, use totalCount; for client-side, use filteredData.length
+        const totalCount = this.config.serverSide ? this.config.totalCount : this.filteredData.length;
+        const totalPages = Math.ceil(totalCount / this.config.rowsPerPage);
         const startIndex = (this.currentPage - 1) * this.config.rowsPerPage;
         const endIndex = startIndex + this.config.rowsPerPage;
-        const pageData = this.filteredData.slice(startIndex, endIndex);
+
+        // For server-side pagination, use the data as-is; for client-side, slice it
+        const pageData = this.config.serverSide ? this.config.data : this.filteredData.slice(startIndex, endIndex);
 
         let html = '<div class="noc-table-container">';
 
@@ -102,7 +109,8 @@ class ProblerTable {
 
         // Pagination
         html += '<div class="noc-table-pagination">';
-        html += `<div class="pagination-info">Showing ${startIndex + 1}-${Math.min(endIndex, this.filteredData.length)} of ${this.filteredData.length} entries</div>`;
+        const actualEnd = this.config.serverSide ? Math.min(endIndex, totalCount) : Math.min(endIndex, this.filteredData.length);
+        html += `<div class="pagination-info">Showing ${startIndex + 1}-${actualEnd} of ${totalCount} entries</div>`;
         html += '<div class="pagination-controls">';
 
         // Previous button
@@ -147,7 +155,7 @@ class ProblerTable {
 
     getStatusClass(status) {
         const statusLower = status.toLowerCase();
-        if (statusLower.includes('operational') || statusLower.includes('ok') || statusLower.includes('healthy')) {
+        if (statusLower.includes('online') || statusLower.includes('operational') || statusLower.includes('ok') || statusLower.includes('healthy')) {
             return 'status-operational';
         } else if (statusLower.includes('warning') || statusLower.includes('degraded')) {
             return 'status-warning';
@@ -201,11 +209,18 @@ class ProblerTable {
 
         // Row click events
         if (this.config.onRowClick) {
-            const startIndex = (this.currentPage - 1) * this.config.rowsPerPage;
             container.querySelectorAll('.noc-table-row').forEach((row, index) => {
                 row.addEventListener('click', (e) => {
-                    const dataIndex = startIndex + index;
-                    const rowData = this.filteredData[dataIndex];
+                    // For server-side pagination, use the current page data directly
+                    // For client-side pagination, use filteredData with calculated index
+                    let rowData;
+                    if (this.config.serverSide) {
+                        rowData = this.config.data[index];
+                    } else {
+                        const startIndex = (this.currentPage - 1) * this.config.rowsPerPage;
+                        const dataIndex = startIndex + index;
+                        rowData = this.filteredData[dataIndex];
+                    }
                     if (rowData) {
                         this.config.onRowClick(rowData);
                     }
@@ -259,10 +274,17 @@ class ProblerTable {
     }
 
     goToPage(page) {
-        const totalPages = Math.ceil(this.filteredData.length / this.config.rowsPerPage);
+        const totalCount = this.config.serverSide ? this.config.totalCount : this.filteredData.length;
+        const totalPages = Math.ceil(totalCount / this.config.rowsPerPage);
         if (page >= 1 && page <= totalPages) {
             this.currentPage = page;
-            this.render();
+
+            // For server-side pagination, call the callback to fetch new data
+            if (this.config.serverSide && this.config.onPageChange) {
+                this.config.onPageChange(page);
+            } else {
+                this.render();
+            }
         }
     }
 
@@ -270,6 +292,12 @@ class ProblerTable {
         this.config.data = newData;
         this.filteredData = [...newData];
         this.currentPage = 1;
+        this.render();
+    }
+
+    updateServerData(newData, totalCount) {
+        this.config.data = newData;
+        this.config.totalCount = totalCount;
         this.render();
     }
 }

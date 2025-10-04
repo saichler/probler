@@ -2,19 +2,22 @@
 
 // Map device status from JSON format to UI format
 function mapDeviceStatus(status) {
-    if (status === 'DEVICE_STATUS_ONLINE') return 'online';
-    if (status === 'DEVICE_STATUS_OFFLINE') return 'offline';
-    if (status === 'DEVICE_STATUS_WARNING') return 'warning';
+    // Handle numeric status codes
+    if (status === 1 || status === 'DEVICE_STATUS_ONLINE') return 'online';
+    if (status === 0 || status === 'DEVICE_STATUS_OFFLINE') return 'offline';
+    if (status === 2 || status === 'DEVICE_STATUS_WARNING') return 'warning';
     return 'offline';
 }
 
 // Map device type from JSON format to UI format
 function mapDeviceType(type) {
-    if (type === 'DEVICE_TYPE_ROUTER') return 'Router';
-    if (type === 'DEVICE_TYPE_SWITCH') return 'Switch';
-    if (type === 'DEVICE_TYPE_FIREWALL') return 'Firewall';
-    if (type === 'DEVICE_TYPE_SERVER') return 'Server';
-    if (type === 'DEVICE_TYPE_ACCESS_POINT') return 'Access Point';
+    // Handle numeric type codes
+    if (type === 1 || type === 'DEVICE_TYPE_ROUTER') return 'Router';
+    if (type === 2 || type === 'DEVICE_TYPE_SWITCH') return 'Switch';
+    if (type === 3 || type === 'DEVICE_TYPE_FIREWALL') return 'Firewall';
+    if (type === 4 || type === 'DEVICE_TYPE_SERVER') return 'Server';
+    if (type === 5 || type === 'DEVICE_TYPE_ACCESS_POINT') return 'Access Point';
+    if (type === 6) return 'Server';
     return 'Unknown';
 }
 
@@ -54,13 +57,15 @@ function transformDeviceData(device) {
         cpuUsage: getRandomUsage(),
         memoryUsage: getRandomUsage(),
         uptime: formatUptime(equipment.uptime),
-        model: equipment.model || '',
+        model: equipment.model || equipment.hardware || '',
         vendor: equipment.vendor || '',
         series: equipment.series || '',
         family: equipment.family || '',
         software: equipment.software || '',
         serialNumber: equipment.serialNumber || '',
         firmware: equipment.version || '',
+        hardware: equipment.hardware || '',
+        sysOid: equipment.sysOid || '',
         interfaces: physicals['physical-0'] ? (physicals['physical-0'].ports || []).length : 0,
         temperature: getRandomTemperature(),
         lastSeen: new Date().toISOString().replace('T', ' ').substring(0, 19),
@@ -68,14 +73,20 @@ function transformDeviceData(device) {
     };
 }
 
-// Initialize Network Devices
-async function initializeNetworkDevices() {
+// Global variable to store the network devices table instance
+let networkDevicesTable = null;
+
+// Fetch devices for a specific page
+async function fetchNetworkDevices(page) {
     const container = document.getElementById('network-devices-table');
 
     try {
+        // Convert GUI page (1-based) to server page (0-based)
+        const serverPage = page - 1;
+
         // Fetch devices data from API endpoint
         const response = await makeAuthenticatedRequest('/probler/0/NetDev?body=' + encodeURIComponent(JSON.stringify({
-            text: 'select * from NetworkDevice where Id=* limit 15 page 0'
+            text: `select * from NetworkDevice where Id=* limit 15 page ${serverPage}`
         })), {
             method: 'GET'
         });
@@ -89,10 +100,9 @@ async function initializeNetworkDevices() {
         // Transform the device list from JSON format to table format
         const networkDevicesData = (data.list || []).map(device => transformDeviceData(device));
 
-        // Calculate total pages from stats
+        // Get total devices from stats
         const totalDevices = data.stats?.Total || 0;
         const onlineDevices = data.stats?.Online || 0;
-        const totalPages = Math.ceil(totalDevices / 15);
 
         // Update hero subtitle with actual stats
         const heroSubtitle = document.querySelector('.network-hero .hero-subtitle');
@@ -101,8 +111,23 @@ async function initializeNetworkDevices() {
             heroSubtitle.textContent = `Real-time monitoring • ${onlineDevices} Active Devices • ${uptime}% Uptime`;
         }
 
-        // Create the network devices table
-        const devicesTable = new ProblerTable('network-devices-table', {
+        return { devices: networkDevicesData, totalCount: totalDevices };
+    } catch (error) {
+        if (container) {
+            container.innerHTML = '<div style="padding: 20px; color: #718096; text-align: center;">Failed to load network devices data</div>';
+        }
+        throw error;
+    }
+}
+
+// Initialize Network Devices
+async function initializeNetworkDevices() {
+    try {
+        // Fetch the first page of devices
+        const { devices, totalCount } = await fetchNetworkDevices(1);
+
+        // Create the network devices table with server-side pagination
+        networkDevicesTable = new ProblerTable('network-devices-table', {
             columns: [
                 { key: 'name', label: 'Device Name' },
                 { key: 'ipAddress', label: 'IP Address' },
@@ -113,16 +138,24 @@ async function initializeNetworkDevices() {
                 { key: 'memoryUsage', label: 'Memory %', formatter: (value) => `${value}%` },
                 { key: 'uptime', label: 'Uptime' }
             ],
-            data: networkDevicesData,
+            data: devices,
             rowsPerPage: 15,
             sortable: true,
             filterable: true,
             statusColumn: 'status',
+            serverSide: true,
+            totalCount: totalCount,
+            onPageChange: async (page) => {
+                // Fetch new page data from server
+                const { devices, totalCount } = await fetchNetworkDevices(page);
+                networkDevicesTable.updateServerData(devices, totalCount);
+            },
             onRowClick: (rowData) => {
                 showDeviceDetailModal(rowData);
             }
         });
     } catch (error) {
+        const container = document.getElementById('network-devices-table');
         if (container) {
             container.innerHTML = '<div style="padding: 20px; color: #718096; text-align: center;">Failed to load network devices data</div>';
         }
