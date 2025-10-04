@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sessionStorage.setItem('username', username);
 
             // Redirect to main application
-            window.location.href = '';
+            window.location.href = '/';
         } else {
             alert('Please enter both username and password');
         }
@@ -53,6 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Check if already logged in
     if (sessionStorage.getItem('isLoggedIn') === 'true') {
-        window.location.href = 'index.html';
+        window.location.href = '/';
     }
 });

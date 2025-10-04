@@ -912,7 +912,7 @@ func getExactDeviceMockData() []deviceMockData {
 		},
 		{
 			id: 6, name: "LON-CORE-01", ipAddress: "192.168.100.1", deviceType: "Router",
-			location: "London, UK", latitude: 51.5074, longitude: -0.127h8,
+			location: "London, UK", latitude: 51.5074, longitude: -0.127,
 			status: "online", cpuUsage: 34, memoryUsage: 56, uptime: "156d 7h 33m",
 			lastSeen: "2025-08-03 14:32:15", model: "Juniper MX960",
 			serialNumber: "JNP-MX960-001", firmware: "21.4R1.12", interfaces: 80, temperature: 41,
