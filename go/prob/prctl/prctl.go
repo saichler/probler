@@ -47,9 +47,9 @@ func main() {
 	}
 
 	resources := common.CreateResources2("client", "./")
-	resources.Introspector().Inspect(&l8poll.L8Pollaris{})
-	resources.Introspector().Inspect(&l8poll.L8C_Target{})
-	resources.Introspector().Inspect(&l8poll.L8C_TargetList{})
+	resources.Introspector().Inspect(&l8tpollaris.L8Pollaris{})
+	resources.Introspector().Inspect(&l8tpollaris.L8PTarget{})
+	resources.Introspector().Inspect(&l8tpollaris.L8PTargetList{})
 	resources.Introspector().Inspect(&l8health.L8Health{})
 	resources.Introspector().Inspect(&l8health.L8Top{})
 	resources.Introspector().Inspect(&types3.K8SCluster{})
