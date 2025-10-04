@@ -1,5 +1,51 @@
 // Main application initialization
 
+// Utility function for making authenticated API calls
+async function makeAuthenticatedRequest(url, options = {}) {
+    const bearerToken = sessionStorage.getItem('bearerToken');
+
+    if (!bearerToken) {
+        console.error('No bearer token found');
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Add Authorization header with bearer token
+    const headers = {
+        'Authorization': `Bearer ${bearerToken}`,
+        'Content-Type': 'application/json',
+        ...options.headers
+    };
+
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers: headers
+        });
+
+        // If unauthorized, redirect to login
+        if (response.status === 401) {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+            return;
+        }
+
+        return response;
+    } catch (error) {
+        console.error('API request failed:', error);
+        throw error;
+    }
+}
+
+// Logout function
+function logout() {
+    // Clear all session storage including bearer token
+    sessionStorage.clear();
+
+    // Redirect to login page
+    window.location.href = 'login.html';
+}
+
 // Add click logging to help identify elements
 document.body.addEventListener('click', function(e) {
     const target = e.target;
@@ -10,6 +56,13 @@ document.body.addEventListener('click', function(e) {
 document.addEventListener('DOMContentLoaded', function() {
     // Check if user is logged in
     if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Also check if bearer token exists
+    if (!sessionStorage.getItem('bearerToken')) {
+        sessionStorage.clear();
         window.location.href = 'login.html';
         return;
     }

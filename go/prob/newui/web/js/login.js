@@ -32,22 +32,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    loginForm.addEventListener('submit', function(e) {
+    loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
-        // For now, simple validation (will be replaced with actual authentication later)
-        if (username && password) {
-            // Store login state
-            sessionStorage.setItem('isLoggedIn', 'true');
-            sessionStorage.setItem('username', username);
-
-            // Redirect to main application
-            window.location.href = '/';
-        } else {
+        if (!username || !password) {
             alert('Please enter both username and password');
+            return;
+        }
+
+        try {
+            // Make REST API call to authenticate
+            const response = await fetch('/auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user: username,
+                    pass: password
+                })
+            });
+
+            const data = await response.json();
+
+            // Check if login was successful
+            if (data.token) {
+                // Store bearer token and login state
+                sessionStorage.setItem('bearerToken', data.token);
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('username', username);
+
+                // Redirect to main application
+                window.location.href = '/';
+            } else {
+                // Empty response body {} indicates failed login
+                alert('Invalid username or password');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Login failed. Please try again.');
         }
     });
 
