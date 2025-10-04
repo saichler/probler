@@ -2,7 +2,7 @@ package creates
 
 import (
 	common2 "github.com/saichler/l8collector/go/collector/common"
-	"github.com/saichler/l8pollaris/go/types/l8poll"
+	"github.com/saichler/l8pollaris/go/types/l8tpollaris"
 	"github.com/saichler/l8types/go/types/l8services"
 	"github.com/saichler/probler/go/prob/common"
 )
