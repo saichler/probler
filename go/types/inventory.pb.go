@@ -2674,15 +2674,15 @@ type EquipmentInfo struct {
 	SerialNumber    string       `protobuf:"bytes,10,opt,name=serial_number,json=serialNumber,proto3" json:"serial_number,omitempty"`
 	FirmwareVersion string       `protobuf:"bytes,11,opt,name=firmware_version,json=firmwareVersion,proto3" json:"firmware_version,omitempty"`
 	IpAddress       string       `protobuf:"bytes,12,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
-	DeviceType      DeviceType   `protobuf:"varint,13,opt,name=device_type,json=deviceType,proto3,enum=l8poll.L8C_TargetType" json:"device_type,omitempty"`
+	DeviceType      DeviceType   `protobuf:"varint,13,opt,name=device_type,json=deviceType,proto3,enum=types.DeviceType" json:"device_type,omitempty"`
 	Location        string       `protobuf:"bytes,14,opt,name=location,proto3" json:"location,omitempty"`
 	Latitude        float64      `protobuf:"fixed64,15,opt,name=latitude,proto3" json:"latitude,omitempty"`
 	Longitude       float64      `protobuf:"fixed64,16,opt,name=longitude,proto3" json:"longitude,omitempty"`
-	DeviceStatus    DeviceStatus `protobuf:"varint,17,opt,name=device_status,json=deviceStatus,proto3,enum=l8poll.L8C_TargetStatus" json:"device_status,omitempty"`
+	DeviceStatus    DeviceStatus `protobuf:"varint,17,opt,name=device_status,json=deviceStatus,proto3,enum=types.DeviceStatus" json:"device_status,omitempty"`
 	LastSeen        string       `protobuf:"bytes,18,opt,name=last_seen,json=lastSeen,proto3" json:"last_seen,omitempty"`
 	Uptime          string       `protobuf:"bytes,19,opt,name=uptime,proto3" json:"uptime,omitempty"`
 	// Additional fields for mock data correlation
-	TargetId       uint32 `protobuf:"varint,20,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`                   // Numeric device ID from mock data
+	DeviceId       uint32 `protobuf:"varint,20,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`                   // Numeric device ID from mock data
 	InterfaceCount uint32 `protobuf:"varint,21,opt,name=interface_count,json=interfaceCount,proto3" json:"interface_count,omitempty"` // Total number of interfaces
 	// Entity MIB fields from RFC 4133
 	VendorTypeOid      string `protobuf:"bytes,22,opt,name=vendor_type_oid,json=vendorTypeOid,proto3" json:"vendor_type_oid,omitempty"`              // entPhysicalVendorType - Vendor-specific hardware type OID
@@ -2859,9 +2859,9 @@ func (x *EquipmentInfo) GetUptime() string {
 	return ""
 }
 
-func (x *EquipmentInfo) GetTargetId() uint32 {
+func (x *EquipmentInfo) GetDeviceId() uint32 {
 	if x != nil {
-		return x.TargetId
+		return x.DeviceId
 	}
 	return 0
 }
@@ -11986,8 +11986,8 @@ var file_inventory_proto_goTypes = []interface{}{
 	(SrPolicyStatus)(0),             // 11: types.SrPolicyStatus
 	(SrPathStatus)(0),               // 12: types.SrPathStatus
 	(SrSegmentType)(0),              // 13: types.SrSegmentType
-	(DeviceType)(0),                 // 14: l8poll.L8C_TargetType
-	(DeviceStatus)(0),               // 15: l8poll.L8C_TargetStatus
+	(DeviceType)(0),                 // 14: types.DeviceType
+	(DeviceStatus)(0),               // 15: types.DeviceStatus
 	(ComponentStatus)(0),            // 16: types.ComponentStatus
 	(ModuleType)(0),                 // 17: types.ModuleType
 	(InterfaceType)(0),              // 18: types.InterfaceType
@@ -12110,8 +12110,8 @@ var file_inventory_proto_depIdxs = []int32{
 	58,  // 5: types.NetworkDevice.topology:type_name -> types.NetworkTopology
 	60,  // 6: types.NetworkDevice.network_links:type_name -> types.NetworkLink
 	66,  // 7: types.NetworkDevice.network_health:type_name -> types.NetworkHealth
-	14,  // 8: types.EquipmentInfo.device_type:type_name -> l8poll.L8C_TargetType
-	15,  // 9: types.EquipmentInfo.device_status:type_name -> l8poll.L8C_TargetStatus
+	14,  // 8: types.EquipmentInfo.device_type:type_name -> types.DeviceType
+	15,  // 9: types.EquipmentInfo.device_status:type_name -> types.DeviceStatus
 	46,  // 10: types.Physical.chassis:type_name -> types.Chassis
 	49,  // 11: types.Physical.ports:type_name -> types.Port
 	53,  // 12: types.Physical.power_supplies:type_name -> types.PowerSupply

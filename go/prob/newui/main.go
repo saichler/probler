@@ -19,8 +19,6 @@ import (
 )
 
 func main() {
-	resources := common2.CreateResources("vnet-" + os.Getenv("HOSTNAME"))
-	resources.Logger().SetLogLevel(ifs.Info_Level)
 	startWebServer(10443, "/data/probler")
 }
 
@@ -37,7 +35,7 @@ func startWebServer(port int, cert string) {
 		panic(err)
 	}
 
-	resources := common2.CreateResources("web-" + os.Getenv("HOSTNAME"))
+	resources := common2.CreateResources("web2-" + os.Getenv("HOSTNAME"))
 
 	node, _ := resources.Introspector().Inspect(&types.NetworkDevice{})
 	introspecting.AddPrimaryKeyDecorator(node, "Id")

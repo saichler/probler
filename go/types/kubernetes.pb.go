@@ -14247,7 +14247,7 @@ var file_kubernetes_proto_goTypes = []interface{}{
 	(*WindowsOptions)(nil),                    // 33: types.WindowsOptions
 	(*Volume)(nil),                            // 34: types.Volume
 	(*VolumeSource)(nil),                      // 35: types.VolumeSource
-	(*HostPathVolumeSource)(nil),              // 36: l8poll.L8C_HostPathVolumeSource
+	(*HostPathVolumeSource)(nil),              // 36: types.HostPathVolumeSource
 	(*EmptyDirVolumeSource)(nil),              // 37: types.EmptyDirVolumeSource
 	(*SecretVolumeSource)(nil),                // 38: types.SecretVolumeSource
 	(*ConfigMapVolumeSource)(nil),             // 39: types.ConfigMapVolumeSource
@@ -14369,7 +14369,7 @@ var file_kubernetes_proto_goTypes = []interface{}{
 	(*RoleRef)(nil),                           // 155: types.RoleRef
 	(*PodSecurityPolicy)(nil),                 // 156: types.PodSecurityPolicy
 	(*PodSecurityPolicySpec)(nil),             // 157: types.PodSecurityPolicySpec
-	(*HostPortRange)(nil),                     // 158: l8poll.L8C_HostPortRange
+	(*HostPortRange)(nil),                     // 158: types.HostPortRange
 	(*SELinuxStrategyOptions)(nil),            // 159: types.SELinuxStrategyOptions
 	(*RunAsUserStrategyOptions)(nil),          // 160: types.RunAsUserStrategyOptions
 	(*RunAsGroupStrategyOptions)(nil),         // 161: types.RunAsGroupStrategyOptions
@@ -14439,7 +14439,7 @@ var file_kubernetes_proto_depIdxs = []int32{
 	32,  // 45: types.SecurityContext.se_linux_options:type_name -> types.SELinuxOptions
 	33,  // 46: types.SecurityContext.windows_options:type_name -> types.WindowsOptions
 	35,  // 47: types.Volume.volume_source:type_name -> types.VolumeSource
-	36,  // 48: types.VolumeSource.host_path:type_name -> l8poll.L8C_HostPathVolumeSource
+	36,  // 48: types.VolumeSource.host_path:type_name -> types.HostPathVolumeSource
 	37,  // 49: types.VolumeSource.empty_dir:type_name -> types.EmptyDirVolumeSource
 	38,  // 50: types.VolumeSource.secret:type_name -> types.SecretVolumeSource
 	39,  // 51: types.VolumeSource.config_map:type_name -> types.ConfigMapVolumeSource
@@ -14581,7 +14581,7 @@ var file_kubernetes_proto_depIdxs = []int32{
 	137, // 187: types.PersistentVolumeSpec.node_affinity:type_name -> types.VolumeNodeAffinity
 	130, // 188: types.PersistentVolumeSource.gce_persistent_disk:type_name -> types.GCEPersistentDiskVolumeSource
 	131, // 189: types.PersistentVolumeSource.aws_elastic_block_store:type_name -> types.AWSElasticBlockStoreVolumeSource
-	36,  // 190: types.PersistentVolumeSource.host_path:type_name -> l8poll.L8C_HostPathVolumeSource
+	36,  // 190: types.PersistentVolumeSource.host_path:type_name -> types.HostPathVolumeSource
 	132, // 191: types.PersistentVolumeSource.nfs:type_name -> types.NFSVolumeSource
 	133, // 192: types.PersistentVolumeSource.iscsi:type_name -> types.ISCSIVolumeSource
 	135, // 193: types.PersistentVolumeSource.csi:type_name -> types.CSIVolumeSource
@@ -14629,7 +14629,7 @@ var file_kubernetes_proto_depIdxs = []int32{
 	155, // 235: types.ClusterRoleBinding.role_ref:type_name -> types.RoleRef
 	0,   // 236: types.PodSecurityPolicy.metadata:type_name -> types.ObjectMeta
 	157, // 237: types.PodSecurityPolicy.spec:type_name -> types.PodSecurityPolicySpec
-	158, // 238: types.PodSecurityPolicySpec.host_ports:type_name -> l8poll.L8C_HostPortRange
+	158, // 238: types.PodSecurityPolicySpec.host_ports:type_name -> types.HostPortRange
 	159, // 239: types.PodSecurityPolicySpec.se_linux:type_name -> types.SELinuxStrategyOptions
 	160, // 240: types.PodSecurityPolicySpec.run_as_user:type_name -> types.RunAsUserStrategyOptions
 	161, // 241: types.PodSecurityPolicySpec.run_as_group:type_name -> types.RunAsGroupStrategyOptions
