@@ -290,3 +290,118 @@
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+
+/* ============================================ */
+/* PROFESSIONAL POPUP MESSAGE STYLES */
+/* ============================================ */
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.popup-overlay.show {
+    display: flex;
+}
+
+.popup-message {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+    position: relative;
+}
+
+.popup-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.popup-icon.error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.popup-icon svg {
+    width: 28px;
+    height: 28px;
+    fill: white;
+}
+
+.popup-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a202c;
+    text-align: center;
+    margin-bottom: 12px;
+    font-family: 'Inter', sans-serif;
+}
+
+.popup-text {
+    font-size: 14px;
+    color: #4a5568;
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.popup-close-btn {
+    width: 100%;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.popup-close-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.popup-close-btn:active {
+    transform: translateY(0);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

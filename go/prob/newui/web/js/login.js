@@ -1,7 +1,52 @@
 // Login page functionality
 
+// Popup functions
+function showPopup(message) {
+    const overlay = document.getElementById('popupOverlay');
+    const popupText = document.getElementById('popupText');
+
+    if (popupText) {
+        popupText.textContent = message;
+    }
+
+    if (overlay) {
+        overlay.classList.add('show');
+    }
+}
+
+function closePopup() {
+    const overlay = document.getElementById('popupOverlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+    }
+
+    // Clear password field
+    const passwordField = document.getElementById('password');
+    if (passwordField) {
+        passwordField.value = '';
+        passwordField.focus();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
+
+    // Add click event to overlay to close popup
+    const popupOverlay = document.getElementById('popupOverlay');
+    if (popupOverlay) {
+        popupOverlay.addEventListener('click', function(e) {
+            if (e.target === popupOverlay) {
+                closePopup();
+            }
+        });
+    }
+
+    // Add Escape key handler to close popup
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePopup();
+        }
+    });
 
     // Parallax mouse movement effect
     document.addEventListener('mousemove', function(e) {
@@ -39,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = document.getElementById('password').value;
 
         if (!username || !password) {
-            alert('Please enter both username and password');
+            showPopup('Please enter both username and password.');
             return;
         }
 
@@ -69,11 +114,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.location.href = '/';
             } else {
                 // Empty response body {} indicates failed login
-                alert('Invalid username or password');
+                showPopup('Invalid username or password. Please check your credentials and try again.');
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('Login failed. Please try again.');
+            showPopup('Login failed. Unable to connect to the authentication server. Please try again later.');
         }
     });
 

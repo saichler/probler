@@ -69,45 +69,62 @@ function transformDeviceData(device) {
 }
 
 // Initialize Network Devices
-function initializeNetworkDevices() {
-    // Fetch devices data from JSON file
-    fetch('samples/devices.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to load devices data');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Transform the device list from JSON format to table format
-            const networkDevicesData = (data.list || []).map(device => transformDeviceData(device));
+async function initializeNetworkDevices() {
+    const container = document.getElementById('network-devices-table');
 
-            // Create the network devices table
-            const devicesTable = new ProblerTable('network-devices-table', {
-                columns: [
-                    { key: 'name', label: 'Device Name' },
-                    { key: 'ipAddress', label: 'IP Address' },
-                    { key: 'deviceType', label: 'Type' },
-                    { key: 'location', label: 'Location' },
-                    { key: 'status', label: 'Status' },
-                    { key: 'cpuUsage', label: 'CPU %', formatter: (value) => `${value}%` },
-                    { key: 'memoryUsage', label: 'Memory %', formatter: (value) => `${value}%` },
-                    { key: 'uptime', label: 'Uptime' }
-                ],
-                data: networkDevicesData,
-                rowsPerPage: 15,
-                sortable: true,
-                filterable: true,
-                statusColumn: 'status',
-                onRowClick: (rowData) => {
-                    showDeviceDetailModal(rowData);
-                }
-            });
-        })
-        .catch(error => {
-            const container = document.getElementById('network-devices-table');
-            if (container) {
-                container.innerHTML = '<div style="padding: 20px; color: #718096; text-align: center;">Failed to load network devices data</div>';
+    try {
+        // Fetch devices data from API endpoint
+        const response = await makeAuthenticatedRequest('/probler/0/NetDev?body=' + encodeURIComponent(JSON.stringify({
+            text: 'select * from NetworkDevice where Id=* limit 15 page 0'
+        })), {
+            method: 'GET'
+        });
+
+        if (!response || !response.ok) {
+            throw new Error('Failed to load devices data');
+        }
+
+        const data = await response.json();
+
+        // Transform the device list from JSON format to table format
+        const networkDevicesData = (data.list || []).map(device => transformDeviceData(device));
+
+        // Calculate total pages from stats
+        const totalDevices = data.stats?.Total || 0;
+        const onlineDevices = data.stats?.Online || 0;
+        const totalPages = Math.ceil(totalDevices / 15);
+
+        // Update hero subtitle with actual stats
+        const heroSubtitle = document.querySelector('.network-hero .hero-subtitle');
+        if (heroSubtitle) {
+            const uptime = totalDevices > 0 ? ((onlineDevices / totalDevices) * 100).toFixed(2) : 0;
+            heroSubtitle.textContent = `Real-time monitoring • ${onlineDevices} Active Devices • ${uptime}% Uptime`;
+        }
+
+        // Create the network devices table
+        const devicesTable = new ProblerTable('network-devices-table', {
+            columns: [
+                { key: 'name', label: 'Device Name' },
+                { key: 'ipAddress', label: 'IP Address' },
+                { key: 'deviceType', label: 'Type' },
+                { key: 'location', label: 'Location' },
+                { key: 'status', label: 'Status' },
+                { key: 'cpuUsage', label: 'CPU %', formatter: (value) => `${value}%` },
+                { key: 'memoryUsage', label: 'Memory %', formatter: (value) => `${value}%` },
+                { key: 'uptime', label: 'Uptime' }
+            ],
+            data: networkDevicesData,
+            rowsPerPage: 15,
+            sortable: true,
+            filterable: true,
+            statusColumn: 'status',
+            onRowClick: (rowData) => {
+                showDeviceDetailModal(rowData);
             }
         });
+    } catch (error) {
+        if (container) {
+            container.innerHTML = '<div style="padding: 20px; color: #718096; text-align: center;">Failed to load network devices data</div>';
+        }
+    }
 }
