@@ -112,7 +112,7 @@ message K8sService {
   string type = 3;
   string cluster_ip = 4;
   string external_ip = 5;
-  string port = 6;
+  string ports = 6;
   string age = 7;
   string selector = 8;
 }
