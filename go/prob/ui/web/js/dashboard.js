@@ -107,12 +107,77 @@ function loadSectionPreferences() {
 }
 
 async function loadDashboardStats() {
+    console.log('🔍 Dashboard: Starting to load dashboard stats...');
+
     try {
-        // Calculate real device statistics from the devicesData array
-        const stats = calculateDeviceStats();
-        updateDashboardStats(stats);
+        // Check if authenticatedFetch is available
+        if (typeof authenticatedFetch === 'undefined') {
+            console.error('❌ Dashboard: authenticatedFetch not available, falling back to calculateDeviceStats');
+            const stats = calculateDeviceStats();
+            updateDashboardStats(stats);
+            return;
+        }
+
+        // Fetch device stats directly from API for dashboard using authenticatedFetch
+        // Use the same format as devices.js with the body parameter
+        const apiEndpoint = '/probler/0/NetDev';
+        const bodyParam = '{"text":"select * from NetworkDevice limit 25 page 0", "rootType":"networkdevice", "properties":["*"], "limit":25, "page":0, "matchCase":true}';
+
+        // Pass the body parameter as URL query parameter for GET request
+        const queryParams = new URLSearchParams({
+            body: bodyParam
+        });
+
+        const apiUrl = `${apiEndpoint}?${queryParams}`;
+        console.log('🔍 Dashboard: Fetching device stats from:', apiEndpoint);
+        console.log('🔍 Dashboard: Using body parameter:', bodyParam);
+
+        const response = await authenticatedFetch(apiUrl, {
+            method: 'GET'
+        });
+
+        console.log('🔍 Dashboard: API Response status:', response.status, 'OK:', response.ok);
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('🔍 Dashboard: API Response data:', data);
+
+            if (data && data.stats) {
+                const serverStats = data.stats;
+                console.log('🔍 Dashboard: Server stats object:', serverStats);
+
+                const totalDevices = serverStats.Total || 0;
+                const onlineDevices = serverStats.Online || 0;
+                const offlineDevices = totalDevices - onlineDevices;
+
+                console.log(`✅ Dashboard Stats from server: Total=${totalDevices}, Online=${onlineDevices}, Offline=${offlineDevices}`);
+
+                const stats = {
+                    totalDevices: totalDevices,
+                    onlineDevices: onlineDevices,
+                    offlineDevices: offlineDevices,
+                    criticalAlarms: 2, // TODO: Get from actual alarms API
+                    totalAlarms: 15 // TODO: Get from actual alarms API
+                };
+
+                console.log('🔍 Dashboard: Calling updateDashboardStats with:', stats);
+                updateDashboardStats(stats);
+            } else {
+                console.log('⚠️ Dashboard: No stats in API response, trying calculateDeviceStats');
+                // Calculate from existing data if available
+                const stats = calculateDeviceStats();
+                updateDashboardStats(stats);
+            }
+        } else {
+            console.log('⚠️ Dashboard: API response not OK, status:', response.status);
+            // Calculate from existing data if available
+            const stats = calculateDeviceStats();
+            updateDashboardStats(stats);
+        }
     } catch (error) {
-        console.error('Error loading dashboard stats:', error);
+        console.error('❌ Dashboard: Error loading dashboard stats:', error);
+        console.error('Error details:', error.message, error.stack);
+
         // Fallback to sample data if calculation fails
         const fallbackStats = {
             totalDevices: 0,
@@ -121,6 +186,7 @@ async function loadDashboardStats() {
             criticalAlarms: 2,
             totalAlarms: 15
         };
+        console.log('🔍 Dashboard: Using fallback stats:', fallbackStats);
         updateDashboardStats(fallbackStats);
     }
 }
@@ -211,9 +277,47 @@ function calculateDeviceStats() {
 }
 
 function updateDashboardStats(stats) {
-    document.getElementById('totalDevices').textContent = stats.totalDevices;
-    document.getElementById('onlineDevices').textContent = stats.onlineDevices;
-    document.getElementById('offlineDevices').textContent = stats.offlineDevices;
-    document.getElementById('criticalAlarms').textContent = stats.criticalAlarms;
-    document.getElementById('totalAlarms').textContent = stats.totalAlarms;
+    console.log('🔍 Dashboard: updateDashboardStats called with:', stats);
+
+    const totalDevicesElement = document.getElementById('totalDevices');
+    if (totalDevicesElement) {
+        console.log('🔍 Dashboard: Updating totalDevices to:', stats.totalDevices);
+        totalDevicesElement.textContent = stats.totalDevices;
+    } else {
+        console.error('❌ Dashboard: totalDevices element not found!');
+    }
+
+    const onlineDevicesElement = document.getElementById('onlineDevices');
+    if (onlineDevicesElement) {
+        console.log('🔍 Dashboard: Updating onlineDevices to:', stats.onlineDevices);
+        onlineDevicesElement.textContent = stats.onlineDevices;
+    } else {
+        console.error('❌ Dashboard: onlineDevices element not found!');
+    }
+
+    const offlineDevicesElement = document.getElementById('offlineDevices');
+    if (offlineDevicesElement) {
+        console.log('🔍 Dashboard: Updating offlineDevices to:', stats.offlineDevices);
+        offlineDevicesElement.textContent = stats.offlineDevices;
+    } else {
+        console.error('❌ Dashboard: offlineDevices element not found!');
+    }
+
+    const criticalAlarmsElement = document.getElementById('criticalAlarms');
+    if (criticalAlarmsElement) {
+        console.log('🔍 Dashboard: Updating criticalAlarms to:', stats.criticalAlarms);
+        criticalAlarmsElement.textContent = stats.criticalAlarms;
+    } else {
+        console.error('❌ Dashboard: criticalAlarms element not found!');
+    }
+
+    const totalAlarmsElement = document.getElementById('totalAlarms');
+    if (totalAlarmsElement) {
+        console.log('🔍 Dashboard: Updating totalAlarms to:', stats.totalAlarms);
+        totalAlarmsElement.textContent = stats.totalAlarms;
+    } else {
+        console.error('❌ Dashboard: totalAlarms element not found!');
+    }
+
+    console.log('✅ Dashboard: Stats update completed');
 }

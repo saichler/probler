@@ -742,6 +742,42 @@ window.viewGPULogs = viewGPULogs;
 window.acknowledgeAlert = acknowledgeAlert;
 window.clearAllAlerts = clearAllAlerts;
 window.saveSettings = saveSettings;
+// Define missing refresh functions
+function refreshGPUList() {
+    console.log('Refreshing GPU list...');
+    loadGPUs(); // Call the existing loadGPUs function
+}
+
+function refreshJobQueue() {
+    console.log('Refreshing job queue...');
+    // TODO: Implement job queue refresh
+}
+
+function refreshAlerts() {
+    console.log('Refreshing alerts...');
+    // TODO: Implement alerts refresh
+}
+
+// Define missing pagination functions
+function goToPage(pageNum) {
+    console.log(`Going to page ${pageNum}`);
+    if (typeof changeGPUPage === 'function') {
+        changeGPUPage(pageNum);
+    }
+}
+
+function handlePageSizeChange(newSize) {
+    console.log(`Changing page size to ${newSize}`);
+    // TODO: Implement page size change
+}
+
+function handlePageJump(pageNum) {
+    console.log(`Jumping to page ${pageNum}`);
+    if (typeof changeGPUPage === 'function') {
+        changeGPUPage(pageNum);
+    }
+}
+
 window.resetToDefaults = resetToDefaults;
 window.filterGPUs = filterGPUs;
 window.filterJobs = filterJobs;

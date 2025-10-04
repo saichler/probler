@@ -8,15 +8,13 @@ async function initializeApp() {
 
     // Only load data if user is authenticated
     if (sessionStorage.getItem('authenticated') === 'true') {
-        // Load devices first, then dashboard stats (which depends on device data)
-        await loadDevices();
+        // Load dashboard data (don't load devices here since it's in a separate file now)
         loadDashboardStats();
         loadAlarms();
 
         // Set up auto-refresh every 5 minutes (only if authenticated)
         setInterval(async () => {
             if (sessionStorage.getItem('authenticated') === 'true') {
-                await loadDevices();
                 loadDashboardStats();
                 loadAlarms();
             }

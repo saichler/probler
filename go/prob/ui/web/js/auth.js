@@ -158,10 +158,12 @@ function showLoginSuccessAndHide() {
         loadUsername(); // Update username display
         showNotification('✓ Welcome to Open Network Automation', 'success');
 
-        // Load application data after successful login
-        await loadDevices();
-        loadDashboardStats();
-        loadAlarms();
+        // Add a small delay to ensure session is fully established before loading dashboard data
+        setTimeout(() => {
+            console.log('🔍 Auth: Loading dashboard stats after session establishment...');
+            loadDashboardStats();
+            loadAlarms();
+        }, 500); // 500ms delay to ensure session cookies are set
 
         // Reset login form
         document.getElementById('loginForm').reset();

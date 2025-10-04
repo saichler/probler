@@ -58,30 +58,101 @@ function updateGPUMetrics() {
     }
 }
 
-// Switch between applications
-function switchApp(appName) {
+// Cache for loaded app content
+const loadedApps = {};
+
+// Switch between applications with dynamic loading
+async function switchApp(appName, buttonElement) {
     // Hide all app content
     const allApps = document.querySelectorAll('.app-content');
     allApps.forEach(app => app.classList.remove('active'));
-    
+
     // Remove active class from all buttons (support both old and new classes)
     const allButtons = document.querySelectorAll('.app-button, .app-tab-button');
     allButtons.forEach(button => button.classList.remove('active'));
-    
-    // Show selected app content
-    const selectedApp = document.getElementById(`${appName}-app`);
-    if (selectedApp) {
-        selectedApp.classList.add('active');
-    }
-    
+
     // Add active class to clicked button
-    if (event && event.target) {
+    if (buttonElement) {
+        buttonElement.classList.add('active');
+    } else if (event && event.target) {
         const button = event.target.closest('.app-button') || event.target.closest('.app-tab-button');
         if (button) {
             button.classList.add('active');
         }
     }
-    
+
+    // Special handling for dashboard (already inline)
+    if (appName === 'dashboard') {
+        const dashboardApp = document.getElementById('dashboard-app');
+        if (dashboardApp) {
+            dashboardApp.classList.add('active');
+        }
+        return;
+    }
+
+    // Check if app is already loaded in cache
+    if (loadedApps[appName]) {
+        loadedApps[appName].classList.add('active');
+        // Run initialization for the app
+        initializeAppFunctions(appName);
+        return;
+    }
+
+    // Check if app already exists in DOM (for backward compatibility)
+    const selectedApp = document.getElementById(`${appName}-app`);
+    if (selectedApp) {
+        selectedApp.classList.add('active');
+        initializeAppFunctions(appName);
+        return;
+    }
+
+    // Load app dynamically
+    try {
+        const response = await fetch(`${appName}.html`);
+        if (response.ok) {
+            const html = await response.text();
+            const container = document.getElementById('dynamicAppContainer');
+            if (!container) {
+                console.error('Dynamic app container not found');
+                return;
+            }
+
+            // Create a temporary div to parse HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            // Extract the app-content div
+            const appContent = tempDiv.querySelector('.app-content');
+            if (appContent) {
+                // Add to container
+                container.appendChild(appContent);
+
+                // Cache the element
+                loadedApps[appName] = appContent;
+
+                // Show the app
+                appContent.classList.add('active');
+
+                // Initialize app-specific functions
+                initializeAppFunctions(appName);
+
+                // Show success notification
+                showNotification(`Loaded ${appName} application`, 'success');
+            } else {
+                console.error(`No app-content div found in ${appName}.html`);
+            }
+        } else {
+            console.error(`Failed to load ${appName}.html: ${response.status}`);
+            showNotification(`Failed to load ${appName} application`, 'error');
+        }
+    } catch (error) {
+        console.error(`Error loading ${appName}:`, error);
+        showNotification(`Error loading ${appName} application`, 'error');
+    }
+}
+
+// Initialize app-specific functions after loading
+function initializeAppFunctions(appName) {
     // Initialize specific apps when opened
     if (appName === 'topology') {
         initializeTopology();
@@ -89,6 +160,26 @@ function switchApp(appName) {
         setTimeout(() => {
             initializeZoomControls();
         }, 100);
+    } else if (appName === 'devices') {
+        // Initialize devices app
+        if (typeof loadDevices === 'function') {
+            loadDevices();
+        }
+    } else if (appName === 'gpus') {
+        // Initialize GPUs app
+        if (typeof loadGPUs === 'function') {
+            loadGPUs();
+        }
+    } else if (appName === 'vms') {
+        // Initialize VMs app
+        if (typeof initVMsApp === 'function') {
+            initVMsApp();
+        }
+    } else if (appName === 'storage') {
+        // Initialize Storage app
+        if (typeof initStorageApp === 'function') {
+            initStorageApp();
+        }
     } else if (appName === 'health') {
         // Initialize System Health app
         console.log('Switching to health app, checking for initServicesApp function...');
