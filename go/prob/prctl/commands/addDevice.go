@@ -1,12 +1,13 @@
 package commands
 
 import (
+	"time"
+
 	"github.com/saichler/l8collector/go/collector/targets"
 	"github.com/saichler/l8pollaris/go/types/l8tpollaris"
 	common2 "github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8web/go/web/client"
 	"github.com/saichler/probler/go/prob/prctl/creates"
-	"time"
 )
 
 func AddDevice(ip string, rc *client.RestClient, resources common2.IResources) {
@@ -18,7 +19,7 @@ func AddDevice(ip string, rc *client.RestClient, resources common2.IResources) {
 		resources.Logger().Error(err.Error())
 		return
 	}
-	_, ok := resp.(*l8poll.L8C_Target)
+	_, ok := resp.(*l8tpollaris.L8PTarget)
 	if ok {
 		resources.Logger().Info("Added ", device.TargetId, " Successfully")
 	}

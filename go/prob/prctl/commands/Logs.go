@@ -11,7 +11,7 @@ import (
 )
 
 func Logs(rc *client.RestClient, namespace, podname string, resources ifs.IResources) {
-	resources.Registry().Register(&l8poll.CJob{})
+	resources.Registry().Register(&l8tpollaris.CJob{})
 	job := boot.LogsJob("lab", "lab", "probler-collector", "probler-collector-0")
 	jsn, err := protojson.Marshal(job)
 	fmt.Println("body:", string(jsn))
@@ -21,6 +21,6 @@ func Logs(rc *client.RestClient, namespace, podname string, resources ifs.IResou
 		return
 	}
 
-	job = resp.(*l8poll.CJob)
+	job = resp.(*l8tpollaris.CJob)
 	fmt.Println(string(job.Result))
 }

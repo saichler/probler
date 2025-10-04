@@ -11,7 +11,7 @@ import (
 )
 
 func Details(rc *client.RestClient, namespace, podname string, resources ifs.IResources) {
-	resources.Registry().Register(&l8poll.CJob{})
+	resources.Registry().Register(&l8tpollaris.CJob{})
 	job := boot.DetailsJob("lab", "lab", "probler-collector", "probler-collector-0")
 	jsn, err := protojson.Marshal(job)
 	fmt.Println("body:", string(jsn))

@@ -21,7 +21,7 @@ func AddPollConfigs(rc *client.RestClient, resources common2.IResources) {
 			resources.Logger().Error(err.Error())
 			return
 		}
-		_, ok := resp.(*l8poll.L8Pollaris)
+		_, ok := resp.(*l8tpollaris.L8Pollaris)
 		if ok {
 			resources.Logger().Info("Added ", snmpPollaris.Name, " Successfully")
 		}
@@ -36,7 +36,7 @@ func AddPollConfigs(rc *client.RestClient, resources common2.IResources) {
 		resources.Logger().Error(err.Error())
 		return
 	}
-	_, ok := resp.(*l8poll.L8Pollaris)
+	_, ok := resp.(*l8tpollaris.L8Pollaris)
 	if ok {
 		resources.Logger().Info("Added ", k8sPollaris.Name, " Successfully")
 	}

@@ -15,7 +15,7 @@ import (
 func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
 
-	deviceList := &l8poll.L8C_TargetList{List: make([]*l8poll.L8C_Target, 0)}
+	deviceList := &l8tpollaris.L8PTargetList{List: make([]*l8tpollaris.L8PTarget, 0)}
 
 	if cmd == "all" || cmd == "cluster" {
 		cluster := creates.CreateCluster("./lab.conf", "lab", 0)

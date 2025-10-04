@@ -19,7 +19,7 @@ func AddCluster(kubeadm, context string, rc *client.RestClient, resources common
 		resources.Logger().Error(err.Error())
 		return
 	}
-	_, ok := resp.(*l8poll.L8Pollaris)
+	_, ok := resp.(*l8tpollaris.L8Pollaris)
 	if ok {
 		resources.Logger().Info("Added ", device.TargetId, " Successfully")
 	}
