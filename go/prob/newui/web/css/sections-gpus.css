@@ -1,0 +1,210 @@
+/* ============================================ */
+/* GPU SECTION STYLES */
+/* ============================================ */
+
+.gpu-section {
+    padding: 0;
+}
+
+.gpu-hero {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(135deg, #1a5490 0%, #0d2a4a 50%, #051729 100%);
+    overflow: hidden;
+    margin: 0 0 30px 0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.gpu-hero .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.gpu-hero .hero-illustration {
+    width: 100%;
+    height: 100%;
+}
+
+.gpu-hero .hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    text-align: center;
+    width: 90%;
+    max-width: 1000px;
+}
+
+.gpu-content {
+    padding: 0 30px 30px 30px;
+}
+
+.section-description {
+    color: #718096;
+    font-size: 13px;
+    margin-bottom: 20px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+/* GPU Card Animations */
+.gpu-card {
+    transition: transform 0.3s ease;
+}
+
+.status-led {
+    filter: drop-shadow(0 0 3px currentColor);
+}
+
+.data-particle {
+    animation: float-particle 4s ease-in-out infinite;
+}
+
+@keyframes float-particle {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateY(-20px);
+        opacity: 1;
+    }
+}
+
+.data-flow-path {
+    stroke-dasharray: 5, 5;
+    animation: dash-flow 2s linear infinite;
+}
+
+@keyframes dash-flow {
+    to {
+        stroke-dashoffset: -10;
+    }
+}
+
+.gpu-quick-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.gpu-quick-metrics .metric-card {
+    background: linear-gradient(135deg, #f7fafc 0%, #ffffff 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.gpu-quick-metrics .metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.gpu-quick-metrics .metric-label {
+    font-size: 11px;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.gpu-quick-metrics .metric-value {
+    font-size: 24px;
+    font-weight: 900;
+    font-family: 'Roboto Mono', monospace;
+    margin-top: 5px;
+}
+
+.gpu-quick-metrics .metric-value.low {
+    color: #00c853;
+}
+
+.gpu-quick-metrics .metric-value.medium {
+    color: #ffc107;
+}
+
+.gpu-quick-metrics .metric-value.high {
+    color: #ff3d00;
+}
+
+.processes-list {
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.process-item {
+    display: grid;
+    grid-template-columns: 100px 1fr 120px;
+    gap: 15px;
+    padding: 12px 15px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+}
+
+.process-item:hover {
+    border-color: #0ea5e9;
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
+}
+
+.process-item:last-child {
+    margin-bottom: 0;
+}
+
+.process-pid {
+    font-size: 11px;
+    color: #718096;
+    font-weight: 600;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.process-name {
+    font-size: 13px;
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.process-memory {
+    font-size: 12px;
+    color: #0ea5e9;
+    font-weight: 700;
+    text-align: right;
+    font-family: 'Roboto Mono', monospace;
+}
+
+@media (max-width: 1200px) {
+    .gpu-quick-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .gpu-quick-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .process-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .process-memory {
+        text-align: left;
+    }
+}

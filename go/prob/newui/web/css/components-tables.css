@@ -1,0 +1,227 @@
+/* ============================================ */
+/* NOC TABLE COMPONENT */
+/* ============================================ */
+
+.noc-table-container {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    margin-top: 20px;
+    overflow-x: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.noc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.noc-table-header-row {
+    background: #f7fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.noc-table-header {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 10px;
+    color: #0ea5e9;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.noc-table-header.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.noc-table-header.sortable:hover {
+    background: rgba(14, 165, 233, 0.1);
+    color: #2d3748;
+}
+
+.noc-table-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.sort-indicator {
+    opacity: 0.5;
+    font-size: 10px;
+}
+
+.noc-table-filter-row {
+    background: #f7fafc;
+}
+
+.noc-table-filter {
+    padding: 8px 15px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.noc-filter-input {
+    width: 100%;
+    padding: 6px 10px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #2d3748;
+    font-size: 11px;
+    font-family: 'Roboto Mono', monospace;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+}
+
+.noc-filter-input:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.noc-filter-input::placeholder {
+    color: #a0aec0;
+    font-size: 10px;
+}
+
+.noc-table-row {
+    border-bottom: 1px solid #f7fafc;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.noc-table-row:hover {
+    background: rgba(14, 165, 233, 0.05);
+    box-shadow: inset 3px 0 0 #0ea5e9;
+}
+
+.noc-table-row.even {
+    background: #f7fafc;
+}
+
+.noc-table-row.odd {
+    background: white;
+}
+
+.noc-table-row.even:hover,
+.noc-table-row.odd:hover {
+    background: rgba(14, 165, 233, 0.05);
+}
+
+.noc-table-cell {
+    padding: 12px 15px;
+    color: #4a5568;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+}
+
+.status-cell {
+    font-weight: 700;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    min-width: 80px;
+}
+
+.status-badge.status-operational {
+    background: rgba(0, 200, 83, 0.2);
+    color: var(--status-operational);
+    border: 1px solid var(--status-operational);
+    box-shadow: 0 0 8px rgba(0, 200, 83, 0.3);
+}
+
+.status-badge.status-warning {
+    background: rgba(255, 193, 7, 0.2);
+    color: var(--status-warning);
+    border: 1px solid var(--status-warning);
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+}
+
+.status-badge.status-critical {
+    background: rgba(255, 61, 0, 0.2);
+    color: var(--status-critical);
+    border: 1px solid var(--status-critical);
+    box-shadow: 0 0 8px rgba(255, 61, 0, 0.3);
+    animation: pulse-critical 1s infinite;
+}
+
+.status-badge.status-offline {
+    background: rgba(117, 117, 117, 0.2);
+    color: var(--status-offline);
+    border: 1px solid var(--status-offline);
+}
+
+/* Table Pagination */
+.noc-table-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #f7fafc;
+    border-top: 1px solid #e2e8f0;
+}
+
+.pagination-info {
+    font-size: 11px;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+
+.pagination-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.pagination-btn {
+    padding: 6px 12px;
+    background: white;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    font-family: 'Roboto Mono', monospace;
+    border-radius: 6px;
+}
+
+.pagination-btn:hover:not(.disabled) {
+    background: #0ea5e9;
+    color: white;
+    border-color: #0ea5e9;
+}
+
+.pagination-btn.active {
+    background: #0ea5e9;
+    color: white;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 8px rgba(14, 165, 233, 0.4);
+}
+
+.pagination-btn.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+    padding: 6px 8px;
+    color: #a0aec0;
+    font-size: 10px;
+}

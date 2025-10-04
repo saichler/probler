@@ -1,0 +1,79 @@
+/* ============================================ */
+/* RESPONSIVE DESIGN */
+/* ============================================ */
+
+@media (max-width: 1024px) {
+    .app-container {
+        grid-template-columns: 220px 1fr;
+    }
+
+    .sidebar {
+        padding: 12px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "header"
+            "content";
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .header-right {
+        gap: 15px;
+    }
+
+    .powered-by-header {
+        display: none;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+}
+
+/* Responsive K8s Layout */
+@media (max-width: 1024px) {
+    .k8s-layout {
+        flex-direction: column;
+    }
+
+    .k8s-cluster-sidebar {
+        width: 100%;
+        padding: 16px;
+    }
+
+    .cluster-tab {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .k8s-hero .hero-title {
+        font-size: 2rem;
+    }
+
+    .k8s-hero .hero-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .resource-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .resource-tab {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .cluster-stats {
+        gap: 12px;
+    }
+}

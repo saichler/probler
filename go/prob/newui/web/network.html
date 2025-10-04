@@ -1,0 +1,101 @@
+<div class="section-container network-section">
+    <!-- Network Hero Header -->
+    <div class="network-hero">
+        <div class="hero-background">
+            <svg class="hero-illustration" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background Grid -->
+                <defs>
+                    <pattern id="networkGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1"/>
+                    </pattern>
+                    <linearGradient id="networkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgba(255, 255, 255, 0.1);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgba(255, 255, 255, 0);stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="1200" height="300" fill="url(#networkGrid)"/>
+
+                <!-- Network Topology Illustration -->
+                <g class="network-topology">
+                    <!-- Core Routers -->
+                    <circle cx="300" cy="150" r="25" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="3"/>
+                    <text x="300" y="155" text-anchor="middle" fill="white" font-size="12" font-weight="bold">CR1</text>
+
+                    <circle cx="500" cy="150" r="25" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="3"/>
+                    <text x="500" y="155" text-anchor="middle" fill="white" font-size="12" font-weight="bold">CR2</text>
+
+                    <circle cx="700" cy="150" r="25" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="3"/>
+                    <text x="700" y="155" text-anchor="middle" fill="white" font-size="12" font-weight="bold">CR3</text>
+
+                    <!-- Switches Layer 1 -->
+                    <rect x="150" y="230" width="60" height="40" rx="4" fill="none" stroke="rgba(0, 255, 100, 1)" stroke-width="2"/>
+                    <text x="180" y="255" text-anchor="middle" fill="white" font-size="11" font-weight="bold">SW1</text>
+
+                    <rect x="450" y="230" width="60" height="40" rx="4" fill="none" stroke="rgba(0, 255, 100, 1)" stroke-width="2"/>
+                    <text x="480" y="255" text-anchor="middle" fill="white" font-size="11" font-weight="bold">SW2</text>
+
+                    <rect x="750" y="230" width="60" height="40" rx="4" fill="none" stroke="rgba(255, 220, 0, 1)" stroke-width="2"/>
+                    <text x="780" y="255" text-anchor="middle" fill="white" font-size="11" font-weight="bold">SW3</text>
+
+                    <!-- Switches Layer 2 -->
+                    <rect x="250" y="50" width="60" height="40" rx="4" fill="none" stroke="rgba(0, 255, 100, 1)" stroke-width="2"/>
+                    <text x="280" y="75" text-anchor="middle" fill="white" font-size="11" font-weight="bold">SW4</text>
+
+                    <rect x="650" y="50" width="60" height="40" rx="4" fill="none" stroke="rgba(0, 255, 100, 1)" stroke-width="2"/>
+                    <text x="680" y="75" text-anchor="middle" fill="white" font-size="11" font-weight="bold">SW5</text>
+
+                    <!-- Firewall -->
+                    <rect x="900" y="130" width="70" height="50" rx="4" fill="none" stroke="rgba(255, 50, 50, 1)" stroke-width="3"/>
+                    <text x="935" y="160" text-anchor="middle" fill="white" font-size="11" font-weight="bold">FW1</text>
+
+                    <!-- Connection Lines -->
+                    <line x1="300" y1="175" x2="180" y2="230" stroke="rgba(255, 255, 255, 0.6)" stroke-width="2" class="network-link"/>
+                    <line x1="500" y1="175" x2="480" y2="230" stroke="rgba(255, 255, 255, 0.6)" stroke-width="2" class="network-link"/>
+                    <line x1="700" y1="175" x2="780" y2="230" stroke="rgba(255, 255, 255, 0.6)" stroke-width="2" class="network-link"/>
+
+                    <line x1="300" y1="125" x2="280" y2="90" stroke="rgba(255, 255, 255, 0.6)" stroke-width="2" class="network-link"/>
+                    <line x1="700" y1="125" x2="680" y2="90" stroke="rgba(255, 255, 255, 0.6)" stroke-width="2" class="network-link"/>
+
+                    <line x1="325" y1="150" x2="475" y2="150" stroke="rgba(255, 255, 255, 0.8)" stroke-width="3" class="network-link"/>
+                    <line x1="525" y1="150" x2="675" y2="150" stroke="rgba(255, 255, 255, 0.8)" stroke-width="3" class="network-link"/>
+
+                    <line x1="725" y1="150" x2="900" y2="155" stroke="rgba(255, 255, 255, 0.6)" stroke-width="2" class="network-link"/>
+
+                    <!-- Data Flow Indicators -->
+                    <circle cx="400" cy="150" r="3" fill="rgba(0, 255, 100, 0.9)" class="data-particle" style="animation-delay: 0s"/>
+                    <circle cx="600" cy="150" r="3" fill="rgba(0, 255, 100, 0.9)" class="data-particle" style="animation-delay: 0.5s"/>
+                    <circle cx="280" cy="200" r="3" fill="rgba(255, 255, 255, 0.9)" class="data-particle" style="animation-delay: 1s"/>
+                    <circle cx="580" cy="200" r="3" fill="rgba(255, 255, 255, 0.9)" class="data-particle" style="animation-delay: 1.5s"/>
+                </g>
+
+                <!-- Gradient Overlay -->
+                <rect width="1200" height="300" fill="url(#networkGradient)" opacity="0.2"/>
+            </svg>
+        </div>
+
+        <div class="hero-content">
+            <h1 class="hero-title">Network Infrastructure</h1>
+            <p class="hero-subtitle">Real-time monitoring • 247 Active Devices • 99.98% Uptime</p>
+        </div>
+    </div>
+
+    <div class="section-content network-content">
+        <div class="section-description">Manage and monitor all network devices across datacenters</div>
+
+        <!-- Network Devices Table -->
+        <div id="network-devices-table"></div>
+    </div>
+</div>
+
+<!-- Device Detail Popup Modal -->
+<div id="device-detail-modal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 class="modal-title">Device Details</h2>
+            <button class="modal-close" onclick="closeDeviceDetailModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="device-detail-content">
+            <!-- Device details will be populated here -->
+        </div>
+    </div>
+</div>
