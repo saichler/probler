@@ -1,7 +1,7 @@
 // Node Detail Modal and Helper Functions
 
 // Node Detail Modal
-function showNodeDetailModal(node, cluster) {
+async function showNodeDetailModal(node, cluster) {
     const modal = document.getElementById('node-detail-modal');
     const content = document.getElementById('node-detail-content');
     const modalTitle = modal.querySelector('.modal-title');
@@ -9,8 +9,77 @@ function showNodeDetailModal(node, cluster) {
     // Update modal title
     modalTitle.textContent = `Node ${node.name} Details`;
 
-    // Generate mock detailed node data matching node.json structure
-    const nodeDetails = generateNodeDetails(node, cluster);
+    // Fetch real node details from API
+    let nodeDetails;
+    try {
+        console.log('Fetching node details for:', node.name);
+        const response = await makeAuthenticatedRequest('/probler/0/exec', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                targetId: 'lab',
+                hostId: 'lab',
+                pollarisName: 'kubernetes',
+                jobName: 'nodedetails',
+                arguments: {
+                    nodename: node.name
+                }
+            })
+        });
+
+        console.log('API response status:', response ? response.ok : 'no response');
+
+        if (!response || !response.ok) {
+            console.log('API failed, using mock data');
+            nodeDetails = generateNodeDetails(node, cluster);
+        } else {
+            const data = await response.json();
+            console.log('API returned data:', data);
+
+            // Extract and decode the base64-encoded result
+            if (data && data.result) {
+                try {
+                    let decodedResult = atob(data.result);
+                    console.log('Decoded result:', decodedResult);
+
+                    // Strip any binary header bytes before the JSON
+                    const jsonStart = decodedResult.indexOf('{');
+                    if (jsonStart > 0) {
+                        decodedResult = decodedResult.substring(jsonStart);
+                        console.log('Stripped header, new result:', decodedResult.substring(0, 100));
+                    }
+
+                    const parsedData = JSON.parse(decodedResult);
+
+                    // Check if response has items array (kubectl get node format)
+                    if (parsedData && parsedData.items && parsedData.items.length > 0) {
+                        // Find the matching node by name or use first item
+                        nodeDetails = parsedData.items.find(item => item.metadata.name === node.name) || parsedData.items[0];
+                        console.log('Using API data from items array');
+                    } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
+                        nodeDetails = parsedData;
+                        console.log('Using API data');
+                    } else {
+                        console.log('Invalid API data structure, using mock data');
+                        nodeDetails = generateNodeDetails(node, cluster);
+                    }
+                } catch (error) {
+                    console.log('Error decoding/parsing result:', error);
+                    nodeDetails = generateNodeDetails(node, cluster);
+                }
+            } else {
+                console.log('No result field in response, using mock data');
+                nodeDetails = generateNodeDetails(node, cluster);
+            }
+        }
+    } catch (error) {
+        console.log('Error fetching node details:', error);
+        nodeDetails = generateNodeDetails(node, cluster);
+    }
+
+    console.log('Final nodeDetails:', nodeDetails);
 
     content.innerHTML = `
         <div class="modal-tabs">

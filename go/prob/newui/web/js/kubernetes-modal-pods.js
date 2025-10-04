@@ -1,7 +1,7 @@
 // Pod Detail Modal and Helper Functions
 
 // Pod Detail Modal
-function showPodDetailModal(pod, cluster) {
+async function showPodDetailModal(pod, cluster) {
     const modal = document.getElementById('k8s-detail-modal');
     const content = document.getElementById('k8s-detail-content');
     const modalTitle = modal.querySelector('.modal-title');
@@ -9,8 +9,78 @@ function showPodDetailModal(pod, cluster) {
     // Update modal title
     modalTitle.textContent = `Pod ${pod.name} Details`;
 
-    // Generate detailed pod data matching pod.json structure
-    const podDetails = generatePodDetails(pod, cluster);
+    // Fetch real pod details from API
+    let podDetails;
+    try {
+        console.log('Fetching pod details for:', pod.name, 'in namespace:', pod.namespace);
+        const response = await makeAuthenticatedRequest('/probler/0/exec', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                targetId: 'lab',
+                hostId: 'lab',
+                pollarisName: 'kubernetes',
+                jobName: 'poddetails',
+                arguments: {
+                    namespace: pod.namespace,
+                    podname: pod.name
+                }
+            })
+        });
+
+        console.log('API response status:', response ? response.ok : 'no response');
+
+        if (!response || !response.ok) {
+            console.log('API failed, using mock data');
+            podDetails = generatePodDetails(pod, cluster);
+        } else {
+            const data = await response.json();
+            console.log('API returned data:', data);
+
+            // Extract and decode the base64-encoded result
+            if (data && data.result) {
+                try {
+                    let decodedResult = atob(data.result);
+                    console.log('Decoded result:', decodedResult);
+
+                    // Strip any binary header bytes before the JSON
+                    const jsonStart = decodedResult.indexOf('{');
+                    if (jsonStart > 0) {
+                        decodedResult = decodedResult.substring(jsonStart);
+                        console.log('Stripped header, new result:', decodedResult.substring(0, 100));
+                    }
+
+                    const parsedData = JSON.parse(decodedResult);
+
+                    // Check if response has items array (kubectl get pod format)
+                    if (parsedData && parsedData.items && parsedData.items.length > 0) {
+                        // Find the matching pod by name or use first item
+                        podDetails = parsedData.items.find(item => item.metadata.name === pod.name) || parsedData.items[0];
+                        console.log('Using API data from items array');
+                    } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
+                        podDetails = parsedData;
+                        console.log('Using API data');
+                    } else {
+                        console.log('Invalid API data structure, using mock data');
+                        podDetails = generatePodDetails(pod, cluster);
+                    }
+                } catch (error) {
+                    console.log('Error decoding/parsing result:', error);
+                    podDetails = generatePodDetails(pod, cluster);
+                }
+            } else {
+                console.log('No result field in response, using mock data');
+                podDetails = generatePodDetails(pod, cluster);
+            }
+        }
+    } catch (error) {
+        console.log('Error fetching pod details:', error);
+        podDetails = generatePodDetails(pod, cluster);
+    }
+
+    console.log('Final podDetails:', podDetails);
 
     content.innerHTML = `
         <div class="modal-tabs">
@@ -187,6 +257,10 @@ function showPodDetailModal(pod, cluster) {
                         <span class="detail-label">Enable Service Links:</span>
                         <span class="detail-value">${podDetails.spec.enableServiceLinks ? 'Yes' : 'No'}</span>
                     </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Host Network:</span>
+                        <span class="detail-value">${podDetails.spec.hostNetwork ? 'Yes' : 'No'}</span>
+                    </div>
                 </div>
             </div>
 
@@ -331,7 +405,22 @@ function showPodDetailModal(pod, cluster) {
                 ${podDetails.spec.volumes.map(volume => `
                     <div class="detail-section">
                         <h4 style="color: #0ea5e9; margin-bottom: 12px;">Volume: ${volume.name}</h4>
-                        ${volume.projected ? `
+                        ${volume.hostPath ? `
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">Type:</span>
+                                    <span class="detail-value">Host Path</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Path:</span>
+                                    <span class="detail-value"><code>${volume.hostPath.path}</code></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Path Type:</span>
+                                    <span class="detail-value">${volume.hostPath.type || 'N/A'}</span>
+                                </div>
+                            </div>
+                        ` : volume.projected ? `
                             <div class="detail-grid">
                                 <div class="detail-item">
                                     <span class="detail-label">Type:</span>
