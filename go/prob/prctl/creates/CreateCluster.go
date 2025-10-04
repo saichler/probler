@@ -9,22 +9,21 @@ import (
 	"github.com/saichler/probler/go/prob/common"
 )
 
-func CreateCluster(kubeconfig, context string, serviceArea int32) *l8poll.L8C_Target {
-
-	device := &l8poll.L8C_Target{}
+func CreateCluster(kubeconfig, context string, serviceArea int32) *l8tpollaris.L8PTarget {
+	device := &l8tpollaris.L8PTarget{}
 	device.TargetId = context
-	device.LinkD = &l8services.L8ServiceLink{ZsideServiceName: common.INVENTORY_SERVICE_K8S,
+	device.LinkData = &l8services.L8ServiceLink{ZsideServiceName: common.INVENTORY_SERVICE_K8S,
 		ZsideServiceArea: common.INVENTORY_AREA_K8S}
-	device.LinkP = &l8services.L8ServiceLink{ZsideServiceName: common.PARSER_SERVICE_K8s,
+	device.LinkParser = &l8services.L8ServiceLink{ZsideServiceName: common.PARSER_SERVICE_K8s,
 		ZsideServiceArea: common.PARSER_AREA_K8S}
-	device.Hosts = make(map[string]*l8poll.L8C_Host)
-	host := &l8poll.L8C_Host{}
+	device.Hosts = make(map[string]*l8tpollaris.L8PHost)
+	host := &l8tpollaris.L8PHost{}
 	host.TargetId = device.TargetId
 
-	host.Configs = make(map[int32]*l8poll.L8T_Connection)
+	host.Configs = make(map[int32]*l8tpollaris.L8PHostProtocol)
 	device.Hosts[device.TargetId] = host
 
-	k8sConfig := &l8poll.L8T_Connection{}
+	k8sConfig := &l8tpollaris.L8PHostProtocol{}
 
 	data, err := os.ReadFile(kubeconfig)
 	if err != nil {
@@ -33,7 +32,7 @@ func CreateCluster(kubeconfig, context string, serviceArea int32) *l8poll.L8C_Ta
 	k8sConfig.KubeConfig = base64.StdEncoding.EncodeToString(data)
 
 	k8sConfig.KukeContext = context
-	k8sConfig.Protocol = l8poll.L8C_Protocol_L8P_Kubectl
+	k8sConfig.Protocol = l8tpollaris.L8PProtocol_L8PKubectl
 
 	host.Configs[int32(k8sConfig.Protocol)] = k8sConfig
 

@@ -7,21 +7,21 @@ import (
 	"github.com/saichler/probler/go/prob/common"
 )
 
-func CreateDevice(ip string, serviceArea byte) *l8poll.L8C_Target {
-	device := &l8poll.L8C_Target{}
+func CreateDevice(ip string, serviceArea byte) *l8tpollaris.L8PTarget {
+	device := &l8tpollaris.L8PTarget{}
 	device.TargetId = ip
-	device.LinkD = &l8services.L8ServiceLink{ZsideServiceName: common.INVENTORY_SERVICE_BOX, ZsideServiceArea: int32(serviceArea)}
-	device.LinkP = &l8services.L8ServiceLink{ZsideServiceName: common2.ParserServicePrefix + common.INVENTORY_SERVICE_BOX,
+	device.LinkData = &l8services.L8ServiceLink{ZsideServiceName: common.INVENTORY_SERVICE_BOX, ZsideServiceArea: int32(serviceArea)}
+	device.LinkParser = &l8services.L8ServiceLink{ZsideServiceName: common2.ParserServicePrefix + common.INVENTORY_SERVICE_BOX,
 		ZsideServiceArea: int32(serviceArea)}
-	device.Hosts = make(map[string]*l8poll.L8C_Host)
-	host := &l8poll.L8C_Host{}
+	device.Hosts = make(map[string]*l8tpollaris.L8PHost)
+	host := &l8tpollaris.L8PHost{}
 	host.TargetId = device.TargetId
 
-	host.Configs = make(map[int32]*l8poll.L8T_Connection)
+	host.Configs = make(map[int32]*l8tpollaris.L8PHostProtocol)
 	device.Hosts[device.TargetId] = host
 
-	sshConfig := &l8poll.L8T_Connection{}
-	sshConfig.Protocol = l8poll.L8C_Protocol_L8P_SSH
+	sshConfig := &l8tpollaris.L8PHostProtocol{}
+	sshConfig.Protocol = l8tpollaris.L8PProtocol_L8PSSH
 	sshConfig.Port = 22
 	sshConfig.Addr = ip
 	sshConfig.Username = "simadmin"
@@ -31,8 +31,8 @@ func CreateDevice(ip string, serviceArea byte) *l8poll.L8C_Target {
 
 	host.Configs[int32(sshConfig.Protocol)] = sshConfig
 
-	snmpConfig := &l8poll.L8T_Connection{}
-	snmpConfig.Protocol = l8poll.L8C_Protocol_L8P_PSNMPV2
+	snmpConfig := &l8tpollaris.L8PHostProtocol{}
+	snmpConfig.Protocol = l8tpollaris.L8PProtocol_L8PPSNMPV2
 	snmpConfig.Addr = ip
 	snmpConfig.Port = 161
 	snmpConfig.Timeout = 60

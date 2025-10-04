@@ -48,9 +48,9 @@ func startWebServer(port int, cert string) {
 	nic.Start()
 	nic.WaitForConnection()
 
-	nic.Resources().Registry().Register(&l8poll.L8Pollaris{})
-	nic.Resources().Registry().Register(&l8poll.L8C_Target{})
-	nic.Resources().Registry().Register(&l8poll.L8C_TargetList{})
+	nic.Resources().Registry().Register(&l8tpollaris.L8Pollaris{})
+	nic.Resources().Registry().Register(&l8tpollaris.L8PTarget{})
+	nic.Resources().Registry().Register(&l8tpollaris.L8PTargetList{})
 	nic.Resources().Registry().Register(&types.NetworkDevice{})
 	nic.Resources().Registry().Register(&types.NetworkDeviceList{})
 	nic.Resources().Registry().Register(&types2.K8SCluster{})
@@ -58,7 +58,7 @@ func startWebServer(port int, cert string) {
 	nic.Resources().Registry().Register(&l8api.L8Query{})
 	nic.Resources().Registry().Register(&l8health.L8Top{})
 	nic.Resources().Registry().Register(&l8web.L8Empty{})
-	nic.Resources().Registry().Register(&l8poll.CJob{})
+	nic.Resources().Registry().Register(&l8tpollaris.CJob{})
 	nic.Resources().Registry().Register(&types2.NetworkTopology{})
 
 	hs, ok := nic.Resources().Services().ServiceHandler(health.ServiceName, 0)
