@@ -88,7 +88,7 @@ func main() {
 			commands.Logs(rc, "", "", resources)
 			return
 		} else if cmd2 == "details" {
-			commands.Details(rc, "", "", resources)
+			commands.Details(rc, resources)
 			return
 		}
 	}

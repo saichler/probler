@@ -10,17 +10,44 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func Details(rc *client.RestClient, namespace, podname string, resources ifs.IResources) {
+func Details(rc *client.RestClient, resources ifs.IResources) {
 	resources.Registry().Register(&l8tpollaris.CJob{})
-	job := boot.DetailsJob("lab", "lab", "probler-collector", "probler-collector-0")
+
+	job := boot.NodeDetailsJob("lab", "lab", "node4")
+	doCJob("Node Detail", rc, job)
+
+	job = boot.PodDetailsJob("lab", "lab", "probler-k8s", "probler-k8s-0")
+	doCJob("Pods Detail", rc, job)
+
+	job = boot.DeploymentDetailsJob("lab", "lab", "probler-parser", "probler-parser")
+	doCJob("Deployment Detail", rc, job)
+
+	job = boot.StatefulsetDetailsJob("lab", "lab", "probler-k8s", "probler-k8s")
+	doCJob("Statefulset Detail", rc, job)
+
+	job = boot.DaemonsetDetailsJob("lab", "lab", "probler-vnet", "probler-vnet")
+	doCJob("Daemonset Detail", rc, job)
+
+	job = boot.ServiceDetailsJob("lab", "lab", "kube-system", "kube-dns")
+	doCJob("Service Detail", rc, job)
+
+	job = boot.NamespaceDetailsJob("lab", "lab", "kube-system")
+	doCJob("Namespace Detail", rc, job)
+
+	job = boot.NetworkPolicyDetailsJob("lab", "lab", "default", "access-nginx")
+	doCJob("Network Policy Detail", rc, job)
+}
+
+func doCJob(name string, rc *client.RestClient, job *l8tpollaris.CJob) {
 	jsn, err := protojson.Marshal(job)
-	fmt.Println("body:", string(jsn))
+	fmt.Println("body for ", name, ":", string(jsn))
 	resp, err := rc.POST("0/exec", "CJob", "", "", job)
 	if err != nil {
-		resources.Logger().Error("POST Error:", err.Error())
+		fmt.Println("POST Error:", err.Error())
 		return
 	}
-
 	jsn, err = protojson.Marshal(resp)
-	fmt.Println(string(jsn))
+	if err != nil {
+		fmt.Println("Error:", err.Error())
+	}
 }

@@ -3,3 +3,7 @@
  in newui, once login, fetch the Device Section data via Endpoint '/probler/0/NetDev' GET command with a parameter named body with the value like '{"text":"select * from
   NetworkDevice where Id=* limit 15 page 0"}'. The response example is '[Pasted text #1]', where in the map 'stats', the key 'Online' has the number of Online devices and key
   'Total' has the total devices. use the Total to calculate the number of pages for the device table.
+
+
+
+{"text":"select * from K8sCluster"}
