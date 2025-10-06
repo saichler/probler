@@ -21,9 +21,17 @@ func main() {
 	nic.WaitForConnection()
 	res.Logger().Info("Registering k8s service")
 	nic.Resources().Registry().Register(&types2.K8SClusterList{})
+
 	//Add the inventory model and mark the Id field as key
 	clusterNode, _ := nic.Resources().Introspector().Inspect(&types2.K8SCluster{})
 	introspecting.AddPrimaryKeyDecorator(clusterNode, "Name")
+
+	podsNode, ok := nic.Resources().Introspector().Node("k8scluster.pods")
+	if !ok {
+		nic.Resources().Logger().Error("Failed to get pods node ")
+	} else {
+		introspecting.AddAlwayOverwriteDecorator(podsNode)
+	}
 
 	//&l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 1}
 

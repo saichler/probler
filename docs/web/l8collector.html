@@ -805,7 +805,7 @@
             <h1 class="hero-title">Layer 8 Data Collection</h1>
             <p class="hero-subtitle">Advanced Multi-Protocol Network Intelligence Platform</p>
             <p class="hero-description">
-                Unify your network data collection with enterprise-grade SNMP, SSH, and Kubernetes monitoring.
+                Unify your network data collection with enterprise-grade SNMP, SSH, Kubernetes, REST/RESTCONF, and GraphQL monitoring.
                 Built for scale, designed for reliability, optimized for performance.
             </p>
 
@@ -844,7 +844,7 @@
                         <div class="feature-icon">🌐</div>
                         <h3 class="feature-title">Multi-Protocol Support</h3>
                         <p class="feature-description">
-                            Native support for SNMP v2c, SSH command execution, and Kubernetes cluster monitoring.
+                            Native support for SNMP v2c, SSH, Kubernetes, REST/RESTCONF, and GraphQL.
                             Extensible architecture for adding custom protocols.
                         </p>
                     </div>
@@ -964,7 +964,7 @@
                         <div class="stat-label">Devices per Instance</div>
                     </div>
                     <div class="stat-card fade-in">
-                        <span class="stat-number">3</span>
+                        <span class="stat-number">5</span>
                         <div class="stat-label">Supported Protocols</div>
                     </div>
                     <div class="stat-card fade-in">
@@ -1018,6 +1018,28 @@
                             <li>Base64-encoded kubeconfig support</li>
                             <li>Cluster resource monitoring</li>
                             <li>Dynamic parameter substitution ($variable)</li>
+                        </ul>
+                    </div>
+
+                    <div class="protocol-card fade-in">
+                        <h3 class="protocol-title">REST/RESTCONF</h3>
+                        <ul class="protocol-features">
+                            <li>HTTP/HTTPS-based API data collection</li>
+                            <li>Multiple authentication methods (token, basic)</li>
+                            <li>Support for all HTTP methods (GET, POST, PUT, PATCH, DELETE)</li>
+                            <li>Flexible body and response handling</li>
+                            <li>Certificate-based secure connections</li>
+                        </ul>
+                    </div>
+
+                    <div class="protocol-card fade-in">
+                        <h3 class="protocol-title">GraphQL</h3>
+                        <ul class="protocol-features">
+                            <li>GraphQL query execution</li>
+                            <li>API key and token-based authentication</li>
+                            <li>Flexible query structure support</li>
+                            <li>Typed response handling with protobuf</li>
+                            <li>HTTPS with certificate support</li>
                         </ul>
                     </div>
                 </div>
@@ -1103,7 +1125,7 @@ response := collectorService.Post(object.New(device), vnic)</div>
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; 2024 Layer 8 Data Collection. Licensed under the Apache License 2.0.</p>
+                <p>&copy; 2024-2025 Layer 8 Data Collection. Licensed under the Apache License 2.0.</p>
                 <p>For questions, issues, or contributions, please use the GitHub issue tracker.</p>
             </div>
         </div>
