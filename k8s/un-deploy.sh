@@ -1,4 +1,4 @@
-kubectl delete -f webui.yaml
+kubectl delete -f webui2.yaml
 kubectl delete -f box.yaml
 kubectl delete -f k8s.yaml
 kubectl delete -f orm.yaml
