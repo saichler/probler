@@ -42,8 +42,17 @@ func main() {
 		Port:          2443,
 		Https:         true,
 		Prefix:        common.PREFIX,
-		AuthPaths:     []string{"auth"},
 		TokenRequired: true,
+		AuthInfo: &client.RestAuthInfo{
+			IsAPIKey:   false,
+			NeedAuth:   true,
+			BodyType:   "AuthUser",
+			UserField:  "User",
+			PassField:  "Pass",
+			RespType:   "AuthToken",
+			TokenField: "Token",
+			AuthPath:   "/auth",
+		},
 	}
 
 	resources := common.CreateResources2("client", "./")
@@ -60,6 +69,7 @@ func main() {
 	resources.Introspector().Inspect(&l8api.L8Query{})
 	resources.Introspector().Inspect(&types5.NetworkTopology{})
 	resources.Introspector().Inspect(&l8api.AuthToken{})
+	resources.Introspector().Inspect(&l8api.AuthUser{})
 
 	rc, err := client.NewRestClient(clientConfig, resources)
 	if err != nil {

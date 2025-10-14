@@ -6,6 +6,7 @@ import (
 
 	"github.com/saichler/l8bus/go/overlay/health"
 	"github.com/saichler/l8bus/go/overlay/protocol"
+	"github.com/saichler/l8bus/go/overlay/vnet"
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8services/go/services/manager"

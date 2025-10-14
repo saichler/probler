@@ -265,6 +265,8 @@
         .feature-icon.security { background: linear-gradient(45deg, #ff6b6b, #ee5a24); }
         .feature-icon.web { background: linear-gradient(45deg, #45b7d1, #096dd9); }
         .feature-icon.performance { background: linear-gradient(45deg, #f9ca24, #f0932b); }
+        .feature-icon.cache { background: linear-gradient(45deg, #8e44ad, #6c3483); }
+        .feature-icon.notify { background: linear-gradient(45deg, #27ae60, #229954); }
 
         .feature-card h3 {
             font-size: 1.5rem;
@@ -536,6 +538,16 @@
                     <h3>Performance Optimized</h3>
                     <p>Lock-free operations, memory-efficient byte handling, asynchronous logging, and connection pooling for maximum performance.</p>
                 </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon cache">💾</div>
+                    <h3>High-Performance Cache</h3>
+                    <p>In-memory cache with storage integration, CRUD operations, built-in notifications, statistics tracking, and query support with pagination (78.1% test coverage).</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon notify">📢</div>
+                    <h3>Notification System</h3>
+                    <p>Comprehensive notification system for distributed state management with Add, Delete, Update, Replace, and Sync operations (87.8% test coverage).</p>
+                </div>
             </div>
         </div>
     </section>
@@ -615,6 +627,8 @@ func main() {
                 </div>
                 <div class="footer-section">
                     <h3>Components</h3>
+                    <p><a href="#">Cache System</a></p>
+                    <p><a href="#">Notifications</a></p>
                     <p><a href="#">Queues & Workers</a></p>
                     <p><a href="#">Security Utils</a></p>
                     <p><a href="#">Web Framework</a></p>

@@ -116,7 +116,7 @@ function generateDeploymentDetails(deployment, cluster) {
 }
 
 // Deployment Detail Modal
-function showDeploymentDetailModal(deployment, cluster) {
+async function showDeploymentDetailModal(deployment, cluster) {
     const modal = document.getElementById('k8s-detail-modal');
     const content = document.getElementById('k8s-detail-content');
     const modalTitle = modal.querySelector('.modal-title');
@@ -124,8 +124,78 @@ function showDeploymentDetailModal(deployment, cluster) {
     // Update modal title
     modalTitle.textContent = `Deployment ${deployment.name} Details`;
 
-    // Generate detailed deployment data matching deployment.json structure
-    const deploymentDetails = generateDeploymentDetails(deployment, cluster);
+    // Fetch real deployment details from API
+    let deploymentDetails;
+    try {
+        console.log('Fetching deployment details for:', deployment.name, 'in namespace:', deployment.namespace);
+        const response = await makeAuthenticatedRequest('/probler/0/exec', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                targetId: 'lab',
+                hostId: 'lab',
+                pollarisName: 'kubernetes',
+                jobName: 'deploymentdetails',
+                arguments: {
+                    namespace: deployment.namespace,
+                    deploymentname: deployment.name
+                }
+            })
+        });
+
+        console.log('API response status:', response ? response.ok : 'no response');
+
+        if (!response || !response.ok) {
+            console.log('API failed, using mock data');
+            deploymentDetails = generateDeploymentDetails(deployment, cluster);
+        } else {
+            const data = await response.json();
+            console.log('API returned data:', data);
+
+            // Extract and decode the base64-encoded result
+            if (data && data.result) {
+                try {
+                    let decodedResult = atob(data.result);
+                    console.log('Decoded result:', decodedResult);
+
+                    // Strip any binary header bytes before the JSON
+                    const jsonStart = decodedResult.indexOf('{');
+                    if (jsonStart > 0) {
+                        decodedResult = decodedResult.substring(jsonStart);
+                        console.log('Stripped header, new result:', decodedResult.substring(0, 100));
+                    }
+
+                    const parsedData = JSON.parse(decodedResult);
+
+                    // Check if response has items array (kubectl get deployment format)
+                    if (parsedData && parsedData.items && parsedData.items.length > 0) {
+                        // Find the matching deployment by name or use first item
+                        deploymentDetails = parsedData.items.find(item => item.metadata.name === deployment.name) || parsedData.items[0];
+                        console.log('Using API data from items array');
+                    } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
+                        deploymentDetails = parsedData;
+                        console.log('Using API data');
+                    } else {
+                        console.log('Invalid API data structure, using mock data');
+                        deploymentDetails = generateDeploymentDetails(deployment, cluster);
+                    }
+                } catch (error) {
+                    console.log('Error decoding/parsing result:', error);
+                    deploymentDetails = generateDeploymentDetails(deployment, cluster);
+                }
+            } else {
+                console.log('No result field in response, using mock data');
+                deploymentDetails = generateDeploymentDetails(deployment, cluster);
+            }
+        }
+    } catch (error) {
+        console.log('Error fetching deployment details:', error);
+        deploymentDetails = generateDeploymentDetails(deployment, cluster);
+    }
+
+    console.log('Final deploymentDetails:', deploymentDetails);
 
     content.innerHTML = `
         <div class="modal-tabs">

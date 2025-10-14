@@ -8,7 +8,7 @@ metadata:
 ---
 
 apiVersion: apps/v1
-kind: StatefulSet 
+kind: StatefulSet
 metadata:
   namespace: probler-box
   name: probler-box
@@ -16,7 +16,7 @@ metadata:
     app: probler-box
 spec:
   serviceName: probler-box
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: probler-box

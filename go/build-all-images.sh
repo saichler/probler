@@ -10,7 +10,7 @@ cd ../inv_box
 ./build.sh
 cd ../inv_k8s
 ./build.sh
-cd ../ui
+cd ../newui
 ./build.sh
 cd ../orm
 ./build.sh
