@@ -7,3 +7,5 @@
 
 
 {"text":"select * from K8sCluster"}
+
+{"text":"select * from L8Health"}

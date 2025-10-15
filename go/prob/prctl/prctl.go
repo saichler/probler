@@ -70,6 +70,8 @@ func main() {
 	resources.Introspector().Inspect(&types5.NetworkTopology{})
 	resources.Introspector().Inspect(&l8api.AuthToken{})
 	resources.Introspector().Inspect(&l8api.AuthUser{})
+	resources.Introspector().Inspect(&l8health.L8Health{})
+	resources.Introspector().Inspect(&l8health.L8HealthList{})
 
 	rc, err := client.NewRestClient(clientConfig, resources)
 	if err != nil {
@@ -99,6 +101,9 @@ func main() {
 			return
 		} else if cmd2 == "details" {
 			commands.Details(rc, resources)
+			return
+		} else if cmd2 == "health" {
+			commands.GetHealth(rc, resources)
 			return
 		}
 	}
