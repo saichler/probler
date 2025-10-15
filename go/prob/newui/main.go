@@ -60,6 +60,8 @@ func startWebServer(port int, cert string) {
 	nic.Resources().Registry().Register(&l8web.L8Empty{})
 	nic.Resources().Registry().Register(&l8tpollaris.CJob{})
 	nic.Resources().Registry().Register(&types2.NetworkTopology{})
+	nic.Resources().Registry().Register(&l8health.L8Health{})
+	nic.Resources().Registry().Register(&l8health.L8HealthList{})
 
 	hs, ok := nic.Resources().Services().ServiceHandler(health.ServiceName, 0)
 	if ok {
