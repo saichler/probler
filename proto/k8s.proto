@@ -20,7 +20,16 @@ message K8sRestartsState {
 enum K8sPodStatus {
   Invalid_Pod_Status = 0;
   Running = 1;
-
+  Pending = 2;
+  Succeeded = 3;
+  Failed = 4;
+  Unknown = 5;
+  CrashLoopBackOff = 6;
+  Terminating = 7;
+  ContainerCreating = 8;
+  ImagePullBackOff = 9;
+  Error = 10;
+  Completed = 11;
 }
 
 enum K8sNodeStatus {

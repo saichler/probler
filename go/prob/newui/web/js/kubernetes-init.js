@@ -66,6 +66,10 @@ function initializeClusterTables(clusterName, clusterData) {
 
     // Initialize pods table
     if (document.getElementById(`pods-${clusterName}-table`)) {
+        console.log('Initializing pods table for cluster:', clusterName);
+        console.log('Pods data:', pods);
+        console.log('Sample pod data:', pods[0]);
+
         new ProblerTable(`pods-${clusterName}-table`, {
             columns: [
                 { key: 'namespace', label: 'NAMESPACE' },
@@ -73,30 +77,41 @@ function initializeClusterTables(clusterName, clusterData) {
                 {
                     key: 'ready',
                     label: 'READY',
-                    render: (value, row) => {
+                    formatter: (value, row) => {
+                        console.log('Ready column - raw value:', value);
+                        console.log('Ready column - value type:', typeof value);
+                        console.log('Ready column - full row:', row);
+
                         // Handle object format: {count: 1, outof: 1}
                         let count, outof;
                         if (value && typeof value === 'object') {
+                            console.log('Detected object format');
                             count = value.count || 0;
                             outof = value.outof || 0;
                         } else if (typeof value === 'string') {
+                            console.log('Detected string format');
                             // Handle string format: "1/1"
                             const parts = value.split('/');
                             count = parseInt(parts[0]) || 0;
                             outof = parseInt(parts[1]) || 0;
                         } else {
+                            console.log('Unknown format, defaulting to 0/0');
                             count = 0;
                             outof = 0;
                         }
+
+                        console.log('Final count:', count, 'outof:', outof);
                         const statusClass = count === outof ? 'status-operational' :
                                            count > 0 ? 'status-warning' : 'status-critical';
-                        return `<span class="status-badge ${statusClass}">${count}/${outof}</span>`;
+                        const result = `<span class="status-badge ${statusClass}">${count}/${outof}</span>`;
+                        console.log('Returning HTML:', result);
+                        return result;
                     }
                 },
                 {
                     key: 'status',
                     label: 'STATUS',
-                    render: (value) => {
+                    formatter: (value) => {
                         const statusClass = value === 'Running' ? 'status-operational' :
                                            value === 'Pending' ? 'status-warning' :
                                            value === 'Succeeded' ? 'status-operational' :
