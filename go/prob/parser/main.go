@@ -26,11 +26,18 @@ func main() {
 	clusterNode, _ := nic.Resources().Introspector().Inspect(&types2.K8SCluster{})
 	introspecting.AddPrimaryKeyDecorator(clusterNode, "Name")
 
-	ready, err := nic.Resources().Registry().Info("K8SReadyState")
+	node, err := nic.Resources().Registry().Info("K8SReadyState")
 	if err != nil {
 		nic.Resources().Logger().Error(err)
 	} else {
-		ready.AddSerializer(&serializers.Ready{})
+		node.AddSerializer(&serializers.Ready{})
+	}
+
+	node, err = nic.Resources().Registry().Info("K8SPodStatus")
+	if err != nil {
+		nic.Resources().Logger().Error(err)
+	} else {
+		node.AddSerializer(&serializers.Status{})
 	}
 
 	nic.Resources().Services().RegisterServiceHandlerType(&service.ParsingService{})
