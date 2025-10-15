@@ -26,7 +26,7 @@ func main() {
 	//Add the inventory model and mark the Id field as key
 	clusterNode, _ := nic.Resources().Introspector().Inspect(&types2.K8SCluster{})
 	introspecting.AddPrimaryKeyDecorator(clusterNode, "Name")
-	ready, err := nic.Resources().Registry().Info("k8scluster.pods.ready")
+	ready, err := nic.Resources().Registry().Info("K8SReadyState")
 	if err != nil {
 		nic.Resources().Logger().Error(err)
 	} else {

@@ -7,8 +7,10 @@ import (
 	"github.com/saichler/l8parser/go/parser/boot"
 	"github.com/saichler/l8parser/go/parser/service"
 	"github.com/saichler/l8pollaris/go/pollaris"
+	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
+	"github.com/saichler/probler/go/serializers"
 	types2 "github.com/saichler/probler/go/types"
 	types3 "github.com/saichler/probler/go/types"
 )
@@ -20,6 +22,16 @@ func main() {
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Start()
 	nic.WaitForConnection()
+
+	clusterNode, _ := nic.Resources().Introspector().Inspect(&types2.K8SCluster{})
+	introspecting.AddPrimaryKeyDecorator(clusterNode, "Name")
+
+	ready, err := nic.Resources().Registry().Info("K8SReadyState")
+	if err != nil {
+		nic.Resources().Logger().Error(err)
+	} else {
+		ready.AddSerializer(&serializers.Ready{})
+	}
 
 	nic.Resources().Services().RegisterServiceHandlerType(&service.ParsingService{})
 	nic.Resources().Services().RegisterServiceHandlerType(&pollaris.PollarisService{})
