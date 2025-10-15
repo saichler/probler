@@ -70,10 +70,32 @@ function initializeClusterTables(clusterName, clusterData) {
             columns: [
                 { key: 'namespace', label: 'NAMESPACE' },
                 { key: 'name', label: 'NAME' },
+                {
+                    key: 'ready',
+                    label: 'READY',
+                    render: (value, row) => {
+                        const statusClass = row.readyContainers === row.containers ? 'status-operational' :
+                                           row.readyContainers > 0 ? 'status-warning' : 'status-critical';
+                        return `<span class="status-badge ${statusClass}">${value}</span>`;
+                    }
+                },
+                {
+                    key: 'status',
+                    label: 'STATUS',
+                    render: (value) => {
+                        const statusClass = value === 'Running' ? 'status-operational' :
+                                           value === 'Pending' ? 'status-warning' :
+                                           value === 'Succeeded' ? 'status-operational' :
+                                           'status-critical';
+                        return `<span class="status-badge ${statusClass}">${value}</span>`;
+                    }
+                },
+                { key: 'restarts', label: 'RESTARTS' },
                 { key: 'age', label: 'AGE' },
                 { key: 'ip', label: 'IP' },
                 { key: 'node', label: 'NODE' },
-                { key: 'nominatedNode', label: 'NOMINATED NODE' }
+                { key: 'nominatedNode', label: 'NOMINATED NODE' },
+                { key: 'readinessGates', label: 'READINESS GATES' }
             ],
             data: pods,
             rowsPerPage: 15,

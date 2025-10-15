@@ -8,6 +8,7 @@ import (
 	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
+	"github.com/saichler/probler/go/serializers"
 	types2 "github.com/saichler/probler/go/types"
 )
 
@@ -25,6 +26,12 @@ func main() {
 	//Add the inventory model and mark the Id field as key
 	clusterNode, _ := nic.Resources().Introspector().Inspect(&types2.K8SCluster{})
 	introspecting.AddPrimaryKeyDecorator(clusterNode, "Name")
+	ready, err := nic.Resources().Registry().Info("k8scluster.pods.ready")
+	if err != nil {
+		nic.Resources().Logger().Error(err)
+	} else {
+		ready.AddSerializer(&serializers.Ready{})
+	}
 
 	podsNode, ok := nic.Resources().Introspector().Node("k8scluster.pods")
 	if !ok {
@@ -37,7 +44,7 @@ func main() {
 
 	//Activate the box inventory service with the primary key & sample model instance
 	res.Services().RegisterServiceHandlerType(&inventory.InventoryService{})
-	_, err := nic.Resources().Services().Activate(inventory.ServiceType, common2.INVENTORY_SERVICE_K8S, common2.INVENTORY_AREA_K8S, nic.Resources(),
+	_, err = nic.Resources().Services().Activate(inventory.ServiceType, common2.INVENTORY_SERVICE_K8S, common2.INVENTORY_AREA_K8S, nic.Resources(),
 		nic, "Name", &types2.K8SCluster{})
 
 	if err != nil {

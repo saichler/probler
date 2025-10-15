@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 sessionStorage.setItem('username', username);
 
                 // Redirect to main application
-                window.location.href = '/';
+                window.location.href = '/app.html';
             } else {
                 // Empty response body {} indicates failed login
                 showPopup('Invalid username or password. Please check your credentials and try again.');
@@ -124,6 +124,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Check if already logged in
     if (sessionStorage.getItem('isLoggedIn') === 'true') {
-        window.location.href = '/';
+        window.location.href = '/app.html';
     }
 });
