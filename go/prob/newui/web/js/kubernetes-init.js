@@ -74,9 +74,23 @@ function initializeClusterTables(clusterName, clusterData) {
                     key: 'ready',
                     label: 'READY',
                     render: (value, row) => {
-                        const statusClass = row.readyContainers === row.containers ? 'status-operational' :
-                                           row.readyContainers > 0 ? 'status-warning' : 'status-critical';
-                        return `<span class="status-badge ${statusClass}">${value}</span>`;
+                        // Handle object format: {count: 1, outof: 1}
+                        let count, outof;
+                        if (value && typeof value === 'object') {
+                            count = value.count || 0;
+                            outof = value.outof || 0;
+                        } else if (typeof value === 'string') {
+                            // Handle string format: "1/1"
+                            const parts = value.split('/');
+                            count = parseInt(parts[0]) || 0;
+                            outof = parseInt(parts[1]) || 0;
+                        } else {
+                            count = 0;
+                            outof = 0;
+                        }
+                        const statusClass = count === outof ? 'status-operational' :
+                                           count > 0 ? 'status-warning' : 'status-critical';
+                        return `<span class="status-badge ${statusClass}">${count}/${outof}</span>`;
                     }
                 },
                 {
