@@ -1177,7 +1177,7 @@
                 <li><a href="#" onclick="openAboutModal()" class="about-emphasized">About</a></li>
             </ul>
             <div class="nav-buttons">
-                <a href="app.html" class="demo-button" target="_blank">Demo</a>
+                <a href="#" onclick="showDemoCredentials(); return false;" class="demo-button">Demo</a>
                 <a href="#getting-started" class="cta-button">Try Now</a>
             </div>
         </nav>
@@ -1699,6 +1699,38 @@ open https://localhost:443/probler/
             </div>
         </section>
 
+        <!-- Demo Credentials Modal -->
+        <div id="demoModal" class="modal">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h2>🔐 Demo Credentials</h2>
+                    <span class="close" onclick="closeDemoModal()">&times;</span>
+                </div>
+                <div class="modal-body" style="padding: 3rem; text-align: center;">
+                    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">👤</div>
+                        <h3 style="color: #0ea5e9; margin-bottom: 1.5rem;">User Credentials for the Demo</h3>
+                        <div style="background: #f8f9ff; padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #0ea5e9;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span style="font-weight: 600; color: #4a5568;">Username:</span>
+                                <code style="background: white; padding: 0.5rem 1rem; border-radius: 5px; color: #0ea5e9; font-size: 1.1rem; font-weight: 600;">admin</code>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 600; color: #4a5568;">Password:</span>
+                                <code style="background: white; padding: 0.5rem 1rem; border-radius: 5px; color: #0ea5e9; font-size: 1.1rem; font-weight: 600;">Admin123!</code>
+                            </div>
+                        </div>
+                        <p style="color: #718096; font-size: 0.9rem; margin-top: 1rem;">
+                            Use these credentials to access the demo environment
+                        </p>
+                    </div>
+                    <button onclick="proceedToDemo()" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 1rem 3rem; border-radius: 12px; border: none; font-weight: 600; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3); transition: all 0.3s ease;">
+                        Open Demo →
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- About Modal -->
         <div id="aboutModal" class="modal">
             <div class="modal-content">
@@ -2038,6 +2070,22 @@ open https://localhost:443/probler/
             window.open(`https://github.com/saichler/${projectName}`, '_blank');
         }
 
+        // Demo Modal functions
+        function showDemoCredentials() {
+            document.getElementById('demoModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDemoModal() {
+            document.getElementById('demoModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function proceedToDemo() {
+            window.open('app.html', '_blank');
+            closeDemoModal();
+        }
+
         // Modal functions
         function openAboutModal() {
             document.getElementById('aboutModal').style.display = 'block';
@@ -2051,8 +2099,13 @@ open https://localhost:443/probler/
 
         // Close modal when clicking outside of it
         window.onclick = function(event) {
-            const modal = document.getElementById('aboutModal');
-            if (event.target === modal) {
+            const demoModal = document.getElementById('demoModal');
+            const aboutModal = document.getElementById('aboutModal');
+
+            if (event.target === demoModal) {
+                closeDemoModal();
+            }
+            if (event.target === aboutModal) {
                 closeAboutModal();
             }
         }
@@ -2060,6 +2113,7 @@ open https://localhost:443/probler/
         // Close modal with Escape key
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
+                closeDemoModal();
                 closeAboutModal();
             }
         });
