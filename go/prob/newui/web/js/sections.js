@@ -73,6 +73,13 @@ function loadSection(sectionName) {
                         if (typeof initializeKubernetes === 'function') {
                             initializeKubernetes();
                         }
+                    } else if (sectionName === 'system') {
+                        if (typeof initializeHealth === 'function') {
+                            initializeHealth();
+                        }
+                        if (typeof initializeParallax === 'function') {
+                            initializeParallax();
+                        }
                     }
                 }, 100);
             }, 200);
