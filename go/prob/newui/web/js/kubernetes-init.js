@@ -112,14 +112,25 @@ function initializeClusterTables(clusterName, clusterData) {
                     key: 'status',
                     label: 'STATUS',
                     formatter: (value) => {
-                        const statusClass = value === 'Running' ? 'status-operational' :
-                                           value === 'Pending' ? 'status-warning' :
-                                           value === 'Succeeded' ? 'status-operational' :
-                                           'status-critical';
-                        return `<span class="status-badge ${statusClass}">${value}</span>`;
+                        const statusText = getPodStatusText(value);
+                        const statusClass = getPodStatusClass(statusText);
+                        return `<span class="status-badge ${statusClass}">${statusText}</span>`;
                     }
                 },
-                { key: 'restarts', label: 'RESTARTS' },
+                {
+                    key: 'restarts',
+                    label: 'RESTARTS',
+                    formatter: (value) => {
+                        // Handle object format: {count: 24, ago: "(12d ago)"}
+                        if (typeof value === 'object' && value !== null) {
+                            const count = value.count || 0;
+                            const ago = value.ago || '';
+                            return `<span>${count} ${ago}</span>`;
+                        }
+                        // Handle simple number format for backward compatibility
+                        return `<span>${value}</span>`;
+                    }
+                },
                 { key: 'age', label: 'AGE' },
                 { key: 'ip', label: 'IP' },
                 { key: 'node', label: 'NODE' },

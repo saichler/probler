@@ -1,8 +1,59 @@
 // Kubernetes Table Initialization Module
 
+// Pod Status Enum Mapping (from k8s.pb.go)
+const PodStatusEnum = {
+    0: "Invalid_Pod_Status",
+    1: "Running",
+    2: "Pending",
+    3: "Succeeded",
+    4: "Failed",
+    5: "Unknown",
+    6: "CrashLoopBackOff",
+    7: "Terminating",
+    8: "ContainerCreating",
+    9: "ImagePullBackOff",
+    10: "Error",
+    11: "Completed"
+};
+
+// Function to convert Pod Status enum to text
+function getPodStatusText(statusValue) {
+    // If it's already a string, return it
+    if (typeof statusValue === 'string') {
+        return statusValue;
+    }
+    // If it's a number, convert using enum mapping
+    return PodStatusEnum[statusValue] || 'Unknown';
+}
+
+// Function to get status class for Pod Status
+function getPodStatusClass(statusText) {
+    const statusLower = statusText.toLowerCase();
+
+    // Operational statuses (green)
+    if (statusLower === 'running' || statusLower === 'succeeded' || statusLower === 'completed') {
+        return 'status-operational';
+    }
+
+    // Warning statuses (yellow/orange)
+    if (statusLower === 'pending' || statusLower === 'containercreating' || statusLower === 'terminating') {
+        return 'status-warning';
+    }
+
+    // Critical statuses (red)
+    if (statusLower === 'failed' || statusLower === 'error' ||
+        statusLower === 'crashloopbackoff' || statusLower === 'imagepullbackoff' ||
+        statusLower === 'unknown' || statusLower === 'invalid_pod_status') {
+        return 'status-critical';
+    }
+
+    // Default to warning for unknown statuses
+    return 'status-warning';
+}
+
 // Table Initialization Functions
 function initializePodsTable(cluster) {
-    const pods = generatePodsMockData(cluster);
+    const pods = []; // Mock data removed
     const containerElement = document.getElementById(`pods-${cluster}-table`);
 
     if (!containerElement) {
@@ -25,14 +76,25 @@ function initializePodsTable(cluster) {
             key: 'status',
             label: 'STATUS',
             render: (value) => {
-                const statusClass = value === 'Running' ? 'status-operational' :
-                                   value === 'Pending' ? 'status-warning' :
-                                   value === 'Succeeded' ? 'status-operational' :
-                                   'status-critical';
-                return `<span class="status-badge ${statusClass}">${value}</span>`;
+                const statusText = getPodStatusText(value);
+                const statusClass = getPodStatusClass(statusText);
+                return `<span class="status-badge ${statusClass}">${statusText}</span>`;
             }
         },
-        { key: 'restarts', label: 'RESTARTS' },
+        {
+            key: 'restarts',
+            label: 'RESTARTS',
+            render: (value) => {
+                // Handle object format: {count: 24, ago: "(12d ago)"}
+                if (typeof value === 'object' && value !== null) {
+                    const count = value.count || 0;
+                    const ago = value.ago || '';
+                    return `<span>${count} ${ago}</span>`;
+                }
+                // Handle simple number format for backward compatibility
+                return `<span>${value}</span>`;
+            }
+        },
         { key: 'age', label: 'AGE' },
         { key: 'ip', label: 'IP' },
         { key: 'node', label: 'NODE' },
@@ -49,7 +111,7 @@ function initializePodsTable(cluster) {
 }
 
 function initializeDeploymentsTable(cluster) {
-    const deployments = generateDeploymentsMockData(cluster);
+    const deployments = []; // Mock data removed
     const containerElement = document.getElementById(`deployments-${cluster}-table`);
 
     if (!containerElement) {
@@ -85,7 +147,7 @@ function initializeDeploymentsTable(cluster) {
 }
 
 function initializeServicesTable(cluster) {
-    const services = generateServicesMockData(cluster);
+    const services = []; // Mock data removed
     const containerElement = document.getElementById(`services-${cluster}-table`);
 
     if (!containerElement) {
@@ -120,7 +182,7 @@ function initializeServicesTable(cluster) {
 }
 
 function initializeNodesTable(cluster) {
-    const nodes = generateNodesMockData(cluster);
+    const nodes = []; // Mock data removed
     const containerElement = document.getElementById(`nodes-${cluster}-table`);
 
     if (!containerElement) {
@@ -158,7 +220,7 @@ function initializeNodesTable(cluster) {
 }
 
 function initializeStatefulSetsTable(cluster) {
-    const statefulsets = generateStatefulSetsMockData(cluster);
+    const statefulsets = []; // Mock data removed
     const containerElement = document.getElementById(`statefulsets-${cluster}-table`);
 
     if (!containerElement) {
@@ -191,7 +253,7 @@ function initializeStatefulSetsTable(cluster) {
 }
 
 function initializeDaemonSetsTable(cluster) {
-    const daemonsets = generateDaemonSetsMockData(cluster);
+    const daemonsets = []; // Mock data removed
     const containerElement = document.getElementById(`daemonsets-${cluster}-table`);
 
     if (!containerElement) {
@@ -230,7 +292,7 @@ function initializeDaemonSetsTable(cluster) {
 }
 
 function initializeNamespacesTable(cluster) {
-    const namespaces = generateNamespacesMockData(cluster);
+    const namespaces = []; // Mock data removed
     const containerElement = document.getElementById(`namespaces-${cluster}-table`);
 
     if (!containerElement) {
@@ -259,7 +321,7 @@ function initializeNamespacesTable(cluster) {
 }
 
 function initializeNetworkPoliciesTable(cluster) {
-    const policies = generateNetworkPoliciesMockData(cluster);
+    const policies = []; // Mock data removed
     const containerElement = document.getElementById(`networkpolicies-${cluster}-table`);
 
     if (!containerElement) {

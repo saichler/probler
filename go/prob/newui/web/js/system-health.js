@@ -82,10 +82,14 @@ function processHealthData(data) {
                 service: serviceName,
                 rx: item.stats.rxMsgCount || 0,
                 rxData: formatBytes(item.stats.rxDataCont || 0),
+                rxDataRaw: item.stats.rxDataCont || 0,
                 tx: item.stats.txMsgCount || 0,
                 txData: formatBytes(item.stats.txDataCount || 0),
+                txDataRaw: item.stats.txDataCount || 0,
                 memory: formatBytes(item.stats.memoryUsage || 0),
+                memoryRaw: item.stats.memoryUsage || 0,
                 cpuPercent: formatCPU(item.stats.cpuUsage || 0),
+                cpuPercentRaw: item.stats.cpuUsage || 0,
                 upTime: formatUptime(item.startTime),
                 lastPulse: formatLastPulse(item.stats.lastMsgTime)
             };
@@ -99,11 +103,11 @@ function renderHealthTable(data) {
     const columns = [
         { key: 'service', label: 'Service' },
         { key: 'rx', label: 'RX' },
-        { key: 'rxData', label: 'RX Data' },
+        { key: 'rxData', label: 'RX Data', sortKey: 'rxDataRaw' },
         { key: 'tx', label: 'TX' },
-        { key: 'txData', label: 'TX Data' },
-        { key: 'memory', label: 'Memory' },
-        { key: 'cpuPercent', label: 'CPU %' },
+        { key: 'txData', label: 'TX Data', sortKey: 'txDataRaw' },
+        { key: 'memory', label: 'Memory', sortKey: 'memoryRaw' },
+        { key: 'cpuPercent', label: 'CPU %', sortKey: 'cpuPercentRaw' },
         { key: 'upTime', label: 'Up Time' },
         { key: 'lastPulse', label: 'Last Pulse' }
     ];

@@ -237,9 +237,13 @@ class ProblerTable {
             this.sortDirection = 'asc';
         }
 
+        // Find the column config to check for sortKey
+        const columnConfig = this.config.columns.find(col => col.key === column);
+        const sortKey = columnConfig && columnConfig.sortKey ? columnConfig.sortKey : column;
+
         this.filteredData.sort((a, b) => {
-            let aVal = a[column];
-            let bVal = b[column];
+            let aVal = a[sortKey];
+            let bVal = b[sortKey];
 
             // Handle numbers
             if (!isNaN(aVal) && !isNaN(bVal)) {

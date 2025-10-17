@@ -1,5 +1,8 @@
 // Pod Detail Modal and Helper Functions
 
+// Import status helper functions (they are defined in kubernetes-tables.js)
+// getPodStatusText() and getPodStatusClass() are available globally
+
 // Pod Detail Modal
 async function showPodDetailModal(pod, cluster) {
     const modal = document.getElementById('k8s-detail-modal');
@@ -115,7 +118,7 @@ async function showPodDetailModal(pod, cluster) {
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Phase:</span>
-                        <span class="detail-value"><span class="status-badge ${podDetails.status.phase === 'Running' ? 'status-operational' : 'status-critical'}">${podDetails.status.phase}</span></span>
+                        <span class="detail-value"><span class="status-badge ${getPodStatusClass(getPodStatusText(podDetails.status.phase))}">${getPodStatusText(podDetails.status.phase)}</span></span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">QoS Class:</span>
@@ -499,7 +502,7 @@ async function showPodDetailModal(pod, cluster) {
                 <div class="detail-grid">
                     <div class="detail-item">
                         <span class="detail-label">Phase:</span>
-                        <span class="detail-value"><span class="status-badge ${podDetails.status.phase === 'Running' ? 'status-operational' : 'status-critical'}">${podDetails.status.phase}</span></span>
+                        <span class="detail-value"><span class="status-badge ${getPodStatusClass(getPodStatusText(podDetails.status.phase))}">${getPodStatusText(podDetails.status.phase)}</span></span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">QoS Class:</span>
@@ -713,13 +716,13 @@ function generatePodDetails(pod, cluster) {
                 },
                 {
                     type: "Ready",
-                    status: pod.status === "Running" ? "True" : "False",
+                    status: pod.status === 1 ? "True" : "False", // 1 = Running
                     lastProbeTime: null,
                     lastTransitionTime: new Date(startTime.getTime() + 2000).toISOString()
                 },
                 {
                     type: "ContainersReady",
-                    status: pod.status === "Running" ? "True" : "False",
+                    status: pod.status === 1 ? "True" : "False", // 1 = Running
                     lastProbeTime: null,
                     lastTransitionTime: new Date(startTime.getTime() + 2000).toISOString()
                 },
@@ -752,12 +755,12 @@ function generatePodDetails(pod, cluster) {
                         }
                     },
                     lastState: {},
-                    ready: pod.status === "Running",
+                    ready: pod.status === 1, // 1 = Running
                     restartCount: pod.restarts,
                     image: `${pod.name.split('-')[0]}:latest`,
                     imageID: `docker.io/${pod.name.split('-')[0]}@sha256:${Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('')}`,
                     containerID: `containerd://${Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('')}`,
-                    started: pod.status === "Running"
+                    started: pod.status === 1 // 1 = Running
                 }
             ],
             qosClass: "BestEffort"
