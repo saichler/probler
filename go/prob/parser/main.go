@@ -57,12 +57,14 @@ func main() {
 	sla = ifs.NewServiceLevelAgreement(&service.ParsingService{}, common2.PARSER_SERVICE_BOX, common2.PARSER_AREA_BOX, false, nil)
 	sla.SetServiceItem(&types3.NetworkDevice{})
 	sla.SetPrimaryKeys("Id")
+	sla.SetArgs(false)
 	nic.Resources().Services().Activate(sla, nic)
 
 	//Activate Kubernetes parser
 	sla = ifs.NewServiceLevelAgreement(&service.ParsingService{}, common2.PARSER_SERVICE_K8s, common2.PARSER_AREA_K8S, false, nil)
 	sla.SetServiceItem(&types2.K8SCluster{})
 	sla.SetPrimaryKeys("Name")
+	sla.SetArgs(false)
 	nic.Resources().Services().Activate(sla, nic)
 
 	resources.Logger().SetLogLevel(ifs.Error_Level)

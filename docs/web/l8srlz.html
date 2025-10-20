@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Layer 8 Serialization - High-Performance Object Serialization Library</title>
     <link rel="icon" type="image/gif" href="Layer8Logo.gif">
-    <meta name="description" content="Layer 8 Serialization - Cross-platform, high-performance object serialization library for microservices with Protocol Buffers integration, advanced filtering, and statistics support.">
+    <meta name="description" content="Layer 8 Serialization - Cross-platform, high-performance object serialization library for microservices with Protocol Buffers integration, replica support, L8QL query language, advanced filtering, and statistics support.">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -686,6 +686,7 @@
                     <span class="badge">Go 1.23.8+</span>
                     <span class="badge">Java 11+</span>
                     <span class="badge">Cross-Platform</span>
+                    <span class="badge">Updated Oct 2025</span>
                 </div>
 
                 <div class="cta-buttons">
@@ -697,6 +698,41 @@
                         <i class="fas fa-code"></i>
                         View Examples
                     </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Updates Section -->
+    <section class="recent-updates" style="padding: 60px 0; background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(184, 150, 15, 0.1));">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2rem; margin-bottom: 2rem; color: var(--text-dark);">
+                🎉 Recent Updates <span style="font-size: 0.8em; color: var(--text-light);">(October 2025)</span>
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; max-width: 900px; margin: 0 auto;">
+                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid var(--primary-color);">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary-color);">✨ Replica Support</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-light);">Built-in replication mechanism with replica number tracking for distributed systems</p>
+                </div>
+                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid var(--primary-color);">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary-color);">🔍 L8QL Integration</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-light);">Enhanced Layer 8 Query Language (formerly GSQL) for powerful data queries</p>
+                </div>
+                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid var(--primary-color);">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary-color);">🛡️ Stability Improvements</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-light);">Multiple crash fixes and improved error handling for production reliability</p>
+                </div>
+                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid var(--primary-color);">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary-color);">📊 Enhanced Statistics</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-light);">Improved performance monitoring and data analysis capabilities</p>
+                </div>
+                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid var(--primary-color);">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary-color);">📄 Enum Support</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-light);">Added comprehensive enumeration type handling for better type safety</p>
+                </div>
+                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid var(--primary-color);">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary-color);">⚡ Performance Analysis</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-light);">Comprehensive performance documentation and optimization insights</p>
                 </div>
             </div>
         </div>
@@ -735,8 +771,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-search"></i>
                     </div>
-                    <h3>Query Support</h3>
-                    <p>GSQL integration for selective data serialization and filtering</p>
+                    <h3>L8QL Query Language</h3>
+                    <p>Layer 8 Query Language (L8QL) integration for selective data serialization and filtering</p>
                 </div>
 
                 <div class="feature-card fade-in">
@@ -773,6 +809,14 @@
 
                 <div class="feature-card fade-in">
                     <div class="feature-icon">
+                        <i class="fas fa-copy"></i>
+                    </div>
+                    <h3>Replica Support</h3>
+                    <p>Built-in replication mechanism with replica number tracking for distributed systems</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
                         <i class="fas fa-file-alt"></i>
                     </div>
                     <h3>Page-based Processing</h3>
@@ -791,6 +835,7 @@
                 <button class="code-tab active" onclick="showCodeTab('go')">Go</button>
                 <button class="code-tab" onclick="showCodeTab('java')">Java</button>
                 <button class="code-tab" onclick="showCodeTab('protobuf')">Protocol Buffers</button>
+                <button class="code-tab" onclick="showCodeTab('replica')">Replica Support</button>
             </div>
 
             <div id="go-code" class="code-content active">
@@ -916,6 +961,49 @@ profile := result.(*pb.UserProfile)
 fmt.Printf("Name: %s, Email: %s\n", profile.Name, profile.Email)</code></pre>
                 </div>
             </div>
+
+            <div id="replica-code" class="code-content">
+                <div class="code-block">
+                    <div class="code-header">Replica Support Example</div>
+                    <pre><code class="language-go">// Create original elements container
+original := object.New(nil, myData)
+
+// Add some data
+original.Add("item1", "key1", nil)
+original.Add("item2", "key2", nil)
+
+// Create replica request with replica number
+replicaRequest := object.NewReplicaRequest(original, byte(1))
+
+// Check if element is a replica
+if replicaRequest.IsReplica() {
+    replicaNum := replicaRequest.Replica()
+    fmt.Printf("Processing replica #%d\n", replicaNum)
+}
+
+// Serialize replica request for transmission
+data, err := replicaRequest.Serialize()
+if err != nil {
+    return err
+}
+
+// Send to replica nodes...
+fmt.Printf("Replica data size: %d bytes\n", len(data))
+
+// On the receiving end
+received := &object.Elements{}
+err = received.Deserialize(data, registry)
+if err != nil {
+    return err
+}
+
+// Check if received data is a replica
+if received.IsReplica() {
+    fmt.Printf("Received replica #%d\n", received.Replica())
+    // Process replica data...
+}</code></pre>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -982,7 +1070,7 @@ fmt.Printf("Name: %s, Email: %s\n", profile.Name, profile.Email)</code></pre>
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Layer 8 Serialization</h3>
-                    <p>High-performance object serialization library for modern microservices architectures with advanced filtering and statistics.</p>
+                    <p>High-performance object serialization library for modern microservices architectures with replica support, L8QL query language, advanced filtering and statistics.</p>
                 </div>
                 
                 <div class="footer-section">
@@ -1009,15 +1097,18 @@ fmt.Printf("Name: %s, Email: %s\n", profile.Name, profile.Email)</code></pre>
                     <h3>Related Projects</h3>
                     <ul style="list-style: none;">
                         <li><a href="#">L8Types</a></li>
-                        <li><a href="#">GSQL</a></li>
+                        <li><a href="#">L8QL</a></li>
                         <li><a href="#">L8Utils</a></li>
-                        <li><a href="#">Layer8</a></li>
+                        <li><a href="#">L8Test</a></li>
+                        <li><a href="#">L8Reflect</a></li>
+                        <li><a href="#">L8Bus</a></li>
+                        <li><a href="#">L8Services</a></li>
                     </ul>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2024 Layer 8 Serialization. Licensed under Apache 2.0. Built for the microservices era.</p>
+                <p>&copy; 2025 Layer 8 Serialization. Licensed under Apache 2.0. Built for the microservices era.</p>
             </div>
         </div>
     </footer>
@@ -1044,12 +1135,12 @@ fmt.Printf("Name: %s, Email: %s\n", profile.Name, profile.Email)</code></pre>
             document.querySelectorAll('.code-content').forEach(content => {
                 content.classList.remove('active');
             });
-            
+
             // Remove active class from all tabs
             document.querySelectorAll('.code-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            
+
             // Show selected content and activate tab
             document.getElementById(language + '-code').classList.add('active');
             event.target.classList.add('active');

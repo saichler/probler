@@ -738,8 +738,10 @@
                 Layer 8 Types
             </a>
             <ul class="nav-links">
+                <li><a href="#whats-new">What's New</a></li>
                 <li><a href="#features">Features</a></li>
                 <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#changelog">Versions</a></li>
                 <li><a href="#examples">Code</a></li>
                 <li><a href="#install">Install</a></li>
                 <li><a href="https://github.com/saichler/l8types" class="github-link">GitHub</a></li>
@@ -781,11 +783,62 @@
             <p class="hero-description">
                 Build sophisticated distributed systems with Protocol Buffer-based type definitions,
                 virtual networking, service discovery, and real-time health monitoring.
-                Now with enhanced authentication and security features.
+                <strong>Version 1.3.0</strong>: Now with Service Level Agreement framework and dynamic type creation.
             </p>
             <div class="cta-container">
                 <a href="#install" class="cta-button cta-primary">Get Started</a>
                 <a href="https://github.com/saichler/l8types" class="cta-button cta-secondary">View on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- What's New Section -->
+    <section class="section section-dark fade-in" id="whats-new">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">What's New in v1.3.0</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.8);">Latest features and improvements</p>
+
+            <div class="features-grid">
+                <div class="feature-card" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="25" y="20" width="50" height="60" rx="5" fill="#d4af37"/>
+                        <line x1="35" y1="35" x2="65" y2="35" stroke="white" stroke-width="2"/>
+                        <line x1="35" y1="45" x2="55" y2="45" stroke="white" stroke-width="2"/>
+                        <line x1="35" y1="55" x2="60" y2="55" stroke="white" stroke-width="2"/>
+                        <line x1="35" y1="65" x2="50" y2="65" stroke="white" stroke-width="2"/>
+                        <circle cx="70" cy="70" r="15" fill="#00b4d8"/>
+                        <path d="M 65 70 L 68 73 L 75 66" stroke="white" stroke-width="2" fill="none"/>
+                    </svg>
+                    <h3 style="color: var(--primary-color);">Service Level Agreement Framework</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Complete refactoring of service activation with new ServiceLevelAgreement structure. Simplified API with encapsulated configuration for service lifecycle management.</p>
+                </div>
+
+                <div class="feature-card" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="30" r="15" fill="#00b4d8"/>
+                        <text x="50" y="35" text-anchor="middle" fill="white" font-size="12" font-weight="bold">T</text>
+                        <path d="M 50 45 L 30 65 L 30 75 L 40 75 L 50 65 L 60 75 L 70 75 L 70 65 L 50 45" fill="#d4af37"/>
+                        <circle cx="30" cy="75" r="5" fill="#06ffa5"/>
+                        <circle cx="50" cy="65" r="5" fill="#06ffa5"/>
+                        <circle cx="70" cy="75" r="5" fill="#06ffa5"/>
+                    </svg>
+                    <h3 style="color: var(--primary-color);">Dynamic Type Creation</h3>
+                    <p style="color: rgba(255,255,255,0.8);">New <code>NewOf()</code> method in IRegistry enables dynamic type instantiation at runtime, perfect for flexible plugin architectures and runtime extensibility.</p>
+                </div>
+
+                <div class="feature-card" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
+                    <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="20" y="40" width="60" height="8" rx="4" fill="#00b4d8"/>
+                        <circle cx="25" cy="44" r="3" fill="white"/>
+                        <circle cx="35" cy="44" r="3" fill="white"/>
+                        <circle cx="45" cy="44" r="3" fill="white"/>
+                        <text x="55" y="47" fill="white" font-size="8">...</text>
+                        <path d="M 50 55 L 50 65" stroke="#d4af37" stroke-width="3"/>
+                        <path d="M 45 60 L 50 65 L 55 60" stroke="#d4af37" stroke-width="3" fill="none"/>
+                    </svg>
+                    <h3 style="color: var(--primary-color);">Improved API Ergonomics</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Variadic parameters for <code>SetPrimaryKeys()</code> and <code>SetArgs()</code> methods. More intuitive API design with cleaner, more readable code.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -957,6 +1010,47 @@
         </div>
     </section>
 
+    <!-- Version History Section -->
+    <section class="section section-gradient fade-in" id="changelog">
+        <div class="container">
+            <h2 class="section-title">Version History</h2>
+            <p class="section-subtitle">Evolution of Layer 8 Types</p>
+
+            <div class="timeline">
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot" style="background: var(--primary-color);"></div>
+                    <div class="timeline-content">
+                        <h3 style="color: var(--primary-color);">Version 1.3.0 <span style="background: var(--gradient-1); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; margin-left: 10px;">Latest</span></h3>
+                        <p><strong>Service Level Agreement Framework</strong>: Complete refactoring of service activation with encapsulated configuration</p>
+                        <p><strong>Dynamic Type Creation</strong>: NewOf() method for runtime type instantiation</p>
+                        <p><strong>API Improvements</strong>: Variadic parameters for cleaner, more intuitive APIs</p>
+                        <p><strong>Code Quality</strong>: 95% test coverage with comprehensive testing suite</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3>Version 1.2.0</h3>
+                        <p><strong>Enhanced Security</strong>: Token-based authentication with validation mechanisms</p>
+                        <p><strong>Logging System</strong>: Comprehensive debugging and monitoring capabilities</p>
+                        <p><strong>Query Improvements</strong>: Flexible sorting mechanisms and enhanced filtering</p>
+                        <p><strong>Token Management</strong>: Secure token lifecycle management</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3>Version 1.1.0</h3>
+                        <p><strong>Core Features</strong>: Protocol Buffer schemas for distributed systems</p>
+                        <p><strong>Virtual Networking</strong>: VNic abstraction with multiple communication patterns</p>
+                        <p><strong>Service Discovery</strong>: Built-in service registration and health monitoring</p>
+                        <p><strong>Foundation</strong>: Established the core architecture for Layer 8 networking</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Code Examples Section -->
     <section class="code-showcase fade-in" id="examples">
         <div class="container">
@@ -969,26 +1063,26 @@
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
-                        <span class="code-title">Service Configuration</span>
+                        <span class="code-title">Service Level Agreement (v1.3.0)</span>
                     </div>
-                    <pre><code><span class="syntax-comment">// Create system configuration</span>
-<span class="syntax-keyword">config</span> := &<span class="syntax-type">types.SysConfig</span>{
-    <span class="syntax-keyword">LocalUuid</span>: <span class="syntax-string">"node-123"</span>,
-    <span class="syntax-keyword">VnetPort</span>: <span class="syntax-number">8080</span>,
-    <span class="syntax-keyword">MaxDataSize</span>: <span class="syntax-number">1024</span>*<span class="syntax-number">1024</span>,
-    <span class="syntax-keyword">TxQueueSize</span>: <span class="syntax-number">1000</span>,
-    <span class="syntax-keyword">RxQueueSize</span>: <span class="syntax-number">1000</span>,
-    <span class="syntax-keyword">AuthToken</span>: <span class="syntax-string">"secure-token"</span>,
-}
+                    <pre><code><span class="syntax-comment">// Create Service Level Agreement</span>
+<span class="syntax-keyword">sla</span> := &<span class="syntax-type">ifs.ServiceLevelAgreement</span>{}
+sla.<span class="syntax-function">SetServiceName</span>(<span class="syntax-string">"user-service"</span>)
+sla.<span class="syntax-function">SetServiceArea</span>(<span class="syntax-number">1</span>)
+sla.<span class="syntax-function">SetStateful</span>(<span class="syntax-keyword">true</span>)
+sla.<span class="syntax-function">SetTransactional</span>(<span class="syntax-keyword">true</span>)
+sla.<span class="syntax-function">SetReplication</span>(<span class="syntax-keyword">true</span>)
+sla.<span class="syntax-function">SetReplicationCount</span>(<span class="syntax-number">3</span>)
 
-<span class="syntax-comment">// Add services with authentication</span>
-<span class="syntax-function">ifs.AddService</span>(config, <span class="syntax-string">"user-service"</span>, <span class="syntax-number">1</span>)
-<span class="syntax-function">ifs.AddService</span>(config, <span class="syntax-string">"auth-service"</span>, <span class="syntax-number">2</span>)
+<span class="syntax-comment">// Variadic parameters (NEW in v1.3.0)</span>
+sla.<span class="syntax-function">SetPrimaryKeys</span>(<span class="syntax-string">"userId"</span>, <span class="syntax-string">"email"</span>)
+sla.<span class="syntax-function">SetArgs</span>(dbConn, cacheLayer, logger)
 
-<span class="syntax-comment">// Initialize VNic with security</span>
-<span class="syntax-keyword">vnic</span> := <span class="syntax-function">NewVNic</span>(config, resources)
-vnic.<span class="syntax-function">EnableAuthentication</span>(<span class="syntax-keyword">true</span>)
-vnic.<span class="syntax-function">Start</span>()</code></pre>
+<span class="syntax-comment">// Simplified activation (NEW in v1.3.0)</span>
+<span class="syntax-keyword">handler</span>, <span class="syntax-keyword">err</span> := services.<span class="syntax-function">Activate</span>(sla, vnic)
+<span class="syntax-keyword">if</span> err != <span class="syntax-keyword">nil</span> {
+    log.<span class="syntax-function">Fatal</span>(<span class="syntax-string">"Failed to activate:"</span>, err)
+}</code></pre>
                 </div>
 
                 <div class="code-block">
@@ -996,37 +1090,32 @@ vnic.<span class="syntax-function">Start</span>()</code></pre>
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
-                        <span class="code-title">Communication Patterns</span>
+                        <span class="code-title">Dynamic Type Creation (v1.3.0)</span>
                     </div>
-                    <pre><code><span class="syntax-comment">// Secure unicast with authentication</span>
-<span class="syntax-keyword">err</span> := vnic.<span class="syntax-function">SecureUnicast</span>(
-    <span class="syntax-string">"node-456"</span>,
-    <span class="syntax-string">"user-service"</span>,
-    <span class="syntax-number">1</span>,
-    ifs.<span class="syntax-keyword">POST</span>,
-    userData,
-    authToken
-)
+                    <pre><code><span class="syntax-comment">// Register types with the registry</span>
+<span class="syntax-keyword">registry</span> := ifs.<span class="syntax-function">NewRegistry</span>()
+<span class="syntax-keyword">userType</span> := &<span class="syntax-type">User</span>{
+    Name: <span class="syntax-string">"template"</span>,
+    Role: <span class="syntax-string">"default"</span>,
+}
+registry.<span class="syntax-function">Register</span>(userType)
 
-<span class="syntax-comment">// Load-balanced round-robin</span>
-<span class="syntax-keyword">dest</span>, <span class="syntax-keyword">err</span> := vnic.<span class="syntax-function">RoundRobin</span>(
-    <span class="syntax-string">"auth-service"</span>,
-    <span class="syntax-number">2</span>,
-    ifs.<span class="syntax-keyword">GET</span>,
-    request
-)
+<span class="syntax-comment">// Dynamic type instantiation (NEW in v1.3.0)</span>
+<span class="syntax-keyword">newUser</span> := registry.<span class="syntax-function">NewOf</span>(userType).(*<span class="syntax-type">User</span>)
+newUser.Name = <span class="syntax-string">"John Doe"</span>
+newUser.Email = <span class="syntax-string">"john@example.com"</span>
 
-<span class="syntax-comment">// Request with timeout</span>
-<span class="syntax-keyword">ctx</span> := <span class="syntax-function">context.WithTimeout</span>(
-    context.<span class="syntax-function">Background</span>(),
-    <span class="syntax-number">5</span>*time.<span class="syntax-keyword">Second</span>
-)
-<span class="syntax-keyword">response</span> := vnic.<span class="syntax-function">RequestWithContext</span>(
-    ctx,
-    <span class="syntax-string">"node-789"</span>,
-    <span class="syntax-string">"data-service"</span>,
-    query
-)</code></pre>
+<span class="syntax-comment">// Create multiple instances dynamically</span>
+<span class="syntax-keyword">for</span> i := <span class="syntax-number">0</span>; i < <span class="syntax-number">10</span>; i++ {
+    <span class="syntax-keyword">instance</span> := registry.<span class="syntax-function">NewOf</span>(userType)
+    <span class="syntax-comment">// Each instance is a fresh copy</span>
+    processUser(instance)
+}
+
+<span class="syntax-comment">// Perfect for plugin architectures</span>
+<span class="syntax-keyword">plugin</span> := registry.<span class="syntax-function">NewOf</span>(pluginTemplate)
+plugin.<span class="syntax-function">Initialize</span>(config)
+plugin.<span class="syntax-function">Execute</span>()</code></pre>
                 </div>
             </div>
         </div>
@@ -1036,7 +1125,11 @@ vnic.<span class="syntax-function">Start</span>()</code></pre>
     <section class="section section-gradient fade-in" id="install">
         <div class="container">
             <h2 class="section-title">Quick Start Guide</h2>
-            <p class="section-subtitle">Get up and running in minutes</p>
+            <p class="section-subtitle">Get up and running in minutes with Layer 8 Types v1.3.0</p>
+
+            <div style="background: linear-gradient(135deg, #d4af37 0%, #b8960f 100%); padding: 1rem 2rem; border-radius: 15px; margin: 2rem auto 3rem; max-width: 800px; color: white; text-align: center;">
+                <strong>⚡ Upgrading from v1.2.0?</strong> Check out the <a href="https://github.com/saichler/l8types#api-migration-guide" style="color: white; text-decoration: underline;">API Migration Guide</a> for breaking changes and new features.
+            </div>
 
             <div class="features-grid">
                 <div class="feature-card">
@@ -1060,13 +1153,19 @@ go mod download</code></pre>
                 <div class="feature-card">
                     <h3>4. Run Tests</h3>
                     <pre style="background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><code>cd go
+./test.sh  # Automated tests with coverage
+# Or manually:
 go test -v -cover ./...</code></pre>
                 </div>
 
                 <div class="feature-card">
                     <h3>5. Build Your App</h3>
                     <pre style="background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><code>import "github.com/saichler/l8types/go/ifs"
-// Start building!</code></pre>
+
+// v1.3.0 - Create SLA
+sla := &ifs.ServiceLevelAgreement{}
+sla.SetServiceName("my-service")
+handler, _ := services.Activate(sla, vnic)</code></pre>
                 </div>
 
                 <div class="feature-card">
@@ -1118,7 +1217,8 @@ docker run myapp</code></pre>
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; 2024 Layer 8 Types. Open source distributed networking library for Go.</p>
+            <p>&copy; 2024 Layer 8 Types v1.3.0 | Open source distributed networking library for Go.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Featuring Service Level Agreement framework, Dynamic Type Creation, and Improved API Ergonomics</p>
         </div>
     </footer>
 

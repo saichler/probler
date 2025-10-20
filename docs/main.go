@@ -12,15 +12,11 @@ import (
 	"github.com/saichler/l8services/go/services/manager"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8api"
-	"github.com/saichler/l8types/go/types/l8health"
 	"github.com/saichler/l8types/go/types/l8sysconfig"
-	"github.com/saichler/l8types/go/types/l8web"
 	"github.com/saichler/l8utils/go/utils/logger"
 	"github.com/saichler/l8utils/go/utils/registry"
 	"github.com/saichler/l8utils/go/utils/resources"
 	"github.com/saichler/l8web/go/web/server"
-	"github.com/saichler/probler/go/types"
-	types2 "github.com/saichler/probler/go/types"
 )
 
 func main() {
@@ -46,20 +42,15 @@ func startWebServer(port int, cert string) {
 
 	resources := CreateResources("web-" + os.Getenv("HOSTNAME"))
 
-	node, _ := resources.Introspector().Inspect(&types.NetworkDevice{})
-	introspecting.AddPrimaryKeyDecorator(node, "Id")
-
-	node, _ = resources.Introspector().Inspect(&types2.K8SCluster{})
-	introspecting.AddPrimaryKeyDecorator(node, "Name")
-
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Resources().SysConfig().KeepAliveIntervalSeconds = 60
 	nic.Start()
 	nic.WaitForConnection()
 
-	nic.Resources().Registry().Register(&l8health.L8Top{})
-	nic.Resources().Registry().Register(&l8web.L8Empty{})
-
+	/*
+		nic.Resources().Registry().Register(&l8health.L8Top{})
+		nic.Resources().Registry().Register(&l8web.L8Empty{})
+	*/
 	hs, ok := nic.Resources().Services().ServiceHandler(health.ServiceName, 0)
 	if ok {
 		ws := hs.WebService()
@@ -67,9 +58,9 @@ func startWebServer(port int, cert string) {
 	}
 
 	//Activate the webpoints service
-	nic.Resources().Services().RegisterServiceHandlerType(&server.WebService{})
-	_, err = nic.Resources().Services().Activate(server.ServiceTypeName, ifs.WebService,
-		0, nic.Resources(), nic, svr)
+	sla := ifs.NewServiceLevelAgreement(&server.WebService{}, ifs.WebService, 0, false, nil)
+	sla.SetArgs(svr)
+	nic.Resources().Services().Activate(sla, nic)
 
 	nic.Resources().Logger().Info("Web Server Started!")
 
