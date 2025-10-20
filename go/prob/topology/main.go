@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8bus/go/overlay/vnic"
+	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/prob/topology/service"
 )
@@ -20,7 +20,8 @@ func main() {
 	nic.Resources().Services().RegisterServiceHandlerType(&service.TopologyService{})
 
 	//Register the topo service
-	nic.Resources().Services().Activate(service.ServiceType, service.ServiceName, service.ServiceArea, nic.Resources(), nic)
+	sla := ifs.NewServiceLevelAgreement(&service.TopologyService{}, service.ServiceName, service.ServiceArea, true, nil)
+	nic.Resources().Services().Activate(sla, nic)
 
 	common.WaitForSignal(resources)
 }

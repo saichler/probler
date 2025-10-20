@@ -5,7 +5,6 @@ import (
 
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8inventory/go/inv/service"
-	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
@@ -16,21 +15,19 @@ func main() {
 	res.Logger().SetLogLevel(ifs.Info_Level)
 	res.Logger().Info("Starting box")
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
+
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
 	nic.Start()
 	nic.WaitForConnection()
 	res.Logger().Info("Registering box service")
-	//Add the inventory model and mark the Id field as key
-	inventoryNode, _ := nic.Resources().Introspector().Inspect(&types2.NetworkDevice{})
-	introspecting.AddPrimaryKeyDecorator(inventoryNode, "Id")
-	nic.Resources().Registry().Register(&types2.NetworkDeviceList{})
 
 	/*&l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 0}*/
 
-	//Activate the box inventory service with the primary key & sample model instance
-	res.Services().RegisterServiceHandlerType(&inventory.InventoryService{})
-	_, err := nic.Resources().Services().Activate(inventory.ServiceType, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX,
-		nic.Resources(), nic, "Id", &types2.NetworkDevice{})
+	sla := ifs.NewServiceLevelAgreement(&inventory.InventoryService{}, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX, true, nil)
+	sla.SetServiceItem(&types2.NetworkDevice{})
+	sla.SetServiceItemList(&types2.NetworkDeviceList{})
+	sla.SetPrimaryKeys("Id")
+	_, err := nic.Resources().Services().Activate(sla, nic)
 
 	invCenter := inventory.Inventory(res, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX)
 	invCenter.AddStats("Total", Total)

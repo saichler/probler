@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8services/go/services/dcache"
 	"github.com/saichler/l8srlz/go/serialize/object"
 	"github.com/saichler/l8types/go/ifs"
@@ -8,7 +9,6 @@ import (
 	"github.com/saichler/l8utils/go/utils/web"
 	common2 "github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/types"
-	"github.com/saichler/l8reflect/go/reflect/introspecting"
 )
 
 const (
@@ -22,13 +22,12 @@ type TopologyService struct {
 }
 
 // Activate implements ifs.IServiceHandler
-func (this *TopologyService) Activate(serviceName string, serviceArea byte,
-	r ifs.IResources, l ifs.IServiceCacheListener, args ...interface{}) error {
-	node, _ := r.Introspector().Inspect(&types.NetworkTopology{})
+func (this *TopologyService) Activate(sla *ifs.ServiceLevelAgreement, vnic ifs.IVNic) error {
+	node, _ := vnic.Resources().Introspector().Inspect(&types.NetworkTopology{})
 	introspecting.AddPrimaryKeyDecorator(node, "TopologyId")
-	r.Introspector().Inspect(&types.NetworkDevice{})
-	this.cache = dcache.NewDistributedCache(ServiceName, ServiceArea, &types.NetworkTopology{}, nil, l, r)
-	r.Logger().Info("Activated Topology on ", serviceName, " area ", serviceArea)
+	vnic.Resources().Introspector().Inspect(&types.NetworkDevice{})
+	this.cache = dcache.NewDistributedCache(sla.ServiceName(), sla.ServiceArea(), &types.NetworkTopology{}, nil, vnic, vnic.Resources())
+	vnic.Resources().Logger().Info("Activated Topology on ", sla.ServiceName(), " area ", sla.ServiceArea())
 	return nil
 }
 

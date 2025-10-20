@@ -70,9 +70,8 @@ func startWebServer(port int, cert string) {
 	}
 
 	//Activate the webpoints service
-	nic.Resources().Services().RegisterServiceHandlerType(&server.WebService{})
-	_, err = nic.Resources().Services().Activate(server.ServiceTypeName, ifs.WebService,
-		0, nic.Resources(), nic, svr)
+	sla := ifs.NewServiceLevelAgreement(&server.WebService{}, ifs.WebService, 0, false, nil)
+	nic.Resources().Services().Activate(sla, nic)
 
 	nic.Resources().Logger().Info("Web Server Started!")
 
