@@ -30,6 +30,10 @@ const (
 	PREFIX                = "/probler/"
 )
 
+func init() {
+	ifs.LogToFiles = true
+}
+
 func CreateResources(alias string) ifs.IResources {
 	return CreateResources2(alias, "/home/run")
 }
