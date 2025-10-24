@@ -45,6 +45,31 @@ class ProblerTable {
 
         let html = '<div class="noc-table-container">';
 
+        // Pagination
+        html += '<div class="noc-table-pagination">';
+        const actualEnd = this.config.serverSide ? Math.min(endIndex, totalCount) : Math.min(endIndex, this.filteredData.length);
+        html += `<div class="pagination-info">Showing ${startIndex + 1}-${actualEnd} of ${totalCount} entries</div>`;
+        html += '<div class="pagination-controls">';
+
+        // Previous button
+        html += `<button class="pagination-btn ${this.currentPage === 1 ? 'disabled' : ''}" data-action="prev" ${this.currentPage === 1 ? 'disabled' : ''}>PREV</button>`;
+
+        // Page numbers
+        const pageRange = this.getPageRange(this.currentPage, totalPages);
+        pageRange.forEach(page => {
+            if (page === '...') {
+                html += `<span class="pagination-ellipsis">...</span>`;
+            } else {
+                html += `<button class="pagination-btn ${page === this.currentPage ? 'active' : ''}" data-page="${page}">${page}</button>`;
+            }
+        });
+
+        // Next button
+        html += `<button class="pagination-btn ${this.currentPage === totalPages ? 'disabled' : ''}" data-action="next" ${this.currentPage === totalPages ? 'disabled' : ''}>NEXT</button>`;
+
+        html += '</div>';
+        html += '</div>';
+
         // Table header with filters
         html += '<table class="noc-table">';
         html += '<thead>';
@@ -106,31 +131,6 @@ class ProblerTable {
         });
         html += '</tbody>';
         html += '</table>';
-
-        // Pagination
-        html += '<div class="noc-table-pagination">';
-        const actualEnd = this.config.serverSide ? Math.min(endIndex, totalCount) : Math.min(endIndex, this.filteredData.length);
-        html += `<div class="pagination-info">Showing ${startIndex + 1}-${actualEnd} of ${totalCount} entries</div>`;
-        html += '<div class="pagination-controls">';
-
-        // Previous button
-        html += `<button class="pagination-btn ${this.currentPage === 1 ? 'disabled' : ''}" data-action="prev" ${this.currentPage === 1 ? 'disabled' : ''}>PREV</button>`;
-
-        // Page numbers
-        const pageRange = this.getPageRange(this.currentPage, totalPages);
-        pageRange.forEach(page => {
-            if (page === '...') {
-                html += `<span class="pagination-ellipsis">...</span>`;
-            } else {
-                html += `<button class="pagination-btn ${page === this.currentPage ? 'active' : ''}" data-page="${page}">${page}</button>`;
-            }
-        });
-
-        // Next button
-        html += `<button class="pagination-btn ${this.currentPage === totalPages ? 'disabled' : ''}" data-action="next" ${this.currentPage === totalPages ? 'disabled' : ''}>NEXT</button>`;
-
-        html += '</div>';
-        html += '</div>';
 
         html += '</div>';
 
