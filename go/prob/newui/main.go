@@ -6,6 +6,7 @@ import (
 	"github.com/saichler/l8bus/go/overlay/health"
 	"github.com/saichler/l8bus/go/overlay/protocol"
 	"github.com/saichler/l8bus/go/overlay/vnic"
+	"github.com/saichler/l8logfusion/go/types/l8logf"
 	"github.com/saichler/l8pollaris/go/types/l8tpollaris"
 	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8types/go/ifs"
@@ -19,6 +20,7 @@ import (
 )
 
 func main() {
+	ifs.LogToFiles = true
 	startWebServer(2443, "/data/probler")
 }
 
@@ -62,6 +64,9 @@ func startWebServer(port int, cert string) {
 	nic.Resources().Registry().Register(&types2.NetworkTopology{})
 	nic.Resources().Registry().Register(&l8health.L8Health{})
 	nic.Resources().Registry().Register(&l8health.L8HealthList{})
+	nic.Resources().Registry().Register(&l8logf.L8File{})
+	fn, _ := nic.Resources().Introspector().Inspect(&l8logf.L8File{})
+	introspecting.AddPrimaryKeyDecorator(fn, "Path", "Name")
 
 	hs, ok := nic.Resources().Services().ServiceHandler(health.ServiceName, 0)
 	if ok {

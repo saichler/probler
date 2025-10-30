@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: probler-log-agent
+  labels:
+    name: probler-log-agent
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: probler-log-agent
+  name: probler-log-agent
+  labels:
+    app: probler-log-agent
+spec:
+  selector:
+    matchLabels:
+      app: probler-log-agent
+  template:
+    metadata:
+      labels:
+        app: probler-log-agent
+    spec:
+      containers:
+        - name: probler-log-agent
+          image: saichler/probler-logagent:latest
+          imagePullPolicy: Always
+          env:
+            - name: LOGPATH
+              value: /data/logs
+            - name: LOGFILE
+              value: "*"
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate

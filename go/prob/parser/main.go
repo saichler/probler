@@ -16,6 +16,7 @@ import (
 )
 
 func main() {
+	ifs.LogToFiles = true
 	resources := common2.CreateResources("parser-" + os.Getenv("HOSTNAME"))
 	resources.Logger().SetLogLevel(ifs.Info_Level)
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)

@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	ifs.LogToFiles = true
 	res := common2.CreateResources("box-" + os.Getenv("HOSTNAME"))
 	res.Logger().SetLogLevel(ifs.Info_Level)
 	res.Logger().Info("Starting box")

@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	ifs.LogToFiles = true
 	res := common2.CreateResources("k8s-" + os.Getenv("HOSTNAME"))
 	res.Logger().SetLogLevel(ifs.Info_Level)
 	res.Logger().Info("Starting k8s")
