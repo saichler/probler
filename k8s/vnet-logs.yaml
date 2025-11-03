@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: logs-vnet
+  labels:
+    name: logs-vnet
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: logs-vnet
+  name: logs-vnet
+  labels:
+    app: logs-vnet
+spec:
+  selector:
+    matchLabels:
+      app: logs-vnet
+  template:
+    metadata:
+      labels:
+        app: logs-vnet
+    spec:
+      hostNetwork: true
+      containers:
+        - name: logs-vnet
+          image: saichler/logs-vnet:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 26998
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate
