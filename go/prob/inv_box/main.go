@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8inventory/go/inv/service"
 	"github.com/saichler/l8types/go/ifs"
@@ -11,8 +9,7 @@ import (
 )
 
 func main() {
-	ifs.LogToFiles = true
-	res := common2.CreateResources("box-" + os.Getenv("HOSTNAME"))
+	res := common2.CreateResources("box")
 	res.Logger().SetLogLevel(ifs.Info_Level)
 	res.Logger().Info("Starting box")
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)

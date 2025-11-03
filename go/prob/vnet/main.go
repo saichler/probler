@@ -10,10 +10,9 @@ import (
 )
 
 func main() {
-	ifs.LogToFiles = true
 	resources := common2.CreateResources("vnet-" + os.Getenv("HOSTNAME"))
 	resources.Logger().SetLogLevel(ifs.Info_Level)
-	net := vnet.NewVNet(resources)
+	net := vnet.NewVNet(resources, true)
 	net.Start()
 	resources.Logger().Info("vnet started!")
 	resources.Logger().SetLogLevel(ifs.Error_Level)

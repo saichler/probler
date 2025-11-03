@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8inventory/go/inv/service"
 	"github.com/saichler/l8reflect/go/reflect/introspecting"
@@ -13,8 +11,7 @@ import (
 )
 
 func main() {
-	ifs.LogToFiles = true
-	res := common2.CreateResources("k8s-" + os.Getenv("HOSTNAME"))
+	res := common2.CreateResources("k8s")
 	res.Logger().SetLogLevel(ifs.Info_Level)
 	res.Logger().Info("Starting k8s")
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)

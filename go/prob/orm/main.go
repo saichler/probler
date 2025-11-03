@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"os"
 
 	_ "github.com/lib/pq"
 	"github.com/saichler/l8bus/go/overlay/vnic"
@@ -15,8 +14,7 @@ import (
 )
 
 func main() {
-	ifs.LogToFiles = true
-	res := common2.CreateResources("orm-" + os.Getenv("HOSTNAME"))
+	res := common2.CreateResources("orm")
 	res.Logger().SetLogLevel(ifs.Info_Level)
 	res.Logger().Info("Starting ORM")
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)

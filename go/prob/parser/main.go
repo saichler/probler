@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8parser/go/parser/boot"
 	"github.com/saichler/l8parser/go/parser/service"
@@ -16,8 +14,7 @@ import (
 )
 
 func main() {
-	ifs.LogToFiles = true
-	resources := common2.CreateResources("parser-" + os.Getenv("HOSTNAME"))
+	resources := common2.CreateResources("parser")
 	resources.Logger().SetLogLevel(ifs.Info_Level)
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)

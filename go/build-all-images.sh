@@ -12,7 +12,7 @@ cd ../inv_k8s
 ./build.sh
 cd ../newui
 ./build.sh
-cd ../orm
-./build.sh
-cd ../topology
-./build.sh
+#cd ../orm
+#./build.sh
+#cd ../topology
+#./build.sh

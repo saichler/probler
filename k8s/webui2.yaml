@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: probler-webui2
+  labels:
+    name: probler-webui2
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet 
+metadata:
+  namespace: probler-webui2
+  name: probler-webui2
+  labels:
+    app: probler-webui2
+spec:
+  selector:
+    matchLabels:
+      app: probler-webui2
+  template:
+    metadata:
+      labels:
+        app: probler-webui2
+    spec:
+      hostNetwork: true
+      containers:
+        - name: probler-webui2
+          image: saichler/probler-webui2:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate

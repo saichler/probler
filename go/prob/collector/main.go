@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8collector/go/collector/common"
 	"github.com/saichler/l8collector/go/collector/service"
@@ -14,9 +12,8 @@ import (
 )
 
 func main() {
-	ifs.LogToFiles = true
 	common.SmoothFirstCollection = false
-	res := common2.CreateResources("collector-" + os.Getenv("HOSTNAME"))
+	res := common2.CreateResources("collector")
 	res.Logger().SetLogLevel(ifs.Info_Level)
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(res, nil)

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	"github.com/saichler/l8bus/go/overlay/health"
 	"github.com/saichler/l8bus/go/overlay/protocol"
 	"github.com/saichler/l8bus/go/overlay/vnic"
@@ -20,7 +18,6 @@ import (
 )
 
 func main() {
-	ifs.LogToFiles = true
 	startWebServer(2443, "/data/probler")
 }
 
@@ -37,7 +34,7 @@ func startWebServer(port int, cert string) {
 		panic(err)
 	}
 
-	resources := common2.CreateResources("web2-" + os.Getenv("HOSTNAME"))
+	resources := common2.CreateResources("web2")
 
 	node, _ := resources.Introspector().Inspect(&types.NetworkDevice{})
 	introspecting.AddPrimaryKeyDecorator(node, "Id")
