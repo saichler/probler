@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/saichler/l8bus/go/overlay/health"
 	"github.com/saichler/l8bus/go/overlay/protocol"
 	"github.com/saichler/l8bus/go/overlay/vnic"
@@ -12,7 +14,7 @@ import (
 	"github.com/saichler/l8types/go/types/l8health"
 	"github.com/saichler/l8types/go/types/l8web"
 	"github.com/saichler/l8web/go/web/server"
-	common2 "github.com/saichler/probler/go/prob/common"
+	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/types"
 	types2 "github.com/saichler/probler/go/types"
 )
@@ -27,14 +29,35 @@ func startWebServer(port int, cert string) {
 		Port:           port,
 		Authentication: true,
 		CertName:       cert,
-		Prefix:         common2.PREFIX,
+		Prefix:         common.PREFIX,
 	}
 	svr, err := server.NewRestServer(serverConfig)
 	if err != nil {
 		panic(err)
 	}
 
-	resources := common2.CreateResources("web2")
+	nic1 := createVnic(common.PROBLER_VNET, nil)
+	nic2 := createVnic(common.LOGS_VNET, nic1.Resources())
+
+	hs, ok := nic1.Resources().Services().ServiceHandler(health.ServiceName, 0)
+	if ok {
+		ws := hs.WebService()
+		svr.RegisterWebService(ws, nic1)
+	}
+
+	//Activate the webpoints service
+	sla := ifs.NewServiceLevelAgreement(&server.WebService{}, ifs.WebService, 0, false, nil)
+	sla.SetArgs(svr, nic2)
+	nic1.Resources().Services().Activate(sla, nic1)
+
+	nic1.Resources().Logger().Info("Web Server Started!")
+
+	svr.Start()
+}
+
+func createVnic(vnet uint32, other ifs.IResources) ifs.IVNic {
+	resources := common.CreateResources3("web-"+strconv.Itoa(int(vnet)), "", other)
+	resources.SysConfig().VnetPort = vnet
 
 	node, _ := resources.Introspector().Inspect(&types.NetworkDevice{})
 	introspecting.AddPrimaryKeyDecorator(node, "Id")
@@ -64,19 +87,5 @@ func startWebServer(port int, cert string) {
 	nic.Resources().Registry().Register(&l8logf.L8File{})
 	fn, _ := nic.Resources().Introspector().Inspect(&l8logf.L8File{})
 	introspecting.AddPrimaryKeyDecorator(fn, "Path", "Name")
-
-	hs, ok := nic.Resources().Services().ServiceHandler(health.ServiceName, 0)
-	if ok {
-		ws := hs.WebService()
-		svr.RegisterWebService(ws, nic)
-	}
-
-	//Activate the webpoints service
-	sla := ifs.NewServiceLevelAgreement(&server.WebService{}, ifs.WebService, 0, false, nil)
-	sla.SetArgs(svr)
-	nic.Resources().Services().Activate(sla, nic)
-
-	nic.Resources().Logger().Info("Web Server Started!")
-
-	svr.Start()
+	return nic
 }
