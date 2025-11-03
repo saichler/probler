@@ -26,7 +26,7 @@ spec:
       hostNetwork: true
       containers:
         - name: probler-logs
-          image: saichler/probler-logserver:latest
+          image: saichler/logs-vnet:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 12888

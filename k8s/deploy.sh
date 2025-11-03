@@ -1,6 +1,6 @@
 kubectl apply -f vnet.yaml
+kubectl apply -f logs.yaml
 sleep 5
-#pod-logs.sh vnet
 kubectl apply -f parser.yaml
 sleep 2
 kubectl apply -f collector.yaml
@@ -14,4 +14,4 @@ sleep 2
 kubectl apply -f webui2.yaml
 sleep 2
 #kubectl apply -f topo.yaml
-#kubectl apply -f log-agent.yaml
+kubectl apply -f log-agent.yaml

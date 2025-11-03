@@ -2,8 +2,9 @@ kubectl delete -f log-agent.yaml
 kubectl delete -f webui2.yaml
 kubectl delete -f box.yaml
 kubectl delete -f k8s.yaml
-#kubectl delete -f orm.yaml
+kubectl delete -f orm.yaml
 kubectl delete -f parser.yaml
 kubectl delete -f collector.yaml
 kubectl delete -f vnet.yaml
 kubectl delete -f topo.yaml
+kubectl delete -f logs.yaml
