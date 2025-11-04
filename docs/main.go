@@ -11,7 +11,6 @@ import (
 	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8services/go/services/manager"
 	"github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/l8types/go/types/l8api"
 	"github.com/saichler/l8types/go/types/l8sysconfig"
 	"github.com/saichler/l8utils/go/utils/logger"
 	"github.com/saichler/l8utils/go/utils/registry"
@@ -21,6 +20,7 @@ import (
 
 func main() {
 	resources := CreateResources("vnet-" + os.Getenv("HOSTNAME"))
+	resources.SysConfig().VnetPort = 60605
 	resources.Logger().SetLogLevel(ifs.Info_Level)
 	net := vnet.NewVNet(resources)
 	net.Start()
@@ -41,16 +41,13 @@ func startWebServer(port int, cert string) {
 	}
 
 	resources := CreateResources("web-" + os.Getenv("HOSTNAME"))
+	resources.SysConfig().VnetPort = 60605
 
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Resources().SysConfig().KeepAliveIntervalSeconds = 60
 	nic.Start()
 	nic.WaitForConnection()
 
-	/*
-		nic.Resources().Registry().Register(&l8health.L8Top{})
-		nic.Resources().Registry().Register(&l8web.L8Empty{})
-	*/
 	hs, ok := nic.Resources().Services().ServiceHandler(health.ServiceName, 0)
 	if ok {
 		ws := hs.WebService()
@@ -70,7 +67,7 @@ func startWebServer(port int, cert string) {
 func CreateResources(alias string) ifs.IResources {
 	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
 	log.SetLogLevel(ifs.Error_Level)
-	res := resources.NewResourcesWithUser(log, &l8api.AuthUser{User: "admin", Pass: "Admin123!"})
+	res := resources.NewResources(log)
 
 	res.Set(registry.NewRegistry())
 

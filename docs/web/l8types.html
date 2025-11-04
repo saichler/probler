@@ -783,7 +783,7 @@
             <p class="hero-description">
                 Build sophisticated distributed systems with Protocol Buffer-based type definitions,
                 virtual networking, service discovery, and real-time health monitoring.
-                <strong>Version 1.3.0</strong>: Now with Service Level Agreement framework and dynamic type creation.
+                <strong>Version 1.4.0</strong>: Now with Map-Reduce framework, Leader Election, and Remote VNet support.
             </p>
             <div class="cta-container">
                 <a href="#install" class="cta-button cta-primary">Get Started</a>
@@ -795,49 +795,57 @@
     <!-- What's New Section -->
     <section class="section section-dark fade-in" id="whats-new">
         <div class="container">
-            <h2 class="section-title" style="color: white;">What's New in v1.3.0</h2>
-            <p class="section-subtitle" style="color: rgba(255,255,255,0.8);">Latest features and improvements</p>
+            <h2 class="section-title" style="color: white;">What's New in v1.4.0</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.8);">Latest features for distributed computing and networking</p>
 
             <div class="features-grid">
                 <div class="feature-card" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
                     <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="25" y="20" width="50" height="60" rx="5" fill="#d4af37"/>
-                        <line x1="35" y1="35" x2="65" y2="35" stroke="white" stroke-width="2"/>
-                        <line x1="35" y1="45" x2="55" y2="45" stroke="white" stroke-width="2"/>
-                        <line x1="35" y1="55" x2="60" y2="55" stroke="white" stroke-width="2"/>
-                        <line x1="35" y1="65" x2="50" y2="65" stroke="white" stroke-width="2"/>
-                        <circle cx="70" cy="70" r="15" fill="#00b4d8"/>
-                        <path d="M 65 70 L 68 73 L 75 66" stroke="white" stroke-width="2" fill="none"/>
+                        <circle cx="30" cy="30" r="10" fill="#00b4d8"/>
+                        <circle cx="70" cy="30" r="10" fill="#00b4d8"/>
+                        <circle cx="30" cy="70" r="10" fill="#00b4d8"/>
+                        <circle cx="70" cy="70" r="10" fill="#00b4d8"/>
+                        <path d="M 30 40 L 50 50 L 30 60" stroke="#d4af37" stroke-width="2" fill="none"/>
+                        <path d="M 70 40 L 50 50 L 70 60" stroke="#d4af37" stroke-width="2" fill="none"/>
+                        <circle cx="50" cy="50" r="15" fill="#ff6b35"/>
+                        <text x="50" y="55" text-anchor="middle" fill="white" font-size="14" font-weight="bold">MR</text>
                     </svg>
-                    <h3 style="color: var(--primary-color);">Service Level Agreement Framework</h3>
-                    <p style="color: rgba(255,255,255,0.8);">Complete refactoring of service activation with new ServiceLevelAgreement structure. Simplified API with encapsulated configuration for service lifecycle management.</p>
+                    <h3 style="color: var(--primary-color);">Map-Reduce Framework</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Distributed Map-Reduce capabilities for parallel data processing. New <code>IMapReduceService</code> interface and <code>Collect()</code> method for distributed computation across services.</p>
                 </div>
 
                 <div class="feature-card" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
                     <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="30" r="15" fill="#00b4d8"/>
-                        <text x="50" y="35" text-anchor="middle" fill="white" font-size="12" font-weight="bold">T</text>
-                        <path d="M 50 45 L 30 65 L 30 75 L 40 75 L 50 65 L 60 75 L 70 75 L 70 65 L 50 45" fill="#d4af37"/>
-                        <circle cx="30" cy="75" r="5" fill="#06ffa5"/>
-                        <circle cx="50" cy="65" r="5" fill="#06ffa5"/>
-                        <circle cx="70" cy="75" r="5" fill="#06ffa5"/>
+                        <circle cx="50" cy="30" r="12" fill="#d4af37"/>
+                        <path d="M 45 27 L 50 22 L 55 27 L 55 33 L 50 38 L 45 33 Z" fill="white"/>
+                        <circle cx="30" cy="60" r="8" fill="#00b4d8"/>
+                        <circle cx="70" cy="60" r="8" fill="#00b4d8"/>
+                        <circle cx="50" cy="75" r="8" fill="#00b4d8"/>
+                        <line x1="50" y1="42" x2="30" y2="52" stroke="#06ffa5" stroke-width="2"/>
+                        <line x1="50" y1="42" x2="70" y2="52" stroke="#06ffa5" stroke-width="2"/>
+                        <line x1="50" y1="42" x2="50" y2="67" stroke="#06ffa5" stroke-width="2"/>
                     </svg>
-                    <h3 style="color: var(--primary-color);">Dynamic Type Creation</h3>
-                    <p style="color: rgba(255,255,255,0.8);">New <code>NewOf()</code> method in IRegistry enables dynamic type instantiation at runtime, perfect for flexible plugin architectures and runtime extensibility.</p>
+                    <h3 style="color: var(--primary-color);">Leader Election</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Automatic leader election with failover support. New <code>Leader()</code> and <code>LeaderRequest()</code> methods in VNic for leader-only messaging patterns.</p>
                 </div>
 
                 <div class="feature-card" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
                     <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="20" y="40" width="60" height="8" rx="4" fill="#00b4d8"/>
-                        <circle cx="25" cy="44" r="3" fill="white"/>
-                        <circle cx="35" cy="44" r="3" fill="white"/>
-                        <circle cx="45" cy="44" r="3" fill="white"/>
-                        <text x="55" y="47" fill="white" font-size="8">...</text>
-                        <path d="M 50 55 L 50 65" stroke="#d4af37" stroke-width="3"/>
-                        <path d="M 45 60 L 50 65 L 55 60" stroke="#d4af37" stroke-width="3" fill="none"/>
+                        <rect x="15" y="25" width="30" height="20" rx="3" fill="#00b4d8" opacity="0.7"/>
+                        <rect x="55" y="25" width="30" height="20" rx="3" fill="#00b4d8" opacity="0.7"/>
+                        <rect x="15" y="55" width="30" height="20" rx="3" fill="#00b4d8" opacity="0.7"/>
+                        <rect x="55" y="55" width="30" height="20" rx="3" fill="#00b4d8" opacity="0.7"/>
+                        <circle cx="30" cy="35" r="3" fill="white"/>
+                        <circle cx="70" cy="35" r="3" fill="white"/>
+                        <circle cx="30" cy="65" r="3" fill="white"/>
+                        <circle cx="70" cy="65" r="3" fill="white"/>
+                        <path d="M 45 35 L 55 35" stroke="#d4af37" stroke-width="2"/>
+                        <path d="M 45 65 L 55 65" stroke="#d4af37" stroke-width="2"/>
+                        <path d="M 30 45 L 30 55" stroke="#d4af37" stroke-width="2"/>
+                        <path d="M 70 45 L 70 55" stroke="#d4af37" stroke-width="2"/>
                     </svg>
-                    <h3 style="color: var(--primary-color);">Improved API Ergonomics</h3>
-                    <p style="color: rgba(255,255,255,0.8);">Variadic parameters for <code>SetPrimaryKeys()</code> and <code>SetArgs()</code> methods. More intuitive API design with cleaner, more readable code.</p>
+                    <h3 style="color: var(--primary-color);">Remote VNet Support</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Enhanced multi-network connectivity with cross-network service discovery. Added <code>Vnet()</code> field to web services for seamless remote operations.</p>
                 </div>
             </div>
         </div>
@@ -1020,10 +1028,20 @@
                 <div class="timeline-item fade-in">
                     <div class="timeline-dot" style="background: var(--primary-color);"></div>
                     <div class="timeline-content">
-                        <h3 style="color: var(--primary-color);">Version 1.3.0 <span style="background: var(--gradient-1); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; margin-left: 10px;">Latest</span></h3>
-                        <p><strong>Service Level Agreement Framework</strong>: Complete refactoring of service activation with encapsulated configuration</p>
+                        <h3 style="color: var(--primary-color);">Version 1.4.0 <span style="background: var(--gradient-1); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; margin-left: 10px;">Latest</span></h3>
+                        <p><strong>Map-Reduce Framework</strong>: Distributed computation and data aggregation capabilities</p>
+                        <p><strong>Leader Election</strong>: Automatic leader election with failover and leader-based communication</p>
+                        <p><strong>Remote VNet Support</strong>: Cross-network connectivity and service discovery</p>
+                        <p><strong>Protocol Enhancements</strong>: Improved serialization utilities for services</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3>Version 1.3.0</h3>
+                        <p><strong>Service Level Agreement Framework</strong>: Complete refactoring of service activation</p>
                         <p><strong>Dynamic Type Creation</strong>: NewOf() method for runtime type instantiation</p>
-                        <p><strong>API Improvements</strong>: Variadic parameters for cleaner, more intuitive APIs</p>
+                        <p><strong>API Improvements</strong>: Variadic parameters for cleaner APIs</p>
                         <p><strong>Code Quality</strong>: 95% test coverage with comprehensive testing suite</p>
                     </div>
                 </div>
@@ -1063,26 +1081,33 @@
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
-                        <span class="code-title">Service Level Agreement (v1.3.0)</span>
+                        <span class="code-title">Map-Reduce Operations (v1.4.0)</span>
                     </div>
-                    <pre><code><span class="syntax-comment">// Create Service Level Agreement</span>
-<span class="syntax-keyword">sla</span> := &<span class="syntax-type">ifs.ServiceLevelAgreement</span>{}
-sla.<span class="syntax-function">SetServiceName</span>(<span class="syntax-string">"user-service"</span>)
-sla.<span class="syntax-function">SetServiceArea</span>(<span class="syntax-number">1</span>)
-sla.<span class="syntax-function">SetStateful</span>(<span class="syntax-keyword">true</span>)
-sla.<span class="syntax-function">SetTransactional</span>(<span class="syntax-keyword">true</span>)
-sla.<span class="syntax-function">SetReplication</span>(<span class="syntax-keyword">true</span>)
-sla.<span class="syntax-function">SetReplicationCount</span>(<span class="syntax-number">3</span>)
+                    <pre><code><span class="syntax-comment">// Implement Map-Reduce service</span>
+<span class="syntax-keyword">type</span> <span class="syntax-type">MyMapReduceService</span> <span class="syntax-keyword">struct</span> {
+    cache <span class="syntax-type">IDistributedCache</span>
+}
 
-<span class="syntax-comment">// Variadic parameters (NEW in v1.3.0)</span>
-sla.<span class="syntax-function">SetPrimaryKeys</span>(<span class="syntax-string">"userId"</span>, <span class="syntax-string">"email"</span>)
-sla.<span class="syntax-function">SetArgs</span>(dbConn, cacheLayer, logger)
+<span class="syntax-keyword">func</span> (s *<span class="syntax-type">MyMapReduceService</span>) <span class="syntax-function">Merge</span>(results <span class="syntax-keyword">map</span>[<span class="syntax-type">string</span>]<span class="syntax-type">IElements</span>) <span class="syntax-type">IElements</span> {
+    <span class="syntax-comment">// Merge results from multiple nodes</span>
+    merged := <span class="syntax-function">NewElements</span>()
+    <span class="syntax-keyword">for</span> nodeId, elements := <span class="syntax-keyword">range</span> results {
+        merged.<span class="syntax-function">Combine</span>(elements)
+    }
+    <span class="syntax-keyword">return</span> merged
+}
 
-<span class="syntax-comment">// Simplified activation (NEW in v1.3.0)</span>
-<span class="syntax-keyword">handler</span>, <span class="syntax-keyword">err</span> := services.<span class="syntax-function">Activate</span>(sla, vnic)
-<span class="syntax-keyword">if</span> err != <span class="syntax-keyword">nil</span> {
-    log.<span class="syntax-function">Fatal</span>(<span class="syntax-string">"Failed to activate:"</span>, err)
-}</code></pre>
+<span class="syntax-comment">// Use Collect for distributed filtering</span>
+results := cache.<span class="syntax-function">Collect</span>(<span class="syntax-keyword">func</span>(item <span class="syntax-type">interface{}</span>) (<span class="syntax-type">bool</span>, <span class="syntax-type">interface{}</span>) {
+    user := item.(*<span class="syntax-type">User</span>)
+    <span class="syntax-keyword">if</span> user.Age > <span class="syntax-number">18</span> && user.Status == <span class="syntax-string">"active"</span> {
+        <span class="syntax-keyword">return</span> <span class="syntax-keyword">true</span>, user.<span class="syntax-function">Summary</span>()
+    }
+    <span class="syntax-keyword">return</span> <span class="syntax-keyword">false</span>, <span class="syntax-keyword">nil</span>
+})
+
+<span class="syntax-comment">// Enable Map-Reduce in queries</span>
+query.MapReduce = <span class="syntax-keyword">true</span></code></pre>
                 </div>
 
                 <div class="code-block">
@@ -1090,32 +1115,32 @@ sla.<span class="syntax-function">SetArgs</span>(dbConn, cacheLayer, logger)
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
-                        <span class="code-title">Dynamic Type Creation (v1.3.0)</span>
+                        <span class="code-title">Leader Election (v1.4.0)</span>
                     </div>
-                    <pre><code><span class="syntax-comment">// Register types with the registry</span>
-<span class="syntax-keyword">registry</span> := ifs.<span class="syntax-function">NewRegistry</span>()
-<span class="syntax-keyword">userType</span> := &<span class="syntax-type">User</span>{
-    Name: <span class="syntax-string">"template"</span>,
-    Role: <span class="syntax-string">"default"</span>,
-}
-registry.<span class="syntax-function">Register</span>(userType)
+                    <pre><code><span class="syntax-comment">// Send message to leader only</span>
+<span class="syntax-keyword">err</span> := vnic.<span class="syntax-function">Leader</span>(
+    <span class="syntax-string">"consensus-service"</span>,
+    <span class="syntax-number">1</span>,
+    ifs.POST,
+    proposal,
+)
 
-<span class="syntax-comment">// Dynamic type instantiation (NEW in v1.3.0)</span>
-<span class="syntax-keyword">newUser</span> := registry.<span class="syntax-function">NewOf</span>(userType).(*<span class="syntax-type">User</span>)
-newUser.Name = <span class="syntax-string">"John Doe"</span>
-newUser.Email = <span class="syntax-string">"john@example.com"</span>
+<span class="syntax-comment">// Request with response from leader</span>
+<span class="syntax-keyword">response</span> := vnic.<span class="syntax-function">LeaderRequest</span>(
+    <span class="syntax-string">"state-service"</span>,
+    <span class="syntax-number">1</span>,
+    ifs.GET,
+    stateQuery,
+    timeout,
+    <span class="syntax-string">"optional-uuid"</span>,
+)
 
-<span class="syntax-comment">// Create multiple instances dynamically</span>
-<span class="syntax-keyword">for</span> i := <span class="syntax-number">0</span>; i < <span class="syntax-number">10</span>; i++ {
-    <span class="syntax-keyword">instance</span> := registry.<span class="syntax-function">NewOf</span>(userType)
-    <span class="syntax-comment">// Each instance is a fresh copy</span>
-    processUser(instance)
-}
-
-<span class="syntax-comment">// Perfect for plugin architectures</span>
-<span class="syntax-keyword">plugin</span> := registry.<span class="syntax-function">NewOf</span>(pluginTemplate)
-plugin.<span class="syntax-function">Initialize</span>(config)
-plugin.<span class="syntax-function">Execute</span>()</code></pre>
+<span class="syntax-comment">// Leader election is automatic</span>
+<span class="syntax-comment">// with failover support</span>
+<span class="syntax-keyword">if</span> response.IsLeader() {
+    <span class="syntax-comment">// Process leader response</span>
+    handleLeaderData(response)
+}</code></pre>
                 </div>
             </div>
         </div>
@@ -1125,10 +1150,10 @@ plugin.<span class="syntax-function">Execute</span>()</code></pre>
     <section class="section section-gradient fade-in" id="install">
         <div class="container">
             <h2 class="section-title">Quick Start Guide</h2>
-            <p class="section-subtitle">Get up and running in minutes with Layer 8 Types v1.3.0</p>
+            <p class="section-subtitle">Get up and running in minutes with Layer 8 Types v1.4.0</p>
 
             <div style="background: linear-gradient(135deg, #d4af37 0%, #b8960f 100%); padding: 1rem 2rem; border-radius: 15px; margin: 2rem auto 3rem; max-width: 800px; color: white; text-align: center;">
-                <strong>⚡ Upgrading from v1.2.0?</strong> Check out the <a href="https://github.com/saichler/l8types#api-migration-guide" style="color: white; text-decoration: underline;">API Migration Guide</a> for breaking changes and new features.
+                <strong>🚀 New in v1.4.0:</strong> Map-Reduce framework, Leader Election, and Remote VNet support! <a href="#whats-new" style="color: white; text-decoration: underline;">See what's new</a>
             </div>
 
             <div class="features-grid">
@@ -1162,10 +1187,12 @@ go test -v -cover ./...</code></pre>
                     <h3>5. Build Your App</h3>
                     <pre style="background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><code>import "github.com/saichler/l8types/go/ifs"
 
-// v1.3.0 - Create SLA
-sla := &ifs.ServiceLevelAgreement{}
-sla.SetServiceName("my-service")
-handler, _ := services.Activate(sla, vnic)</code></pre>
+// v1.4.0 - Use Map-Reduce
+query := &types.Query{MapReduce: true}
+// Leader communication
+vnic.Leader("service", 1, ifs.POST, data)
+// Remote VNet support
+webService.SetVnet(remoteVnetId)</code></pre>
                 </div>
 
                 <div class="feature-card">
@@ -1217,8 +1244,8 @@ docker run myapp</code></pre>
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; 2024 Layer 8 Types v1.3.0 | Open source distributed networking library for Go.</p>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Featuring Service Level Agreement framework, Dynamic Type Creation, and Improved API Ergonomics</p>
+            <p>&copy; 2024 Layer 8 Types v1.4.0 | Open source distributed networking library for Go.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Featuring Map-Reduce Framework, Leader Election, Remote VNet Support, and Protocol Enhancements</p>
         </div>
     </footer>
 
