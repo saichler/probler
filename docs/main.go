@@ -31,7 +31,7 @@ func startWebServer(port int, cert string) {
 	serverConfig := &server.RestServerConfig{
 		Host:           protocol.MachineIP,
 		Port:           port,
-		Authentication: true,
+		Authentication: false,
 		CertName:       "layer-8",
 		Prefix:         "/layer8/",
 	}
