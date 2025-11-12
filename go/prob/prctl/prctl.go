@@ -67,7 +67,6 @@ func main() {
 	resources.Introspector().Inspect(&types5.NetworkDeviceList{})
 	resources.Introspector().Inspect(&l8web.L8Empty{})
 	resources.Introspector().Inspect(&l8api.L8Query{})
-	resources.Introspector().Inspect(&types5.NetworkTopology{})
 	resources.Introspector().Inspect(&l8api.AuthToken{})
 	resources.Introspector().Inspect(&l8api.AuthUser{})
 	resources.Introspector().Inspect(&l8health.L8Health{})
@@ -85,7 +84,7 @@ func main() {
 
 	if cmd1 == "get" {
 		if cmd2 == "topo" {
-			commands.GetTopo(cmd3, rc, resources)
+			//commands.GetTopo(cmd3, rc, resources)
 			return
 		} else if cmd2 == "cluster" {
 			commands.GetCluster(rc, resources, cmd3)

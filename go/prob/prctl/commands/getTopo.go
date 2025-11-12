@@ -1,5 +1,6 @@
 package commands
 
+/*
 import (
 	"fmt"
 	"os"
@@ -33,4 +34,4 @@ func GetTopo(cmd string, rc *client.RestClient, resources common2.IResources) {
 	}
 	fmt.Println(string(jsn))
 	os.WriteFile("/tmp/topo.json", jsn, 0777)
-}
+}*/
