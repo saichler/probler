@@ -81,7 +81,6 @@ func createVnic(vnet uint32, other ifs.IResources) ifs.IVNic {
 	nic.Resources().Registry().Register(&l8health.L8Top{})
 	nic.Resources().Registry().Register(&l8web.L8Empty{})
 	nic.Resources().Registry().Register(&l8tpollaris.CJob{})
-	nic.Resources().Registry().Register(&types2.NetworkTopology{})
 	nic.Resources().Registry().Register(&l8health.L8Health{})
 	nic.Resources().Registry().Register(&l8health.L8HealthList{})
 	nic.Resources().Registry().Register(&l8logf.L8File{})
