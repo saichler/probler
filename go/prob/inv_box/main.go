@@ -28,8 +28,7 @@ func main() {
 	_, err := nic.Resources().Services().Activate(sla, nic)
 
 	invCenter := inventory.Inventory(res, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX)
-	invCenter.AddStats("Total", Total)
-	invCenter.AddStats("Online", Online)
+	invCenter.AddMetadata("Online", Online)
 
 	if err != nil {
 		res.Logger().Error(err)
@@ -39,23 +38,16 @@ func main() {
 	common2.WaitForSignal(nic.Resources())
 }
 
-func Total(any interface{}) bool {
+func Online(any interface{}) (bool, string) {
 	if any == nil {
-		return false
-	}
-	return true
-}
-
-func Online(any interface{}) bool {
-	if any == nil {
-		return false
+		return false, ""
 	}
 	nd := any.(*types2.NetworkDevice)
 	if nd.Equipmentinfo == nil {
-		return false
+		return false, ""
 	}
 	if nd.Equipmentinfo.DeviceStatus == types2.DeviceStatus_DEVICE_STATUS_ONLINE {
-		return true
+		return true, ""
 	}
-	return false
+	return false, ""
 }

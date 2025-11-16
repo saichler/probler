@@ -8,3 +8,6 @@ docker run --user "$(id -u):$(id -g)" -e PROTO=inventory.proto --mount type=bind
 mkdir -p ../go/types
 mv ./types/*.pb.go ../go/types/.
 rm -rf ./types
+
+cd ../go
+find . -name "*.go" -type f -exec sed -i 's|"./types/l8services"|"github.com/saichler/l8types/go/types/l8services"|g' {} +
