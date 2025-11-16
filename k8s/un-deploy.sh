@@ -8,4 +8,3 @@ kubectl delete -f collector.yaml
 kubectl delete -f vnet.yaml
 kubectl delete -f logs.yaml
 kubectl delete -f topo.yaml
-kubectl delete -f logs.yaml

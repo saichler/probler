@@ -6,10 +6,11 @@ option java_multiple_files = true;
 option java_outer_classname = "Types";
 option java_package = "com.inventory.types";
 option go_package = "./types";
+import "api.proto";
 
 message NetworkDeviceList {
   repeated NetworkDevice list = 1;
-  map<string, int32> stats = 2;
+  l8api.L8MetaData metadata = 2;
 }
 
 message NetworkDevice {
