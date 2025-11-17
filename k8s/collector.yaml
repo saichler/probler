@@ -15,7 +15,7 @@ metadata:
   labels:
     app: probler-collector
 spec:
-  replicas: 2
+  replicas: 12
   selector:
     matchLabels:
       app: probler-collector

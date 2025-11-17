@@ -76,6 +76,9 @@ function transformDeviceData(device) {
 // Global variable to store the network devices table instance
 let networkDevicesTable = null;
 
+// Cache for total count (metadata exists on all pages, but only page 0 has real data)
+let cachedTotalCount = 0;
+
 // Fetch devices for a specific page
 async function fetchNetworkDevices(page) {
     const container = document.getElementById('network-devices-table');
@@ -100,15 +103,21 @@ async function fetchNetworkDevices(page) {
         // Transform the device list from JSON format to table format
         const networkDevicesData = (data.list || []).map(device => transformDeviceData(device));
 
-        // Get total devices from stats
-        const totalDevices = data.stats?.Total || 0;
-        const onlineDevices = data.stats?.Online || 0;
+        // Get counts from metadata (only use page 0, pages 1+ contain per-page totals)
+        let totalDevices = cachedTotalCount; // Use cached value by default
 
-        // Update hero subtitle with actual stats
-        const heroSubtitle = document.querySelector('.network-hero .hero-subtitle');
-        if (heroSubtitle) {
-            const uptime = totalDevices > 0 ? ((onlineDevices / totalDevices) * 100).toFixed(2) : 0;
-            heroSubtitle.textContent = `Real-time monitoring • ${onlineDevices} Active Devices • ${uptime}% Uptime`;
+        if (serverPage === 0 && data.metadata?.keyCount?.counts) {
+            // Page 0: metadata contains real aggregate data, extract and cache counts
+            totalDevices = data.metadata.keyCount.counts.Total || 0;
+            const onlineDevices = data.metadata.keyCount.counts.Online || 0;
+            cachedTotalCount = totalDevices; // Cache for pages 1+ (disregard their metadata)
+
+            // Update hero subtitle with actual stats (only on page 0)
+            const heroSubtitle = document.querySelector('.network-hero .hero-subtitle');
+            if (heroSubtitle) {
+                const uptime = totalDevices > 0 ? ((onlineDevices / totalDevices) * 100).toFixed(2) : 0;
+                heroSubtitle.textContent = `Real-time monitoring • ${onlineDevices} Active Devices • ${uptime}% Uptime`;
+            }
         }
 
         return { devices: networkDevicesData, totalCount: totalDevices };

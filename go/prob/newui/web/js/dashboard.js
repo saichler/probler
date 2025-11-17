@@ -14,7 +14,7 @@ async function fetchNetworkDeviceStats() {
         }
 
         const data = await response.json();
-        return data.stats || null;
+        return data.metadata?.keyCount?.counts || null;
     } catch (error) {
         return null;
     }
