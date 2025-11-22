@@ -8,13 +8,15 @@ metadata:
 ---
 
 apiVersion: apps/v1
-kind: DaemonSet
+kind: StatefulSet
 metadata:
   namespace: probler-topo
   name: probler-topo
   labels:
     app: probler-topo
 spec:
+  serviceName: probler-topo
+  replicas: 1
   selector:
     matchLabels:
       app: probler-topo

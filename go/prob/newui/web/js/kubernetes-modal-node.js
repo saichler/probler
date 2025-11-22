@@ -374,6 +374,26 @@ async function showNodeDetailModal(node, cluster) {
 function generateNodeDetails(node, cluster) {
     const creationDate = new Date(Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000);
 
+    // Provide default values for missing fields
+    const cpuCapacity = node.cpuCapacity || node.cpu || "4";
+    const memoryCapacity = node.memoryCapacity || node.memory || "8Gi";
+    const internalIP = node.internalIP || node.internalIp || "192.168.1.100";
+    const externalIP = node.externalIP || node.externalIp || '<none>';
+    const roles = node.roles || "";
+    const osImage = node.osImage || "Ubuntu 22.04.3 LTS";
+    const kernelVersion = node.kernelVersion || "5.15.0-78-generic";
+    const containerRuntime = node.containerRuntime || "containerd://1.7.2";
+    const version = node.version || "v1.28.0";
+
+    // Parse memory capacity to handle different formats
+    let memoryKi;
+    if (typeof memoryCapacity === 'string') {
+        const memoryValue = parseFloat(memoryCapacity.replace(/[^0-9.]/g, '')) || 8;
+        memoryKi = memoryCapacity.includes('Gi') ? memoryValue * 1024 * 1024 : memoryValue;
+    } else {
+        memoryKi = memoryCapacity * 1024 * 1024;
+    }
+
     return {
         apiVersion: "v1",
         kind: "Node",
@@ -389,8 +409,8 @@ function generateNodeDetails(node, cluster) {
                     "kubernetes.io/arch": "amd64",
                     "kubernetes.io/hostname": node.name,
                     "kubernetes.io/os": "linux",
-                    "node-role.kubernetes.io/control-plane": node.roles.includes('control-plane') ? "" : undefined,
-                    "node-role.kubernetes.io/worker": node.roles.includes('worker') ? "" : undefined,
+                    "node-role.kubernetes.io/control-plane": roles.includes('control-plane') ? "" : undefined,
+                    "node-role.kubernetes.io/worker": roles.includes('worker') ? "" : undefined,
                     "node.kubernetes.io/exclude-from-external-load-balancers": ""
                 }).filter(([_, value]) => value !== undefined)
             ),
@@ -398,7 +418,7 @@ function generateNodeDetails(node, cluster) {
                 "flannel.alpha.coreos.com/backend-data": `{"VNI":1,"VtepMAC":"${generateMAC()}"}`,
                 "flannel.alpha.coreos.com/backend-type": "vxlan",
                 "flannel.alpha.coreos.com/kube-subnet-manager": "true",
-                "flannel.alpha.coreos.com/public-ip": node.internalIP,
+                "flannel.alpha.coreos.com/public-ip": internalIP,
                 "kubeadm.alpha.kubernetes.io/cri-socket": "unix:///var/run/containerd/containerd.sock",
                 "node.alpha.kubernetes.io/ttl": "0",
                 "volumes.kubernetes.io/controller-managed-attach-detach": "true"
@@ -410,22 +430,22 @@ function generateNodeDetails(node, cluster) {
         },
         status: {
             addresses: [
-                { type: "InternalIP", address: node.internalIP },
+                { type: "InternalIP", address: internalIP },
                 { type: "Hostname", address: node.name },
-                ...(node.externalIP !== '<none>' ? [{ type: "ExternalIP", address: node.externalIP }] : [])
+                ...(externalIP !== '<none>' ? [{ type: "ExternalIP", address: externalIP }] : [])
             ],
             capacity: {
-                cpu: String(node.cpuCapacity),
+                cpu: String(cpuCapacity),
                 "ephemeral-storage": "50254368Ki",
                 "hugepages-2Mi": "0",
-                memory: node.memoryCapacity.replace('Gi', '') + "Ki",
+                memory: memoryKi + "Ki",
                 pods: "110"
             },
             allocatable: {
-                cpu: String(node.cpuCapacity),
+                cpu: String(cpuCapacity),
                 "ephemeral-storage": "46314425473",
                 "hugepages-2Mi": "0",
-                memory: (parseInt(node.memoryCapacity) * 1024 * 0.95).toFixed(0) + "Ki",
+                memory: (memoryKi * 0.95).toFixed(0) + "Ki",
                 pods: "110"
             },
             conditions: [
@@ -479,13 +499,13 @@ function generateNodeDetails(node, cluster) {
             nodeInfo: {
                 architecture: "amd64",
                 bootID: generateUID(),
-                containerRuntimeVersion: node.containerRuntime,
-                kernelVersion: node.kernelVersion,
-                kubeProxyVersion: node.version,
-                kubeletVersion: node.version,
+                containerRuntimeVersion: containerRuntime,
+                kernelVersion: kernelVersion,
+                kubeProxyVersion: version,
+                kubeletVersion: version,
                 machineID: generateUID().replace(/-/g, ''),
                 operatingSystem: "linux",
-                osImage: node.osImage,
+                osImage: osImage,
                 systemUUID: generateUID()
             }
         }

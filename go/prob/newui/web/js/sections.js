@@ -8,6 +8,7 @@ const sections = {
     hosts: 'hosts.html',
     kubernetes: 'kubernetes.html',
     infrastructure: 'infrastructure.html',
+    topologies: 'topologies.html',
     events: 'events.html',
     automation: 'automation.html',
     applications: 'applications.html',

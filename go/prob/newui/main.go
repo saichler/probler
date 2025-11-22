@@ -9,6 +9,7 @@ import (
 	"github.com/saichler/l8logfusion/go/types/l8logf"
 	"github.com/saichler/l8pollaris/go/types/l8tpollaris"
 	"github.com/saichler/l8reflect/go/reflect/introspecting"
+	"github.com/saichler/l8topology/go/types/l8topo"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8api"
 	"github.com/saichler/l8types/go/types/l8health"
@@ -84,6 +85,13 @@ func createVnic(vnet uint32, other ifs.IResources) ifs.IVNic {
 	nic.Resources().Registry().Register(&l8health.L8Health{})
 	nic.Resources().Registry().Register(&l8health.L8HealthList{})
 	nic.Resources().Registry().Register(&l8logf.L8File{})
+
+	nic.Resources().Registry().Register(&l8topo.L8Topology{})
+	node, _ = nic.Resources().Introspector().Inspect(&l8topo.L8TopologyMetadata{})
+	introspecting.AddPrimaryKeyDecorator(node, "ServiceName", "ServiceArea")
+	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadataList{})
+	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadata{})
+
 	fn, _ := nic.Resources().Introspector().Inspect(&l8logf.L8File{})
 	introspecting.AddPrimaryKeyDecorator(fn, "Path", "Name")
 	return nic

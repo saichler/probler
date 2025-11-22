@@ -40,7 +40,7 @@ func CreateResources2(alias, path string) ifs.IResources {
 }
 
 func CreateResources3(alias, path string, other ifs.IResources) ifs.IResources {
-	logger.SetLogToFile(alias)
+	//logger.SetLogToFile(alias)
 	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
 	log.SetLogLevel(ifs.Error_Level)
 	res := resources.NewResources(log)
