@@ -11,7 +11,6 @@ import (
 func main() {
 	resources := common.CreateResources("topo")
 	resources.Logger().SetLogLevel(ifs.Info_Level)
-	resources.Logger().s
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Start()

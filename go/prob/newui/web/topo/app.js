@@ -783,7 +783,9 @@ class TopologyBrowser {
         const nodePositions = {};
         Object.entries(nodes).forEach(([id, node]) => {
             const pos = this.latLongToXY(node.latitude, node.longitude, worldMapRect, containerRect);
-            nodePositions[id] = pos;
+            if (pos) {
+                nodePositions[id] = pos;
+            }
         });
 
         Object.values(links).forEach(link => {
@@ -807,6 +809,12 @@ class TopologyBrowser {
     }
 
     latLongToXY(lat, lon, mapRect, containerRect) {
+        // Validate coordinates - return null if invalid
+        if (lat === undefined || lat === null || lon === undefined || lon === null ||
+            isNaN(lat) || isNaN(lon)) {
+            return null;
+        }
+
         // Map to SVG native coordinate space (viewBox: 0 0 2000 857)
         // SVG from Simplemaps.com uses Robinson Projection
         const svgWidth = 2000;
