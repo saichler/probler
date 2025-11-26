@@ -69,10 +69,21 @@
                     <span id="zoom-level">100%</span>
                     <button id="zoom-out-btn" title="Zoom Out">-</button>
                     <button id="zoom-reset-btn" title="Reset Zoom">Reset</button>
+                    <span class="control-divider"></span>
+                    <select id="layout-select" title="Select Layout">
+                        <option value="map">Map</option>
+                        <option value="hierarchical">Hierarchical</option>
+                        <option value="circular">Circular</option>
+                        <option value="radial">Radial</option>
+                        <option value="force">Force Directed</option>
+                    </select>
                 </div>
                 <div id="map-container">
-                    <img id="world-map" src="resources/world.svg" alt="World Map">
-                    <svg id="overlay-svg" viewBox="0 0 2000 857" preserveAspectRatio="none">
+                    <!-- WebGL Canvas (primary renderer) -->
+                    <canvas id="webgl-canvas"></canvas>
+                    <!-- Fallback SVG overlay (hidden when WebGL is active) -->
+                    <img id="world-map" src="resources/world.svg" alt="World Map" style="display: none;">
+                    <svg id="overlay-svg" viewBox="0 0 2000 857" preserveAspectRatio="none" style="display: none;">
                         <defs>
                             <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
                                 <polygon points="0 0, 10 3, 0 6" fill="#0ea5e9" />
@@ -185,6 +196,20 @@
         </div>
     </div>
 
+    <!-- WebGL Scripts -->
+    <script src="webgl/shaders.js"></script>
+    <script src="webgl/webgl-renderer.js"></script>
+    <script src="webgl/webgl-camera.js"></script>
+    <script src="webgl/webgl-nodes.js"></script>
+    <script src="webgl/webgl-links.js"></script>
+    <script src="webgl/webgl-icons.js"></script>
+    <script src="webgl/webgl-picking.js"></script>
+    <script src="webgl/webgl-topology.js"></script>
+    <!-- Core Scripts -->
+    <script src="topology-core.js"></script>
+    <script src="topology-data.js"></script>
+    <script src="topology-map.js"></script>
+    <script src="topology-ui.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

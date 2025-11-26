@@ -1,0 +1,12 @@
+/* Topologies Section Styles */
+
+.topologies-section {
+    padding: 0;
+    height: 100%;
+}
+
+.topologies-frame {
+    width: 100%;
+    height: calc(100vh - 80px);
+    padding: 0;
+}
