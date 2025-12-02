@@ -1,9 +1,3 @@
-// ============================================
-// TOGGLE THIS TO SHOW/HIDE LOGIN PANEL
-// Set to true for testing, false for production
-const SHOW_LOGIN_PANEL = false;
-// ============================================
-
 // Data stores (in-memory, would connect to API in production)
 let users = {};
 let roles = {};
@@ -33,9 +27,6 @@ let pendingDelete = { type: null, id: null };
 let tempRules = [];
 let pendingPasswordChange = null;
 
-// Authentication token
-let bearerToken = null;
-
 // Cached registry types for Element Type dropdown
 let registryTypes = null;
 
@@ -50,6 +41,11 @@ async function fetchRegistryTypes() {
             method: 'GET',
             headers: getAuthHeaders()
         });
+
+        if (response.status === 401) {
+            handleUnauthorized();
+            return ['*'];
+        }
 
         if (!response.ok) {
             const errorMsg = await getApiErrorMessage(response, 'Failed to fetch registry types');
@@ -89,77 +85,9 @@ async function populateElementTypeDropdown(selectedValue = '') {
     });
 }
 
-// Authenticate with the server (used for auto-login when panel is hidden)
-async function authenticate(username, password) {
-    const user = username || 'admin';
-    const pass = password || 'Admin123!';
-
-    try {
-        const response = await fetch('/auth', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ user: user, pass: pass })
-        });
-
-        if (!response.ok) {
-            const errorMsg = await getApiErrorMessage(response, 'Login failed');
-            console.error('Authentication failed:', response.status, errorMsg);
-            updateLoginStatus(errorMsg, 'error');
-            return false;
-        }
-
-        const data = await response.json();
-        bearerToken = data.token;
-        console.log('Authentication successful');
-        updateLoginStatus(`Logged in as ${user}`, 'logged-in');
-        return true;
-    } catch (error) {
-        console.error('Authentication error:', error);
-        updateLoginStatus('Login error', 'error');
-        return false;
-    }
-}
-
-// Manual login from panel
-async function doLogin() {
-    const username = document.getElementById('login-user').value.trim();
-    const password = document.getElementById('login-pass').value;
-
-    if (!username || !password) {
-        showToast('Please enter username and password', 'warning');
-        return;
-    }
-
-    const success = await authenticate(username, password);
-    if (success) {
-        await fetchRoles();
-        await fetchUsers();
-    }
-}
-
-// Logout
-function doLogout() {
-    bearerToken = null;
-    users = {};
-    roles = {};
-    renderUsers();
-    renderRoles();
-    updateLoginStatus('Not logged in', '');
-}
-
-// Update login status display
-function updateLoginStatus(message, className) {
-    const status = document.getElementById('login-status');
-    if (status) {
-        status.textContent = message;
-        status.className = 'login-status ' + className;
-    }
-}
-
-// Get authorization headers for API calls
+// Get authorization headers for API calls using system bearer token from sessionStorage
 function getAuthHeaders() {
+    const bearerToken = sessionStorage.getItem('bearerToken');
     const headers = {
         'Content-Type': 'application/json'
     };
@@ -167,6 +95,12 @@ function getAuthHeaders() {
         headers['Authorization'] = `Bearer ${bearerToken}`;
     }
     return headers;
+}
+
+// Handle unauthorized response - redirect to login
+function handleUnauthorized() {
+    sessionStorage.clear();
+    window.location.href = '/login.html';
 }
 
 // Extract error message from API response (for 400/401 errors)
@@ -236,6 +170,11 @@ async function fetchUsers() {
             headers: getAuthHeaders()
         });
 
+        if (response.status === 401) {
+            handleUnauthorized();
+            return;
+        }
+
         if (!response.ok) {
             const errorMsg = await getApiErrorMessage(response, 'Failed to fetch users');
             console.error('Failed to fetch users:', response.status, errorMsg);
@@ -265,6 +204,11 @@ async function fetchRoles() {
             headers: getAuthHeaders()
         });
 
+        if (response.status === 401) {
+            handleUnauthorized();
+            return;
+        }
+
         if (!response.ok) {
             const errorMsg = await getApiErrorMessage(response, 'Failed to fetch roles');
             console.error('Failed to fetch roles:', response.status, errorMsg);
@@ -287,22 +231,17 @@ async function fetchRoles() {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async () => {
-    initTabs();
-
-    // Show/hide login panel based on SHOW_LOGIN_PANEL flag
-    const loginPanel = document.getElementById('login-panel');
-    if (SHOW_LOGIN_PANEL) {
-        loginPanel.classList.add('visible');
-        // Don't auto-login, wait for user to click Login
-        renderUsers();
-        renderRoles();
-    } else {
-        loginPanel.classList.remove('visible');
-        // Auto-login when panel is hidden
-        await authenticate();
-        await fetchRoles();
-        await fetchUsers();
+    // Check if bearer token exists in sessionStorage
+    const bearerToken = sessionStorage.getItem('bearerToken');
+    if (!bearerToken) {
+        // No token, redirect to login
+        window.location.href = '/login.html';
+        return;
     }
+
+    initTabs();
+    await fetchRoles();
+    await fetchUsers();
 });
 
 // Tab switching
@@ -464,6 +403,11 @@ async function confirmChangePassword(event) {
             body: JSON.stringify(user)
         });
 
+        if (response.status === 401) {
+            handleUnauthorized();
+            return;
+        }
+
         if (!response.ok) {
             const errorMsg = await getApiErrorMessage(response, 'Failed to change password');
             console.error('Failed to change password:', response.status, errorMsg);
@@ -558,6 +502,11 @@ async function saveUser(event) {
             headers: getAuthHeaders(),
             body: JSON.stringify(user)
         });
+
+        if (response.status === 401) {
+            handleUnauthorized();
+            return;
+        }
 
         if (!response.ok) {
             const errorMsg = await getApiErrorMessage(response, 'Failed to save user');
@@ -687,6 +636,11 @@ async function saveRole(event) {
             headers: getAuthHeaders(),
             body: JSON.stringify(role)
         });
+
+        if (response.status === 401) {
+            handleUnauthorized();
+            return;
+        }
 
         if (!response.ok) {
             const errorMsg = await getApiErrorMessage(response, 'Failed to save role');
