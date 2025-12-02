@@ -57,6 +57,28 @@ class TopologyBrowser {
         this.init();
     }
 
+    // Get bearer token from sessionStorage
+    getBearerToken() {
+        return sessionStorage.getItem('bearerToken');
+    }
+
+    // Set bearer token in sessionStorage
+    setBearerToken(token) {
+        sessionStorage.setItem('bearerToken', token);
+    }
+
+    // Create fetch options with authorization header
+    getAuthHeaders() {
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        const token = this.getBearerToken();
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        return headers;
+    }
+
     init() {
         this.setupEventListeners();
         this.loadTopologyList();

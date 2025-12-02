@@ -27,7 +27,9 @@ TopologyBrowser.prototype.loadTopologyList = async function() {
 
     try {
         const query = encodeURIComponent('{"text":"select * from l8topologymetadata"}');
-        const response = await fetch(`${this.apiBaseUrl}/0/TopoList?body=${query}`);
+        const response = await fetch(`${this.apiBaseUrl}/0/TopoList?body=${query}`, {
+            headers: this.getAuthHeaders()
+        });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -69,7 +71,9 @@ TopologyBrowser.prototype.loadTopology = async function(name) {
         // Find metadata for this topology to get serviceName and serviceArea
         const metadata = this.topologyMetadataList.find(item => item.name === name);
         const endpoint = this.topologyNameToEndpoint(name, metadata);
-        const response = await fetch(endpoint);
+        const response = await fetch(endpoint, {
+            headers: this.getAuthHeaders()
+        });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -124,7 +128,9 @@ TopologyBrowser.prototype.loadTopologyWithCanvas = async function(name) {
         // Find metadata for this topology
         const metadata = this.topologyMetadataList.find(item => item.name === name);
         const endpoint = this.topologyNameToEndpoint(name, metadata, this.canvasSelection);
-        const response = await fetch(endpoint);
+        const response = await fetch(endpoint, {
+            headers: this.getAuthHeaders()
+        });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
