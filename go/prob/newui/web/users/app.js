@@ -245,34 +245,30 @@ async function fetchRoles() {
     }
 }
 
+// Global flag for embedded mode
+let isEmbeddedMode = false;
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async () => {
     // Check for tab parameter to determine if embedded
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
-    const isEmbedded = (tabParam === 'users' || tabParam === 'roles');
+    isEmbeddedMode = (tabParam === 'users' || tabParam === 'roles') || (window.parent !== window);
 
-    // Check if bearer token exists
-    let bearerToken = sessionStorage.getItem('bearerToken');
-
-    // If embedded and no token in sessionStorage, try parent window
-    if (!bearerToken && isEmbedded && window.parent !== window) {
-        try {
-            bearerToken = window.parent.sessionStorage.getItem('bearerToken');
-        } catch (e) {
-            // Cross-origin access denied
-        }
-    }
+    // Check if bearer token exists - sessionStorage is shared on same origin
+    const bearerToken = sessionStorage.getItem('bearerToken');
 
     if (!bearerToken) {
         // No token - only redirect if not embedded
-        if (!isEmbedded) {
+        if (!isEmbeddedMode) {
             window.location.href = '/login.html';
+        } else {
+            console.error('Users app: No bearer token found in sessionStorage');
         }
         return;
     }
 
-    if (isEmbedded) {
+    if (isEmbeddedMode) {
         // Mark as embedded mode for styling
         document.body.classList.add('embedded');
 
@@ -283,19 +279,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Show only the requested tab
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-        const targetTab = document.getElementById(tabParam);
-        if (targetTab) {
-            targetTab.classList.add('active');
+        if (tabParam) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            const targetTab = document.getElementById(tabParam);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
         }
     } else {
         initTabs();
     }
 
-    await fetchRoles();
-    await fetchUsers();
+    try {
+        await fetchRoles();
+        await fetchUsers();
+    } catch (e) {
+        console.error('Users app: Error fetching data', e);
+    }
 });
 
 // Tab switching
@@ -389,6 +391,7 @@ function showUserModal(userId = null) {
     // If embedded, call parent's modal
     if (window.parent !== window && typeof window.parent.showUserModal === 'function') {
         window.parent.urUsers = users;
+        window.parent.urRoles = roles;
         window.parent.showUserModal(userId);
         return;
     }
@@ -604,6 +607,7 @@ function deleteUser(userId) {
 function showRoleModal(roleId = null) {
     // If embedded, call parent's modal
     if (window.parent !== window && typeof window.parent.showRoleModal === 'function') {
+        window.parent.urUsers = users;
         window.parent.urRoles = roles;
         window.parent.showRoleModal(roleId);
         return;

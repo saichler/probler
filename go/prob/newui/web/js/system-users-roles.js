@@ -7,6 +7,8 @@ let urTempRules = [];
 let urCurrentRuleIndex = null;
 let urPendingDelete = { type: null, id: null };
 let urRegistryTypes = null;
+let usersTable = null;
+let rolesTable = null;
 
 const UR_ACTION_NAMES = {
     '-999': 'ALL', '1': 'POST', '2': 'PUT', '3': 'PATCH', '4': 'DELETE', '5': 'GET'
@@ -14,6 +16,52 @@ const UR_ACTION_NAMES = {
 const UR_ACTION_CODES = {
     'ALL': '-999', 'POST': '1', 'PUT': '2', 'PATCH': '3', 'DELETE': '4', 'GET': '5'
 };
+
+// === TOAST NOTIFICATION SYSTEM ===
+function showUrToast(message, type = 'error', duration = 5000) {
+    // Remove existing toast if any
+    const existingToast = document.querySelector('.ur-toast');
+    if (existingToast) existingToast.remove();
+
+    const icons = { error: '✕', success: '✓', warning: '⚠' };
+    const titles = { error: 'Error', success: 'Success', warning: 'Warning' };
+
+    const toast = document.createElement('div');
+    toast.className = `ur-toast ur-toast-${type}`;
+    toast.innerHTML = `
+        <div class="ur-toast-icon">${icons[type] || icons.error}</div>
+        <div class="ur-toast-content">
+            <div class="ur-toast-title">${titles[type] || titles.error}</div>
+            <div class="ur-toast-message">${escapeHtml(message)}</div>
+        </div>
+        <button class="ur-toast-close" onclick="this.parentElement.remove()">×</button>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Trigger animation
+    setTimeout(() => toast.classList.add('ur-toast-show'), 10);
+
+    if (duration > 0) {
+        setTimeout(() => {
+            toast.classList.remove('ur-toast-show');
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+}
+
+// Extract error message from API response
+async function getApiErrorMessage(response, defaultMessage) {
+    try {
+        const text = await response.text();
+        if (text && text.trim()) {
+            return text.trim();
+        }
+    } catch (e) {
+        console.error('Error reading response body:', e);
+    }
+    return defaultMessage;
+}
 
 // Fetch registry types
 async function fetchRegistryTypes() {
@@ -30,49 +78,162 @@ async function fetchRegistryTypes() {
     return urRegistryTypes || ['*'];
 }
 
-// Fetch users data
+// === USERS TABLE ===
 async function fetchUsersData() {
     try {
-        const body = encodeURIComponent('{"text":"select * from L8User"}');
-        const response = await makeAuthenticatedRequest(`/probler/73/users?body=${body}`, { method: 'GET' });
-        if (response && response.ok) {
-            const data = await response.json();
-            urUsers = {};
-            if (data && data.list) {
-                data.list.forEach(u => { urUsers[u.userId] = u; });
-            }
+        const bodyParam = JSON.stringify({ text: 'select * from L8User' });
+        const url = `/probler/73/users?body=${encodeURIComponent(bodyParam)}`;
+        const response = await makeAuthenticatedRequest(url, { method: 'GET' });
+
+        if (!response || !response.ok) {
+            throw new Error(`HTTP error! status: ${response ? response.status : 'unknown'}`);
         }
-    } catch (e) { console.error('Error fetching users:', e); }
+
+        const data = await response.json();
+        processUsersData(data);
+    } catch (error) {
+        console.error('Error fetching users data:', error);
+        displayUsersError('Failed to load users data.');
+    }
 }
 
-// Fetch roles data
+function processUsersData(data) {
+    if (!data || !data.list) {
+        displayUsersError('No users data available.');
+        return;
+    }
+
+    urUsers = {};
+    data.list.forEach(user => { urUsers[user.userId] = user; });
+    window.urUsers = urUsers;
+
+    const tableData = data.list.map(user => {
+        const roleNames = Object.keys(user.roles || {})
+            .filter(r => user.roles[r])
+            .map(r => urRoles[r] ? urRoles[r].roleName : r);
+
+        return {
+            userId: user.userId,
+            fullName: user.fullName || '',
+            roles: roleNames.join(', ') || '-',
+            actions: `<button class="ur-btn ur-btn-small" onclick="editUser('${escapeHtml(user.userId)}')">Edit</button>
+                      <button class="ur-btn ur-btn-small ur-btn-danger" onclick="deleteUser('${escapeHtml(user.userId)}')">Delete</button>`
+        };
+    });
+
+    renderUsersTable(tableData);
+}
+
+function renderUsersTable(data) {
+    const columns = [
+        { key: 'userId', label: 'User ID' },
+        { key: 'fullName', label: 'Full Name' },
+        { key: 'roles', label: 'Roles' },
+        { key: 'actions', label: 'Actions', sortable: false }
+    ];
+
+    usersTable = new ProblerTable('users-table', {
+        columns: columns,
+        data: data,
+        rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
+        statusColumn: null,
+        onRowClick: (rowData) => {
+            editUser(rowData.userId);
+        }
+    });
+}
+
+function displayUsersError(message) {
+    const container = document.getElementById('users-table');
+    if (container) {
+        container.innerHTML = `<div class="error-message">
+            <div class="error-icon">⚠️</div>
+            <div class="error-text">${message}</div>
+        </div>`;
+    }
+}
+
+// === ROLES TABLE ===
 async function fetchRolesData() {
     try {
-        const body = encodeURIComponent('{"text":"select * from L8Role"}');
-        const response = await makeAuthenticatedRequest(`/probler/74/roles?body=${body}`, { method: 'GET' });
-        if (response && response.ok) {
-            const data = await response.json();
-            urRoles = {};
-            if (data && data.list) {
-                data.list.forEach(r => { urRoles[r.roleId] = r; });
-            }
+        const bodyParam = JSON.stringify({ text: 'select * from L8Role' });
+        const url = `/probler/74/roles?body=${encodeURIComponent(bodyParam)}`;
+        const response = await makeAuthenticatedRequest(url, { method: 'GET' });
+
+        if (!response || !response.ok) {
+            throw new Error(`HTTP error! status: ${response ? response.status : 'unknown'}`);
         }
-    } catch (e) { console.error('Error fetching roles:', e); }
+
+        const data = await response.json();
+        processRolesData(data);
+    } catch (error) {
+        console.error('Error fetching roles data:', error);
+        displayRolesError('Failed to load roles data.');
+    }
 }
 
-// Refresh iframe after changes
-function refreshUsersIframe() {
-    const iframe = document.getElementById('users-iframe');
-    if (iframe && iframe.src) iframe.src = iframe.src;
+function processRolesData(data) {
+    if (!data || !data.list) {
+        displayRolesError('No roles data available.');
+        return;
+    }
+
+    urRoles = {};
+    data.list.forEach(role => { urRoles[role.roleId] = role; });
+    window.urRoles = urRoles;
+
+    const tableData = data.list.map(role => {
+        const rulesCount = Object.keys(role.rules || {}).length;
+        return {
+            roleId: role.roleId,
+            roleName: role.roleName || '',
+            rulesCount: rulesCount,
+            actions: `<button class="ur-btn ur-btn-small" onclick="editRole('${escapeHtml(role.roleId)}')">Edit</button>
+                      <button class="ur-btn ur-btn-small ur-btn-danger" onclick="deleteRole('${escapeHtml(role.roleId)}')">Delete</button>`
+        };
+    });
+
+    renderRolesTable(tableData);
 }
-function refreshRolesIframe() {
-    const iframe = document.getElementById('roles-iframe');
-    if (iframe && iframe.src) iframe.src = iframe.src;
+
+function renderRolesTable(data) {
+    const columns = [
+        { key: 'roleId', label: 'Role ID' },
+        { key: 'roleName', label: 'Role Name' },
+        { key: 'rulesCount', label: 'Rules' },
+        { key: 'actions', label: 'Actions', sortable: false }
+    ];
+
+    rolesTable = new ProblerTable('roles-table', {
+        columns: columns,
+        data: data,
+        rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
+        statusColumn: null,
+        onRowClick: (rowData) => {
+            editRole(rowData.roleId);
+        }
+    });
+}
+
+function displayRolesError(message) {
+    const container = document.getElementById('roles-table');
+    if (container) {
+        container.innerHTML = `<div class="error-message">
+            <div class="error-icon">⚠️</div>
+            <div class="error-text">${message}</div>
+        </div>`;
+    }
 }
 
 // === USER MODAL ===
 async function showUserModal(userId) {
-    await fetchRolesData();
+    if (Object.keys(urRoles).length === 0) {
+        await fetchRolesData();
+    }
     const modal = document.getElementById('user-modal');
     const title = document.getElementById('user-modal-title');
     const editMode = document.getElementById('user-edit-mode');
@@ -131,7 +292,10 @@ async function saveUser(event) {
     const editMode = document.getElementById('user-edit-mode').value;
     const userId = document.getElementById('user-id').value.trim();
     const fullName = document.getElementById('user-fullname').value.trim();
-    if (!userId || !fullName) return alert('Please fill in all required fields');
+    if (!userId || !fullName) {
+        showUrToast('Please fill in all required fields', 'warning');
+        return;
+    }
 
     const selectedRoles = {};
     document.querySelectorAll('#user-roles-list input:checked').forEach(cb => {
@@ -141,7 +305,10 @@ async function saveUser(event) {
     let user;
     if (editMode === 'add') {
         const password = document.getElementById('user-password').value;
-        if (!password) return alert('Password is required');
+        if (!password) {
+            showUrToast('Password is required for new users', 'warning');
+            return;
+        }
         user = { userId, fullName, password: { hash: password }, roles: selectedRoles };
     } else {
         user = { ...urUsers[editMode], fullName, roles: selectedRoles };
@@ -154,11 +321,16 @@ async function saveUser(event) {
         });
         if (response && response.ok) {
             closeUserModal();
-            refreshUsersIframe();
+            fetchUsersData();
+            showUrToast('User saved successfully', 'success');
         } else {
-            alert('Failed to save user');
+            const errorMsg = await getApiErrorMessage(response, 'Failed to save user');
+            showUrToast(errorMsg, 'error');
         }
-    } catch (e) { console.error('Error saving user:', e); alert('Error saving user'); }
+    } catch (e) {
+        console.error('Error saving user:', e);
+        showUrToast('Error saving user: ' + e.message, 'error');
+    }
 }
 
 function editUser(userId) {
@@ -229,7 +401,10 @@ async function saveRole(event) {
     const editMode = document.getElementById('role-edit-mode').value;
     const roleId = document.getElementById('role-id').value.trim();
     const roleName = document.getElementById('role-name').value.trim();
-    if (!roleId || !roleName) return alert('Please fill in all required fields');
+    if (!roleId || !roleName) {
+        showUrToast('Please fill in all required fields', 'warning');
+        return;
+    }
 
     const rulesMap = {};
     urTempRules.forEach(r => { rulesMap[r.ruleId] = r; });
@@ -242,12 +417,17 @@ async function saveRole(event) {
         });
         if (response && response.ok) {
             closeRoleModal();
-            refreshRolesIframe();
-            refreshUsersIframe();
+            fetchRolesData();
+            fetchUsersData();
+            showUrToast('Role saved successfully', 'success');
         } else {
-            alert('Failed to save role');
+            const errorMsg = await getApiErrorMessage(response, 'Failed to save role');
+            showUrToast(errorMsg, 'error');
         }
-    } catch (e) { console.error('Error saving role:', e); alert('Error saving role'); }
+    } catch (e) {
+        console.error('Error saving role:', e);
+        showUrToast('Error saving role: ' + e.message, 'error');
+    }
 }
 
 function editRole(roleId) {
@@ -375,12 +555,28 @@ async function confirmDelete() {
     try {
         if (type === 'user') {
             const response = await makeAuthenticatedRequest(`/probler/73/users/${id}`, { method: 'DELETE' });
-            if (response && response.ok) refreshUsersIframe();
+            if (response && response.ok) {
+                fetchUsersData();
+                showUrToast('User deleted successfully', 'success');
+            } else {
+                const errorMsg = await getApiErrorMessage(response, 'Failed to delete user');
+                showUrToast(errorMsg, 'error');
+            }
         } else if (type === 'role') {
             const response = await makeAuthenticatedRequest(`/probler/74/roles/${id}`, { method: 'DELETE' });
-            if (response && response.ok) { refreshRolesIframe(); refreshUsersIframe(); }
+            if (response && response.ok) {
+                fetchRolesData();
+                fetchUsersData();
+                showUrToast('Role deleted successfully', 'success');
+            } else {
+                const errorMsg = await getApiErrorMessage(response, 'Failed to delete role');
+                showUrToast(errorMsg, 'error');
+            }
         }
-    } catch (e) { console.error('Error deleting:', e); }
+    } catch (e) {
+        console.error('Error deleting:', e);
+        showUrToast('Error deleting: ' + e.message, 'error');
+    }
     closeDeleteModal();
 }
 
@@ -401,7 +597,10 @@ async function savePassword(event) {
     const oldPwd = document.getElementById('user-old-password').value;
     const newPwd = document.getElementById('user-new-password').value;
     const confirmPwd = document.getElementById('user-confirm-password').value;
-    if (newPwd !== confirmPwd) return alert('Passwords do not match');
+    if (newPwd !== confirmPwd) {
+        showUrToast('Passwords do not match', 'warning');
+        return;
+    }
 
     const userId = document.getElementById('user-edit-mode').value;
     try {
@@ -411,11 +610,15 @@ async function savePassword(event) {
         });
         if (response && response.ok) {
             closeChangePasswordModal();
-            alert('Password changed');
+            showUrToast('Password changed successfully', 'success');
         } else {
-            alert('Failed to change password');
+            const errorMsg = await getApiErrorMessage(response, 'Failed to change password');
+            showUrToast(errorMsg, 'error');
         }
-    } catch (e) { console.error('Error changing password:', e); }
+    } catch (e) {
+        console.error('Error changing password:', e);
+        showUrToast('Error changing password: ' + e.message, 'error');
+    }
 }
 
 function escapeHtml(str) {
@@ -425,8 +628,8 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
-// Initialize data when system section loads
-async function initUsersRolesData() {
-    await fetchUsersData();
-    await fetchRolesData();
-}
+// Export functions and variables for tab switching
+window.fetchUsersData = fetchUsersData;
+window.fetchRolesData = fetchRolesData;
+window.urRoles = urRoles;
+window.urUsers = urUsers;

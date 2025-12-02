@@ -391,3 +391,117 @@
 .ur-kv-row .ur-btn {
     flex-shrink: 0;
 }
+
+/* ============================================ */
+/* TOAST NOTIFICATION STYLES */
+/* ============================================ */
+
+.ur-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    min-width: 320px;
+    max-width: 450px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 12px;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease-out;
+    border-left: 4px solid #e2e8f0;
+}
+
+.ur-toast-show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.ur-toast-error {
+    border-left-color: #ef4444;
+    background: linear-gradient(135deg, #fff 0%, #fef2f2 100%);
+}
+
+.ur-toast-success {
+    border-left-color: #22c55e;
+    background: linear-gradient(135deg, #fff 0%, #f0fdf4 100%);
+}
+
+.ur-toast-warning {
+    border-left-color: #f59e0b;
+    background: linear-gradient(135deg, #fff 0%, #fffbeb 100%);
+}
+
+.ur-toast-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.ur-toast-error .ur-toast-icon {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.ur-toast-success .ur-toast-icon {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+}
+
+.ur-toast-warning .ur-toast-icon {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.ur-toast-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.ur-toast-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ur-toast-message {
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.ur-toast-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.ur-toast-close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #64748b;
+}

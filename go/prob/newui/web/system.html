@@ -153,16 +153,24 @@
 
         <!-- Users Tab Content -->
         <div class="resource-content" data-tab-content="users">
-            <iframe id="users-iframe"
-                    style="width: 100%; height: calc(100vh - 320px); border: none; display: block;"
-                    title="User Management"></iframe>
+            <div class="subsection-description">
+                Manage user accounts and role assignments
+                <button class="ur-btn ur-btn-primary ur-btn-small" style="margin-left: 20px;" onclick="showUserModal()">Add User</button>
+            </div>
+            <div class="table-container">
+                <div id="users-table"></div>
+            </div>
         </div>
 
         <!-- Roles Tab Content -->
         <div class="resource-content" data-tab-content="roles">
-            <iframe id="roles-iframe"
-                    style="width: 100%; height: calc(100vh - 320px); border: none; display: block;"
-                    title="Role Management"></iframe>
+            <div class="subsection-description">
+                Manage roles and permission rules
+                <button class="ur-btn ur-btn-primary ur-btn-small" style="margin-left: 20px;" onclick="showRoleModal()">Add Role</button>
+            </div>
+            <div class="table-container">
+                <div id="roles-table"></div>
+            </div>
         </div>
 
         <!-- Settings Tab Content -->

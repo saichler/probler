@@ -8,6 +8,14 @@ let healthDataMap = new Map(); // Store raw health data for modal details
 function initializeHealth() {
     setupSystemTabSwitching();
     fetchHealthData();
+    // Fetch Users and Roles data when System section loads (like Logs)
+    if (typeof fetchRolesData === 'function') {
+        fetchRolesData().then(() => {
+            if (typeof fetchUsersData === 'function') {
+                fetchUsersData();
+            }
+        });
+    }
 }
 
 // Set up system tab switching
@@ -30,27 +38,9 @@ function setupSystemTabSwitching() {
                 }
             });
 
-            // Load data for health tab if selected
+            // Load data for health tab if selected (fallback if not already loaded)
             if (tabName === 'health' && !healthTable) {
                 fetchHealthData();
-            }
-
-            // Lazy-load users iframe and init data when tab is selected
-            if (tabName === 'users') {
-                if (typeof initUsersRolesData === 'function') initUsersRolesData();
-                const usersIframe = document.getElementById('users-iframe');
-                if (usersIframe && !usersIframe.getAttribute('src')) {
-                    usersIframe.src = 'users/index.html?tab=users';
-                }
-            }
-
-            // Lazy-load roles iframe and init data when tab is selected
-            if (tabName === 'roles') {
-                if (typeof initUsersRolesData === 'function') initUsersRolesData();
-                const rolesIframe = document.getElementById('roles-iframe');
-                if (rolesIframe && !rolesIframe.getAttribute('src')) {
-                    rolesIframe.src = 'users/index.html?tab=roles';
-                }
             }
         });
     });
