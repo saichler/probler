@@ -400,3 +400,37 @@
 .performance-bar-fill.high {
     background: var(--status-critical);
 }
+
+/* ============================================ */
+/* MODAL SIZE VARIANTS */
+/* ============================================ */
+
+/* Small modal for confirmations and simple forms */
+.modal-container.modal-small {
+    max-width: 450px;
+    min-height: auto;
+}
+
+/* Large modal for complex forms */
+.modal-container.modal-large {
+    max-width: 700px;
+    min-height: auto;
+}
+
+/* Standard form modal */
+.modal-container.modal-form {
+    min-height: auto;
+    max-width: 550px;
+}
+
+/* Modal body with padding for forms */
+.modal-body form {
+    padding: 24px;
+}
+
+.modal-body > p {
+    padding: 20px 24px;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.6;
+}

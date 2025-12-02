@@ -34,6 +34,24 @@ function setupSystemTabSwitching() {
             if (tabName === 'health' && !healthTable) {
                 fetchHealthData();
             }
+
+            // Lazy-load users iframe and init data when tab is selected
+            if (tabName === 'users') {
+                if (typeof initUsersRolesData === 'function') initUsersRolesData();
+                const usersIframe = document.getElementById('users-iframe');
+                if (usersIframe && !usersIframe.getAttribute('src')) {
+                    usersIframe.src = 'users/index.html?tab=users';
+                }
+            }
+
+            // Lazy-load roles iframe and init data when tab is selected
+            if (tabName === 'roles') {
+                if (typeof initUsersRolesData === 'function') initUsersRolesData();
+                const rolesIframe = document.getElementById('roles-iframe');
+                if (rolesIframe && !rolesIframe.getAttribute('src')) {
+                    rolesIframe.src = 'users/index.html?tab=roles';
+                }
+            }
         });
     });
 }

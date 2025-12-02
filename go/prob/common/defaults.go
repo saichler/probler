@@ -32,14 +32,6 @@ const (
 )
 
 func CreateResources(alias string) ifs.IResources {
-	return CreateResources2(alias, "/home/run")
-}
-
-func CreateResources2(alias, path string) ifs.IResources {
-	return CreateResources3(alias, "/home/run", nil)
-}
-
-func CreateResources3(alias, path string, other ifs.IResources) ifs.IResources {
 	logger.SetLogToFile(alias)
 	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
 	log.SetLogLevel(ifs.Error_Level)
@@ -47,16 +39,12 @@ func CreateResources3(alias, path string, other ifs.IResources) ifs.IResources {
 
 	res.Set(registry.NewRegistry())
 
-	if other != nil {
-		res.Set(other.Security())
-	} else {
-		sec, err := ifs.LoadSecurityProvider(res)
-		if err != nil {
-			time.Sleep(time.Second * 10)
-			panic(err.Error())
-		}
-		res.Set(sec)
+	sec, err := ifs.LoadSecurityProvider(res)
+	if err != nil {
+		time.Sleep(time.Second * 10)
+		panic(err.Error())
 	}
+	res.Set(sec)
 
 	conf := &l8sysconfig.L8SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize:              resources.DEFAULT_QUEUE_SIZE,

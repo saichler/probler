@@ -55,7 +55,7 @@ func main() {
 		},
 	}
 
-	resources := common.CreateResources2("client", "./")
+	resources := common.CreateResources("client")
 	resources.Introspector().Inspect(&l8tpollaris.L8Pollaris{})
 	resources.Introspector().Inspect(&l8tpollaris.L8PTarget{})
 	resources.Introspector().Inspect(&l8tpollaris.L8PTargetList{})
@@ -77,7 +77,7 @@ func main() {
 		panic(err)
 	}
 
-	err = rc.Auth("admin", "Admin123!")
+	err = rc.Auth("operator", "Oper123!")
 	if err != nil {
 		panic(err)
 	}

@@ -37,8 +37,8 @@ func startWebServer(port int, cert string) {
 		panic(err)
 	}
 
-	nic1 := createVnic(common.PROBLER_VNET, nil)
-	nic2 := createVnic(common.LOGS_VNET, nic1.Resources())
+	nic1 := createVnic(common.PROBLER_VNET)
+	nic2 := createVnic(common.LOGS_VNET)
 
 	hs, ok := nic1.Resources().Services().ServiceHandler(health.ServiceName, 0)
 	if ok {
@@ -56,8 +56,8 @@ func startWebServer(port int, cert string) {
 	svr.Start()
 }
 
-func createVnic(vnet uint32, other ifs.IResources) ifs.IVNic {
-	resources := common.CreateResources3("web-"+strconv.Itoa(int(vnet)), "", other)
+func createVnic(vnet uint32) ifs.IVNic {
+	resources := common.CreateResources("web-" + strconv.Itoa(int(vnet)))
 	resources.SysConfig().VnetPort = vnet
 
 	node, _ := resources.Introspector().Inspect(&types.NetworkDevice{})

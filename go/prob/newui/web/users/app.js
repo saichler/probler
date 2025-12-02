@@ -87,7 +87,18 @@ async function populateElementTypeDropdown(selectedValue = '') {
 
 // Get authorization headers for API calls using system bearer token from sessionStorage
 function getAuthHeaders() {
-    const bearerToken = sessionStorage.getItem('bearerToken');
+    // Try to get token from sessionStorage (shared with parent on same origin)
+    let bearerToken = sessionStorage.getItem('bearerToken');
+
+    // If in iframe and no token, try parent window
+    if (!bearerToken && window.parent !== window) {
+        try {
+            bearerToken = window.parent.sessionStorage.getItem('bearerToken');
+        } catch (e) {
+            // Cross-origin access denied, ignore
+        }
+    }
+
     const headers = {
         'Content-Type': 'application/json'
     };
@@ -97,8 +108,13 @@ function getAuthHeaders() {
     return headers;
 }
 
-// Handle unauthorized response - redirect to login
+// Handle unauthorized response - redirect to login (only if not in iframe)
 function handleUnauthorized() {
+    // Don't redirect if embedded in iframe
+    if (window.parent !== window) {
+        console.error('Authentication failed in embedded users app');
+        return;
+    }
     sessionStorage.clear();
     window.location.href = '/login.html';
 }
@@ -231,15 +247,53 @@ async function fetchRoles() {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check if bearer token exists in sessionStorage
-    const bearerToken = sessionStorage.getItem('bearerToken');
+    // Check for tab parameter to determine if embedded
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    const isEmbedded = (tabParam === 'users' || tabParam === 'roles');
+
+    // Check if bearer token exists
+    let bearerToken = sessionStorage.getItem('bearerToken');
+
+    // If embedded and no token in sessionStorage, try parent window
+    if (!bearerToken && isEmbedded && window.parent !== window) {
+        try {
+            bearerToken = window.parent.sessionStorage.getItem('bearerToken');
+        } catch (e) {
+            // Cross-origin access denied
+        }
+    }
+
     if (!bearerToken) {
-        // No token, redirect to login
-        window.location.href = '/login.html';
+        // No token - only redirect if not embedded
+        if (!isEmbedded) {
+            window.location.href = '/login.html';
+        }
         return;
     }
 
-    initTabs();
+    if (isEmbedded) {
+        // Mark as embedded mode for styling
+        document.body.classList.add('embedded');
+
+        // Hide the tab navigation bar
+        const tabNav = document.querySelector('.tabs');
+        if (tabNav) {
+            tabNav.style.display = 'none';
+        }
+
+        // Show only the requested tab
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        const targetTab = document.getElementById(tabParam);
+        if (targetTab) {
+            targetTab.classList.add('active');
+        }
+    } else {
+        initTabs();
+    }
+
     await fetchRoles();
     await fetchUsers();
 });
@@ -332,6 +386,12 @@ function renderRoles() {
 
 // User Modal Functions
 function showUserModal(userId = null) {
+    // If embedded, call parent's modal
+    if (window.parent !== window && typeof window.parent.showUserModal === 'function') {
+        window.parent.urUsers = users;
+        window.parent.showUserModal(userId);
+        return;
+    }
     const modal = document.getElementById('user-modal');
     const title = document.getElementById('user-modal-title');
     const editMode = document.getElementById('user-edit-mode');
@@ -529,6 +589,11 @@ function editUser(userId) {
 }
 
 function deleteUser(userId) {
+    // If embedded, call parent's modal
+    if (window.parent !== window && typeof window.parent.deleteUser === 'function') {
+        window.parent.deleteUser(userId);
+        return;
+    }
     pendingDelete = { type: 'user', id: userId };
     document.getElementById('delete-message').textContent =
         `Are you sure you want to delete user "${userId}"?`;
@@ -537,6 +602,12 @@ function deleteUser(userId) {
 
 // Role Modal Functions
 function showRoleModal(roleId = null) {
+    // If embedded, call parent's modal
+    if (window.parent !== window && typeof window.parent.showRoleModal === 'function') {
+        window.parent.urRoles = roles;
+        window.parent.showRoleModal(roleId);
+        return;
+    }
     const modal = document.getElementById('role-modal');
     const title = document.getElementById('role-modal-title');
     const editMode = document.getElementById('role-edit-mode');
@@ -666,6 +737,11 @@ function editRole(roleId) {
 }
 
 function deleteRole(roleId) {
+    // If embedded, call parent's modal
+    if (window.parent !== window && typeof window.parent.deleteRole === 'function') {
+        window.parent.deleteRole(roleId);
+        return;
+    }
     pendingDelete = { type: 'role', id: roleId };
     document.getElementById('delete-message').textContent =
         `Are you sure you want to delete role "${roleId}"? Users with this role will lose these permissions.`;

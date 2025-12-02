@@ -720,3 +720,73 @@ small {
 ::-webkit-scrollbar-thumb:hover {
     background: #0ea5e9;
 }
+
+/* ============================================ */
+/* EMBEDDED MODE STYLES */
+/* When loaded inside an iframe with ?tab= parameter */
+/* ============================================ */
+
+body.embedded {
+    background: transparent;
+}
+
+body.embedded .container {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+body.embedded .tab-content {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+body.embedded .section-header {
+    padding: 0 0 15px 0;
+    justify-content: flex-end;
+}
+
+body.embedded .section-header h2 {
+    display: none;
+}
+
+body.embedded .table-container {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+body.embedded table th {
+    background: #f8fafc;
+    color: #0ea5e9;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+body.embedded table td {
+    font-size: 13px;
+    color: #475569;
+}
+
+body.embedded .btn-primary {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+}
+
+body.embedded .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+}
