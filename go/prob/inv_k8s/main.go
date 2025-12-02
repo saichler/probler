@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8inventory/go/inv/service"
-	"github.com/saichler/l8reflect/go/reflect/introspecting"
+	"github.com/saichler/l8reflect/go/reflect/helping"
 	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/serializers"
@@ -23,7 +23,7 @@ func main() {
 
 	//Add the inventory model and mark the Id field as key
 	clusterNode, _ := nic.Resources().Introspector().Inspect(&types2.K8SCluster{})
-	introspecting.AddPrimaryKeyDecorator(clusterNode, "Name")
+	helping.AddPrimaryKeyDecorator(clusterNode, "Name")
 
 	info, err := nic.Resources().Registry().Info("K8SReadyState")
 	if err != nil {
@@ -45,7 +45,7 @@ func main() {
 	if !ok {
 		nic.Resources().Logger().Error("Failed to get pods node ")
 	} else {
-		introspecting.AddAlwayOverwriteDecorator(podsNode)
+		helping.AddAlwayOverwriteDecorator(podsNode)
 	}
 
 	//&l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 1}

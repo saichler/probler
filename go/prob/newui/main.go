@@ -4,16 +4,16 @@ import (
 	"strconv"
 
 	"github.com/saichler/l8bus/go/overlay/health"
-	"github.com/saichler/l8bus/go/overlay/protocol"
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8logfusion/go/types/l8logf"
 	"github.com/saichler/l8pollaris/go/types/l8tpollaris"
-	"github.com/saichler/l8reflect/go/reflect/introspecting"
+	"github.com/saichler/l8reflect/go/reflect/helping"
 	"github.com/saichler/l8topology/go/types/l8topo"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8api"
 	"github.com/saichler/l8types/go/types/l8health"
 	"github.com/saichler/l8types/go/types/l8web"
+	"github.com/saichler/l8utils/go/utils/ipsegment"
 	"github.com/saichler/l8web/go/web/server"
 	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/types"
@@ -26,7 +26,7 @@ func main() {
 
 func startWebServer(port int, cert string) {
 	serverConfig := &server.RestServerConfig{
-		Host:           protocol.MachineIP,
+		Host:           ipsegment.MachineIP,
 		Port:           port,
 		Authentication: true,
 		CertName:       cert,
@@ -61,10 +61,10 @@ func createVnic(vnet uint32, other ifs.IResources) ifs.IVNic {
 	resources.SysConfig().VnetPort = vnet
 
 	node, _ := resources.Introspector().Inspect(&types.NetworkDevice{})
-	introspecting.AddPrimaryKeyDecorator(node, "Id")
+	helping.AddPrimaryKeyDecorator(node, "Id")
 
 	node, _ = resources.Introspector().Inspect(&types2.K8SCluster{})
-	introspecting.AddPrimaryKeyDecorator(node, "Name")
+	helping.AddPrimaryKeyDecorator(node, "Name")
 
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Resources().SysConfig().KeepAliveIntervalSeconds = 60
@@ -89,11 +89,11 @@ func createVnic(vnet uint32, other ifs.IResources) ifs.IVNic {
 	nic.Resources().Registry().Register(&l8topo.L8Topology{})
 	nic.Resources().Registry().Register(&l8topo.L8TopologyQuery{})
 	node, _ = nic.Resources().Introspector().Inspect(&l8topo.L8TopologyMetadata{})
-	introspecting.AddPrimaryKeyDecorator(node, "ServiceName", "ServiceArea")
+	helping.AddPrimaryKeyDecorator(node, "ServiceName", "ServiceArea")
 	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadataList{})
 	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadata{})
 
 	fn, _ := nic.Resources().Introspector().Inspect(&l8logf.L8File{})
-	introspecting.AddPrimaryKeyDecorator(fn, "Path", "Name")
+	helping.AddPrimaryKeyDecorator(fn, "Path", "Name")
 	return nic
 }
