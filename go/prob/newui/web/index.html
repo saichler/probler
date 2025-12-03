@@ -95,7 +95,7 @@
             width: 100%;
         }
 
-        /* Emphasis animation for About link */
+        /* Emphasis animation for Developer link */
         .about-emphasized {
             position: relative;
             font-weight: 600;
@@ -830,7 +830,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 2rem;
-            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 100%);
             color: white;
             border-radius: 20px 20px 0 0;
         }
@@ -851,12 +851,12 @@
 
         .close:hover,
         .close:focus {
-            color: #f0f0f0;
+            color: #0ea5e9;
         }
 
         .modal-body {
             padding: 2rem;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             border-radius: 0 0 20px 20px;
         }
 
@@ -1130,7 +1130,7 @@
             font-size: 1.2rem;
         }
 
-        /* Responsive adjustments for About Developer */
+        /* Responsive adjustments for Developer modal */
         @media (max-width: 768px) {
             .developer-intro {
                 flex-direction: column;
@@ -1174,7 +1174,8 @@
                 <li><a href="#getting-started">Get Started</a></li>
                 <li><a href="#docs">Docs</a></li>
                 <li><a href="https://github.com/saichler/probler" target="_blank">View on GitHub</a></li>
-                <li><a href="#" onclick="openAboutModal()" class="about-emphasized">About</a></li>
+                <li><a href="#" onclick="openAboutModal()">About</a></li>
+                <li><a href="#" onclick="openDeveloperModal()" class="about-emphasized">Developer</a></li>
             </ul>
             <div class="nav-buttons">
                 <a href="#" onclick="showDemoCredentials(); return false;" class="demo-button">Demo</a>
@@ -1802,12 +1803,38 @@ open https://localhost:443/probler/
             </div>
         </div>
 
-        <!-- About Modal -->
+        <!-- About Modal - Layer 8 Ecosystem -->
         <div id="aboutModal" class="modal">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h2>About Layer 8 Ecosystem</h2>
+                    <span class="close" onclick="closeAboutModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div style="text-align: center; padding: 1rem; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+                        <img src="Layer8Logo.gif" alt="Layer 8 Logo" style="height: 80px; width: 80px; margin-bottom: 1rem;">
+                        <p style="font-size: 1.1rem; line-height: 1.6; color: #4a5568;">
+                            <strong>Layer 8</strong> is an open-source ecosystem providing model-agnostic microservices,
+                            virtual networking, and intelligent service discovery for building scalable distributed systems.
+                        </p>
+                        <p style="margin-top: 1rem;">
+                            <a href="https://www.layer-8.dev" target="_blank"
+                               style="display: inline-block; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #0ea5e9, #0284c7);
+                                      color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: transform 0.2s;">
+                                Visit layer-8.dev
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Developer Modal -->
+        <div id="developerModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2>👨‍💻 About the Developer</h2>
-                    <span class="close" onclick="closeAboutModal()">&times;</span>
+                    <span class="close" onclick="closeDeveloperModal()">&times;</span>
                 </div>
                 <div class="modal-body">
                     <div class="developer-content">
@@ -2160,24 +2187,38 @@ open https://localhost:443/probler/
         // Modal functions
         function openAboutModal() {
             document.getElementById('aboutModal').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            document.body.style.overflow = 'hidden';
         }
 
         function closeAboutModal() {
             document.getElementById('aboutModal').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Restore scrolling
+            document.body.style.overflow = 'auto';
+        }
+
+        function openDeveloperModal() {
+            document.getElementById('developerModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeveloperModal() {
+            document.getElementById('developerModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
 
         // Close modal when clicking outside of it
         window.onclick = function(event) {
             const demoModal = document.getElementById('demoModal');
             const aboutModal = document.getElementById('aboutModal');
+            const developerModal = document.getElementById('developerModal');
 
             if (event.target === demoModal) {
                 closeDemoModal();
             }
             if (event.target === aboutModal) {
                 closeAboutModal();
+            }
+            if (event.target === developerModal) {
+                closeDeveloperModal();
             }
         }
 
@@ -2186,6 +2227,7 @@ open https://localhost:443/probler/
             if (event.key === 'Escape') {
                 closeDemoModal();
                 closeAboutModal();
+                closeDeveloperModal();
             }
         });
 
