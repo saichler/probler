@@ -1,0 +1,17 @@
+{
+    "login": {
+        "appTitle": "Probler",
+        "appDescription": "Datacenter Management",
+        "authEndpoint": "/auth",
+        "redirectUrl": "../",
+        "showRememberMe": true,
+        "sessionTimeout": 30,
+        "tfaEnabled": true
+    },
+    "api": {
+        "prefix": "/probler",
+        "usersPath": "/73/users",
+        "rolesPath": "/74/roles",
+        "registryPath": "/registry"
+    }
+}

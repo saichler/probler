@@ -1,7 +1,6 @@
-/* Layer 8 NOC Theme - Applied to original layout */
+/* Layer 8 Ecosystem - Roles Management Styles */
 
 :root {
-    /* Status Colors */
     --status-operational: #00c853;
     --status-warning: #ffc107;
     --status-critical: #ff3d00;
@@ -21,56 +20,13 @@ body {
     color: #2d3748;
     line-height: 1.6;
     font-size: 14px;
+    min-height: 100vh;
 }
 
-/* Login Panel */
-.login-panel {
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    padding: 10px 20px;
-    display: none;
-}
-
-.login-panel.visible {
-    display: block;
-}
-
-.login-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.login-content input {
-    padding: 8px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 8px;
-    font-size: 12px;
-    background: rgba(255, 255, 255, 0.95);
-    font-family: 'Roboto Mono', monospace;
-}
-
-.login-content input::placeholder {
-    color: #718096;
-}
-
-.login-status {
-    color: white;
-    font-size: 12px;
-    margin-left: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.login-status.logged-in {
-    color: #00ff41;
-}
-
-.login-status.error {
-    color: #ff6b6b;
+/* When embedded in iframe, remove background */
+body.embedded {
+    background: transparent;
+    min-height: auto;
 }
 
 .container {
@@ -79,64 +35,11 @@ body {
     padding: 20px;
 }
 
-header {
-    margin-bottom: 30px;
-}
-
-header h1 {
-    color: white;
-    font-size: 24px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-/* Tabs */
-.tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-    padding-bottom: 0;
-}
-
-.tab-btn {
-    padding: 12px 24px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: rgba(255, 255, 255, 0.7);
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    transition: all 0.3s ease;
-    font-family: 'Roboto Mono', monospace;
-}
-
-.tab-btn:hover {
-    color: #0ea5e9;
-}
-
-.tab-btn.active {
-    color: #0ea5e9;
-    border-bottom-color: #0ea5e9;
-    font-weight: 700;
-}
-
-/* Tab Content */
-.tab-content {
-    display: none;
+.content-section {
     background: white;
     border-radius: 16px;
     padding: 24px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.tab-content.active {
-    display: block;
 }
 
 .section-header {
@@ -412,13 +315,6 @@ select:focus {
     box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
 }
 
-small {
-    display: block;
-    margin-top: 6px;
-    color: #718096;
-    font-size: 10px;
-}
-
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -426,40 +322,6 @@ small {
     padding-top: 20px;
     border-top: 1px solid #e2e8f0;
     margin-top: 20px;
-}
-
-/* Checkbox List */
-.checkbox-list {
-    max-height: 200px;
-    overflow-y: auto;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 10px;
-    background: #f7fafc;
-}
-
-.checkbox-item {
-    display: flex;
-    align-items: center;
-    padding: 8px;
-    border-radius: 4px;
-    transition: background 0.2s ease;
-}
-
-.checkbox-item:hover {
-    background: rgba(14, 165, 233, 0.1);
-}
-
-.checkbox-item input {
-    margin-right: 10px;
-}
-
-.checkbox-item label {
-    margin-bottom: 0;
-    font-weight: normal;
-    cursor: pointer;
-    text-transform: none;
-    font-size: 12px;
 }
 
 /* Rules Container */
@@ -719,74 +581,4 @@ small {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #0ea5e9;
-}
-
-/* ============================================ */
-/* EMBEDDED MODE STYLES */
-/* When loaded inside an iframe with ?tab= parameter */
-/* ============================================ */
-
-body.embedded {
-    background: transparent;
-}
-
-body.embedded .container {
-    max-width: 100%;
-    padding: 0;
-    margin: 0;
-}
-
-body.embedded .tab-content {
-    background: transparent;
-    border-radius: 0;
-    padding: 0;
-    box-shadow: none;
-}
-
-body.embedded .section-header {
-    padding: 0 0 15px 0;
-    justify-content: flex-end;
-}
-
-body.embedded .section-header h2 {
-    display: none;
-}
-
-body.embedded .table-container {
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-body.embedded table th {
-    background: #f8fafc;
-    color: #0ea5e9;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-body.embedded table td {
-    font-size: 13px;
-    color: #475569;
-}
-
-body.embedded .btn-primary {
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
-}
-
-body.embedded .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
 }
