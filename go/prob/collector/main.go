@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	common.SmoothFirstCollection = false
+	common.SmoothFirstCollection = true
 	res := common2.CreateResources("collector")
 	res.Logger().SetLogLevel(ifs.Info_Level)
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
