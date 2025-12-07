@@ -22,6 +22,7 @@ async function loadConfig() {
             authEndpoint: '/auth',
             redirectUrl: '../',
             showRememberMe: true,
+            showRegister: true,
             sessionTimeout: 30,
             tfaEnabled: true
         };

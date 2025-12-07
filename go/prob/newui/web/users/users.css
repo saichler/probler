@@ -15,31 +15,25 @@
 
 body {
     font-family: 'Roboto Mono', 'Courier New', 'Consolas', monospace;
-    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-    background-attachment: fixed;
+    background: transparent;
     color: #2d3748;
     line-height: 1.6;
     font-size: 14px;
-    min-height: 100vh;
-}
-
-/* When embedded in iframe, remove background */
-body.embedded {
-    background: transparent;
     min-height: auto;
 }
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 10px;
 }
 
 .content-section {
-    background: white;
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
 }
 
 .section-header {
@@ -355,7 +349,7 @@ select:focus {
 /* Responsive */
 @media (max-width: 768px) {
     .container {
-        padding: 15px;
+        padding: 5px;
     }
 
     .section-header {

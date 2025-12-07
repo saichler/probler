@@ -6,7 +6,7 @@ async function makeAuthenticatedRequest(url, options = {}) {
 
     if (!bearerToken) {
         console.error('No bearer token found');
-        window.location.href = 'login.html';
+        window.location.href = 'login/index.html';
         return;
     }
 
@@ -25,8 +25,8 @@ async function makeAuthenticatedRequest(url, options = {}) {
 
         // If unauthorized, redirect to login
         if (response.status === 401) {
-            sessionStorage.clear();
-            window.location.href = 'login.html';
+            sessionStorage.removeItem('bearerToken');
+            window.location.href = 'login/index.html';
             return;
         }
 
@@ -39,30 +39,26 @@ async function makeAuthenticatedRequest(url, options = {}) {
 
 // Logout function
 function logout() {
-    // Clear all session storage including bearer token
-    sessionStorage.clear();
+    // Clear bearer token from sessionStorage
+    sessionStorage.removeItem('bearerToken');
+    localStorage.removeItem('rememberedUser');
 
     // Redirect to login page
-    window.location.href = 'login.html';
+    window.location.href = 'login/index.html';
 }
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if user is logged in
-    if (sessionStorage.getItem('isLoggedIn') !== 'true') {
-        window.location.href = 'login.html';
+    // Check if bearer token exists (user is logged in)
+    // Using sessionStorage so session is cleared when browser tab is closed
+    const bearerToken = sessionStorage.getItem('bearerToken');
+    if (!bearerToken) {
+        window.location.href = 'login/index.html';
         return;
     }
 
-    // Also check if bearer token exists
-    if (!sessionStorage.getItem('bearerToken')) {
-        sessionStorage.clear();
-        window.location.href = 'login.html';
-        return;
-    }
-
-    // Set username in header
-    const username = sessionStorage.getItem('username') || 'Admin';
+    // Set username in header from current session
+    const username = sessionStorage.getItem('currentUser') || 'Admin';
     document.querySelector('.username').textContent = username;
 
     // Load default section (dashboard)

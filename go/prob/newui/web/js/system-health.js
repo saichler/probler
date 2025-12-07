@@ -8,14 +8,6 @@ let healthDataMap = new Map(); // Store raw health data for modal details
 function initializeHealth() {
     setupSystemTabSwitching();
     fetchHealthData();
-    // Fetch Users and Roles data when System section loads (like Logs)
-    if (typeof fetchRolesData === 'function') {
-        fetchRolesData().then(() => {
-            if (typeof fetchUsersData === 'function') {
-                fetchUsersData();
-            }
-        });
-    }
 }
 
 // Set up system tab switching
@@ -42,8 +34,28 @@ function setupSystemTabSwitching() {
             if (tabName === 'health' && !healthTable) {
                 fetchHealthData();
             }
+
+            // Lazy load iframes when their tab is selected
+            lazyLoadIframe(tabName);
         });
     });
+}
+
+// Lazy load iframe when tab is selected
+function lazyLoadIframe(tabName) {
+    const iframeMap = {
+        'users': 'users-iframe',
+        'roles': 'roles-iframe',
+        'logs': 'logs-iframe'
+    };
+
+    const iframeId = iframeMap[tabName];
+    if (!iframeId) return;
+
+    const iframe = document.getElementById(iframeId);
+    if (iframe && iframe.dataset.src && !iframe.getAttribute('src')) {
+        iframe.src = iframe.dataset.src;
+    }
 }
 
 // Fetch health data from the server

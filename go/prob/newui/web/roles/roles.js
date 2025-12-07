@@ -30,8 +30,8 @@ let tempRules = [];
 // Cached registry types for Element Type dropdown
 let registryTypes = null;
 
-// Authentication token (from localStorage or parent window)
-let bearerToken = localStorage.getItem('bearerToken') || null;
+// Authentication token (from sessionStorage or parent window)
+let bearerToken = sessionStorage.getItem('bearerToken') || null;
 
 // Callback for when roles change (can be set by parent)
 let onRolesChanged = null;
@@ -40,9 +40,9 @@ let onRolesChanged = null;
 function setBearerToken(token) {
     bearerToken = token;
     if (token) {
-        localStorage.setItem('bearerToken', token);
+        sessionStorage.setItem('bearerToken', token);
     } else {
-        localStorage.removeItem('bearerToken');
+        sessionStorage.removeItem('bearerToken');
     }
 }
 

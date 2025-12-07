@@ -24,6 +24,11 @@ function applyConfiguration() {
     if (!LOGIN_CONFIG.showRememberMe) {
         rememberMeSection.style.display = 'none';
     }
+
+    const registerLink = document.querySelector('.register-link');
+    if (registerLink && !LOGIN_CONFIG.showRegister) {
+        registerLink.style.display = 'none';
+    }
 }
 
 // Setup event listeners
@@ -60,7 +65,7 @@ function setupEventListeners() {
 
 // Check for existing session
 function checkExistingSession() {
-    const token = localStorage.getItem('bearerToken');
+    const token = sessionStorage.getItem('bearerToken');
     if (token && LOGIN_CONFIG.redirectUrl) {
         // Redirect if token exists
         window.location.href = LOGIN_CONFIG.redirectUrl;
@@ -152,10 +157,13 @@ async function authenticate(username, password) {
 
 // Handle successful login
 function handleLoginSuccess(result, username, rememberMe) {
-    // Store bearer token
-    localStorage.setItem('bearerToken', result.token);
+    // Store bearer token in sessionStorage (cleared when tab is closed)
+    sessionStorage.setItem('bearerToken', result.token);
 
-    // Handle remember me
+    // Always store current username in sessionStorage for display
+    sessionStorage.setItem('currentUser', username);
+
+    // Handle remember me (persists username across sessions for auto-fill)
     if (rememberMe) {
         localStorage.setItem('rememberedUser', username);
     } else {
@@ -402,7 +410,7 @@ function setupSessionTimeout() {
     const resetTimeout = () => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
-            localStorage.removeItem('bearerToken');
+            sessionStorage.removeItem('bearerToken');
             showToast('Session expired. Please login again.', 'warning');
             if (LOGIN_CONFIG.redirectUrl) {
                 window.location.reload();
@@ -488,7 +496,7 @@ function escapeHtml(text) {
 
 // Logout function (can be called from other pages)
 function logout() {
-    localStorage.removeItem('bearerToken');
+    sessionStorage.removeItem('bearerToken');
     localStorage.removeItem('tfaSetupRequired');
     if (window.location.pathname.includes('/login')) {
         window.location.reload();
@@ -501,7 +509,7 @@ function logout() {
 if (typeof window !== 'undefined') {
     window.L8Login = {
         logout: logout,
-        getToken: () => localStorage.getItem('bearerToken'),
-        isLoggedIn: () => !!localStorage.getItem('bearerToken')
+        getToken: () => sessionStorage.getItem('bearerToken'),
+        isLoggedIn: () => !!sessionStorage.getItem('bearerToken')
     };
 }

@@ -71,9 +71,23 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		}
 	}
 
+	if cmd == "25K" {
+		ip := 1
+		sub := 10
+		for i := 1; i <= 25000; i++ {
+			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			deviceList.List = append(deviceList.List, device)
+			ip++
+			if ip > 254 {
+				sub++
+				ip = 1
+			}
+		}
+	}
+
 	if cmd == "20K" {
 		ip := 1
-		sub := 40
+		sub := 10
 		for i := 1; i <= 20000; i++ {
 			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
 			deviceList.List = append(deviceList.List, device)
@@ -87,7 +101,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 
 	if cmd == "10K" {
 		ip := 1
-		sub := 40
+		sub := 10
 		for i := 1; i <= 10000; i++ {
 			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
 			deviceList.List = append(deviceList.List, device)
@@ -101,7 +115,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 
 	if cmd == "5K" {
 		ip := 1
-		sub := 40
+		sub := 10
 		for i := 1; i <= 5000; i++ {
 			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
 			deviceList.List = append(deviceList.List, device)
@@ -115,7 +129,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 
 	if cmd == "3K" {
 		ip := 1
-		sub := 40
+		sub := 10
 		for i := 1; i <= 3000; i++ {
 			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
 			deviceList.List = append(deviceList.List, device)
@@ -129,7 +143,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 
 	if cmd == "1K" {
 		ip := 1
-		sub := 40
+		sub := 10
 		for i := 1; i <= 1000; i++ {
 			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
 			deviceList.List = append(deviceList.List, device)

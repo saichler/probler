@@ -3,8 +3,9 @@
         "appTitle": "Probler",
         "appDescription": "Datacenter Management",
         "authEndpoint": "/auth",
-        "redirectUrl": "../",
+        "redirectUrl": "../app.html",
         "showRememberMe": true,
+        "showRegister": true,
         "sessionTimeout": 30,
         "tfaEnabled": true
     },

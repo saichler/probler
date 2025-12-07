@@ -153,23 +153,19 @@
 
         <!-- Users Tab Content -->
         <div class="resource-content" data-tab-content="users">
-            <div class="subsection-description">
-                Manage user accounts and role assignments
-                <button class="ur-btn ur-btn-primary ur-btn-small" style="margin-left: 20px;" onclick="showUserModal()">Add User</button>
-            </div>
-            <div class="table-container">
-                <div id="users-table"></div>
+            <div class="table-container" style="padding: 0; height: calc(100vh - 300px);">
+                <iframe id="users-iframe" data-src="users/index.html"
+                        style="width: 100%; height: 100%; border: none; display: block;"
+                        title="Users Management"></iframe>
             </div>
         </div>
 
         <!-- Roles Tab Content -->
         <div class="resource-content" data-tab-content="roles">
-            <div class="subsection-description">
-                Manage roles and permission rules
-                <button class="ur-btn ur-btn-primary ur-btn-small" style="margin-left: 20px;" onclick="showRoleModal()">Add Role</button>
-            </div>
-            <div class="table-container">
-                <div id="roles-table"></div>
+            <div class="table-container" style="padding: 0; height: calc(100vh - 300px);">
+                <iframe id="roles-iframe" data-src="roles/index.html"
+                        style="width: 100%; height: 100%; border: none; display: block;"
+                        title="Roles Management"></iframe>
             </div>
         </div>
 
@@ -184,7 +180,7 @@
         <!-- Logs Tab Content -->
         <div class="resource-content" data-tab-content="logs">
             <div class="table-container" style="padding: 0; height: calc(100vh - 300px);">
-                <iframe src="logsui/index.html"
+                <iframe id="logs-iframe" data-src="logsui/index.html"
                         style="width: 100%; height: 100%; border: none; display: block;"
                         title="Log Viewer"></iframe>
             </div>
@@ -199,171 +195,6 @@
                 <button class="modal-close" onclick="closeHealthDetailModal()">&times;</button>
             </div>
             <div class="modal-body" id="health-detail-content">
-            </div>
-        </div>
-    </div>
-
-    <!-- User Modal -->
-    <div id="user-modal" class="modal-overlay">
-        <div class="modal-container" style="max-width: 500px; min-height: auto;">
-            <div class="modal-header">
-                <h2 class="modal-title" id="user-modal-title">Add User</h2>
-                <button class="modal-close" onclick="closeUserModal()">&times;</button>
-            </div>
-            <div class="modal-body" style="padding: 24px;">
-                <form id="user-form" onsubmit="saveUser(event)">
-                    <input type="hidden" id="user-edit-mode" value="add">
-                    <div class="ur-form-group">
-                        <label for="user-id">User ID</label>
-                        <input type="text" id="user-id" class="ur-form-input" required>
-                    </div>
-                    <div class="ur-form-group">
-                        <label for="user-fullname">Full Name</label>
-                        <input type="text" id="user-fullname" class="ur-form-input" required>
-                    </div>
-                    <div id="password-add-section" class="ur-form-group">
-                        <label for="user-password">Password</label>
-                        <input type="password" id="user-password" class="ur-form-input">
-                    </div>
-                    <div id="password-edit-section" class="ur-form-group" style="display: none;">
-                        <button type="button" class="ur-btn ur-btn-secondary" onclick="showChangePasswordModal()">Change Password</button>
-                    </div>
-                    <div class="ur-form-group">
-                        <label>Assigned Roles</label>
-                        <div id="user-roles-list" class="ur-checkbox-list"></div>
-                    </div>
-                    <div class="ur-form-actions">
-                        <button type="button" class="ur-btn ur-btn-secondary" onclick="closeUserModal()">Cancel</button>
-                        <button type="submit" class="ur-btn ur-btn-primary">Save</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Role Modal -->
-    <div id="role-modal" class="modal-overlay">
-        <div class="modal-container" style="max-width: 700px; min-height: auto;">
-            <div class="modal-header">
-                <h2 class="modal-title" id="role-modal-title">Add Role</h2>
-                <button class="modal-close" onclick="closeRoleModal()">&times;</button>
-            </div>
-            <div class="modal-body" style="padding: 24px;">
-                <form id="role-form" onsubmit="saveRole(event)">
-                    <input type="hidden" id="role-edit-mode" value="add">
-                    <div class="ur-form-row">
-                        <div class="ur-form-group">
-                            <label for="role-id">Role ID</label>
-                            <input type="text" id="role-id" class="ur-form-input" required>
-                        </div>
-                        <div class="ur-form-group">
-                            <label for="role-name">Role Name</label>
-                            <input type="text" id="role-name" class="ur-form-input" required>
-                        </div>
-                    </div>
-                    <div class="ur-form-group">
-                        <label>Rules</label>
-                        <button type="button" class="ur-btn ur-btn-small" onclick="addRuleRow()">Add Rule</button>
-                        <div id="rules-container"></div>
-                    </div>
-                    <div class="ur-form-actions">
-                        <button type="button" class="ur-btn ur-btn-secondary" onclick="closeRoleModal()">Cancel</button>
-                        <button type="submit" class="ur-btn ur-btn-primary">Save</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Rule Edit Modal -->
-    <div id="rule-modal" class="modal-overlay">
-        <div class="modal-container" style="max-width: 550px; min-height: auto;">
-            <div class="modal-header">
-                <h2 class="modal-title">Edit Rule</h2>
-                <button class="modal-close" onclick="closeRuleModal()">&times;</button>
-            </div>
-            <div class="modal-body" style="padding: 24px;">
-                <form id="rule-form" onsubmit="saveRuleForm(event)">
-                    <input type="hidden" id="rule-index" value="">
-                    <div class="ur-form-group">
-                        <label for="rule-id">Rule ID</label>
-                        <input type="text" id="rule-id" class="ur-form-input" required>
-                    </div>
-                    <div class="ur-form-group">
-                        <label for="rule-elem-type">Element Type</label>
-                        <select id="rule-elem-type" class="ur-form-input" required>
-                            <option value="">Select type...</option>
-                        </select>
-                    </div>
-                    <div class="ur-form-group">
-                        <label for="rule-allowed">Rule Type</label>
-                        <select id="rule-allowed" class="ur-form-input">
-                            <option value="true">Allow</option>
-                            <option value="false">Deny</option>
-                        </select>
-                    </div>
-                    <div class="ur-form-group">
-                        <label>Actions</label>
-                        <button type="button" class="ur-btn ur-btn-small" onclick="addActionRow()">Add Action</button>
-                        <div id="actions-container"></div>
-                    </div>
-                    <div class="ur-form-group">
-                        <label>Attributes</label>
-                        <button type="button" class="ur-btn ur-btn-small" onclick="addAttributeRow()">Add Attribute</button>
-                        <div id="attributes-container"></div>
-                    </div>
-                    <div class="ur-form-actions">
-                        <button type="button" class="ur-btn ur-btn-secondary" onclick="closeRuleModal()">Cancel</button>
-                        <button type="submit" class="ur-btn ur-btn-primary">Save Rule</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="delete-modal" class="modal-overlay">
-        <div class="modal-container" style="max-width: 400px; min-height: auto;">
-            <div class="modal-header">
-                <h2 class="modal-title">Confirm Delete</h2>
-                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
-            </div>
-            <div class="modal-body" style="padding: 24px;">
-                <p id="delete-message" style="margin-bottom: 20px; color: #475569;">Are you sure you want to delete this item?</p>
-                <div class="ur-form-actions">
-                    <button type="button" class="ur-btn ur-btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                    <button type="button" class="ur-btn ur-btn-danger" onclick="confirmDelete()">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Change Password Modal -->
-    <div id="password-modal" class="modal-overlay">
-        <div class="modal-container" style="max-width: 400px; min-height: auto;">
-            <div class="modal-header">
-                <h2 class="modal-title">Change Password</h2>
-                <button class="modal-close" onclick="closeChangePasswordModal()">&times;</button>
-            </div>
-            <div class="modal-body" style="padding: 24px;">
-                <form id="password-form" onsubmit="savePassword(event)">
-                    <div class="ur-form-group">
-                        <label for="user-old-password">Old Password</label>
-                        <input type="password" id="user-old-password" class="ur-form-input" required>
-                    </div>
-                    <div class="ur-form-group">
-                        <label for="user-new-password">New Password</label>
-                        <input type="password" id="user-new-password" class="ur-form-input" required>
-                    </div>
-                    <div class="ur-form-group">
-                        <label for="user-confirm-password">Confirm Password</label>
-                        <input type="password" id="user-confirm-password" class="ur-form-input" required>
-                    </div>
-                    <div class="ur-form-actions">
-                        <button type="button" class="ur-btn ur-btn-secondary" onclick="closeChangePasswordModal()">Cancel</button>
-                        <button type="submit" class="ur-btn ur-btn-primary">Change Password</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>

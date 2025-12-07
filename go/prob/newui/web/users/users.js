@@ -7,16 +7,16 @@ let roles = {};
 // State management
 let pendingDelete = null;
 
-// Authentication token (from localStorage or parent window)
-let bearerToken = localStorage.getItem('bearerToken') || null;
+// Authentication token (from sessionStorage or parent window)
+let bearerToken = sessionStorage.getItem('bearerToken') || null;
 
 // Set bearer token for API authentication
 function setBearerToken(token) {
     bearerToken = token;
     if (token) {
-        localStorage.setItem('bearerToken', token);
+        sessionStorage.setItem('bearerToken', token);
     } else {
-        localStorage.removeItem('bearerToken');
+        sessionStorage.removeItem('bearerToken');
     }
 }
 
