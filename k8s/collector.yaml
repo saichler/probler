@@ -24,6 +24,15 @@ spec:
       labels:
         app: probler-collector
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: probler-collector
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: probler-collector
           image: saichler/probler-collector:latest

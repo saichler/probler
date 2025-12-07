@@ -24,6 +24,15 @@ spec:
       labels:
         app: probler-parser
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: probler-parser
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: probler-parser
           image: saichler/probler-parser:latest
