@@ -5,7 +5,6 @@ import (
 	"github.com/saichler/l8parser/go/parser/boot"
 	"github.com/saichler/l8parser/go/parser/service"
 	"github.com/saichler/l8pollaris/go/pollaris"
-	"github.com/saichler/l8reflect/go/reflect/helping"
 	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/serializers"
@@ -21,8 +20,7 @@ func main() {
 	nic.Start()
 	nic.WaitForConnection()
 
-	clusterNode, _ := nic.Resources().Introspector().Inspect(&types2.K8SCluster{})
-	helping.AddPrimaryKeyDecorator(clusterNode, "Name")
+	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&types2.K8SCluster{}, "Name")
 
 	info, err := nic.Resources().Registry().Info("K8SReadyState")
 	if err != nil {

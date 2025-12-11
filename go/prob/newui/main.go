@@ -7,7 +7,6 @@ import (
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8logfusion/go/types/l8logf"
 	"github.com/saichler/l8pollaris/go/types/l8tpollaris"
-	"github.com/saichler/l8reflect/go/reflect/helping"
 	"github.com/saichler/l8topology/go/types/l8topo"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8api"
@@ -60,11 +59,8 @@ func createVnic(vnet uint32) ifs.IVNic {
 	resources := common.CreateResources("web-" + strconv.Itoa(int(vnet)))
 	resources.SysConfig().VnetPort = vnet
 
-	node, _ := resources.Introspector().Inspect(&types.NetworkDevice{})
-	helping.AddPrimaryKeyDecorator(node, "Id")
-
-	node, _ = resources.Introspector().Inspect(&types2.K8SCluster{})
-	helping.AddPrimaryKeyDecorator(node, "Name")
+	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types.NetworkDevice{}, "Id")
+	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types2.K8SCluster{}, "Name")
 
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Resources().SysConfig().KeepAliveIntervalSeconds = 60
@@ -88,12 +84,12 @@ func createVnic(vnet uint32) ifs.IVNic {
 
 	nic.Resources().Registry().Register(&l8topo.L8Topology{})
 	nic.Resources().Registry().Register(&l8topo.L8TopologyQuery{})
-	node, _ = nic.Resources().Introspector().Inspect(&l8topo.L8TopologyMetadata{})
-	helping.AddPrimaryKeyDecorator(node, "ServiceName", "ServiceArea")
+
+	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&l8topo.L8TopologyMetadata{}, "ServiceName", "ServiceArea")
+
 	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadataList{})
 	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadata{})
 
-	fn, _ := nic.Resources().Introspector().Inspect(&l8logf.L8File{})
-	helping.AddPrimaryKeyDecorator(fn, "Path", "Name")
+	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&l8logf.L8File{}, "Path", "Name")
 	return nic
 }

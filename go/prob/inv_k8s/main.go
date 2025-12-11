@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8inventory/go/inv/service"
-	"github.com/saichler/l8reflect/go/reflect/helping"
 	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/serializers"
@@ -22,8 +21,7 @@ func main() {
 	nic.Resources().Registry().Register(&types2.K8SClusterList{})
 
 	//Add the inventory model and mark the Id field as key
-	clusterNode, _ := nic.Resources().Introspector().Inspect(&types2.K8SCluster{})
-	helping.AddPrimaryKeyDecorator(clusterNode, "Name")
+	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&types2.K8SCluster{}, "Name")
 
 	info, err := nic.Resources().Registry().Info("K8SReadyState")
 	if err != nil {
@@ -40,12 +38,9 @@ func main() {
 	}
 
 	nic.Resources().Registry().RegisterEnums(types2.K8SPodStatus_value)
-
-	podsNode, ok := nic.Resources().Introspector().Node("k8scluster.pods")
-	if !ok {
-		nic.Resources().Logger().Error("Failed to get pods node ")
-	} else {
-		helping.AddAlwayOverwriteDecorator(podsNode)
+	err = nic.Resources().Introspector().Decorators().AddAlwayOverwriteDecorator("k8scluster.pods")
+	if err != nil {
+		panic("Failed to register k8s pods")
 	}
 
 	//&l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 1}

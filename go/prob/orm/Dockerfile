@@ -12,9 +12,9 @@ RUN mkdir /run/postgresql
 RUN chown -R postgres:postgres /run/postgresql/
 
 USER postgres
-RUN mkdir /var/lib/postgresql/data
-RUN chmod 0700 /var/lib/postgresql/data
-RUN initdb -D /var/lib/postgresql/data
+RUN mkdir /data/postgresql/data
+RUN chmod 0700 /data/postgresql/data
+RUN initdb -D /data/postgresql/data
 
 #RUN apk add --no-cache libc6-compat
 USER root
