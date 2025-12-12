@@ -1,6 +1,7 @@
 package common
 
 import (
+	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"os"
 	"os/signal"
 	"syscall"
@@ -30,6 +31,10 @@ const (
 	INVENTORY_AREA_K8S    = 1
 	PREFIX                = "/probler/"
 )
+
+func init() {
+	targets.Links = &Links{}
+}
 
 func CreateResources(alias string) ifs.IResources {
 	logger.SetLogToFile(alias)
