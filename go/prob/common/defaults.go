@@ -7,7 +7,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/saichler/l8collector/go/collector/common"
 	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8services/go/services/manager"
 	"github.com/saichler/l8types/go/ifs"
@@ -18,18 +17,11 @@ import (
 )
 
 const (
-	PROBLER_VNET          = 26000
-	LOGS_VNET             = 27000
-	ORM_SERVICE           = "orm"
-	PARSER_SERVICE_BOX    = common.ParserServicePrefix + INVENTORY_SERVICE_BOX
-	PARSER_SERVICE_K8s    = common.ParserServicePrefix + INVENTORY_SERVICE_K8S
-	PARSER_AREA_BOX       = 0
-	PARSER_AREA_K8S       = 1
-	INVENTORY_SERVICE_BOX = "NetDev"
-	INVENTORY_AREA_BOX    = 0
-	INVENTORY_SERVICE_K8S = "K8sClr"
-	INVENTORY_AREA_K8S    = 1
-	PREFIX                = "/probler/"
+	PROBLER_VNET = 26000
+	LOGS_VNET    = 27000
+	PREFIX       = "/probler/"
+	DB_CREDS     = "postgres"
+	DB_NAME      = "probler"
 )
 
 func init() {
