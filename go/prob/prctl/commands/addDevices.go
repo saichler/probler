@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/saichler/probler/go/prob/common"
 	"strconv"
 	"time"
 
@@ -18,13 +19,13 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 	deviceList := &l8tpollaris.L8PTargetList{List: make([]*l8tpollaris.L8PTarget, 0)}
 
 	if cmd == "all" || cmd == "cluster" {
-		cluster := creates.CreateCluster("./lab.conf", "lab", 0)
+		cluster := creates.CreateCluster("lab")
 		deviceList.List = append(deviceList.List, cluster)
 	}
 
 	if cmd == "all" || cmd == "base" {
 		for i := 1; i <= 19; i++ {
-			device := creates.CreateDevice("10.20.30."+strconv.Itoa(i), 0)
+			device := creates.CreateDevice("10.20.30."+strconv.Itoa(i), common.NetworkDevice_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 		}
 	}
@@ -33,7 +34,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		ip := 1
 		sub := 10
 		for i := 1; i <= 1000; i++ {
-			device := creates.CreateDevice("30.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			device := creates.CreateDevice("30.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.NetworkDevice_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 			ip++
 			if ip > 254 {
@@ -47,7 +48,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		ip := 1
 		sub := 10
 		for i := 1; i <= 1000; i++ {
-			device := creates.CreateDevice("40.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			device := creates.CreateDevice("40.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.NetworkDevice_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 			ip++
 			if ip > 254 {
@@ -61,7 +62,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		ip := 1
 		sub := 10
 		for i := 1; i <= 1000; i++ {
-			device := creates.CreateDevice("50.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			device := creates.CreateDevice("50.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.NetworkDevice_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 			ip++
 			if ip > 254 {
@@ -75,7 +76,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		ip := 1
 		sub := 40
 		for i := 1; i <= 25000; i++ {
-			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.NetworkDevice_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 			ip++
 			if ip > 254 {
@@ -89,7 +90,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		ip := 1
 		sub := 40
 		for i := 1; i <= 20000; i++ {
-			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.NetworkDevice_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 			ip++
 			if ip > 254 {
@@ -103,7 +104,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		ip := 1
 		sub := 40
 		for i := 1; i <= 10000; i++ {
-			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.NetworkDevice_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 			ip++
 			if ip > 254 {
@@ -117,7 +118,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		ip := 1
 		sub := 40
 		for i := 1; i <= 5000; i++ {
-			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.NetworkDevice_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 			ip++
 			if ip > 254 {
@@ -131,7 +132,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		ip := 1
 		sub := 40
 		for i := 1; i <= 3000; i++ {
-			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.NetworkDevice_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 			ip++
 			if ip > 254 {
@@ -145,7 +146,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		ip := 1
 		sub := 40
 		for i := 1; i <= 1000; i++ {
-			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.NetworkDevice_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 			ip++
 			if ip > 254 {
@@ -159,7 +160,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		ip := 1
 		sub := 40
 		for i := 1; i <= 500; i++ {
-			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), 0)
+			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.NetworkDevice_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 			ip++
 			if ip > 254 {

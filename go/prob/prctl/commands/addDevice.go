@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"github.com/saichler/probler/go/prob/common"
 	"time"
 
 	"github.com/saichler/l8collector/go/collector/targets"
@@ -12,7 +13,7 @@ import (
 
 func AddDevice(ip string, rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
-	device := creates.CreateDevice(ip, 0)
+	device := creates.CreateDevice(ip, common.NetworkDevice_Links_ID, "sim")
 	resp, err := rc.POST("0/"+targets.ServiceName, "Device",
 		"", "", device)
 	if err != nil {
