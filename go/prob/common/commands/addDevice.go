@@ -1,14 +1,14 @@
 package commands
 
 import (
+	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"github.com/saichler/probler/go/prob/common"
 	"time"
 
-	"github.com/saichler/l8collector/go/collector/targets"
 	"github.com/saichler/l8pollaris/go/types/l8tpollaris"
 	common2 "github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8web/go/web/client"
-	"github.com/saichler/probler/go/prob/prctl/creates"
+	"github.com/saichler/probler/go/prob/common/creates"
 )
 
 func AddDevice(ip string, rc *client.RestClient, resources common2.IResources) {

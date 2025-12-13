@@ -4,9 +4,9 @@ import (
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8collector/go/collector/common"
 	"github.com/saichler/l8collector/go/collector/service"
-	"github.com/saichler/l8collector/go/collector/targets"
 	"github.com/saichler/l8parser/go/parser/boot"
 	"github.com/saichler/l8pollaris/go/pollaris"
+	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
 )
@@ -29,10 +29,6 @@ func main() {
 	//Activate Polaris
 	sla := ifs.NewServiceLevelAgreement(&pollaris.PollarisService{}, pollaris.ServiceName, pollaris.ServiceArea, true, nil)
 	sla.SetInitItems(initData)
-	nic.Resources().Services().Activate(sla, nic)
-
-	//Activate Targets
-	sla = ifs.NewServiceLevelAgreement(&targets.TargetService{}, targets.ServiceName, 0, true, nil)
 	nic.Resources().Services().Activate(sla, nic)
 
 	//Activate Collector
