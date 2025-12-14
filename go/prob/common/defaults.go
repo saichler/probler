@@ -29,7 +29,7 @@ func init() {
 }
 
 func CreateResources(alias string) ifs.IResources {
-	logger.SetLogToFile(alias)
+	//logger.SetLogToFile(alias)
 	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
 	log.SetLogLevel(ifs.Error_Level)
 	res := resources.NewResources(log)
