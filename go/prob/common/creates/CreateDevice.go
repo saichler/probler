@@ -11,10 +11,10 @@ func CreateDevice(ip, linksId, crId string) *l8tpollaris.L8PTarget {
 	device.LinksId = linksId
 	device.Hosts = make(map[string]*l8tpollaris.L8PHost)
 	host := &l8tpollaris.L8PHost{}
-	host.TargetId = ifs.NewUuid()
+	host.HostId = ifs.NewUuid()
 
 	host.Configs = make(map[int32]*l8tpollaris.L8PHostProtocol)
-	device.Hosts[host.TargetId] = host
+	device.Hosts[host.HostId] = host
 
 	sshConfig := &l8tpollaris.L8PHostProtocol{}
 	sshConfig.Protocol = l8tpollaris.L8PProtocol_L8PSSH

@@ -23,8 +23,5 @@ func main() {
 
 	//no need to activate with links id k8s as they are the same area for collection
 	service.Activate(common2.NetworkDevice_Links_ID, nic)
-
-	res.Logger().SetLogLevel(ifs.Error_Level)
-
 	common2.WaitForSignal(res)
 }

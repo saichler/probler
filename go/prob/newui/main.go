@@ -86,6 +86,7 @@ func createVnic(vnet uint32) ifs.IVNic {
 	nic.Resources().Registry().Register(&l8topo.L8TopologyQuery{})
 
 	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&l8topo.L8TopologyMetadata{}, "ServiceName", "ServiceArea")
+	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&l8tpollaris.L8PTarget{}, "TargetId")
 
 	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadataList{})
 	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadata{})

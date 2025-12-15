@@ -66,20 +66,3 @@ cd ../newui/
 go build -o webui_demo
 mv ./webui_demo ../../demo/.
 cp -r ./web ../../demo/.
-
-cd ../../demo
-echo "Echo running demo"
-./vnet_demo &
-./logvnet_demo &
-sleep 5
-./targets_demo &
-./collector_demo &
-./parser_demo &
-./box_demo &
-./k8s_demo &
-./topology_demo &
-./logagent_demo &
-sleep 1
-./webui_demo
-
-pkill demo

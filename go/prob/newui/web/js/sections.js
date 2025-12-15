@@ -3,6 +3,7 @@
 // Section mapping to HTML files
 const sections = {
     dashboard: 'dashboard.html',
+    inventory: 'inventory.html',
     network: 'network.html',
     gpus: 'gpus.html',
     hosts: 'hosts.html',
@@ -85,6 +86,10 @@ function loadSection(sectionName) {
                         if (typeof setupSystemTabSwitching === 'function') {
                             setupSystemTabSwitching();
                         }
+                        if (typeof initializeParallax === 'function') {
+                            initializeParallax();
+                        }
+                    } else if (sectionName === 'inventory') {
                         if (typeof initializeParallax === 'function') {
                             initializeParallax();
                         }

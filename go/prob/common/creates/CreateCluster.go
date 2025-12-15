@@ -13,7 +13,7 @@ func CreateCluster(id string) *l8tpollaris.L8PTarget {
 
 	device.Hosts = make(map[string]*l8tpollaris.L8PHost)
 	host := &l8tpollaris.L8PHost{}
-	host.TargetId = device.TargetId
+	host.HostId = id
 
 	host.Configs = make(map[int32]*l8tpollaris.L8PHostProtocol)
 	device.Hosts[device.TargetId] = host

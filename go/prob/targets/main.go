@@ -3,8 +3,10 @@ package main
 import (
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8pollaris/go/pollaris/targets"
+	"github.com/saichler/l8srlz/go/serialize/object"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/probler/go/prob/common"
+	"github.com/saichler/probler/go/prob/common/creates"
 )
 
 func main() {
@@ -18,7 +20,12 @@ func main() {
 	//Activate targets
 	targets.Activate(common.DB_CREDS, common.DB_NAME, nic)
 
-	res.Logger().SetLogLevel(ifs.Error_Level)
+	ts, _ := targets.Targets(nic)
+	device := creates.CreateDevice("10.20.30.3", common.NetworkDevice_Links_ID, "sim")
+	ts.Post(object.New(nil, device), nic)
 
+	cluster := creates.CreateCluster("lab")
+	ts.Post(object.New(nil, cluster), nic)
+	
 	common.WaitForSignal(res)
 }
