@@ -15,6 +15,7 @@
         "rolesPath": "/74/roles",
         "credsPath": "/75/Creds",
         "targetsPath": "/91/Targets",
-        "registryPath": "/registry"
+        "registryPath": "/registry",
+        "healthPath": "/0/Health"
     }
 }
