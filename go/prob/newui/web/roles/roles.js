@@ -3,6 +3,9 @@
 // Data stores
 let roles = {};
 
+// Table instance
+let rolesTable = null;
+
 // Action enum mapping
 const ACTION_NAMES = {
     '-999': 'ALL',
@@ -30,8 +33,8 @@ let tempRules = [];
 // Cached registry types for Element Type dropdown
 let registryTypes = null;
 
-// Authentication token (from sessionStorage or parent window)
-let bearerToken = sessionStorage.getItem('bearerToken') || null;
+// Authentication token (from localStorage or parent window)
+let bearerToken = localStorage.getItem('bearerToken') || null;
 
 // Callback for when roles change (can be set by parent)
 let onRolesChanged = null;
@@ -40,9 +43,9 @@ let onRolesChanged = null;
 function setBearerToken(token) {
     bearerToken = token;
     if (token) {
-        sessionStorage.setItem('bearerToken', token);
+        localStorage.setItem('bearerToken', token);
     } else {
-        sessionStorage.removeItem('bearerToken');
+        localStorage.removeItem('bearerToken');
     }
 }
 
@@ -86,6 +89,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load configuration first
     await loadConfig();
 
+    // Initialize the table
+    initRolesTable();
+
     // Check for token from parent window (if embedded)
     if (window.parent !== window && window.parent.bearerToken) {
         bearerToken = window.parent.bearerToken;
@@ -97,6 +103,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderRoles();
     }
 });
+
+// Initialize the roles table
+function initRolesTable() {
+    rolesTable = new L8Table({
+        containerId: 'roles-table-container',
+        tableId: 'roles-table',
+        pageSize: 10,
+        emptyMessage: 'No roles found. Click "Add Role" to create one.',
+        columns: [
+            { label: 'Role ID', key: 'roleId' },
+            { label: 'Role Name', key: 'roleName' },
+            {
+                label: 'Rules Count',
+                render: (role) => {
+                    const count = Object.keys(role.rules || {}).length;
+                    return String(count);
+                }
+            }
+        ],
+        onAdd: () => showRoleModal(),
+        addButtonText: 'Add Role',
+        onEdit: editRole,
+        onDelete: deleteRole
+    });
+    rolesTable.init();
+}
 
 // Fetch roles from the API
 async function fetchRoles() {
@@ -180,35 +212,9 @@ async function populateElementTypeDropdown(selectedValue) {
 
 // Render roles table
 function renderRoles() {
-    const tbody = document.querySelector('#roles-table tbody');
-    tbody.innerHTML = '';
-
-    const roleList = Object.values(roles);
-    if (roleList.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="4" class="empty-state">
-                    <p>No roles found. Click "Add Role" to create one.</p>
-                </td>
-            </tr>
-        `;
-        return;
+    if (rolesTable) {
+        rolesTable.setData(roles);
     }
-
-    roleList.forEach(role => {
-        const rulesCount = Object.keys(role.rules || {}).length;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${escapeHtml(role.roleId)}</td>
-            <td>${escapeHtml(role.roleName)}</td>
-            <td>${rulesCount}</td>
-            <td class="action-btns">
-                <button class="btn btn-small" onclick="editRole('${escapeHtml(role.roleId)}')">Edit</button>
-                <button class="btn btn-danger btn-small" onclick="deleteRole('${escapeHtml(role.roleId)}')">Delete</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
 }
 
 // Role Modal Functions
@@ -585,6 +591,10 @@ function escapeHtml(text) {
 
 // Refresh data (can be called from parent)
 async function refreshData() {
+    // Ensure config is loaded
+    if (!ROLES_CONFIG) {
+        await loadConfig();
+    }
     await fetchRoles();
 }
 

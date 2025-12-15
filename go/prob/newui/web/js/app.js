@@ -39,8 +39,9 @@ async function makeAuthenticatedRequest(url, options = {}) {
 
 // Logout function
 function logout() {
-    // Clear bearer token from sessionStorage
+    // Clear bearer token from sessionStorage and localStorage
     sessionStorage.removeItem('bearerToken');
+    localStorage.removeItem('bearerToken');
     localStorage.removeItem('rememberedUser');
 
     // Redirect to login page
@@ -56,6 +57,11 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'login/index.html';
         return;
     }
+
+    // Sync bearer token to localStorage so iframes can access it
+    localStorage.setItem('bearerToken', bearerToken);
+    // Also expose on window for iframes that check parent
+    window.bearerToken = bearerToken;
 
     // Set username in header from current session
     const username = sessionStorage.getItem('currentUser') || 'Admin';

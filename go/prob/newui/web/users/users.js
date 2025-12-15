@@ -7,16 +7,19 @@ let roles = {};
 // State management
 let pendingDelete = null;
 
-// Authentication token (from sessionStorage or parent window)
-let bearerToken = sessionStorage.getItem('bearerToken') || null;
+// Table instance
+let usersTable = null;
+
+// Authentication token (from localStorage or parent window)
+let bearerToken = localStorage.getItem('bearerToken') || null;
 
 // Set bearer token for API authentication
 function setBearerToken(token) {
     bearerToken = token;
     if (token) {
-        sessionStorage.setItem('bearerToken', token);
+        localStorage.setItem('bearerToken', token);
     } else {
-        sessionStorage.removeItem('bearerToken');
+        localStorage.removeItem('bearerToken');
     }
 }
 
@@ -51,6 +54,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load configuration first
     await loadConfig();
 
+    // Initialize the table
+    initUsersTable();
+
     // Check for token from parent window (if embedded)
     if (window.parent !== window && window.parent.bearerToken) {
         bearerToken = window.parent.bearerToken;
@@ -63,6 +69,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderUsers();
     }
 });
+
+// Initialize the users table
+function initUsersTable() {
+    usersTable = new L8Table({
+        containerId: 'users-table-container',
+        tableId: 'users-table',
+        pageSize: 10,
+        emptyMessage: 'No users found. Click "Add User" to create one.',
+        columns: [
+            { label: 'User ID', key: 'userId' },
+            { label: 'Full Name', key: 'fullName' },
+            {
+                label: 'Assigned Roles',
+                render: (user) => {
+                    const roleNames = Object.keys(user.roles || {})
+                        .filter(r => user.roles[r])
+                        .map(r => roles[r] ? roles[r].roleName : r);
+                    return roleNames.length > 0 ? L8Table.tags(roleNames) : '-';
+                }
+            }
+        ],
+        onAdd: () => showUserModal(),
+        addButtonText: 'Add User',
+        onEdit: editUser,
+        onDelete: deleteUser
+    });
+    usersTable.init();
+}
 
 // Get API endpoint URLs
 function getUsersEndpoint() {
@@ -131,38 +165,9 @@ async function fetchRoles() {
 
 // Render users table
 function renderUsers() {
-    const tbody = document.querySelector('#users-table tbody');
-    tbody.innerHTML = '';
-
-    const userList = Object.values(users);
-    if (userList.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="4" class="empty-state">
-                    <p>No users found. Click "Add User" to create one.</p>
-                </td>
-            </tr>
-        `;
-        return;
+    if (usersTable) {
+        usersTable.setData(users);
     }
-
-    userList.forEach(user => {
-        const roleNames = Object.keys(user.roles || {})
-            .filter(r => user.roles[r])
-            .map(r => roles[r] ? roles[r].roleName : r);
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${escapeHtml(user.userId)}</td>
-            <td>${escapeHtml(user.fullName)}</td>
-            <td>${roleNames.map(r => '<span class="tag">' + escapeHtml(r) + '</span>').join(' ') || '-'}</td>
-            <td class="action-btns">
-                <button class="btn btn-small" onclick="editUser('${escapeHtml(user.userId)}')">Edit</button>
-                <button class="btn btn-danger btn-small" onclick="deleteUser('${escapeHtml(user.userId)}')">Delete</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
 }
 
 // User Modal Functions
@@ -389,6 +394,10 @@ function escapeHtml(text) {
 
 // Refresh data (can be called from parent)
 async function refreshData() {
+    // Ensure config is loaded
+    if (!USERS_CONFIG) {
+        await loadConfig();
+    }
     await fetchRoles();
     await fetchUsers();
 }

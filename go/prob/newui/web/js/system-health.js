@@ -39,6 +39,13 @@ function setupSystemTabSwitching() {
             lazyLoadIframe(tabName);
         });
     });
+
+    // Load the initial active tab's iframe
+    const activeTab = document.querySelector('.resource-tab.active');
+    if (activeTab) {
+        const activeTabName = activeTab.getAttribute('data-tab');
+        lazyLoadIframe(activeTabName);
+    }
 }
 
 // Lazy load iframe when tab is selected
@@ -46,7 +53,8 @@ function lazyLoadIframe(tabName) {
     const iframeMap = {
         'users': 'users-iframe',
         'roles': 'roles-iframe',
-        'logs': 'logs-iframe'
+        'logs': 'logs-iframe',
+        'credentials': 'credentials-iframe'
     };
 
     const iframeId = iframeMap[tabName];

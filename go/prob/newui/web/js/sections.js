@@ -81,6 +81,13 @@ function loadSection(sectionName) {
                         if (typeof initializeParallax === 'function') {
                             initializeParallax();
                         }
+                    } else if (sectionName === 'security') {
+                        if (typeof setupSystemTabSwitching === 'function') {
+                            setupSystemTabSwitching();
+                        }
+                        if (typeof initializeParallax === 'function') {
+                            initializeParallax();
+                        }
                     }
                 }, 100);
             }, 200);

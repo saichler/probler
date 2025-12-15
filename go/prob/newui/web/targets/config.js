@@ -1,7 +1,7 @@
-// Login App Configuration
+// Targets App Configuration
 // Loaded from ../login.json
 
-let LOGIN_CONFIG = null;
+let TARGETS_CONFIG = null;
 
 // Load configuration from login.json
 async function loadConfig() {
@@ -11,20 +11,19 @@ async function loadConfig() {
             throw new Error('Failed to load configuration');
         }
         const config = await response.json();
-        LOGIN_CONFIG = config.login;
+        TARGETS_CONFIG = {
+            apiPrefix: config.api.prefix,
+            targetsPath: config.api.targetsPath || '/91/Targets',
+            credsPath: config.api.credsPath || '/75/Creds'
+        };
         return true;
     } catch (error) {
         console.error('Error loading configuration:', error);
         // Fallback defaults
-        LOGIN_CONFIG = {
-            appTitle: 'Security Console',
-            appDescription: 'User & Role Management System',
-            authEndpoint: '/auth',
-            redirectUrl: '../app.html',
-            showRememberMe: true,
-            showRegister: true,
-            sessionTimeout: 30,
-            tfaEnabled: true
+        TARGETS_CONFIG = {
+            apiPrefix: '/probler',
+            targetsPath: '/91/Targets',
+            credsPath: '/75/Creds'
         };
         return false;
     }
