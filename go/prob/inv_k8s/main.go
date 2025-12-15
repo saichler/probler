@@ -18,7 +18,6 @@ func main() {
 	nic.Start()
 	nic.WaitForConnection()
 	res.Logger().Info("Registering k8s service")
-	nic.Resources().Registry().Register(&types2.K8SClusterList{})
 
 	//Add the inventory model and mark the Id field as key
 	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&types2.K8SCluster{}, "Name")
@@ -46,12 +45,7 @@ func main() {
 	//&l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 1}
 
 	//Activate the box inventory service with the primary key & sample model instance
-	sla := ifs.NewServiceLevelAgreement(&inventory.InventoryService{}, common2.INVENTORY_SERVICE_K8S, common2.INVENTORY_AREA_K8S, true, nil)
-	sla.SetServiceItem(&types2.K8SCluster{})
-	sla.SetServiceItemList(&types2.K8SClusterList{})
-	sla.SetPrimaryKeys("Name")
-	nic.Resources().Services().Activate(sla, nic)
-	res.Services().RegisterServiceHandlerType(&inventory.InventoryService{})
+	inventory.Activate(common2.K8s_Links_ID, types2.K8SCluster{}, types2.K8SClusterList{}, nic, "Name")
 
 	if err != nil {
 		res.Logger().Error(err)

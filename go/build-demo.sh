@@ -26,6 +26,11 @@ cd ../log-vnet/
 go build -o logvnet_demo
 mv ./logvnet_demo ../../demo/.
 
+echo "Building Targets"
+cd ../targets/
+go build -o targets_demo
+mv ./targets_demo ../../demo/.
+
 echo "Building Collector"
 cd ../collector/
 go build -o collector_demo
@@ -67,6 +72,7 @@ echo "Echo running demo"
 ./vnet_demo &
 ./logvnet_demo &
 sleep 5
+./targets_demo &
 ./collector_demo &
 ./parser_demo &
 ./box_demo &

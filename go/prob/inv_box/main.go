@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8inventory/go/inv/service"
+	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
@@ -21,18 +22,11 @@ func main() {
 
 	/*&l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 0}*/
 
-	sla := ifs.NewServiceLevelAgreement(&inventory.InventoryService{}, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX, true, nil)
-	sla.SetServiceItem(&types2.NetworkDevice{})
-	sla.SetServiceItemList(&types2.NetworkDeviceList{})
-	sla.SetPrimaryKeys("Id")
-	_, err := nic.Resources().Services().Activate(sla, nic)
+	inventory.Activate(common2.NetworkDevice_Links_ID, &types2.NetworkDevice{}, &types2.NetworkDeviceList{}, nic, "Id")
 
-	invCenter := inventory.Inventory(res, common2.INVENTORY_SERVICE_BOX, common2.INVENTORY_AREA_BOX)
+	s, a := targets.Links.Cache(common2.NetworkDevice_Links_ID)
+	invCenter := inventory.Inventory(res, s, a)
 	invCenter.AddMetadata("Online", Online)
-
-	if err != nil {
-		res.Logger().Error(err)
-	}
 
 	res.Logger().SetLogLevel(ifs.Error_Level)
 	common2.WaitForSignal(nic.Resources())

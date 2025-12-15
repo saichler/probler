@@ -2,13 +2,11 @@ package main
 
 import (
 	"github.com/saichler/l8bus/go/overlay/vnic"
-	"github.com/saichler/l8parser/go/parser/boot"
 	"github.com/saichler/l8parser/go/parser/service"
 	"github.com/saichler/l8pollaris/go/pollaris"
 	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/serializers"
-	types2 "github.com/saichler/probler/go/types"
 	types3 "github.com/saichler/probler/go/types"
 )
 
@@ -19,8 +17,6 @@ func main() {
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Start()
 	nic.WaitForConnection()
-
-	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&types2.K8SCluster{}, "Name")
 
 	info, err := nic.Resources().Registry().Info("K8SReadyState")
 	if err != nil {
@@ -38,30 +34,14 @@ func main() {
 
 	nic.Resources().Registry().RegisterEnums(types3.K8SPodStatus_value)
 
-	initData := []interface{}{}
-	for _, p := range boot.GetAllPolarisModels() {
-		initData = append(initData, p)
-	}
-	initData = append(initData, boot.CreateK8sBootPolls())
-
 	//Activate Polaris
-	sla := ifs.NewServiceLevelAgreement(&pollaris.PollarisService{}, pollaris.ServiceName, pollaris.ServiceArea, true, nil)
-	sla.SetInitItems(initData)
-	nic.Resources().Services().Activate(sla, nic)
+	pollaris.Activate(nic)
 
 	//Activate Inventory parser
-	sla = ifs.NewServiceLevelAgreement(&service.ParsingService{}, common2.PARSER_SERVICE_BOX, common2.PARSER_AREA_BOX, false, nil)
-	sla.SetServiceItem(&types3.NetworkDevice{})
-	sla.SetPrimaryKeys("Id")
-	sla.SetArgs(false)
-	nic.Resources().Services().Activate(sla, nic)
+	service.Activate(common2.NetworkDevice_Links_ID, &types3.NetworkDevice{}, false, nic, "Id")
 
 	//Activate Kubernetes parser
-	sla = ifs.NewServiceLevelAgreement(&service.ParsingService{}, common2.PARSER_SERVICE_K8s, common2.PARSER_AREA_K8S, false, nil)
-	sla.SetServiceItem(&types2.K8SCluster{})
-	sla.SetPrimaryKeys("Name")
-	sla.SetArgs(false)
-	nic.Resources().Services().Activate(sla, nic)
+	service.Activate(common2.K8s_Links_ID, &types3.K8SCluster{}, false, nic, "Name")
 
 	resources.Logger().SetLogLevel(ifs.Error_Level)
 	common2.WaitForSignal(resources)
