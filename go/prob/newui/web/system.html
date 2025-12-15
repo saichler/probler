@@ -143,9 +143,10 @@
         <!-- Tab Content Areas -->
         <!-- Health Tab Content -->
         <div class="resource-content active" data-tab-content="health">
-            <div class="subsection-description">Monitor service health metrics across the infrastructure</div>
-            <div class="table-container">
-                <div id="health-table"></div>
+            <div class="table-container" style="padding: 0; height: calc(100vh - 300px);">
+                <iframe id="health-iframe" data-src="health/index.html"
+                        style="width: 100%; height: 100%; border: none; display: block;"
+                        title="Health Monitor"></iframe>
             </div>
         </div>
 
@@ -163,18 +164,6 @@
                 <iframe id="logs-iframe" data-src="logsui/index.html"
                         style="width: 100%; height: 100%; border: none; display: block;"
                         title="Log Viewer"></iframe>
-            </div>
-        </div>
-    </div>
-
-    <!-- Health Detail Modal -->
-    <div id="health-detail-modal" class="modal-overlay">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2 class="modal-title">Health Details</h2>
-                <button class="modal-close" onclick="closeHealthDetailModal()">&times;</button>
-            </div>
-            <div class="modal-body" id="health-detail-content">
             </div>
         </div>
     </div>

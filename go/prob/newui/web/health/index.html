@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Monitor</title>
+    <link rel="stylesheet" href="../view_table/table.css">
+    <link rel="stylesheet" href="health.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Health Section -->
+        <section id="health" class="content-section">
+            <div id="health-table-container"></div>
+        </section>
+    </div>
+
+    <!-- Health Detail Modal -->
+    <div id="health-detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="health-modal-title">Service Health Details</h3>
+                <button class="close-btn" onclick="closeHealthDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="health-detail-content">
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <script src="config.js"></script>
+    <script src="../view_table/table.js"></script>
+    <script src="health.js"></script>
+</body>
+</html>
