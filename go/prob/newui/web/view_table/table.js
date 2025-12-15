@@ -43,9 +43,9 @@ class ProblerTable {
         // For server-side pagination, use the data as-is; for client-side, slice it
         const pageData = this.config.serverSide ? this.config.data : this.filteredData.slice(startIndex, endIndex);
 
-        let html = '<div class="noc-table-container">';
+        let html = '<div class="noc-table-wrapper">';
 
-        // Pagination
+        // Pagination (outside table container for separate rounded corners)
         html += '<div class="noc-table-pagination">';
         const actualEnd = this.config.serverSide ? Math.min(endIndex, totalCount) : Math.min(endIndex, this.filteredData.length);
         html += `<div class="pagination-info">Showing ${startIndex + 1}-${actualEnd} of ${totalCount} entries</div>`;
@@ -69,6 +69,9 @@ class ProblerTable {
 
         html += '</div>';
         html += '</div>';
+
+        // Table container with bottom rounded corners
+        html += '<div class="noc-table-container">';
 
         // Table header with filters
         html += '<table class="noc-table">';
@@ -108,7 +111,7 @@ class ProblerTable {
         // Table body
         html += '<tbody>';
         pageData.forEach((row, index) => {
-            html += `<tr class="noc-table-row ${index % 2 === 0 ? 'even' : 'odd'}">`;
+            html += `<tr class="noc-table-row">`;
             this.config.columns.forEach(col => {
                 let value = row[col.key];
                 let cellClass = 'noc-table-cell';
@@ -131,8 +134,9 @@ class ProblerTable {
         });
         html += '</tbody>';
         html += '</table>';
+        html += '</div>'; // Close noc-table-container
 
-        html += '</div>';
+        html += '</div>'; // Close noc-table-wrapper
 
         container.innerHTML = html;
         this.attachEventListeners();
