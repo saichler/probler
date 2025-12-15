@@ -18,6 +18,9 @@ func main() {
 	nic.Start()
 	nic.WaitForConnection()
 
+	nic.Resources().Registry().Register(&types3.K8SReadyState{})
+	nic.Resources().Registry().Register(&types3.K8SRestartsState{})
+
 	info, err := nic.Resources().Registry().Info("K8SReadyState")
 	if err != nil {
 		nic.Resources().Logger().Error(err)

@@ -45,7 +45,7 @@ func main() {
 	//&l8services.L8ServiceLink{ZsideServiceName: common2.ORM_SERVICE, ZsideServiceArea: 1}
 
 	//Activate the box inventory service with the primary key & sample model instance
-	inventory.Activate(common2.K8s_Links_ID, types2.K8SCluster{}, types2.K8SClusterList{}, nic, "Name")
+	inventory.Activate(common2.K8s_Links_ID, &types2.K8SCluster{}, &types2.K8SClusterList{}, nic, "Name")
 
 	if err != nil {
 		res.Logger().Error(err)
