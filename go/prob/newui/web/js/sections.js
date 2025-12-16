@@ -62,7 +62,10 @@ function loadSection(sectionName) {
                     if (sectionName === 'dashboard') {
                         initializeDashboard();
                     } else if (sectionName === 'network') {
-                        initializeNetworkDevices();
+                        // Network devices now loads in iframe, just init parallax
+                        if (typeof initializeParallax === 'function') {
+                            initializeParallax();
+                        }
                     } else if (sectionName === 'gpus') {
                         if (typeof initializeGPUs === 'function') {
                             initializeGPUs();

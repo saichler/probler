@@ -12,7 +12,7 @@ import (
 func main() {
 	common.SmoothFirstCollection = true
 	res := common2.CreateResources("collector")
-	res.Logger().SetLogLevel(ifs.Info_Level)
+	res.Logger().SetLogLevel(ifs.Debug_Level)
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
 	nic.Start()

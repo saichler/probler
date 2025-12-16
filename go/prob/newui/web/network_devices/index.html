@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Devices</title>
+    <link rel="stylesheet" href="../view_table/table.css">
+    <link rel="stylesheet" href="network-devices.css">
+</head>
+<body>
+    <div class="container">
+        <section id="network-devices" class="content-section">
+            <div class="section-description">Manage and monitor all network devices across datacenters</div>
+            <div id="network-devices-table"></div>
+        </section>
+    </div>
+
+    <!-- Device Detail Modal -->
+    <div id="device-detail-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">Device Details</h2>
+                <button class="modal-close" onclick="closeDeviceDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="device-detail-content">
+                <!-- Device details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <script src="config.js"></script>
+    <script src="../view_table/table.js"></script>
+    <script src="../js/tree.js"></script>
+    <script src="network-devices.js"></script>
+    <script src="device-modal.js"></script>
+</body>
+</html>

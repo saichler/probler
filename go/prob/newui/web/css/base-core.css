@@ -299,7 +299,7 @@ body {
     grid-area: content;
     background: #2d3748;
     overflow: hidden;
-    padding: 7px;
+    padding: 0;
 }
 
 #content-area {
