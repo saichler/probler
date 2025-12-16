@@ -1,12 +1,33 @@
-// Dashboard Section Module
+// Dashboard App - Standalone Module
+
+// Authentication token
+let bearerToken = localStorage.getItem('bearerToken') || null;
+
+// Global table instance
+let alarmsTable = null;
+
+// Get auth headers
+function getAuthHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    if (bearerToken) {
+        headers['Authorization'] = 'Bearer ' + bearerToken;
+    }
+    return headers;
+}
 
 // Fetch network device stats from API
 async function fetchNetworkDeviceStats() {
+    if (!DASHBOARD_CONFIG) return null;
+
     try {
-        const response = await makeAuthenticatedRequest('/probler/0/NCache?body=' + encodeURIComponent(JSON.stringify({
-            text: 'select * from NetworkDevice where Id=* limit 1 page 0'
-        })), {
-            method: 'GET'
+        const url = DASHBOARD_CONFIG.apiPrefix + DASHBOARD_CONFIG.cachePath +
+            '?body=' + encodeURIComponent(JSON.stringify({
+                text: 'select * from NetworkDevice where Id=* limit 1 page 0'
+            }));
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: getAuthHeaders()
         });
 
         if (!response || !response.ok) {
@@ -16,6 +37,7 @@ async function fetchNetworkDeviceStats() {
         const data = await response.json();
         return data.metadata?.keyCount?.counts || null;
     } catch (error) {
+        console.error('Error fetching network device stats:', error);
         return null;
     }
 }
@@ -38,48 +60,43 @@ async function updateNetworkDevicesCard() {
         // Update the card details (online, offline)
         const cardDetails = document.querySelector('.metric-card .metric-card-details');
         if (cardDetails) {
-            cardDetails.innerHTML = `
-                <span class="metric-status">
-                    <span class="status-indicator status-operational"></span>
-                    <span>${onlineDevices.toLocaleString()} Online</span>
-                </span>
-                <span class="metric-status">
-                    <span class="status-indicator status-offline"></span>
-                    <span>${offlineDevices.toLocaleString()} Offline</span>
-                </span>
-            `;
+            cardDetails.innerHTML =
+                '<span class="metric-status">' +
+                    '<span class="status-indicator status-operational"></span>' +
+                    '<span>' + onlineDevices.toLocaleString() + ' Online</span>' +
+                '</span>' +
+                '<span class="metric-status">' +
+                    '<span class="status-indicator status-offline"></span>' +
+                    '<span>' + offlineDevices.toLocaleString() + ' Offline</span>' +
+                '</span>';
         }
     }
 }
 
-// Initialize Dashboard
-async function initializeDashboard() {
-    // Update Network Devices card with actual data
-    await updateNetworkDevicesCard();
-    // Add parallax scrolling effect to dashboard hero
-    const sectionContainer = document.querySelector('.dashboard-section');
+// Initialize parallax scrolling effect
+function initializeParallax() {
+    const container = document.querySelector('.container');
     const heroBackground = document.querySelector('.hero-background');
     const heroContent = document.querySelector('.hero-content');
 
-    if (sectionContainer && heroBackground && heroContent) {
-        sectionContainer.addEventListener('scroll', function() {
+    if (container && heroBackground && heroContent) {
+        container.addEventListener('scroll', function() {
             const scrollPosition = this.scrollTop;
 
             // Parallax effect on hero background (slower scroll)
-            heroBackground.style.transform = `translateY(${scrollPosition * 0.5}px)`;
+            const scale = 1 + (scrollPosition * 0.0005);
+            heroBackground.style.transform = 'translateY(' + (scrollPosition * 0.5) + 'px) scale(' + scale + ')';
 
             // Fade out hero content as user scrolls
             const opacity = Math.max(0, 1 - (scrollPosition / 200));
             heroContent.style.opacity = opacity;
-
-            // Slight zoom effect on illustration
-            const scale = 1 + (scrollPosition * 0.0005);
-            heroBackground.style.transform = `translateY(${scrollPosition * 0.5}px) scale(${scale})`;
         });
     }
+}
 
-    // Sample alarm data
-    const alarmsData = [
+// Sample alarm data (in production, this would come from API)
+function getAlarmsData() {
+    return [
         { timestamp: '2025-10-01 14:32:15', severity: 'CRITICAL', device: 'DC1-CORE-SW-01', type: 'Network', message: 'High CPU utilization (98%)', location: 'Dallas DC1 - Rack A12' },
         { timestamp: '2025-10-01 14:28:42', severity: 'CRITICAL', device: 'DC2-GPU-NODE-47', type: 'GPU', message: 'Temperature threshold exceeded (92°C)', location: 'Austin DC2 - Rack B08' },
         { timestamp: '2025-10-01 14:25:18', severity: 'WARNING', device: 'DC1-ESX-HOST-22', type: 'Host', message: 'Memory usage high (87%)', location: 'Dallas DC1 - Rack C15' },
@@ -101,9 +118,13 @@ async function initializeDashboard() {
         { timestamp: '2025-10-01 13:29:38', severity: 'WARNING', device: 'DC2-ACCESS-SW-19', type: 'Network', message: 'Port error counter increasing', location: 'Austin DC2 - Rack C09' },
         { timestamp: '2025-10-01 13:26:04', severity: 'WARNING', device: 'DC3-ESX-HOST-67', type: 'Host', message: 'Storage path redundancy lost', location: 'Houston DC3 - Rack C31' }
     ];
+}
 
-    // Initialize the alarms table
-    const alarmsTable = new ProblerTable('alarms-table', {
+// Initialize alarms table
+function initializeAlarmsTable() {
+    const alarmsData = getAlarmsData();
+
+    alarmsTable = new ProblerTable('alarms-table', {
         columns: [
             { key: 'timestamp', label: 'Timestamp' },
             { key: 'severity', label: 'Severity' },
@@ -119,3 +140,21 @@ async function initializeDashboard() {
         statusColumn: 'severity'
     });
 }
+
+// Initialize Dashboard
+async function initializeDashboard() {
+    // Load configuration
+    await loadConfig();
+
+    // Update Network Devices card with actual data
+    await updateNetworkDevicesCard();
+
+    // Initialize parallax effect
+    initializeParallax();
+
+    // Initialize the alarms table
+    initializeAlarmsTable();
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', initializeDashboard);

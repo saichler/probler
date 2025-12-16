@@ -1,0 +1,307 @@
+/* Dashboard App Styles */
+
+/* CSS Variables */
+:root {
+    --status-operational: #00c853;
+    --status-warning: #ffc107;
+    --status-critical: #ff3d00;
+    --status-offline: #757575;
+}
+
+/* Container */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: white;
+}
+
+.container {
+    height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Dashboard Hero Section */
+.dashboard-hero {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+    margin: 0;
+    background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+    flex-shrink: 0;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.hero-illustration {
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+}
+
+/* SVG Animations */
+.rack-server {
+    animation: server-pulse 3s ease-in-out infinite;
+}
+
+.rack-server:nth-child(odd) {
+    animation-delay: 0.5s;
+}
+
+.rack-critical {
+    animation: critical-pulse 1s ease-in-out infinite !important;
+}
+
+@keyframes server-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+@keyframes critical-pulse {
+    0%, 100% { opacity: 1; stroke-width: 1; }
+    50% { opacity: 0.4; stroke-width: 2; }
+}
+
+.network-node-pulse {
+    animation: node-pulse 2s ease-in-out infinite;
+}
+
+@keyframes node-pulse {
+    0%, 100% { r: 3; opacity: 0.8; }
+    50% { r: 5; opacity: 1; }
+}
+
+.network-link {
+    stroke-dasharray: 10, 5;
+    animation: dash-animate 2s linear infinite;
+}
+
+@keyframes dash-animate {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -15; }
+}
+
+.data-particle {
+    animation: particle-flow 4s ease-in-out infinite;
+}
+
+@keyframes particle-flow {
+    0% { opacity: 0; cy: 80; }
+    25% { opacity: 1; }
+    75% { opacity: 1; }
+    100% { opacity: 0; cy: 250; }
+}
+
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 10;
+    width: 90%;
+    max-width: 1000px;
+}
+
+.hero-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 15px;
+    margin-top: 20px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Inter', sans-serif;
+    animation: hero-title-entrance 1s ease-out;
+}
+
+@keyframes hero-title-entrance {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-subtitle {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.95;
+    animation: hero-subtitle-entrance 1s ease-out 0.2s both;
+}
+
+@keyframes hero-subtitle-entrance {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 0.9;
+        transform: translateY(0);
+    }
+}
+
+/* Dashboard Content */
+.dashboard-content {
+    padding: 20px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* Metric Cards */
+.metric-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.metric-card:hover {
+    border-color: #0ea5e9;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px);
+}
+
+.metric-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.metric-card-title {
+    font-size: 10px;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+}
+
+.metric-card-icon {
+    font-size: 20px;
+    opacity: 0.6;
+}
+
+.metric-card-value {
+    font-size: 28px;
+    color: #0ea5e9;
+    font-weight: 900;
+    font-family: 'Roboto Mono', monospace;
+    margin-bottom: 8px;
+    text-shadow: none;
+}
+
+.metric-card-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.metric-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Status Indicators */
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-indicator.status-operational {
+    background: var(--status-operational);
+    box-shadow: 0 0 6px var(--status-operational);
+}
+
+.status-indicator.status-warning {
+    background: var(--status-warning);
+    box-shadow: 0 0 6px var(--status-warning);
+}
+
+.status-indicator.status-critical {
+    background: var(--status-critical);
+    box-shadow: 0 0 6px var(--status-critical);
+}
+
+.status-indicator.status-offline {
+    background: var(--status-offline);
+}
+
+/* Section Title */
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0 0 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Alarms Table Container */
+.alarms-container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#alarms-table {
+    flex: 1;
+    min-height: 300px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-title {
+        font-size: 28px;
+    }
+
+    .hero-subtitle {
+        font-size: 11px;
+    }
+}

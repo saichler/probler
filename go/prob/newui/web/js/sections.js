@@ -60,7 +60,7 @@ function loadSection(sectionName) {
                 // Initialize section-specific content after DOM is ready
                 setTimeout(() => {
                     if (sectionName === 'dashboard') {
-                        initializeDashboard();
+                        // Dashboard now loads in iframe, self-initializes
                     } else if (sectionName === 'network') {
                         // Network devices now loads in iframe, just init parallax
                         if (typeof initializeParallax === 'function') {
