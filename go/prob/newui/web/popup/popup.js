@@ -28,6 +28,10 @@
         switch (event.data.type) {
             case 'probler-popup-show':
                 show(event.data.config);
+                // Handle device data for tree initialization
+                if (event.data.deviceData) {
+                    initializeDeviceTree(event.data.deviceData);
+                }
                 break;
             case 'probler-popup-close':
                 close();
@@ -36,6 +40,24 @@
                 updateContent(event.data.content);
                 break;
         }
+    }
+
+    // Initialize device physical inventory tree
+    function initializeDeviceTree(deviceData) {
+        setTimeout(function() {
+            const treeContainer = document.getElementById('physical-inventory-tree');
+            if (!treeContainer) return;
+
+            if (deviceData.physicals && typeof ProblerTree !== 'undefined') {
+                new ProblerTree('physical-inventory-tree', {
+                    data: deviceData.physicals,
+                    expandAll: true,
+                    maxHeight: '600px'
+                });
+            } else {
+                treeContainer.innerHTML = '<div class="detail-section detail-full-width"><p style="color: #718096; text-align: center; padding: 20px;">No physical inventory data available</p></div>';
+            }
+        }, 100);
     }
 
     // Show a popup
@@ -64,9 +86,15 @@
         // Create header
         const header = document.createElement('div');
         header.className = 'probler-popup-header';
-        header.innerHTML =
-            '<h3 class="probler-popup-title">' + escapeHtml(config.title || 'Popup') + '</h3>' +
-            '<button class="probler-popup-close" type="button">&times;</button>';
+
+        // Support custom title HTML (for status badges, etc.) or plain title
+        let titleHtml;
+        if (config.titleHtml) {
+            titleHtml = config.titleHtml;
+        } else {
+            titleHtml = '<h3 class="probler-popup-title">' + escapeHtml(config.title || 'Popup') + '</h3>';
+        }
+        header.innerHTML = titleHtml + '<button class="probler-popup-close" type="button">&times;</button>';
 
         // Close button handler
         header.querySelector('.probler-popup-close').addEventListener('click', function() {
@@ -76,6 +104,9 @@
         // Create body
         const body = document.createElement('div');
         body.className = 'probler-popup-body';
+        if (config.noPadding) {
+            body.style.padding = '0';
+        }
         body.innerHTML = config.content || '';
 
         // Create footer if needed
@@ -142,6 +173,47 @@
         if (firstInput) {
             setTimeout(function() { firstInput.focus(); }, 100);
         }
+
+        // Call onShow callback if provided (for initializing tabs, trees, etc.)
+        if (typeof config.onShow === 'function') {
+            setTimeout(function() { config.onShow(body); }, 50);
+        }
+
+        // Setup tab switching via event delegation (for any tabs in popup content)
+        body.addEventListener('click', function(e) {
+            const tab = e.target.closest('.probler-popup-tab');
+            if (!tab) return;
+
+            const tabId = tab.dataset.tab;
+            if (!tabId) return;
+
+            // Deactivate all tabs and panes in this popup
+            body.querySelectorAll('.probler-popup-tab').forEach(function(t) {
+                t.classList.remove('active');
+            });
+            body.querySelectorAll('.probler-popup-tab-pane').forEach(function(p) {
+                p.classList.remove('active');
+            });
+
+            // Activate clicked tab and corresponding pane
+            tab.classList.add('active');
+            const pane = body.querySelector('.probler-popup-tab-pane[data-pane="' + tabId + '"]');
+            if (pane) {
+                pane.classList.add('active');
+            }
+
+            // Notify iframe if applicable (for custom tab handlers)
+            if (config.iframeId) {
+                const iframe = document.getElementById(config.iframeId);
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({
+                        type: 'probler-popup-tab-changed',
+                        id: config.id,
+                        tabId: tabId
+                    }, '*');
+                }
+            }
+        });
     }
 
     // Close the topmost popup

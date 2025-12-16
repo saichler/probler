@@ -2,20 +2,20 @@
 
 // Section mapping to HTML files
 const sections = {
-    dashboard: 'dashboard.html',
-    inventory: 'inventory.html',
-    network: 'network.html',
-    gpus: 'gpus.html',
-    hosts: 'hosts.html',
-    kubernetes: 'kubernetes.html',
-    infrastructure: 'infrastructure.html',
-    topologies: 'topologies.html',
-    events: 'events.html',
-    automation: 'automation.html',
-    applications: 'applications.html',
-    analytics: 'analytics.html',
-    security: 'security.html',
-    system: 'system.html'
+    dashboard: 'sections/dashboard.html',
+    inventory: 'sections/inventory.html',
+    network: 'sections/network.html',
+    gpus: 'sections/gpus.html',
+    hosts: 'sections/hosts.html',
+    kubernetes: 'sections/kubernetes.html',
+    infrastructure: 'sections/infrastructure.html',
+    topologies: 'sections/topologies.html',
+    events: 'sections/events.html',
+    automation: 'sections/automation.html',
+    applications: 'sections/applications.html',
+    analytics: 'sections/analytics.html',
+    security: 'sections/security.html',
+    system: 'sections/system.html'
 };
 
 // Load section content dynamically
