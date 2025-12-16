@@ -241,18 +241,12 @@ async function initializeKubernetes() {
         return;
     }
 
-    const sidebar = document.querySelector('.k8s-cluster-sidebar');
+    const clusterTabsContainer = document.querySelector('.k8s-cluster-tabs');
     const mainContent = document.querySelector('.k8s-main-content');
 
-    if (!sidebar || !mainContent) return;
+    if (!clusterTabsContainer || !mainContent) return;
 
-    const sidebarTitle = sidebar.querySelector('.sidebar-title');
-    sidebar.innerHTML = '';
-    if (sidebarTitle) {
-        sidebar.appendChild(sidebarTitle);
-    } else {
-        sidebar.innerHTML = '<div class="sidebar-title">Clusters</div>';
-    }
+    clusterTabsContainer.innerHTML = '';
     mainContent.innerHTML = '';
 
     clusters.forEach((cluster, index) => {
@@ -264,12 +258,9 @@ async function initializeKubernetes() {
         tab.setAttribute('data-cluster', clusterName);
         tab.innerHTML = `
             <span class="cluster-status status-operational"></span>
-            <div class="cluster-info">
-                <div class="cluster-name">${clusterName}</div>
-                <div class="cluster-version">K8s Cluster</div>
-            </div>
+            <span class="cluster-name">${clusterName}</span>
         `;
-        sidebar.appendChild(tab);
+        clusterTabsContainer.appendChild(tab);
 
         const clusterContent = createClusterContentHTML(clusterName, cluster, isActive);
         mainContent.appendChild(clusterContent);
@@ -290,6 +281,12 @@ function createClusterContentHTML(clusterName, clusterData, isActive) {
 
     const nodeCount = clusterData.nodes ? Object.keys(clusterData.nodes).length : 0;
     const podCount = clusterData.pods ? Object.keys(clusterData.pods).length : 0;
+    const deploymentCount = clusterData.deployments ? Object.keys(clusterData.deployments).length : 0;
+    const statefulsetCount = clusterData.statefulsets ? Object.keys(clusterData.statefulsets).length : 0;
+    const daemonsetCount = clusterData.daemonsets ? Object.keys(clusterData.daemonsets).length : 0;
+    const serviceCount = clusterData.services ? Object.keys(clusterData.services).length : 0;
+    const namespaceCount = clusterData.namespaces ? Object.keys(clusterData.namespaces).length : 0;
+    const networkpolicyCount = clusterData.networkpolicies ? Object.keys(clusterData.networkpolicies).length : 0;
 
     div.innerHTML = `
         <div class="cluster-header">
@@ -297,6 +294,12 @@ function createClusterContentHTML(clusterName, clusterData, isActive) {
             <div class="cluster-stats">
                 <span class="stat-item"><strong>Nodes:</strong> ${nodeCount}</span>
                 <span class="stat-item"><strong>Pods:</strong> ${podCount}</span>
+                <span class="stat-item"><strong>Deployments:</strong> ${deploymentCount}</span>
+                <span class="stat-item"><strong>StatefulSets:</strong> ${statefulsetCount}</span>
+                <span class="stat-item"><strong>DaemonSets:</strong> ${daemonsetCount}</span>
+                <span class="stat-item"><strong>Services:</strong> ${serviceCount}</span>
+                <span class="stat-item"><strong>Namespaces:</strong> ${namespaceCount}</span>
+                <span class="stat-item"><strong>Network Policies:</strong> ${networkpolicyCount}</span>
             </div>
         </div>
         <div class="resource-tabs">

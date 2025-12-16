@@ -202,6 +202,64 @@
 }
 
 /* ============================================ */
+/* RESOURCE TABS (Security & System Sections) */
+/* ============================================ */
+
+.resource-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0;
+    flex-wrap: wrap;
+}
+
+.resource-tab {
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #64748b;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    bottom: -2px;
+}
+
+.resource-tab:hover {
+    color: #0ea5e9;
+    background: #f8fafc;
+}
+
+.resource-tab.active {
+    color: #0ea5e9;
+    border-bottom-color: #0ea5e9;
+    font-weight: 600;
+}
+
+.resource-content {
+    display: none;
+}
+
+.resource-content.active {
+    display: block;
+    animation: fade-in-content 0.3s ease-out;
+}
+
+@keyframes fade-in-content {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================ */
 /* USERS & ROLES FORM STYLES */
 /* ============================================ */
 
