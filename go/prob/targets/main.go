@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os/exec"
+
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"github.com/saichler/l8srlz/go/serialize/object"
@@ -26,6 +28,18 @@ func main() {
 
 	cluster := creates.CreateCluster("lab")
 	ts.Post(object.New(nil, cluster), nic)
-	
+
 	common.WaitForSignal(res)
+}
+
+func startDb(nic ifs.IVNic) {
+	_, user, pass, _, err := nic.Resources().Security().Credential(common.DB_CREDS, common.DB_NAME, nic.Resources())
+	if err != nil {
+		panic(err)
+	}
+	cmd := exec.Command("/start-postgres.sh", common.DB_NAME, user, pass)
+	err = cmd.Run()
+	if err != nil {
+		panic(err)
+	}
 }

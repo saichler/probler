@@ -75,9 +75,7 @@ function loadSection(sectionName) {
                             initializeHosts();
                         }
                     } else if (sectionName === 'kubernetes') {
-                        if (typeof initializeKubernetes === 'function') {
-                            initializeKubernetes();
-                        }
+                        // Kubernetes now loads in iframe, self-initializes
                     } else if (sectionName === 'system') {
                         if (typeof initializeHealth === 'function') {
                             initializeHealth();
