@@ -1,0 +1,149 @@
+<div class="section-container system-section">
+    <!-- Full Frame Header with Parallax Effect -->
+    <div class="system-header-frame parallax-container">
+        <!-- Background Illustration Layer -->
+        <div class="system-header-bg parallax-layer" data-speed="0.5">
+            <svg class="system-illustration" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="inventoryGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.4" />
+                        <stop offset="100%" style="stop-color:#d97706;stop-opacity:0.2" />
+                    </linearGradient>
+                    <linearGradient id="inventoryGradient2" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:0.3" />
+                        <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.15" />
+                    </linearGradient>
+                    <filter id="inventoryGlow">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Network Grid Background -->
+                <g opacity="0.1">
+                    <line x1="0" y1="50" x2="1200" y2="50" stroke="#f59e0b" stroke-width="0.5"/>
+                    <line x1="0" y1="100" x2="1200" y2="100" stroke="#f59e0b" stroke-width="0.5"/>
+                    <line x1="0" y1="150" x2="1200" y2="150" stroke="#f59e0b" stroke-width="0.5"/>
+                    <line x1="0" y1="200" x2="1200" y2="200" stroke="#f59e0b" stroke-width="0.5"/>
+                    <line x1="200" y1="0" x2="200" y2="300" stroke="#f59e0b" stroke-width="0.5"/>
+                    <line x1="400" y1="0" x2="400" y2="300" stroke="#f59e0b" stroke-width="0.5"/>
+                    <line x1="600" y1="0" x2="600" y2="300" stroke="#f59e0b" stroke-width="0.5"/>
+                    <line x1="800" y1="0" x2="800" y2="300" stroke="#f59e0b" stroke-width="0.5"/>
+                    <line x1="1000" y1="0" x2="1000" y2="300" stroke="#f59e0b" stroke-width="0.5"/>
+                </g>
+
+                <!-- Server Rack Left -->
+                <g class="server-rack-animation">
+                    <rect x="100" y="80" width="80" height="140" rx="4" fill="url(#inventoryGradient1)" filter="url(#inventoryGlow)"/>
+                    <rect x="108" y="90" width="64" height="20" rx="2" fill="#f59e0b" opacity="0.5"/>
+                    <rect x="108" y="115" width="64" height="20" rx="2" fill="#f59e0b" opacity="0.4"/>
+                    <rect x="108" y="140" width="64" height="20" rx="2" fill="#f59e0b" opacity="0.5"/>
+                    <rect x="108" y="165" width="64" height="20" rx="2" fill="#f59e0b" opacity="0.3"/>
+                    <rect x="108" y="190" width="64" height="20" rx="2" fill="#f59e0b" opacity="0.4"/>
+                    <circle cx="115" cy="100" r="3" fill="#00ff41">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="115" cy="125" r="3" fill="#00ff41">
+                        <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="115" cy="150" r="3" fill="#fbbf24">
+                        <animate attributeName="opacity" values="0.4;1;0.4" dur="1.8s" repeatCount="indefinite"/>
+                    </circle>
+                </g>
+
+                <!-- Central Database/Storage -->
+                <g class="storage-animation">
+                    <ellipse cx="600" cy="180" rx="80" ry="25" fill="url(#inventoryGradient2)" opacity="0.8"/>
+                    <rect x="520" y="100" width="160" height="80" rx="4" fill="url(#inventoryGradient1)" filter="url(#inventoryGlow)"/>
+                    <ellipse cx="600" cy="100" rx="80" ry="25" fill="url(#inventoryGradient1)"/>
+                    <ellipse cx="600" cy="100" rx="60" ry="18" fill="#f59e0b" opacity="0.3"/>
+                    <ellipse cx="600" cy="100" rx="40" ry="12" fill="#f59e0b" opacity="0.2"/>
+                    <!-- Data flow lines -->
+                    <line x1="600" y1="125" x2="600" y2="155" stroke="#fbbf24" stroke-width="2" opacity="0.6">
+                        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/>
+                    </line>
+                </g>
+
+                <!-- Server Rack Right -->
+                <g class="server-rack-animation">
+                    <rect x="1020" y="80" width="80" height="140" rx="4" fill="url(#inventoryGradient1)" filter="url(#inventoryGlow)"/>
+                    <rect x="1028" y="90" width="64" height="20" rx="2" fill="#f59e0b" opacity="0.5"/>
+                    <rect x="1028" y="115" width="64" height="20" rx="2" fill="#f59e0b" opacity="0.4"/>
+                    <rect x="1028" y="140" width="64" height="20" rx="2" fill="#f59e0b" opacity="0.5"/>
+                    <rect x="1028" y="165" width="64" height="20" rx="2" fill="#f59e0b" opacity="0.3"/>
+                    <rect x="1028" y="190" width="64" height="20" rx="2" fill="#f59e0b" opacity="0.4"/>
+                    <circle cx="1035" cy="100" r="3" fill="#00ff41">
+                        <animate attributeName="opacity" values="0.4;1;0.4" dur="1.7s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="1035" cy="125" r="3" fill="#00ff41">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2.2s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="1035" cy="150" r="3" fill="#00ff41">
+                        <animate attributeName="opacity" values="0.5;1;0.5" dur="1.6s" repeatCount="indefinite"/>
+                    </circle>
+                </g>
+
+                <!-- Inventory Boxes -->
+                <g class="inventory-boxes">
+                    <rect x="300" y="180" width="50" height="50" rx="4" fill="url(#inventoryGradient2)" opacity="0.7"/>
+                    <rect x="360" y="190" width="40" height="40" rx="4" fill="url(#inventoryGradient1)" opacity="0.6"/>
+                    <rect x="800" y="175" width="55" height="55" rx="4" fill="url(#inventoryGradient2)" opacity="0.7"/>
+                    <rect x="865" y="185" width="45" height="45" rx="4" fill="url(#inventoryGradient1)" opacity="0.6"/>
+                </g>
+
+                <!-- Connection Lines -->
+                <g class="connection-lines" opacity="0.4">
+                    <line x1="180" y1="150" x2="520" y2="140" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5,5">
+                        <animate attributeName="stroke-dashoffset" values="0;10" dur="1s" repeatCount="indefinite"/>
+                    </line>
+                    <line x1="680" y1="140" x2="1020" y2="150" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5,5">
+                        <animate attributeName="stroke-dashoffset" values="0;10" dur="1s" repeatCount="indefinite"/>
+                    </line>
+                </g>
+
+                <!-- Data Flow Particles -->
+                <circle cx="200" cy="150" r="4" fill="#fbbf24" opacity="0.8">
+                    <animate attributeName="cx" values="200;500" dur="3s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0;0.8;0" dur="3s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="700" cy="140" r="4" fill="#fbbf24" opacity="0.8">
+                    <animate attributeName="cx" values="700;1000" dur="3.5s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0;0.8;0" dur="3.5s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+        </div>
+
+        <!-- Header Content Layer -->
+        <div class="system-header-content parallax-layer" data-speed="1">
+            <div class="system-header-title">
+                <div class="system-icon">
+                    <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="5" y="10" width="40" height="30" rx="3" fill="none" stroke="#f59e0b" stroke-width="2"/>
+                        <rect x="10" y="15" width="30" height="6" rx="1" fill="#f59e0b" opacity="0.6"/>
+                        <rect x="10" y="24" width="30" height="6" rx="1" fill="#f59e0b" opacity="0.4"/>
+                        <rect x="10" y="33" width="30" height="4" rx="1" fill="#f59e0b" opacity="0.3"/>
+                        <circle cx="14" cy="18" r="1.5" fill="#00ff41"/>
+                        <circle cx="14" cy="27" r="1.5" fill="#00ff41"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="system-title" style="color: #f59e0b;">Inventory</h1>
+                    <p class="system-subtitle">Manage Targets and Infrastructure Assets</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-content" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+        <!-- Single iframe, no tabs needed -->
+        <div class="table-container" style="padding: 0; flex: 1; min-height: 0;">
+            <iframe id="targets-iframe" src="targets/index.html"
+                    style="width: 100%; height: 100%; border: none; display: block;"
+                    title="Inventory Management"></iframe>
+        </div>
+    </div>
+
+</div>

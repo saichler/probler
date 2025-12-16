@@ -3,6 +3,7 @@
 // State management for hosts and configs
 let tempConfigs = [];
 let editingHostIndex = -1;
+let editingConfigIndex = -1;
 
 // ============================================
 // Hosts Table Functions
@@ -11,8 +12,7 @@ let editingHostIndex = -1;
 function hostsMapToArray(hostsMap) {
     if (!hostsMap) return [];
     return Object.entries(hostsMap).map(([hostId, hostObj]) => ({
-        hostId: hostId,
-        targetId: hostObj.targetId || '',
+        hostId: hostObj.hostId || hostId,
         configs: hostObj.configs || {},
         polls: hostObj.polls || {},
         groups: hostObj.groups || {}
@@ -24,7 +24,7 @@ function hostsArrayToMap(hostsArray) {
     hostsArray.forEach(host => {
         if (host.hostId && host.hostId.trim()) {
             map[host.hostId.trim()] = {
-                targetId: host.targetId || '',
+                hostId: host.hostId.trim(),
                 configs: host.configs || {},
                 polls: host.polls || {},
                 groups: host.groups || {}
@@ -34,90 +34,133 @@ function hostsArrayToMap(hostsArray) {
     return map;
 }
 
-function renderHostsTable() {
-    const tbody = document.getElementById('hosts-tbody');
-    tbody.innerHTML = '';
-
-    if (tempHosts.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="4" class="empty-nested-table">
-                    No hosts configured. Click "+ Add Host" to add one.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    tempHosts.forEach((host, index) => {
-        const configsCount = host.configs ? Object.keys(host.configs).length : 0;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${escapeHtml(host.hostId)}</td>
-            <td><span class="tag">${configsCount} protocol${configsCount !== 1 ? 's' : ''}</span></td>
-            <td class="action-btns">
-                <button type="button" class="btn btn-small" onclick="editHost(${index})">Edit</button>
-                <button type="button" class="btn btn-danger btn-small" onclick="removeHost(${index})">Delete</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-function removeHost(index) {
-    tempHosts.splice(index, 1);
-    renderHostsTable();
-}
-
 // ============================================
 // Host Modal Functions
 // ============================================
 
-function showHostModal(index) {
-    const modal = document.getElementById('host-modal');
-    const title = document.getElementById('host-modal-title');
-    const editIndex = document.getElementById('host-edit-index');
-    const hostIdInput = document.getElementById('host-id');
+function generateHostFormHtml(host) {
+    const isEdit = !!host;
+    const hostId = isEdit ? escapeAttr(host.hostId) : '';
 
-    if (index !== undefined && index >= 0 && tempHosts[index]) {
-        title.textContent = 'Edit Host';
-        editIndex.value = index;
+    return `
+        <div class="form-group">
+            <label for="host-id">Host ID</label>
+            <input type="text" id="host-id" name="host-id" value="${hostId}" placeholder="e.g., router1, switch-core" ${isEdit ? 'disabled' : ''} required>
+        </div>
+        <div class="form-group">
+            <label>Protocol Configurations</label>
+            <div class="nested-table-container">
+                <div class="nested-table-header">
+                    <span>Protocols</span>
+                    <button type="button" class="btn btn-small" onclick="document.getElementById('targets-iframe').contentWindow.showConfigModal()">
+                        + Add Protocol
+                    </button>
+                </div>
+                <table class="nested-items-table">
+                    <thead>
+                        <tr>
+                            <th>Protocol</th>
+                            <th>Address</th>
+                            <th>Port</th>
+                            <th>Credential ID</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="configs-tbody">${generateConfigsTableRows()}</tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function generateConfigsTableRows() {
+    if (tempConfigs.length === 0) {
+        return `
+            <tr>
+                <td colspan="5" class="empty-nested-table">
+                    No protocols configured. Click "+ Add Protocol" to add one.
+                </td>
+            </tr>
+        `;
+    }
+
+    return tempConfigs.map((cfg, index) => {
+        return `
+            <tr>
+                <td>${PROTOCOLS[cfg.protocol] || 'Unknown'}</td>
+                <td>${escapeHtml(cfg.addr)}</td>
+                <td>${cfg.port}</td>
+                <td>${escapeHtml(cfg.credId || '-')}</td>
+                <td class="action-btns">
+                    <button type="button" class="btn btn-small" onclick="document.getElementById('targets-iframe').contentWindow.editConfig(${index})">Edit</button>
+                    <button type="button" class="btn btn-danger btn-small" onclick="document.getElementById('targets-iframe').contentWindow.removeConfigAndRefresh(${index})">Delete</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function showHostModal(index) {
+    const isEdit = index !== undefined && index >= 0 && tempHosts[index];
+
+    if (isEdit) {
         editingHostIndex = index;
-        hostIdInput.value = tempHosts[index].hostId;
-        hostIdInput.disabled = true;
         tempConfigs = configsMapToArray(tempHosts[index].configs);
     } else {
-        title.textContent = 'Add Host';
-        editIndex.value = -1;
         editingHostIndex = -1;
-        hostIdInput.value = '';
-        hostIdInput.disabled = false;
         tempConfigs = [];
     }
 
-    renderConfigsTable();
-    modal.classList.add('active');
+    const formHtml = generateHostFormHtml(isEdit ? tempHosts[index] : null);
+
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-show',
+            config: {
+                id: 'host-modal',
+                title: isEdit ? 'Edit Host' : 'Add Host',
+                size: 'large',
+                content: formHtml,
+                iframeId: 'targets-iframe',
+                saveButtonText: 'Save Host'
+            }
+        }, '*');
+    }
 }
 
 function closeHostModal() {
-    document.getElementById('host-modal').classList.remove('active');
-    document.getElementById('host-form').reset();
     tempConfigs = [];
     editingHostIndex = -1;
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'probler-popup-close' }, '*');
+    }
 }
 
-function saveHost(event) {
-    event.preventDefault();
+function refreshHostPopupContent() {
+    const host = editingHostIndex >= 0 ? tempHosts[editingHostIndex] : null;
+    const formHtml = generateHostFormHtml(host);
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-update',
+            content: formHtml
+        }, '*');
+    }
+}
 
-    const editIndex = parseInt(document.getElementById('host-edit-index').value, 10);
-    const hostId = document.getElementById('host-id').value.trim();
+function removeConfigAndRefresh(index) {
+    tempConfigs.splice(index, 1);
+    refreshHostPopupContent();
+}
+
+function handleHostSave(formData) {
+    const hostId = formData['host-id'] ? formData['host-id'].trim() : '';
 
     if (!hostId) {
         showToast('Host ID is required', 'warning');
         return;
     }
 
-    if (editIndex < 0) {
+    if (editingHostIndex < 0) {
         const existingIndex = tempHosts.findIndex(h => h.hostId === hostId);
         if (existingIndex >= 0) {
             showToast('A host with this ID already exists', 'warning');
@@ -127,20 +170,19 @@ function saveHost(event) {
 
     const hostObj = {
         hostId: hostId,
-        targetId: document.getElementById('target-id').value.trim(),
         configs: configsArrayToMap(tempConfigs),
         polls: {},
         groups: {}
     };
 
-    if (editIndex >= 0) {
-        tempHosts[editIndex] = hostObj;
+    if (editingHostIndex >= 0) {
+        tempHosts[editingHostIndex] = hostObj;
     } else {
         tempHosts.push(hostObj);
     }
 
     closeHostModal();
-    renderHostsTable();
+    refreshTargetPopupContent();
 }
 
 function editHost(index) { showHostModal(index); }
@@ -177,99 +219,99 @@ function configsArrayToMap(configsArray) {
     return map;
 }
 
-function renderConfigsTable() {
-    const tbody = document.getElementById('configs-tbody');
-    tbody.innerHTML = '';
-
-    if (tempConfigs.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="5" class="empty-nested-table">
-                    No protocols configured. Click "+ Add Protocol" to add one.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    tempConfigs.forEach((cfg, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${PROTOCOLS[cfg.protocol] || 'Unknown'}</td>
-            <td>${escapeHtml(cfg.addr)}</td>
-            <td>${cfg.port}</td>
-            <td>${escapeHtml(cfg.credId || '-')}</td>
-            <td class="action-btns">
-                <button type="button" class="btn btn-small" onclick="editConfig(${index})">Edit</button>
-                <button type="button" class="btn btn-danger btn-small" onclick="removeConfig(${index})">Delete</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-function removeConfig(index) {
-    tempConfigs.splice(index, 1);
-    renderConfigsTable();
-}
-
 // ============================================
 // Protocol Config Modal
 // ============================================
 
-function populateCredentialsDropdown(selectedValue) {
-    const select = document.getElementById('config-cred-id');
-    select.innerHTML = '<option value="">-- Select Credential --</option>';
-
+function generateCredentialsOptions(selectedValue) {
+    let options = '<option value="">-- Select Credential --</option>';
     const credList = Object.values(credentials);
     credList.forEach(cred => {
-        const option = document.createElement('option');
-        option.value = cred.id;
-        option.textContent = cred.id + (cred.name ? ' (' + cred.name + ')' : '');
-        if (cred.id === selectedValue) {
-            option.selected = true;
-        }
-        select.appendChild(option);
+        const selected = cred.id === selectedValue ? 'selected' : '';
+        const label = cred.id + (cred.name ? ' (' + cred.name + ')' : '');
+        options += `<option value="${escapeAttr(cred.id)}" ${selected}>${escapeHtml(label)}</option>`;
     });
+    return options;
+}
+
+function generateConfigFormHtml(cfg) {
+    const isEdit = !!cfg;
+    const protocol = isEdit ? cfg.protocol : 1;
+    const addr = isEdit ? escapeAttr(cfg.addr) : '';
+    const port = isEdit ? cfg.port : 22;
+    const credId = isEdit ? cfg.credId : '';
+
+    return `
+        <div class="form-group">
+            <label for="config-protocol">Protocol</label>
+            <select id="config-protocol" name="config-protocol">
+                <option value="1" ${protocol === 1 ? 'selected' : ''}>SSH</option>
+                <option value="2" ${protocol === 2 ? 'selected' : ''}>SNMPV2</option>
+                <option value="3" ${protocol === 3 ? 'selected' : ''}>SNMPV3</option>
+                <option value="4" ${protocol === 4 ? 'selected' : ''}>RESTCONF</option>
+                <option value="5" ${protocol === 5 ? 'selected' : ''}>NETCONF</option>
+                <option value="6" ${protocol === 6 ? 'selected' : ''}>GRPC</option>
+                <option value="7" ${protocol === 7 ? 'selected' : ''}>Kubectl</option>
+                <option value="8" ${protocol === 8 ? 'selected' : ''}>GraphQL</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="config-addr">Address</label>
+                <input type="text" id="config-addr" name="config-addr" value="${addr}" placeholder="e.g., 192.168.1.1" required>
+            </div>
+            <div class="form-group">
+                <label for="config-port">Port</label>
+                <input type="number" id="config-port" name="config-port" value="${port}" min="1" max="65535">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="config-cred-id">Credential ID</label>
+            <select id="config-cred-id" name="config-cred-id">
+                ${generateCredentialsOptions(credId)}
+            </select>
+        </div>
+    `;
 }
 
 function showConfigModal(index) {
-    const modal = document.getElementById('config-modal');
-    const title = document.getElementById('config-modal-title');
-    const editIndex = document.getElementById('config-edit-index');
+    const isEdit = index !== undefined && index >= 0 && tempConfigs[index];
 
-    if (index !== undefined && index >= 0 && tempConfigs[index]) {
-        title.textContent = 'Edit Protocol';
-        editIndex.value = index;
-        document.getElementById('config-protocol').value = tempConfigs[index].protocol;
-        document.getElementById('config-addr').value = tempConfigs[index].addr;
-        document.getElementById('config-port').value = tempConfigs[index].port;
-        populateCredentialsDropdown(tempConfigs[index].credId);
+    if (isEdit) {
+        editingConfigIndex = index;
     } else {
-        title.textContent = 'Add Protocol';
-        editIndex.value = -1;
-        document.getElementById('config-protocol').value = 1;
-        document.getElementById('config-addr').value = '';
-        document.getElementById('config-port').value = 22;
-        populateCredentialsDropdown('');
+        editingConfigIndex = -1;
     }
 
-    modal.classList.add('active');
+    const formHtml = generateConfigFormHtml(isEdit ? tempConfigs[index] : null);
+
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-show',
+            config: {
+                id: 'config-modal',
+                title: isEdit ? 'Edit Protocol' : 'Add Protocol',
+                size: 'medium',
+                content: formHtml,
+                iframeId: 'targets-iframe',
+                saveButtonText: 'Save Protocol'
+            }
+        }, '*');
+    }
 }
 
 function closeConfigModal() {
-    document.getElementById('config-modal').classList.remove('active');
-    document.getElementById('config-form').reset();
+    editingConfigIndex = -1;
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'probler-popup-close' }, '*');
+    }
 }
 
-function saveConfig(event) {
-    event.preventDefault();
-
-    const editIndex = parseInt(document.getElementById('config-edit-index').value, 10);
-    const protocol = parseInt(document.getElementById('config-protocol').value, 10);
-    const addr = document.getElementById('config-addr').value.trim();
-    const port = parseInt(document.getElementById('config-port').value, 10);
-    const credId = document.getElementById('config-cred-id').value.trim();
+function handleConfigSave(formData) {
+    const protocol = parseInt(formData['config-protocol'], 10);
+    const addr = formData['config-addr'] ? formData['config-addr'].trim() : '';
+    const port = parseInt(formData['config-port'], 10);
+    const credId = formData['config-cred-id'] ? formData['config-cred-id'].trim() : '';
 
     if (!addr) {
         showToast('Address is required', 'warning');
@@ -277,23 +319,23 @@ function saveConfig(event) {
     }
 
     const configObj = {
-        portKey: editIndex >= 0 ? tempConfigs[editIndex].portKey : Date.now(),
+        portKey: editingConfigIndex >= 0 ? tempConfigs[editingConfigIndex].portKey : Date.now(),
         protocol: protocol,
         addr: addr,
         port: port,
         credId: credId,
-        terminal: editIndex >= 0 ? tempConfigs[editIndex].terminal : '',
-        timeout: editIndex >= 0 ? tempConfigs[editIndex].timeout : ''
+        terminal: editingConfigIndex >= 0 ? tempConfigs[editingConfigIndex].terminal : '',
+        timeout: editingConfigIndex >= 0 ? tempConfigs[editingConfigIndex].timeout : ''
     };
 
-    if (editIndex >= 0) {
-        tempConfigs[editIndex] = configObj;
+    if (editingConfigIndex >= 0) {
+        tempConfigs[editingConfigIndex] = configObj;
     } else {
         tempConfigs.push(configObj);
     }
 
     closeConfigModal();
-    renderConfigsTable();
+    refreshHostPopupContent();
 }
 
 function editConfig(index) { showConfigModal(index); }

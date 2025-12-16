@@ -39,6 +39,47 @@ const INVENTORY_TYPES = {
 // Authentication token
 let bearerToken = localStorage.getItem('bearerToken') || null;
 
+// Current editing state for popup
+let currentEditMode = 'add';
+let currentEditTargetId = null;
+
+// Listen for messages from parent popup
+window.addEventListener('message', function(event) {
+    if (!event.data || !event.data.type) return;
+
+    switch (event.data.type) {
+        case 'probler-popup-save':
+            handlePopupSave(event.data.id, event.data.formData);
+            break;
+        case 'probler-popup-closed':
+            handlePopupClosed(event.data.id);
+            break;
+    }
+});
+
+// Handle save from popup
+function handlePopupSave(modalId, formData) {
+    if (modalId === 'target-modal') {
+        handleTargetSave(formData);
+    } else if (modalId === 'host-modal') {
+        handleHostSave(formData);
+    } else if (modalId === 'config-modal') {
+        handleConfigSave(formData);
+    }
+}
+
+// Handle popup closed
+function handlePopupClosed(modalId) {
+    if (modalId === 'target-modal') {
+        tempHosts = [];
+        currentEditMode = 'add';
+        currentEditTargetId = null;
+    } else if (modalId === 'host-modal') {
+        tempConfigs = [];
+        editingHostIndex = -1;
+    }
+}
+
 function setBearerToken(token) {
     bearerToken = token;
     if (token) {
@@ -278,56 +319,147 @@ function renderTargets() {
 // Target Modal Functions
 // ============================================
 
-function showTargetModal(targetId) {
-    const modal = document.getElementById('target-modal');
-    const title = document.getElementById('target-modal-title');
-    const editMode = document.getElementById('target-edit-mode');
-    const idInput = document.getElementById('target-id');
-    const linksIdInput = document.getElementById('target-links-id');
-    const stateSelect = document.getElementById('target-state');
+function generateTargetFormHtml(target) {
+    const isEdit = !!target;
+    const targetId = isEdit ? escapeAttr(target.targetId) : '';
+    const linksId = isEdit ? escapeAttr(target.linksId || '') : '';
+    const state = isEdit ? target.state : 0;
 
-    if (targetId && targets[targetId]) {
-        title.textContent = 'Edit Target';
-        editMode.value = targetId;
-        idInput.value = targets[targetId].targetId;
-        idInput.disabled = true;
-        linksIdInput.value = targets[targetId].linksId || '';
-        stateSelect.value = targets[targetId].state || 0;
+    return `
+        <div class="form-row">
+            <div class="form-group">
+                <label for="target-id">Target ID</label>
+                <input type="text" id="target-id" name="target-id" value="${targetId}" ${isEdit ? 'disabled' : ''} required>
+            </div>
+            <div class="form-group">
+                <label for="target-links-id">Links ID</label>
+                <input type="text" id="target-links-id" name="target-links-id" value="${linksId}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="target-state">State</label>
+            <select id="target-state" name="target-state">
+                <option value="0" ${state === 0 ? 'selected' : ''}>Down</option>
+                <option value="1" ${state === 1 ? 'selected' : ''}>Up</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Hosts</label>
+            <div class="nested-table-container">
+                <div class="nested-table-header">
+                    <span>Configured Hosts</span>
+                    <button type="button" class="btn btn-small" onclick="document.getElementById('targets-iframe').contentWindow.showHostModal()">
+                        + Add Host
+                    </button>
+                </div>
+                <table class="nested-items-table">
+                    <thead>
+                        <tr>
+                            <th>Host ID</th>
+                            <th>Protocols</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hosts-tbody">${generateHostsTableRows()}</tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function generateHostsTableRows() {
+    if (tempHosts.length === 0) {
+        return `
+            <tr>
+                <td colspan="4" class="empty-nested-table">
+                    No hosts configured. Click "+ Add Host" to add one.
+                </td>
+            </tr>
+        `;
+    }
+
+    return tempHosts.map((host, index) => {
+        const configsCount = host.configs ? Object.keys(host.configs).length : 0;
+        return `
+            <tr>
+                <td>${escapeHtml(host.hostId)}</td>
+                <td><span class="tag">${configsCount} protocol${configsCount !== 1 ? 's' : ''}</span></td>
+                <td class="action-btns">
+                    <button type="button" class="btn btn-small" onclick="document.getElementById('targets-iframe').contentWindow.editHost(${index})">Edit</button>
+                    <button type="button" class="btn btn-danger btn-small" onclick="document.getElementById('targets-iframe').contentWindow.removeHostAndRefresh(${index})">Delete</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function showTargetModal(targetId) {
+    const isEdit = targetId && targets[targetId];
+
+    if (isEdit) {
+        currentEditMode = targetId;
+        currentEditTargetId = targetId;
         tempHosts = hostsMapToArray(targets[targetId].hosts);
     } else {
-        title.textContent = 'Add Target';
-        editMode.value = 'add';
-        idInput.value = '';
-        idInput.disabled = false;
-        linksIdInput.value = '';
-        stateSelect.value = 0;
+        currentEditMode = 'add';
+        currentEditTargetId = null;
         tempHosts = [];
     }
 
-    renderHostsTable();
-    modal.classList.add('active');
+    const formHtml = generateTargetFormHtml(isEdit ? targets[targetId] : null);
+
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-show',
+            config: {
+                id: 'target-modal',
+                title: isEdit ? 'Edit Target' : 'Add Target',
+                size: 'large',
+                content: formHtml,
+                iframeId: 'targets-iframe',
+                saveButtonText: 'Save'
+            }
+        }, '*');
+    }
 }
 
 function closeTargetModal() {
-    document.getElementById('target-modal').classList.remove('active');
-    document.getElementById('target-form').reset();
     tempHosts = [];
+    currentEditMode = 'add';
+    currentEditTargetId = null;
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'probler-popup-close' }, '*');
+    }
 }
 
-async function saveTarget(event) {
-    event.preventDefault();
+function refreshTargetPopupContent() {
+    const formHtml = generateTargetFormHtml(
+        currentEditTargetId ? targets[currentEditTargetId] : null
+    );
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-update',
+            content: formHtml
+        }, '*');
+    }
+}
 
-    const editMode = document.getElementById('target-edit-mode').value;
-    const targetId = document.getElementById('target-id').value.trim();
-    const linksId = document.getElementById('target-links-id').value.trim();
-    const state = parseInt(document.getElementById('target-state').value, 10);
+function removeHostAndRefresh(index) {
+    tempHosts.splice(index, 1);
+    refreshTargetPopupContent();
+}
+
+async function handleTargetSave(formData) {
+    const targetId = formData['target-id'] ? formData['target-id'].trim() : '';
+    const linksId = formData['target-links-id'] ? formData['target-links-id'].trim() : '';
+    const state = parseInt(formData['target-state'], 10);
 
     if (!targetId) {
         showToast('Target ID is required', 'warning');
         return;
     }
 
-    if (editMode === 'add' && targets[targetId]) {
+    if (currentEditMode === 'add' && targets[targetId]) {
         showToast('Target ID already exists', 'warning');
         return;
     }
@@ -336,11 +468,12 @@ async function saveTarget(event) {
         targetId: targetId,
         linksId: linksId,
         hosts: hostsArrayToMap(tempHosts),
-        state: state
+        state: state,
+        inventoryType: selectedInventoryType
     };
 
     try {
-        const method = editMode === 'add' ? 'POST' : 'PATCH';
+        const method = currentEditMode === 'add' ? 'POST' : 'PATCH';
         const response = await fetch(getTargetsEndpoint(), {
             method: method,
             headers: getAuthHeaders(),
@@ -371,6 +504,7 @@ function deleteTarget(targetId) {
     document.getElementById('delete-message').textContent =
         'Are you sure you want to delete target "' + targetId + '"?';
     document.getElementById('delete-modal').classList.add('active');
+    notifyParentModalOpen();
 }
 
 // ============================================
@@ -380,15 +514,18 @@ function deleteTarget(targetId) {
 function closeDeleteModal() {
     document.getElementById('delete-modal').classList.remove('active');
     pendingDelete = null;
+    notifyParentModalClose();
 }
 
 async function confirmDelete() {
     if (!pendingDelete) return;
 
     try {
-        const response = await fetch(getTargetsEndpoint() + '/' + encodeURIComponent(pendingDelete), {
+        const query = { text: `select * from L8PTarget where targetId=${pendingDelete}` };
+        const response = await fetch(getTargetsEndpoint(), {
             method: 'DELETE',
-            headers: getAuthHeaders()
+            headers: getAuthHeaders(),
+            body: JSON.stringify(query)
         });
 
         if (!response.ok) {

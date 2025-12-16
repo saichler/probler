@@ -88,7 +88,7 @@ async function fetchNetworkDevices(page) {
         const serverPage = page - 1;
 
         // Fetch devices data from API endpoint
-        const response = await makeAuthenticatedRequest('/probler/0/NetDev?body=' + encodeURIComponent(JSON.stringify({
+        const response = await makeAuthenticatedRequest('/probler/0/NCache?body=' + encodeURIComponent(JSON.stringify({
             text: `select * from NetworkDevice where Id=* limit 15 page ${serverPage}`
         })), {
             method: 'GET'

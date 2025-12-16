@@ -7,7 +7,15 @@
     --status-offline: #757575;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+}
 
 body {
     font-family: 'Roboto Mono', 'Courier New', 'Consolas', monospace;
@@ -16,21 +24,56 @@ body {
     color: #2d3748;
     line-height: 1.6;
     font-size: 14px;
-    min-height: 100vh;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 body.embedded { background: transparent; min-height: auto; }
+
+/* When modal is open, force body to fill viewport for proper centering */
+body.modal-open {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
 .container {
     max-width: 100%;
     margin: 0;
     padding: 0;
-    min-height: 100vh;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .content-section {
     background: white;
     padding: 0;
-    min-height: 100vh;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#targets-table-container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#targets-table-container .l8-table-wrapper {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#targets-table-container .l8-table-container {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 /* Filter Bar */

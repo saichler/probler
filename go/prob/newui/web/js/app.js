@@ -127,4 +127,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Listen for modal open/close events from iframes
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'modal-open') {
+            const iframe = document.getElementById(event.data.iframeId);
+            if (iframe) {
+                iframe.classList.add('modal-active');
+                // Add class to body to remove overflow constraints from ancestors
+                document.body.classList.add('iframe-modal-active');
+            }
+        } else if (event.data && event.data.type === 'modal-close') {
+            const iframe = document.getElementById(event.data.iframeId);
+            if (iframe) {
+                iframe.classList.remove('modal-active');
+                document.body.classList.remove('iframe-modal-active');
+            }
+        }
+    });
 });

@@ -3,7 +3,7 @@
 // Fetch network device stats from API
 async function fetchNetworkDeviceStats() {
     try {
-        const response = await makeAuthenticatedRequest('/probler/0/NetDev?body=' + encodeURIComponent(JSON.stringify({
+        const response = await makeAuthenticatedRequest('/probler/0/NCache?body=' + encodeURIComponent(JSON.stringify({
             text: 'select * from NetworkDevice where Id=* limit 1 page 0'
         })), {
             method: 'GET'

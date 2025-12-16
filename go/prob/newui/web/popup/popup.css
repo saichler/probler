@@ -1,0 +1,350 @@
+/* Probler Generic Popup Component */
+
+/* Overlay - covers entire screen */
+.probler-popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+.probler-popup-overlay.active {
+    display: flex;
+}
+
+/* Container - the popup box */
+.probler-popup-container {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(14, 165, 233, 0.2);
+    animation: probler-popup-slide-in 0.3s ease-out;
+}
+
+/* Size variants */
+.probler-popup-container.probler-popup-small {
+    max-width: 400px;
+}
+
+.probler-popup-container.probler-popup-medium {
+    max-width: 550px;
+}
+
+.probler-popup-container.probler-popup-large {
+    max-width: 800px;
+}
+
+/* Header */
+.probler-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    border-radius: 16px 16px 0 0;
+    flex-shrink: 0;
+}
+
+.probler-popup-title {
+    font-size: 16px;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+.probler-popup-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: white;
+    line-height: 1;
+    transition: all 0.2s ease;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.probler-popup-close:hover {
+    color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.1);
+}
+
+/* Body - scrollable content area */
+.probler-popup-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Footer - action buttons */
+.probler-popup-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid #e2e8f0;
+    background: #f7fafc;
+    flex-shrink: 0;
+}
+
+/* Stacked modal - slightly offset and dimmed */
+.probler-popup-overlay.stacked {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.probler-popup-overlay.stacked .probler-popup-container {
+    transform: scale(0.95);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Animation */
+@keyframes probler-popup-slide-in {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.probler-popup-overlay.closing .probler-popup-container {
+    animation: probler-popup-slide-out 0.2s ease-in forwards;
+}
+
+@keyframes probler-popup-slide-out {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+}
+
+/* ============================================ */
+/* Form Styles for Popup Content */
+/* ============================================ */
+
+.probler-popup-body .form-group {
+    margin-bottom: 20px;
+}
+
+.probler-popup-body .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.probler-popup-body label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.probler-popup-body input[type="text"],
+.probler-popup-body input[type="password"],
+.probler-popup-body input[type="number"],
+.probler-popup-body textarea,
+.probler-popup-body select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: 'Roboto Mono', monospace;
+    transition: all 0.2s ease;
+    background: white;
+    color: #2d3748;
+}
+
+.probler-popup-body input:focus,
+.probler-popup-body textarea:focus,
+.probler-popup-body select:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.probler-popup-body input:disabled {
+    background: #f7fafc;
+    color: #718096;
+    cursor: not-allowed;
+}
+
+/* Nested Table Styles */
+.probler-popup-body .nested-table-container {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.probler-popup-body .nested-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f7fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.probler-popup-body .nested-table-header span {
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #2d3748;
+    letter-spacing: 0.5px;
+}
+
+.probler-popup-body .nested-items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.probler-popup-body .nested-items-table th,
+.probler-popup-body .nested-items-table td {
+    padding: 10px 12px;
+    font-size: 11px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.probler-popup-body .nested-items-table th {
+    background: #f1f5f9;
+    font-size: 9px;
+    font-weight: 700;
+    color: #0ea5e9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.probler-popup-body .nested-items-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.probler-popup-body .empty-nested-table {
+    text-align: center;
+    padding: 30px 20px !important;
+    color: #718096;
+    font-size: 12px;
+    font-style: italic;
+}
+
+/* Button Styles */
+.probler-popup-body .btn,
+.probler-popup-footer .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    font-family: 'Arial', sans-serif;
+}
+
+.probler-popup-body .btn-primary,
+.probler-popup-footer .btn-primary {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: white;
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+}
+
+.probler-popup-body .btn-primary:hover,
+.probler-popup-footer .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+}
+
+.probler-popup-body .btn-secondary,
+.probler-popup-footer .btn-secondary {
+    background: #f7fafc;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+}
+
+.probler-popup-body .btn-secondary:hover,
+.probler-popup-footer .btn-secondary:hover {
+    background: #e2e8f0;
+    color: #2d3748;
+}
+
+.probler-popup-body .btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+}
+
+.probler-popup-body .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+}
+
+.probler-popup-body .btn-small {
+    padding: 6px 12px;
+    font-size: 10px;
+    background: #f7fafc;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+}
+
+.probler-popup-body .btn-small:hover {
+    background: #e2e8f0;
+}
+
+.probler-popup-body .action-btns {
+    display: flex;
+    gap: 8px;
+}
+
+/* Tag/Badge Styles */
+.probler-popup-body .tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .probler-popup-body .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .probler-popup-body .action-btns {
+        flex-direction: column;
+    }
+}
