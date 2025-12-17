@@ -7,7 +7,7 @@ let credentials = {};
 // State management
 let pendingDelete = null;
 let tempHosts = [];
-let selectedInventoryType = 0;
+let selectedInventoryType = 1;
 
 // Table instance
 let targetsTable = null;
@@ -27,13 +27,23 @@ const PROTOCOLS = {
 
 // Inventory type enum mapping (L8PTargetType)
 const INVENTORY_TYPES = {
-    0: 'Network Device',
-    1: 'GPUS',
-    2: 'Hosts',
-    3: 'Virtual Machine',
-    4: 'K8s Cluster',
-    5: 'Storage',
-    6: 'Power'
+    0: 'Invalid',
+    1: 'Network Device',
+    2: 'GPUS',
+    3: 'Hosts',
+    4: 'Virtual Machine',
+    5: 'K8s Cluster',
+    6: 'Storage',
+    7: 'Power'
+};
+
+// Target state enum mapping (L8PTargetState)
+const TARGET_STATES = {
+    0: 'Invalid',
+    1: 'Down',
+    2: 'Up',
+    3: 'Maintenance',
+    4: 'Offline'
 };
 
 // Authentication token
@@ -136,6 +146,8 @@ function initInventoryTypeFilter() {
 
     select.innerHTML = '';
     for (const [value, label] of Object.entries(INVENTORY_TYPES)) {
+        // Skip invalid type (0)
+        if (parseInt(value, 10) === 0) continue;
         const option = document.createElement('option');
         option.value = value;
         option.textContent = label;
@@ -192,7 +204,7 @@ function initTargetsTable() {
             },
             {
                 label: 'State',
-                render: (target) => L8Table.statusTag(target.state === 1)
+                render: (target) => L8Table.statusTag(target.state === 2)
             }
         ],
         onAdd: () => showTargetModal(),
@@ -323,7 +335,7 @@ function generateTargetFormHtml(target) {
     const isEdit = !!target;
     const targetId = isEdit ? escapeAttr(target.targetId) : '';
     const linksId = isEdit ? escapeAttr(target.linksId || '') : '';
-    const state = isEdit ? target.state : 0;
+    const state = isEdit ? target.state : 1;
 
     return `
         <div class="form-row">
@@ -339,8 +351,10 @@ function generateTargetFormHtml(target) {
         <div class="form-group">
             <label for="target-state">State</label>
             <select id="target-state" name="target-state">
-                <option value="0" ${state === 0 ? 'selected' : ''}>Down</option>
-                <option value="1" ${state === 1 ? 'selected' : ''}>Up</option>
+                <option value="1" ${state === 1 ? 'selected' : ''}>Down</option>
+                <option value="2" ${state === 2 ? 'selected' : ''}>Up</option>
+                <option value="3" ${state === 3 ? 'selected' : ''}>Maintenance</option>
+                <option value="4" ${state === 4 ? 'selected' : ''}>Offline</option>
             </select>
         </div>
         <div class="form-group">
