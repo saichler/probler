@@ -161,10 +161,12 @@ class ProblerTable {
         const statusLower = status.toLowerCase();
         if (statusLower.includes('online') || statusLower.includes('operational') || statusLower.includes('ok') || statusLower.includes('healthy')) {
             return 'status-operational';
-        } else if (statusLower.includes('warning') || statusLower.includes('degraded')) {
+        } else if (statusLower.includes('warning') || statusLower.includes('degraded') || statusLower.includes('partial')) {
             return 'status-warning';
         } else if (statusLower.includes('critical') || statusLower.includes('error') || statusLower.includes('down')) {
             return 'status-critical';
+        } else if (statusLower.includes('maintenance')) {
+            return 'status-maintenance';
         } else if (statusLower.includes('offline') || statusLower.includes('unknown')) {
             return 'status-offline';
         }

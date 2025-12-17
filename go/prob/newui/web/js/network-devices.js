@@ -1,12 +1,16 @@
 // Network Devices Section Module
 
 // Map device status from JSON format to UI format
+// Proto enum: UNKNOWN=0, ONLINE=1, OFFLINE=2, WARNING=3, CRITICAL=4, MAINTENANCE=5, PARTIAL=6
 function mapDeviceStatus(status) {
-    // Handle numeric status codes
     if (status === 1 || status === 'DEVICE_STATUS_ONLINE') return 'online';
-    if (status === 0 || status === 'DEVICE_STATUS_OFFLINE') return 'offline';
-    if (status === 2 || status === 'DEVICE_STATUS_WARNING') return 'warning';
-    return 'offline';
+    if (status === 2 || status === 'DEVICE_STATUS_OFFLINE') return 'offline';
+    if (status === 3 || status === 'DEVICE_STATUS_WARNING') return 'warning';
+    if (status === 4 || status === 'DEVICE_STATUS_CRITICAL') return 'critical';
+    if (status === 5 || status === 'DEVICE_STATUS_MAINTENANCE') return 'maintenance';
+    if (status === 6 || status === 'DEVICE_STATUS_PARTIAL') return 'partial';
+    if (status === 0 || status === 'DEVICE_STATUS_UNKNOWN') return 'unknown';
+    return 'unknown';
 }
 
 // Map device type from JSON format to UI format

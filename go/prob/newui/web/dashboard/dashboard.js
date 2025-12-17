@@ -46,19 +46,21 @@ async function fetchNetworkDeviceStats() {
 async function updateNetworkDevicesCard() {
     const stats = await fetchNetworkDeviceStats();
 
+    // Get the card elements
+    const cardValue = document.querySelector('.metric-card .metric-card-value');
+    const cardDetails = document.querySelector('.metric-card .metric-card-details');
+
     if (stats) {
         const totalDevices = stats.Total || 0;
         const onlineDevices = stats.Online || 0;
         const offlineDevices = totalDevices - onlineDevices;
 
         // Update the card value (total)
-        const cardValue = document.querySelector('.metric-card .metric-card-value');
         if (cardValue) {
             cardValue.textContent = totalDevices.toLocaleString();
         }
 
         // Update the card details (online, offline)
-        const cardDetails = document.querySelector('.metric-card .metric-card-details');
         if (cardDetails) {
             cardDetails.innerHTML =
                 '<span class="metric-status">' +
@@ -69,6 +71,14 @@ async function updateNetworkDevicesCard() {
                     '<span class="status-indicator status-offline"></span>' +
                     '<span>' + offlineDevices.toLocaleString() + ' Offline</span>' +
                 '</span>';
+        }
+    } else {
+        // API call failed - clear mock data and show unavailable state
+        if (cardValue) {
+            cardValue.textContent = '--';
+        }
+        if (cardDetails) {
+            cardDetails.innerHTML = '<span class="metric-status unavailable">Data unavailable</span>';
         }
     }
 }
