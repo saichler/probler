@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"time"
 
 	"github.com/saichler/l8srlz/go/serialize/object"
@@ -13,7 +14,8 @@ import (
 
 func GetCluster(rc *client.RestClient, resources common2.IResources, name string) {
 	defer time.Sleep(time.Second)
-	q, e := object.NewQuery("select * from k8scluster where Name="+name, resources)
+	elems, e := object.NewQuery("select * from k8scluster where Name="+name, resources)
+	q := elems.(*object.Elements)
 	pq := q.PQuery()
 
 	jsn, _ := protojson.Marshal(pq)
@@ -24,7 +26,9 @@ func GetCluster(rc *client.RestClient, resources common2.IResources, name string
 		return
 	}
 
-	resp, err := rc.GET("1/"+common.INVENTORY_SERVICE_K8S, "K8SClusterList",
+	cs, _ := targets.Links.Cache(common.K8s_Links_ID)
+
+	resp, err := rc.GET("1/"+cs, "K8SClusterList",
 		"", "", pq)
 	if err != nil {
 		resources.Logger().Error("Get Error:", err.Error())
@@ -35,7 +39,8 @@ func GetCluster(rc *client.RestClient, resources common2.IResources, name string
 
 func GetClusterOrm(rc *client.RestClient, resources common2.IResources, name string) {
 	defer time.Sleep(time.Second)
-	q, e := object.NewQuery("select * from k8scluster where Name="+name, resources)
+	elems, e := object.NewQuery("select * from k8scluster where Name="+name, resources)
+	q := elems.(*object.Elements)
 	pq := q.PQuery()
 
 	jsn, _ := protojson.Marshal(pq)
@@ -46,7 +51,9 @@ func GetClusterOrm(rc *client.RestClient, resources common2.IResources, name str
 		return
 	}
 
-	resp, err := rc.GET("1/"+common.ORM_SERVICE, "K8SCluster",
+	cs, _ := targets.Links.Cache(common.K8s_Links_ID)
+
+	resp, err := rc.GET("1/"+cs, "K8SCluster",
 		"", "", pq)
 	if err != nil {
 		resources.Logger().Error("Get Error:", err.Error())

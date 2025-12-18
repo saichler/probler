@@ -13,7 +13,8 @@ import (
 
 func GetHealth(rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
-	q, e := object.NewQuery("select * from L8Health ", resources)
+	elems, e := object.NewQuery("select * from L8Health ", resources)
+	q := elems.(*object.Elements)
 	pq := q.PQuery()
 
 	if e != nil {

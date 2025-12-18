@@ -16,7 +16,7 @@ cd ../log-vnet
 ./build.sh
 cd ../log-agent
 ./build.sh
-#cd ../orm
-#./build.sh
+cd ../orm
+./build.sh
 cd ../topology
 ./build.sh

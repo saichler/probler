@@ -2,8 +2,6 @@ FROM saichler/builder:latest AS build
 
 ENV CGO_ENABLED 1
 COPY prctl.go /home/src/github.com/saichler/build/prctl.go
-COPY commands /home/src/github.com/saichler/build/commands
-COPY creates /home/src/github.com/saichler/build/creates
 
 RUN go mod init
 RUN GOPROXY=direct GOPRIVATE=github.com go mod tidy

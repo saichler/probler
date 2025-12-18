@@ -12,7 +12,7 @@ import (
 
 func AddCluster(kubeadm, context string, rc *client.RestClient, resources common2.IResources) {
 	defer time.Sleep(time.Second)
-	device := creates.CreateCluster(kubeadm, context, 0)
+	device := creates.CreateCluster("lab")
 	resp, err := rc.POST("0/"+targets.ServiceName, "Device",
 		"", "", device)
 	if err != nil {

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"time"
 
 	"github.com/saichler/l8srlz/go/serialize/object"
@@ -14,7 +15,8 @@ import (
 
 func GetDevice(rc *client.RestClient, resources common2.IResources, ip string) {
 	defer time.Sleep(time.Second)
-	q, e := object.NewQuery("select * from NetworkDevice where Id="+ip, resources)
+	elems, e := object.NewQuery("select * from NetworkDevice where Id="+ip, resources)
+	q := elems.(*object.Elements)
 	pq := q.PQuery()
 
 	if e != nil {
@@ -24,7 +26,9 @@ func GetDevice(rc *client.RestClient, resources common2.IResources, ip string) {
 	jsn, err := protojson.Marshal(pq)
 	fmt.Println(string(jsn))
 
-	resp, err := rc.GET("0/"+common.INVENTORY_SERVICE_BOX, "NetworkDeviceList",
+	cs, _ := targets.Links.Cache(common.NetworkDevice_Links_ID)
+
+	resp, err := rc.GET("0/"+cs, "NetworkDeviceList",
 		"", "", pq)
 	if err != nil {
 		resources.Logger().Error("Get Error:", err.Error())
