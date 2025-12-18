@@ -26,10 +26,10 @@ cd ../log-vnet/
 go build -o logvnet_demo
 mv ./logvnet_demo ../../demo/.
 
-echo "Building Targets"
-cd ../targets/
-go build -o targets_demo
-mv ./targets_demo ../../demo/.
+echo "Building Orm"
+cd ../orm/
+go build -o orm_demo
+mv ./orm_demo ../../demo/.
 
 echo "Building Collector"
 cd ../collector/

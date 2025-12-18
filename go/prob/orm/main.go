@@ -22,7 +22,6 @@ func main() {
 
 	//Activate targets
 	targets.Activate(common.DB_CREDS, common.DB_NAME, nic)
-
 	/*
 		ts, _ := targets.Targets(nic)
 		deviceList := &l8tpollaris.L8PTargetList{}

@@ -8,15 +8,15 @@ metadata:
 ---
 
 apiVersion: apps/v1
-kind: DaemonSet
+kind: StatefulSet
 metadata:
   namespace: probler-orm
   name: probler-orm
   labels:
     app: probler-orm
 spec:
-  #serviceName: probler-orm
-  #replicas: 1
+  serviceName: probler-orm
+  replicas: 1
   selector:
     matchLabels:
       app: probler-orm

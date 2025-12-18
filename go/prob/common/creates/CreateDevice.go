@@ -2,18 +2,17 @@ package creates
 
 import (
 	"github.com/saichler/l8pollaris/go/types/l8tpollaris"
-	"github.com/saichler/l8types/go/ifs"
 )
 
 func CreateDevice(ip, linksId, crId string) *l8tpollaris.L8PTarget {
 	device := &l8tpollaris.L8PTarget{}
-	device.TargetId = ifs.NewUuid()
+	device.TargetId = ip
 	device.LinksId = linksId
 	device.Hosts = make(map[string]*l8tpollaris.L8PHost)
 	device.InventoryType = l8tpollaris.L8PTargetType_Network_Device
 	device.State = l8tpollaris.L8PTargetState_Down
 	host := &l8tpollaris.L8PHost{}
-	host.HostId = ifs.NewUuid()
+	host.HostId = ip
 
 	host.Configs = make(map[int32]*l8tpollaris.L8PHostProtocol)
 	device.Hosts[host.HostId] = host
