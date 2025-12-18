@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: probler-targets
+  labels:
+    name: probler-targets
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler-targets
+  name: probler-targets
+  labels:
+    app: probler-targets
+spec:
+  serviceName: probler-targets
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probler-targets
+  template:
+    metadata:
+      labels:
+        app: probler-targets
+    spec:
+      containers:
+        - name: probler-targets
+          image: saichler/probler-targets:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate

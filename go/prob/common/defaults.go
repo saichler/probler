@@ -21,7 +21,7 @@ const (
 	LOGS_VNET    = 27000
 	PREFIX       = "/probler/"
 	DB_CREDS     = "postgres"
-	DB_NAME      = "probler"
+	DB_NAME      = "dbname"
 )
 
 func init() {
