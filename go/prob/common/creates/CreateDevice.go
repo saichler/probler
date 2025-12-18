@@ -11,6 +11,7 @@ func CreateDevice(ip, linksId, crId string) *l8tpollaris.L8PTarget {
 	device.LinksId = linksId
 	device.Hosts = make(map[string]*l8tpollaris.L8PHost)
 	device.InventoryType = l8tpollaris.L8PTargetType_Network_Device
+	device.State = l8tpollaris.L8PTargetState_Down
 	host := &l8tpollaris.L8PHost{}
 	host.HostId = ifs.NewUuid()
 

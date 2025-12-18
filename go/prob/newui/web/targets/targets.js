@@ -129,6 +129,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize the table
     initTargetsTable();
 
+    // Initialize bulk action buttons
+    document.getElementById('start-all-btn').addEventListener('click', () => setAllTargetsState(2));
+    document.getElementById('stop-all-btn').addEventListener('click', () => setAllTargetsState(1));
+
     if (window.parent !== window && window.parent.bearerToken) {
         bearerToken = window.parent.bearerToken;
     }
@@ -300,6 +304,40 @@ async function fetchCredentials() {
         }
     } catch (error) {
         console.error('Error fetching credentials:', error);
+    }
+}
+
+// Set state for all targets of the current inventory type
+async function setAllTargetsState(state) {
+    const action = state === 2 ? 'start' : 'stop';
+    const typeName = INVENTORY_TYPES[selectedInventoryType] || 'targets';
+
+    if (!confirm(`Are you sure you want to ${action} all ${typeName}?`)) {
+        return;
+    }
+
+    const payload = {
+        actionType: selectedInventoryType,
+        actionState: state
+    };
+
+    try {
+        const response = await fetch(getTargetsEndpoint(), {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorMsg = await getApiErrorMessage(response, 'Failed to update targets state');
+            showToast(errorMsg, 'error');
+            return;
+        }
+
+        showToast(`All ${typeName} ${state === 2 ? 'started' : 'stopped'} successfully`, 'success');
+        await fetchTargets();
+    } catch (error) {
+        showToast('Network error: ' + error.message, 'error');
     }
 }
 
