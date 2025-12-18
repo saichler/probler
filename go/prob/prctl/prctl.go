@@ -39,7 +39,7 @@ func main() {
 	}
 	clientConfig := &client.RestClientConfig{
 		Host:          host,
-		Port:          2443,
+		Port:          30443,
 		Https:         true,
 		Prefix:        common.PREFIX,
 		TokenRequired: true,
