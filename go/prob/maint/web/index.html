@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probler - System Maintenance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/maint.css">
+</head>
+<body>
+    <!-- Full-frame header with logo -->
+    <header class="maint-header">
+        <div class="header-content">
+            <img src="images/logo.gif" alt="Probler" class="logo">
+            <h1 class="header-title">PROBLER</h1>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="maint-container">
+        <!-- Network topology SVG illustration -->
+        <div class="illustration">
+            <svg viewBox="0 0 400 200" class="network-svg">
+                <!-- Connection lines -->
+                <line class="connection-line" x1="80" y1="100" x2="200" y2="100"/>
+                <line class="connection-line" x1="320" y1="100" x2="200" y2="100"/>
+                <line class="connection-line" x1="140" y1="40" x2="200" y2="100"/>
+                <line class="connection-line" x1="260" y1="40" x2="200" y2="100"/>
+                <line class="connection-line" x1="140" y1="160" x2="200" y2="100"/>
+                <line class="connection-line" x1="260" y1="160" x2="200" y2="100"/>
+
+                <!-- Outer nodes -->
+                <circle class="node node-outer" cx="80" cy="100" r="12"/>
+                <circle class="node node-outer" cx="320" cy="100" r="12"/>
+                <circle class="node node-outer" cx="140" cy="40" r="10"/>
+                <circle class="node node-outer" cx="260" cy="40" r="10"/>
+                <circle class="node node-outer" cx="140" cy="160" r="10"/>
+                <circle class="node node-outer" cx="260" cy="160" r="10"/>
+
+                <!-- Central maintenance node -->
+                <circle class="node node-center" cx="200" cy="100" r="24"/>
+                <circle class="node-center-inner" cx="200" cy="100" r="16"/>
+
+                <!-- Maintenance icon (wrench) in center -->
+                <g class="maint-icon" transform="translate(200, 100)">
+                    <path d="M-8,-8 L-4,-4 L-2,-6 L2,-2 L6,2 L4,4 L6,6 L8,4 L6,-2 L2,-6 L-2,-2 L-6,2 L-8,-8 Z"
+                          fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="0" cy="0" r="3" fill="#ffffff"/>
+                </g>
+
+                <!-- Pulse rings on center node -->
+                <circle class="pulse-ring pulse-ring-1" cx="200" cy="100" r="24"/>
+                <circle class="pulse-ring pulse-ring-2" cx="200" cy="100" r="24"/>
+            </svg>
+        </div>
+
+        <!-- Message card -->
+        <div class="message-card">
+            <h2 class="card-title">SYSTEM MAINTENANCE</h2>
+            <p class="card-description">
+                We're currently performing scheduled maintenance to improve your experience.
+                The system will be back online shortly.
+            </p>
+
+            <div class="status-indicator">
+                <span class="pulse-dot"></span>
+                <span class="status-text">Maintenance in Progress</span>
+            </div>
+
+            <!-- ETA Section -->
+            <div class="eta-section">
+                <svg class="clock-icon" viewBox="0 0 24 24" width="20" height="20">
+                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 6 L12 12 L16 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span class="eta-text">Estimated Return: <strong>{{.EstimatedReturn}}</strong></span>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="contact-section">
+                <p class="contact-label">Need assistance? Contact us at:</p>
+                <a href="mailto:{{.SupportEmail}}" class="contact-link">{{.SupportEmail}}</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="maint-footer">
+        <p>&copy; 2024 Probler. All rights reserved.</p>
+    </footer>
+</body>
+</html>

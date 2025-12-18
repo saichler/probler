@@ -1,0 +1,439 @@
+/* ============================================
+   Probler Maintenance Page Styles
+   Matching newui design patterns
+   ============================================ */
+
+/* CSS Variables */
+:root {
+    --color-primary: #0ea5e9;
+    --color-primary-dark: #0284c7;
+    --color-bg-dark: #0f2027;
+    --color-bg-mid: #203a43;
+    --color-bg-light: #2c5364;
+    --color-text-light: #ffffff;
+    --color-text-dark: #1a1a1a;
+    --color-text-muted: #78909c;
+    --color-card-bg: rgba(255, 255, 255, 0.95);
+    --color-header-bg: rgba(255, 255, 255, 0.1);
+    --color-node-active: #0ea5e9;
+    --color-node-offline: #757575;
+    --font-mono: 'Roboto Mono', 'Courier New', monospace;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --shadow-glow: 0 0 10px rgba(14, 165, 233, 0.6);
+}
+
+/* Reset and Base */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-mid) 50%, var(--color-bg-light) 100%);
+    min-height: 100vh;
+    font-family: var(--font-mono);
+    color: var(--color-text-light);
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+/* ============================================
+   Header Styles
+   ============================================ */
+.maint-header {
+    background: var(--color-header-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0 40px;
+    height: 70px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.logo {
+    height: 50px;
+    width: auto;
+    filter: drop-shadow(0 0 10px rgba(21, 101, 192, 0.6));
+    animation: logo-glow 3s ease-in-out infinite;
+}
+
+.header-title {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--color-text-light);
+    text-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+}
+
+/* ============================================
+   Main Container
+   ============================================ */
+.maint-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 20px 60px;
+    gap: 40px;
+}
+
+/* ============================================
+   Network Illustration
+   ============================================ */
+.illustration {
+    width: 100%;
+    max-width: 500px;
+    animation: fade-in-up 0.8s ease-out;
+}
+
+.network-svg {
+    width: 100%;
+    height: auto;
+}
+
+/* Connection lines */
+.connection-line {
+    stroke: var(--color-node-active);
+    stroke-width: 2;
+    stroke-dasharray: 8 4;
+    opacity: 0.6;
+    animation: dash-flow 3s linear infinite;
+}
+
+/* Nodes */
+.node {
+    fill: var(--color-bg-dark);
+    stroke: var(--color-node-active);
+    stroke-width: 2;
+}
+
+.node-outer {
+    animation: node-pulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgba(14, 165, 233, 0.4));
+}
+
+.node-outer:nth-child(odd) {
+    animation-delay: 0.3s;
+}
+
+.node-center {
+    fill: var(--color-primary);
+    stroke: var(--color-text-light);
+    stroke-width: 3;
+    filter: drop-shadow(0 0 15px rgba(14, 165, 233, 0.8));
+}
+
+.node-center-inner {
+    fill: var(--color-primary-dark);
+    stroke: none;
+}
+
+.maint-icon {
+    animation: icon-rotate 8s linear infinite;
+    transform-origin: center;
+}
+
+/* Pulse rings */
+.pulse-ring {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    opacity: 0;
+}
+
+.pulse-ring-1 {
+    animation: pulse-expand 2s ease-out infinite;
+}
+
+.pulse-ring-2 {
+    animation: pulse-expand 2s ease-out infinite 1s;
+}
+
+/* ============================================
+   Message Card
+   ============================================ */
+.message-card {
+    background: var(--color-card-bg);
+    border-radius: 16px;
+    padding: 40px 50px;
+    color: var(--color-text-dark);
+    box-shadow: var(--shadow-card);
+    text-align: center;
+    max-width: 550px;
+    width: 100%;
+    animation: fade-in-up 0.8s ease-out 0.2s backwards;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.card-title {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 16px;
+}
+
+.card-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+    border-radius: 2px;
+}
+
+.card-description {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #4a5568;
+    margin-bottom: 28px;
+}
+
+/* Status Indicator */
+.status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(2, 132, 199, 0.1));
+    border-radius: 30px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+.pulse-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    animation: pulse-dot 2s ease-in-out infinite;
+    box-shadow: var(--shadow-glow);
+}
+
+.status-text {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-primary-dark);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ETA Section */
+.eta-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    border: 1px solid #e2e8f0;
+}
+
+.clock-icon {
+    color: var(--color-primary);
+}
+
+.eta-text {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.eta-text strong {
+    color: var(--color-primary-dark);
+}
+
+/* Contact Section */
+.contact-section {
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.contact-label {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: 8px;
+}
+
+.contact-link {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.contact-link:hover {
+    color: var(--color-primary-dark);
+    text-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+.maint-footer {
+    padding: 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+@keyframes logo-glow {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(21, 101, 192, 0.6)); }
+    50% { filter: drop-shadow(0 0 20px rgba(14, 165, 233, 0.8)); }
+}
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes dash-flow {
+    to { stroke-dashoffset: -24; }
+}
+
+@keyframes node-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0.7;
+    }
+}
+
+@keyframes pulse-expand {
+    0% {
+        r: 24;
+        opacity: 0.6;
+    }
+    100% {
+        r: 50;
+        opacity: 0;
+    }
+}
+
+@keyframes icon-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 768px) {
+    .maint-header {
+        padding: 0 20px;
+        height: 60px;
+    }
+
+    .logo {
+        height: 40px;
+    }
+
+    .header-title {
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+    }
+
+    .maint-container {
+        padding: 100px 16px 40px;
+        gap: 30px;
+    }
+
+    .message-card {
+        padding: 30px 24px;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        letter-spacing: 2px;
+    }
+
+    .card-description {
+        font-size: 0.9rem;
+    }
+
+    .illustration {
+        max-width: 350px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-title {
+        font-size: 1rem;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+    }
+
+    .status-indicator {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .eta-section {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

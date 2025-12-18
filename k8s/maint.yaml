@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: probler-maint
+  labels:
+    name: probler-maint
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet 
+metadata:
+  namespace: probler-maint
+  name: probler-maint
+  labels:
+    app: probler-maint
+spec:
+  selector:
+    matchLabels:
+      app: probler-maint
+  template:
+    metadata:
+      labels:
+        app: probler-maint
+    spec:
+      hostNetwork: true
+      containers:
+        - name: probler-maint
+          image: saichler/probler-maint:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate
