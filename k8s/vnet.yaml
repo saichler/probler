@@ -1,35 +1,35 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: probler-vnet2
+  name: probler-vnet
   labels:
-    name: probler-vnet2
+    name: probler-vnet
 
 ---
 
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  namespace: probler-vnet2
-  name: probler-vnet2
+  namespace: probler-vnet
+  name: probler-vnet
   labels:
-    app: probler-vnet2
+    app: probler-vnet
 spec:
   selector:
     matchLabels:
-      app: probler-vnet2
+      app: probler-vnet
   template:
     metadata:
       labels:
-        app: probler-vnet2
+        app: probler-vnet
     spec:
       hostNetwork: true
       containers:
-        - name: probler-vnet2
-          image: saichler/probler-vnet2:latest
+        - name: probler-vnet
+          image: saichler/probler-vnet:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 27998
+            - containerPort: 25998
           volumeMounts:
             - name: hdata
               mountPath: /data

@@ -1,41 +1,52 @@
 package main
 
 import (
-	"fmt"
-	_ "github.com/lib/pq"
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"github.com/saichler/l8types/go/ifs"
-	common2 "github.com/saichler/probler/go/prob/common"
+	"github.com/saichler/probler/go/prob/common"
 	"os/exec"
 	"time"
 )
 
 func main() {
-	res := common2.CreateResources("orm")
+	res := common.CreateResources("orm")
 	res.Logger().SetLogLevel(ifs.Info_Level)
-	res.Logger().Info("Starting ORM")
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
-
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
 	nic.Start()
 	nic.WaitForConnection()
-	res.Logger().Info("Registering ORM Services")
 
-	_, user, pass, _, err := nic.Resources().Security().Credential(common2.DB_CREDS, common2.DB_NAME, nic.Resources())
+	//Start postgres
+	startDb(nic)
+
+	//Activate targets
+	targets.Activate(common.DB_CREDS, common.DB_NAME, nic)
+
+	/*
+		ts, _ := targets.Targets(nic)
+		deviceList := &l8tpollaris.L8PTargetList{}
+		deviceList.List = make([]*l8tpollaris.L8PTarget, 0)
+		for i := 1; i <= 19; i++ {
+			device := creates.CreateDevice("10.20.30."+strconv.Itoa(i), common.NetworkDevice_Links_ID, "sim")
+			deviceList.List = append(deviceList.List, device)
+		}
+		ts.Post(object.New(nil, deviceList), nic)
+		cluster := creates.CreateCluster("lab")
+		ts.Post(object.New(nil, cluster), nic)
+	*/
+	common.WaitForSignal(res)
+}
+
+func startDb(nic ifs.IVNic) {
+	_, user, pass, _, err := nic.Resources().Security().Credential(common.DB_CREDS, common.DB_NAME, nic.Resources())
 	if err != nil {
-		panic("Failed to get security credentials")
+		panic(err)
 	}
-
-	cmd := exec.Command("/usr/bin/bash", "-c", "/start-postgres.sh "+common2.DB_NAME+" "+user+" "+pass)
-	_, err = cmd.Output()
+	cmd := exec.Command("/start-postgres.sh", common.DB_NAME, user, pass)
+	err = cmd.Run()
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
-
-	fmt.Println("Allowing db to load")
 	time.Sleep(time.Second * 5)
-	targets.Activate(common2.DB_CREDS, common2.DB_NAME, nic)
-
-	common2.WaitForSignal(nic.Resources())
 }

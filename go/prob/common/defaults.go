@@ -17,11 +17,11 @@ import (
 )
 
 const (
-	PROBLER_VNET = 28000
+	PROBLER_VNET = 26000
 	LOGS_VNET    = 27000
 	PREFIX       = "/probler/"
 	DB_CREDS     = "postgres"
-	DB_NAME      = "dbname"
+	DB_NAME      = "problerdb"
 )
 
 func init() {
