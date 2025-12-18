@@ -212,6 +212,22 @@
     border: none;
 }
 
+.l8-btn-toggle {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    font-size: 16px;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.l8-btn-toggle:hover {
+    background: rgba(14, 165, 233, 0.1);
+    border-color: #0ea5e9;
+    transform: scale(1.1);
+}
+
 /* Tags/Badges */
 .l8-tag {
     display: inline-block;

@@ -210,7 +210,9 @@ function initTargetsTable() {
         onAdd: () => showTargetModal(),
         addButtonText: 'Add Target',
         onEdit: editTarget,
-        onDelete: deleteTarget
+        onDelete: deleteTarget,
+        onToggleState: toggleTargetState,
+        getItemState: (target) => target.state === 2
     });
     targetsTable.init();
 }
@@ -512,6 +514,43 @@ async function handleTargetSave(formData) {
 }
 
 function editTarget(targetId) { showTargetModal(targetId); }
+
+async function toggleTargetState(targetId) {
+    const target = targets[targetId];
+    if (!target) return;
+
+    // Toggle: Down(1) -> Up(2), Up(2) -> Down(1)
+    const newState = target.state === 2 ? 1 : 2;
+
+    const targetObj = {
+        targetId: target.targetId,
+        linksId: target.linksId || '',
+        hosts: target.hosts || {},
+        state: newState,
+        inventoryType: target.inventoryType || selectedInventoryType
+    };
+
+    try {
+        const response = await fetch(getTargetsEndpoint(), {
+            method: 'PATCH',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(targetObj)
+        });
+
+        if (!response.ok) {
+            const errorMsg = await getApiErrorMessage(response, 'Failed to toggle state');
+            showToast(errorMsg, 'error');
+            return;
+        }
+
+        targets[targetId].state = newState;
+        renderTargets();
+        showToast(`Target ${newState === 2 ? 'started' : 'stopped'} successfully`, 'success');
+    } catch (error) {
+        console.error('Error toggling target state:', error);
+        showToast('Error toggling target state', 'error');
+    }
+}
 
 function deleteTarget(targetId) {
     pendingDelete = targetId;

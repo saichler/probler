@@ -23,6 +23,10 @@ class L8Table {
         this.onAdd = options.onAdd || null;
         this.addButtonText = options.addButtonText || 'Add';
 
+        // Toggle state button support
+        this.onToggleState = options.onToggleState || null;
+        this.getItemState = options.getItemState || null;
+
         this.container = null;
         this.tableId = options.tableId || 'l8-table-' + Date.now();
     }
@@ -160,7 +164,7 @@ class L8Table {
             `<th>${this.escapeHtml(col.label)}</th>`
         ).join('');
 
-        if (this.showActions && (this.onEdit || this.onDelete)) {
+        if (this.showActions && (this.onEdit || this.onDelete || this.onToggleState)) {
             headers += '<th>Actions</th>';
         }
 
@@ -198,11 +202,19 @@ class L8Table {
             return `<td>${value}</td>`;
         }).join('');
 
-        if (this.showActions && (this.onEdit || this.onDelete)) {
+        if (this.showActions && (this.onEdit || this.onDelete || this.onToggleState)) {
             const itemId = this.getItemId(item);
+            let toggleBtn = '';
+            if (this.onToggleState && this.getItemState) {
+                const isUp = this.getItemState(item);
+                const emoji = isUp ? '⏹️' : '▶️';
+                const title = isUp ? 'Stop' : 'Start';
+                toggleBtn = `<button class="l8-btn l8-btn-toggle l8-btn-small" data-action="toggle" data-id="${this.escapeAttr(itemId)}" title="${title}">${emoji}</button>`;
+            }
             cells += `
                 <td>
                     <div class="l8-action-btns">
+                        ${toggleBtn}
                         ${this.onEdit ? `<button class="l8-btn l8-btn-small" data-action="edit" data-id="${this.escapeAttr(itemId)}">Edit</button>` : ''}
                         ${this.onDelete ? `<button class="l8-btn l8-btn-danger l8-btn-small" data-action="delete" data-id="${this.escapeAttr(itemId)}">Delete</button>` : ''}
                     </div>
@@ -270,6 +282,14 @@ class L8Table {
             btn.addEventListener('click', (e) => {
                 const id = e.target.dataset.id;
                 if (this.onDelete) this.onDelete(id);
+            });
+        });
+
+        // Toggle state button
+        this.container.querySelectorAll('[data-action="toggle"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.closest('button').dataset.id;
+                if (this.onToggleState) this.onToggleState(id);
             });
         });
 
