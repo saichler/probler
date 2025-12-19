@@ -27,6 +27,7 @@ const (
 type Config struct {
 	EstimatedReturn string `json:"estimated_return"`
 	SupportEmail    string `json:"support_email"`
+	Description     string `json:"description"`
 }
 
 var config Config
@@ -50,6 +51,7 @@ func loadConfig() error {
 		config = Config{
 			EstimatedReturn: "--:-- UTC",
 			SupportEmail:    "support@probler.io",
+			Description:     "Performing scheduled maintenance.",
 		}
 		return nil
 	}
@@ -58,7 +60,7 @@ func loadConfig() error {
 		return err
 	}
 
-	log.Printf("Loaded config: ETA=%s, Email=%s", config.EstimatedReturn, config.SupportEmail)
+	log.Printf("Loaded config: ETA=%s, Email=%s, Description=%s", config.EstimatedReturn, config.SupportEmail, config.Description)
 	return nil
 }
 
