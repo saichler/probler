@@ -1,0 +1,66 @@
+/* Landing Page - Responsive Styles */
+
+@media (max-width: 768px) {
+    /* Navigation */
+    .nav-links {
+        display: none;
+    }
+
+    /* Hero Section */
+    .hero {
+        min-height: 100vh;
+        padding: 60px 20px;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Section Headers */
+    .section-header h2 {
+        font-size: 2rem;
+    }
+
+    .section-header p {
+        font-size: 1rem;
+        padding: 0 20px;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    /* Developer Modal Responsive */
+    .developer-intro {
+        flex-direction: column;
+        text-align: center;
+        gap: 2rem;
+    }
+
+    .expertise-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-links {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .philosophy-item {
+        flex-direction: column;
+        text-align: center;
+    }
+}

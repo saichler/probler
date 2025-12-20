@@ -1,0 +1,221 @@
+<div id="developerModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>👨‍💻 About the Developer</h2>
+            <span class="close" onclick="closeDeveloperModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="developer-content">
+                <div class="developer-intro">
+                    <div class="developer-avatar">
+                        <img src="me.gif" alt="Sharon Aicler - Software Architect" class="developer-gif">
+                    </div>
+                    <div class="developer-info">
+                        <h3>Sharon Aicler (saichler@gmail.com)</h3>
+                        <p class="developer-title">Senior Software Architect & DCIM Solutions Specialist</p>
+                        <p class="developer-description">
+                            Visionary Software Architect and DevOps Leader with decades of delivering transformative, high-impact technology solutions that accelerate business growth and operational efficiency. Proven expertise in designing and orchestrating distributed, cloud-native architectures in Go and Java, enabling organizations to scale securely and reliably. Recognized for building high-performance, multi-tier frameworks that reduce time-to-market, improve developer productivity, and ensure long-term maintainability. Trusted advisor to executive leadership, bridging business objectives with technical execution through deep knowledge of Kubernetes ecosystems, virtualization, and DevOps automation. Passionate about driving innovation, optimizing systems, and creating cohesive architectures that endure and evolve.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="expertise-grid">
+                    <div class="expertise-card">
+                        <div class="expertise-icon">⚡</div>
+                        <h4>Core Technologies</h4>
+                        <ul>
+                            <li>Go (Golang) - Advanced</li>
+                            <li>Kubernetes & Docker</li>
+                            <li>PostgreSQL & Database Design</li>
+                            <li>gRPC & REST APIs</li>
+                            <li>Network Protocols (SNMP, SSH)</li>
+                        </ul>
+                    </div>
+                    <div class="expertise-card">
+                        <div class="expertise-icon">🏗️</div>
+                        <h4>Architecture Patterns</h4>
+                        <ul>
+                            <li>Microservices Architecture</li>
+                            <li>Model-Agnostic Design</li>
+                            <li>Horizontal & Vertical Scaling</li>
+                            <li>Service Discovery & Mesh</li>
+                            <li>Event-Driven Systems</li>
+                        </ul>
+                    </div>
+                    <div class="expertise-card">
+                        <div class="expertise-icon">🌐</div>
+                        <h4>Network Operations</h4>
+                        <ul>
+                            <li>Network Device Management</li>
+                            <li>Topology Discovery & Mapping</li>
+                            <li>Performance Monitoring</li>
+                            <li>Alarm Correlation & Analysis</li>
+                            <li>Automation Workflows</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="projects-showcase">
+                    <h3>Featured Projects</h3>
+                    <div class="projects-grid">
+                        <div class="project-card" onclick="openProjectGitHub('probler')">
+                            <h4><img src="logo.gif" alt="Probler" style="height: 30px; width: auto; vertical-align: middle; margin-right: 8px;">Probler</h4>
+                            <p>Complete DCIM platform managing network, power, environmental, and capacity infrastructure with microservices architecture. Features horizontal scaling, model-agnostic services, comprehensive NOC dashboard, and enterprise-grade monitoring.</p>
+                            <div class="project-tech">
+                                <span class="tech-tag">Go</span>
+                                <span class="tech-tag">Kubernetes</span>
+                                <span class="tech-tag">PostgreSQL</span>
+                                <span class="tech-tag">gRPC</span>
+                            </div>
+                        </div>
+                        <div class="project-card" onclick="openProjectGitHub('layer8')">
+                            <h4>🌐 Layer8</h4>
+                            <p>Advanced network communication framework providing virtual network overlay, service discovery, and intelligent message routing for distributed systems.</p>
+                            <div class="project-tech">
+                                <span class="tech-tag">Go</span>
+                                <span class="tech-tag">Networking</span>
+                                <span class="tech-tag">Service Discovery</span>
+                                <span class="tech-tag">Message Routing</span>
+                            </div>
+                        </div>
+                        <div class="project-card" onclick="openProjectGitHub('l8services')">
+                            <h4>🔧 L8Services</h4>
+                            <p>Model-agnostic services framework enabling universal service adaptation to any data structure without code modifications. Core of the Layer8 ecosystem.</p>
+                            <div class="project-tech">
+                                <span class="tech-tag">Go</span>
+                                <span class="tech-tag">Model-Agnostic</span>
+                                <span class="tech-tag">Dynamic Adaptation</span>
+                                <span class="tech-tag">Microservices</span>
+                            </div>
+                        </div>
+                        <div class="project-card" onclick="openProjectGitHub('opensim')">
+                            <h4>🎮 OpenSim</h4>
+                            <p>Advanced simulation framework for modeling and testing complex system behaviors with comprehensive scenario management and performance analysis.</p>
+                            <div class="project-tech">
+                                <span class="tech-tag">Go</span>
+                                <span class="tech-tag">Simulation</span>
+                                <span class="tech-tag">Testing</span>
+                                <span class="tech-tag">Modeling</span>
+                            </div>
+                        </div>
+                        <div class="project-card" onclick="openProjectGitHub('reflect')">
+                            <h4>🔍 Reflect</h4>
+                            <p>Dynamic type introspection and model adaptation system using Go reflection capabilities for building truly agnostic services and applications.</p>
+                            <div class="project-tech">
+                                <span class="tech-tag">Go Reflection</span>
+                                <span class="tech-tag">Dynamic Types</span>
+                                <span class="tech-tag">Code Generation</span>
+                                <span class="tech-tag">Type Safety</span>
+                            </div>
+                        </div>
+                        <div class="project-card" onclick="openProjectGitHub('l8orm')">
+                            <h4>🗄️ L8ORM</h4>
+                            <p>Object-relational mapping framework with advanced caching, transaction management, and automatic schema generation for PostgreSQL databases.</p>
+                            <div class="project-tech">
+                                <span class="tech-tag">Go</span>
+                                <span class="tech-tag">PostgreSQL</span>
+                                <span class="tech-tag">ORM</span>
+                                <span class="tech-tag">Caching</span>
+                            </div>
+                        </div>
+                        <div class="project-card" onclick="openProjectGitHub('l8srlz')">
+                            <h4>📦 L8Srlz</h4>
+                            <p>High-performance serialization library providing efficient binary encoding/decoding with support for complex data structures and version compatibility.</p>
+                            <div class="project-tech">
+                                <span class="tech-tag">Go</span>
+                                <span class="tech-tag">Serialization</span>
+                                <span class="tech-tag">Binary Encoding</span>
+                                <span class="tech-tag">Performance</span>
+                            </div>
+                        </div>
+                        <div class="project-card" onclick="openProjectGitHub('l8web')">
+                            <h4>🌐 L8Web</h4>
+                            <p>Web services framework with modern UI components, REST APIs, and WebSocket support for building responsive network management interfaces.</p>
+                            <div class="project-tech">
+                                <span class="tech-tag">Go</span>
+                                <span class="tech-tag">Web Services</span>
+                                <span class="tech-tag">REST APIs</span>
+                                <span class="tech-tag">WebSocket</span>
+                            </div>
+                        </div>
+                        <div class="project-card" onclick="openProjectGitHub('l8test')">
+                            <h4>🧪 L8Test</h4>
+                            <p>Comprehensive testing and automation framework providing validation tools, quality assurance utilities, and continuous integration support.</p>
+                            <div class="project-tech">
+                                <span class="tech-tag">Go</span>
+                                <span class="tech-tag">Testing</span>
+                                <span class="tech-tag">Automation</span>
+                                <span class="tech-tag">CI/CD</span>
+                            </div>
+                        </div>
+                        <div class="project-card" onclick="openProjectGitHub('gsql')">
+                            <h4>📊 GSQL</h4>
+                            <p>Graph SQL interface for querying and managing network topology data with intuitive query capabilities and advanced visualization features.</p>
+                            <div class="project-tech">
+                                <span class="tech-tag">Graph Databases</span>
+                                <span class="tech-tag">SQL</span>
+                                <span class="tech-tag">Data Visualization</span>
+                                <span class="tech-tag">Query Engine</span>
+                            </div>
+                        </div>
+                        <div class="project-card" onclick="openProjectGitHub('traffic')">
+                            <h4>🚀 Traffic</h4>
+                            <p>Advanced traffic engineering application with MPLS and Segment Routing policy management, BGP analytics, and interactive network visualization.</p>
+                            <div class="project-tech">
+                                <span class="tech-tag">Go</span>
+                                <span class="tech-tag">MPLS</span>
+                                <span class="tech-tag">BGP</span>
+                                <span class="tech-tag">Traffic Engineering</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="philosophy-section">
+                    <h3>Development Philosophy</h3>
+                    <div class="philosophy-content">
+                        <div class="philosophy-item">
+                            <div class="philosophy-icon">🎯</div>
+                            <div>
+                                <h4>Simplicity Through Abstraction</h4>
+                                <p>Complex problems deserve elegant solutions. I believe in creating abstractions that hide complexity while maintaining flexibility and performance.</p>
+                            </div>
+                        </div>
+                        <div class="philosophy-item">
+                            <div class="philosophy-icon">🔄</div>
+                            <div>
+                                <h4>Model-Agnostic Design</h4>
+                                <p>Building systems that adapt to changing requirements without code modifications. Future-proofing through intelligent abstraction layers.</p>
+                            </div>
+                        </div>
+                        <div class="philosophy-item">
+                            <div class="philosophy-icon">📈</div>
+                            <div>
+                                <h4>Scalable by Design</h4>
+                                <p>Every component should scale independently. Horizontal and vertical scaling capabilities built into the foundation, not added as an afterthought.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-section">
+                    <h3>Connect & Collaborate</h3>
+                    <div class="contact-links">
+                        <a href="https://github.com/saichler" class="contact-link" target="_blank">
+                            <span class="contact-icon">📚</span>
+                            <span>GitHub Portfolio</span>
+                        </a>
+                        <a href="https://github.com/saichler/probler" class="contact-link" target="_blank">
+                            <img src="logo.gif" alt="Probler" class="contact-icon" style="height: 35px; width: auto; vertical-align: middle;">
+                            <span>Probler Project</span>
+                        </a>
+                        <a href="https://github.com/saichler/probler/issues" class="contact-link" target="_blank">
+                            <span class="contact-icon">💬</span>
+                            <span>Discussions & Issues</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

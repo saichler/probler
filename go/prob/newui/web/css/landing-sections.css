@@ -1,0 +1,219 @@
+/* Landing Page - Section Styles */
+
+/* Features Section */
+.features {
+    background: white;
+    padding: 0;
+}
+
+/* Full-width Section Headers with Parallax */
+.section-header {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+}
+
+.section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shimmer 8s infinite;
+}
+
+.section-header h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    z-index: 1;
+}
+
+.section-header p {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    opacity: 0.95;
+    position: relative;
+    z-index: 1;
+}
+
+.section-content {
+    padding: 80px 0;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 4rem;
+    color: #2d3748;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.3;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.feature-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border-color: #0ea5e9;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1.2rem;
+    color: #2d3748;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+
+.feature-card p {
+    color: #4a5568;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* Architecture Section */
+.architecture {
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    padding: 0;
+}
+
+.arch-diagram {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    padding: 3rem;
+    margin: 3rem 0;
+    box-shadow: 0 3px 15px rgba(139, 116, 95, 0.08);
+    border: 1px solid rgba(139, 116, 95, 0.06);
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.service-card {
+    background: linear-gradient(135deg, #a08873 0%, #8b745f 100%);
+    color: #f7f3e9;
+    padding: 1.8rem;
+    border-radius: 3px;
+    text-align: center;
+    transition: all 0.4s ease;
+    border: 1px solid rgba(160, 136, 115, 0.2);
+}
+
+.service-card.clickable {
+    cursor: pointer;
+}
+
+.service-card.clickable:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 4px 20px rgba(139, 116, 95, 0.25);
+}
+
+.service-card h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.7rem;
+    font-weight: normal;
+    font-family: 'Georgia', serif;
+}
+
+.service-card p {
+    font-size: 0.85rem;
+    opacity: 0.95;
+    line-height: 1.5;
+}
+
+/* Getting Started Section */
+.getting-started {
+    background: white;
+    padding: 0;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.step-card {
+    background: #f8f9ff;
+    padding: 2rem;
+    border-radius: 15px;
+    border-left: 4px solid #667eea;
+}
+
+.step-number {
+    background: #667eea;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+/* Stats Section */
+.stats {
+    background: linear-gradient(135deg, #a08873 0%, #8b745f 100%);
+    color: #f7f3e9;
+    padding: 80px 0;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    text-align: center;
+}
+
+.stat-item h3 {
+    font-size: 2.8rem;
+    margin-bottom: 0.7rem;
+    font-weight: normal;
+    font-family: 'Georgia', serif;
+}
+
+.stat-item p {
+    font-size: 1rem;
+    opacity: 0.95;
+    font-family: 'Georgia', serif;
+}
