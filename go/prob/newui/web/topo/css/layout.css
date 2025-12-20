@@ -1,0 +1,151 @@
+/* Main Content Area and Topology Map View */
+
+main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    gap: 7px;
+    padding: 7px;
+    background: var(--bg-content);
+}
+
+/* Topology Map View */
+
+.topology-view {
+    flex: 1;
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border-light);
+}
+
+.zoom-controls {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+}
+
+.zoom-controls button {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border-light);
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.zoom-controls button:hover {
+    background: var(--bg-card);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.zoom-controls button#zoom-reset-btn {
+    width: auto;
+    padding: 0 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#layout-select {
+    padding: 6px 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: white;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-family: 'Roboto Mono', monospace;
+    transition: all 0.3s ease;
+}
+
+#layout-select:hover,
+#layout-select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
+.control-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border-light);
+    margin: 0 4px;
+}
+
+#zoom-level {
+    font-size: 11px;
+    min-width: 45px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+#map-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#webgl-canvas {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+}
+
+#world-map {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transform-origin: center center;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+#overlay-svg {
+    position: absolute;
+    pointer-events: none;
+    overflow: visible;
+    transform-origin: center center;
+}
+
+/* Canvas selection rectangle */
+#canvas-selection-rect {
+    position: absolute;
+    border: 2px dashed var(--primary-color);
+    background: rgba(14, 165, 233, 0.15);
+    pointer-events: none;
+    z-index: 50;
+    display: none;
+}

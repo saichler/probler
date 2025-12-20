@@ -135,6 +135,7 @@
     overflow-y: auto;
     flex: 1;
     min-height: 0;
+    color: #2d3748;
 }
 
 /* Modal Tabs */

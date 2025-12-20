@@ -1,0 +1,139 @@
+/* Info Panel Styles */
+
+.info-panel {
+    width: 350px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+}
+
+.panel-section {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.panel-section:last-child {
+    border-bottom: none;
+}
+
+.panel-section h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Topology header */
+.topology-header {
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #0369a1 0%, #0e7490 100%);
+    border-radius: 16px 16px 0 0;
+}
+
+.topology-header h3 {
+    color: white;
+    margin-bottom: 5px;
+}
+
+.topology-summary {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.topology-summary .summary-item {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.topology-summary strong {
+    color: white;
+    font-weight: 700;
+}
+
+/* Tabs */
+.panel-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--border-light);
+    background: var(--bg-card);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    position: relative;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tab-btn:hover {
+    color: var(--primary-color);
+    background: rgba(14, 165, 233, 0.05);
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary-color);
+}
+
+.tab-count {
+    background: var(--border-light);
+    color: var(--text-secondary);
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+.tab-btn.active .tab-count {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Tab content */
+.tab-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.tab-pane {
+    display: none;
+    padding: 15px;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.tab-pane.active {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}

@@ -15,54 +15,6 @@
         </section>
     </div>
 
-    <!-- User Modal -->
-    <div id="user-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="user-modal-title">Add User</h3>
-                <button class="close-btn" onclick="closeUserModal()">&times;</button>
-            </div>
-            <form id="user-form" onsubmit="saveUser(event)">
-                <input type="hidden" id="user-edit-mode" value="add">
-                <div class="form-group">
-                    <label for="user-id">User ID</label>
-                    <input type="text" id="user-id" required>
-                </div>
-                <div class="form-group">
-                    <label for="user-fullname">Full Name</label>
-                    <input type="text" id="user-fullname" required>
-                </div>
-                <div id="password-add-section" class="form-group">
-                    <label for="user-password">Password</label>
-                    <input type="password" id="user-password">
-                </div>
-                <div class="form-group">
-                    <label>Assigned Roles</label>
-                    <div id="user-roles-list" class="checkbox-list"></div>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeUserModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="delete-modal" class="modal">
-        <div class="modal-content modal-small">
-            <div class="modal-header">
-                <h3>Confirm Delete</h3>
-                <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
-            </div>
-            <p id="delete-message">Are you sure you want to delete this user?</p>
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast Notification Container -->
     <div id="toast-container"></div>
 

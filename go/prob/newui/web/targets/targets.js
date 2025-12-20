@@ -85,8 +85,9 @@ function handlePopupClosed(modalId) {
         currentEditMode = 'add';
         currentEditTargetId = null;
     } else if (modalId === 'host-modal') {
-        tempConfigs = [];
-        editingHostIndex = -1;
+        onHostModalClosed();
+    } else if (modalId === 'config-modal') {
+        onConfigModalClosed();
     }
 }
 
@@ -372,16 +373,17 @@ function renderTargets() {
 // ============================================
 
 function generateTargetFormHtml(target) {
-    const isEdit = !!target;
-    const targetId = isEdit ? escapeAttr(target.targetId) : '';
-    const linksId = isEdit ? escapeAttr(target.linksId || '') : '';
-    const state = isEdit ? target.state : 1;
+    const hasData = !!target;
+    const isEditMode = currentEditMode !== 'add';
+    const targetId = hasData ? escapeAttr(target.targetId) : '';
+    const linksId = hasData ? escapeAttr(target.linksId || '') : '';
+    const state = hasData ? target.state : 1;
 
     return `
         <div class="form-row">
             <div class="form-group">
                 <label for="target-id">Target ID</label>
-                <input type="text" id="target-id" name="target-id" value="${targetId}" ${isEdit ? 'disabled' : ''} required>
+                <input type="text" id="target-id" name="target-id" value="${targetId}" ${isEditMode ? 'disabled' : ''} required>
             </div>
             <div class="form-group">
                 <label for="target-links-id">Links ID</label>
@@ -425,7 +427,7 @@ function generateHostsTableRows() {
     if (tempHosts.length === 0) {
         return `
             <tr>
-                <td colspan="4" class="empty-nested-table">
+                <td colspan="3" class="empty-nested-table">
                     No hosts configured. Click "+ Add Host" to add one.
                 </td>
             </tr>
@@ -487,8 +489,25 @@ function closeTargetModal() {
 }
 
 function refreshTargetPopupContent() {
+    // Preserve current form values from the parent popup before regenerating
+    let currentFormValues = null;
+    if (window.parent !== window) {
+        const targetIdInput = window.parent.document.getElementById('target-id');
+        const linksIdInput = window.parent.document.getElementById('target-links-id');
+        const stateSelect = window.parent.document.getElementById('target-state');
+
+        if (targetIdInput || linksIdInput || stateSelect) {
+            currentFormValues = {
+                targetId: targetIdInput ? targetIdInput.value : '',
+                linksId: linksIdInput ? linksIdInput.value : '',
+                state: stateSelect ? parseInt(stateSelect.value, 10) : 1
+            };
+        }
+    }
+
+    // Use preserved form values if available, otherwise use original target data
     const formHtml = generateTargetFormHtml(
-        currentEditTargetId ? targets[currentEditTargetId] : null
+        currentFormValues || (currentEditTargetId ? targets[currentEditTargetId] : null)
     );
     if (window.parent !== window) {
         window.parent.postMessage({

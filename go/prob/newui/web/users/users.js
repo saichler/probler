@@ -6,12 +6,47 @@ let roles = {};
 
 // State management
 let pendingDelete = null;
+let currentEditMode = 'add';
+let currentEditUserId = null;
 
 // Table instance
 let usersTable = null;
 
 // Authentication token (from localStorage or parent window)
 let bearerToken = localStorage.getItem('bearerToken') || null;
+
+// Listen for messages from parent popup
+window.addEventListener('message', function(event) {
+    if (!event.data || !event.data.type) return;
+
+    switch (event.data.type) {
+        case 'probler-popup-save':
+            handlePopupSave(event.data.id, event.data.formData);
+            break;
+        case 'probler-popup-closed':
+            handlePopupClosed(event.data.id);
+            break;
+    }
+});
+
+// Handle save from popup
+function handlePopupSave(modalId, formData) {
+    if (modalId === 'user-modal') {
+        handleUserSave(formData);
+    } else if (modalId === 'delete-confirm') {
+        confirmDelete();
+    }
+}
+
+// Handle popup closed
+function handlePopupClosed(modalId) {
+    if (modalId === 'user-modal') {
+        currentEditMode = 'add';
+        currentEditUserId = null;
+    } else if (modalId === 'delete-confirm') {
+        pendingDelete = null;
+    }
+}
 
 // Set bearer token for API authentication
 function setBearerToken(token) {
@@ -170,89 +205,119 @@ function renderUsers() {
     }
 }
 
-// User Modal Functions
-function showUserModal(userId) {
-    const modal = document.getElementById('user-modal');
-    const title = document.getElementById('user-modal-title');
-    const editMode = document.getElementById('user-edit-mode');
-    const userIdInput = document.getElementById('user-id');
-    const fullNameInput = document.getElementById('user-fullname');
-    const passwordInput = document.getElementById('user-password');
-    const passwordAddSection = document.getElementById('password-add-section');
+// Generate user form HTML for popup
+function generateUserFormHtml(userId) {
+    const isEdit = userId && users[userId];
+    const user = isEdit ? users[userId] : null;
+    const userRoles = user ? user.roles : {};
 
-    if (userId && users[userId]) {
-        title.textContent = 'Edit User';
-        editMode.value = userId;
-        userIdInput.value = users[userId].userId;
-        userIdInput.disabled = true;
-        fullNameInput.value = users[userId].fullName || '';
-        passwordAddSection.style.display = 'none';
+    // Build roles checkboxes HTML
+    let rolesHtml = '';
+    if (Object.keys(roles).length === 0) {
+        rolesHtml = '<p style="color: #999; padding: 10px;">No roles available. Create roles first.</p>';
     } else {
-        title.textContent = 'Add User';
-        editMode.value = 'add';
-        userIdInput.value = '';
-        userIdInput.disabled = false;
-        fullNameInput.value = '';
-        passwordInput.value = '';
-        passwordAddSection.style.display = 'block';
+        Object.values(roles).forEach(role => {
+            const isChecked = userRoles[role.roleId] === true;
+            rolesHtml += `
+                <div class="checkbox-item">
+                    <input type="checkbox" id="role-${role.roleId}" name="role-${role.roleId}" value="${role.roleId}" ${isChecked ? 'checked' : ''}>
+                    <label for="role-${role.roleId}">${escapeHtml(role.roleName)} (${escapeHtml(role.roleId)})</label>
+                </div>
+            `;
+        });
     }
 
-    renderUserRolesList(userId);
-    modal.classList.add('active');
+    // Build password section (only for add mode)
+    const passwordSection = isEdit ? '' : `
+        <div class="form-group">
+            <label for="user-password">Password</label>
+            <input type="password" id="user-password" name="user-password" placeholder="Enter password">
+        </div>
+    `;
+
+    return `
+        <div class="form-group">
+            <label for="user-id">User ID</label>
+            <input type="text" id="user-id" name="user-id" value="${isEdit ? escapeHtml(user.userId) : ''}" ${isEdit ? 'disabled' : ''} required>
+        </div>
+        <div class="form-group">
+            <label for="user-fullname">Full Name</label>
+            <input type="text" id="user-fullname" name="user-fullname" value="${isEdit ? escapeHtml(user.fullName || '') : ''}" required>
+        </div>
+        ${passwordSection}
+        <div class="form-group">
+            <label>Assigned Roles</label>
+            <div class="checkbox-list">
+                ${rolesHtml}
+            </div>
+        </div>
+    `;
 }
 
-function renderUserRolesList(userId) {
-    const container = document.getElementById('user-roles-list');
-    container.innerHTML = '';
+// User Modal Functions
+function showUserModal(userId) {
+    const isEdit = userId && users[userId];
 
-    const userRoles = userId && users[userId] ? users[userId].roles : {};
+    if (isEdit) {
+        currentEditMode = userId;
+        currentEditUserId = userId;
+    } else {
+        currentEditMode = 'add';
+        currentEditUserId = null;
+    }
 
-    Object.values(roles).forEach(role => {
-        const isChecked = userRoles[role.roleId] === true;
-        const div = document.createElement('div');
-        div.className = 'checkbox-item';
-        div.innerHTML = `
-            <input type="checkbox" id="role-${role.roleId}" value="${role.roleId}" ${isChecked ? 'checked' : ''}>
-            <label for="role-${role.roleId}">${escapeHtml(role.roleName)} (${escapeHtml(role.roleId)})</label>
-        `;
-        container.appendChild(div);
-    });
+    const formHtml = generateUserFormHtml(userId);
 
-    if (Object.keys(roles).length === 0) {
-        container.innerHTML = '<p style="color: #999; padding: 10px;">No roles available. Create roles first.</p>';
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-show',
+            config: {
+                id: 'user-modal',
+                title: isEdit ? 'Edit User' : 'Add User',
+                size: 'medium',
+                content: formHtml,
+                iframeId: 'users-iframe',
+                saveButtonText: 'Save'
+            }
+        }, '*');
     }
 }
 
 function closeUserModal() {
-    document.getElementById('user-modal').classList.remove('active');
-    document.getElementById('user-form').reset();
+    currentEditMode = 'add';
+    currentEditUserId = null;
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'probler-popup-close' }, '*');
+    }
 }
 
-async function saveUser(event) {
-    event.preventDefault();
-
-    const editMode = document.getElementById('user-edit-mode').value;
-    const userId = document.getElementById('user-id').value.trim();
-    const fullName = document.getElementById('user-fullname').value.trim();
+// Handle user save from popup
+async function handleUserSave(formData) {
+    const userId = formData['user-id'] ? formData['user-id'].trim() : '';
+    const fullName = formData['user-fullname'] ? formData['user-fullname'].trim() : '';
 
     if (!userId || !fullName) {
         showToast('Please fill in all required fields', 'warning');
         return;
     }
 
-    if (editMode === 'add' && users[userId]) {
+    if (currentEditMode === 'add' && users[userId]) {
         showToast('User ID already exists', 'warning');
         return;
     }
 
+    // Collect selected roles from formData
     const selectedRoles = {};
-    document.querySelectorAll('#user-roles-list input[type="checkbox"]:checked').forEach(cb => {
-        selectedRoles[cb.value] = true;
+    Object.keys(formData).forEach(key => {
+        if (key.startsWith('role-') && formData[key]) {
+            const roleId = key.replace('role-', '');
+            selectedRoles[roleId] = true;
+        }
     });
 
     let user;
-    if (editMode === 'add') {
-        const password = document.getElementById('user-password').value;
+    if (currentEditMode === 'add') {
+        const password = formData['user-password'] || '';
         if (!password) {
             showToast('Password is required for new users', 'warning');
             return;
@@ -264,13 +329,13 @@ async function saveUser(event) {
             roles: selectedRoles
         };
     } else {
-        user = { ...users[editMode] };
+        user = { ...users[currentEditMode] };
         user.fullName = fullName;
         user.roles = selectedRoles;
     }
 
     try {
-        const method = editMode === 'add' ? 'POST' : 'PATCH';
+        const method = currentEditMode === 'add' ? 'POST' : 'PATCH';
         const response = await fetch(getUsersEndpoint(), {
             method: method,
             headers: getAuthHeaders(),
@@ -300,15 +365,28 @@ function editUser(userId) {
 
 function deleteUser(userId) {
     pendingDelete = userId;
-    document.getElementById('delete-message').textContent =
-        'Are you sure you want to delete user "' + userId + '"?';
-    document.getElementById('delete-modal').classList.add('active');
+
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-show',
+            config: {
+                id: 'delete-confirm',
+                title: 'Confirm Delete',
+                size: 'small',
+                content: '<p class="delete-message">Are you sure you want to delete user "' + escapeHtml(userId) + '"?</p>',
+                iframeId: 'users-iframe',
+                saveButtonText: 'Delete'
+            }
+        }, '*');
+    }
 }
 
-// Delete Modal Functions
+// Close delete confirmation popup
 function closeDeleteModal() {
-    document.getElementById('delete-modal').classList.remove('active');
     pendingDelete = null;
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'probler-popup-close' }, '*');
+    }
 }
 
 async function confirmDelete() {
@@ -328,14 +406,14 @@ async function confirmDelete() {
         }
 
         delete users[pendingDelete];
+        closeDeleteModal();
         renderUsers();
         showToast('User deleted successfully', 'success');
     } catch (error) {
         console.error('Error deleting user:', error);
         showToast('Error deleting user', 'error');
+        closeDeleteModal();
     }
-
-    closeDeleteModal();
 }
 
 // Toast notification system

@@ -5,6 +5,18 @@ let tempConfigs = [];
 let editingHostIndex = -1;
 let editingConfigIndex = -1;
 
+// Default ports for each protocol
+const PROTOCOL_DEFAULT_PORTS = {
+    1: 22,      // SSH
+    2: 161,     // SNMPV2
+    3: 161,     // SNMPV3
+    4: 443,     // RESTCONF (HTTPS)
+    5: 830,     // NETCONF
+    6: 50051,   // GRPC
+    7: 6443,    // Kubectl (K8s API server)
+    8: 443      // GraphQL (HTTPS)
+};
+
 // ============================================
 // Hosts Table Functions
 // ============================================
@@ -39,13 +51,14 @@ function hostsArrayToMap(hostsArray) {
 // ============================================
 
 function generateHostFormHtml(host) {
-    const isEdit = !!host;
-    const hostId = isEdit ? escapeAttr(host.hostId) : '';
+    const hasData = !!host;
+    const isEditMode = editingHostIndex >= 0;
+    const hostId = hasData ? escapeAttr(host.hostId) : '';
 
     return `
         <div class="form-group">
             <label for="host-id">Host ID</label>
-            <input type="text" id="host-id" name="host-id" value="${hostId}" placeholder="e.g., router1, switch-core" ${isEdit ? 'disabled' : ''} required>
+            <input type="text" id="host-id" name="host-id" value="${hostId}" placeholder="e.g., router1, switch-core" ${isEditMode ? 'disabled' : ''} required>
         </div>
         <div class="form-group">
             <label>Protocol Configurations</label>
@@ -77,9 +90,7 @@ function generateConfigsTableRows() {
     if (tempConfigs.length === 0) {
         return `
             <tr>
-                <td colspan="5" class="empty-nested-table">
-                    No protocols configured. Click "+ Add Protocol" to add one.
-                </td>
+                <td colspan="5" class="empty-nested-table">No protocols configured. Click "+ Add Protocol" to add one.</td>
             </tr>
         `;
     }
@@ -88,8 +99,8 @@ function generateConfigsTableRows() {
         return `
             <tr>
                 <td>${PROTOCOLS[cfg.protocol] || 'Unknown'}</td>
-                <td>${escapeHtml(cfg.addr)}</td>
-                <td>${cfg.port}</td>
+                <td>${escapeHtml(cfg.addr || '-')}</td>
+                <td>${cfg.port || '-'}</td>
                 <td>${escapeHtml(cfg.credId || '-')}</td>
                 <td class="action-btns">
                     <button type="button" class="btn btn-small" onclick="document.getElementById('targets-iframe').contentWindow.editConfig(${index})">Edit</button>
@@ -137,7 +148,19 @@ function closeHostModal() {
 }
 
 function refreshHostPopupContent() {
-    const host = editingHostIndex >= 0 ? tempHosts[editingHostIndex] : null;
+    // Preserve current form values from the parent popup before regenerating
+    let currentFormValues = null;
+    if (window.parent !== window) {
+        const hostIdInput = window.parent.document.getElementById('host-id');
+        if (hostIdInput) {
+            currentFormValues = {
+                hostId: hostIdInput.value
+            };
+        }
+    }
+
+    // Use preserved form values if available, otherwise use original host data
+    const host = currentFormValues || (editingHostIndex >= 0 ? tempHosts[editingHostIndex] : null);
     const formHtml = generateHostFormHtml(host);
     if (window.parent !== window) {
         window.parent.postMessage({
@@ -181,8 +204,23 @@ function handleHostSave(formData) {
         tempHosts.push(hostObj);
     }
 
+    // Set flag to refresh target popup after host modal closes
+    pendingTargetRefresh = true;
     closeHostModal();
-    refreshTargetPopupContent();
+    // Don't refresh immediately - wait for probler-popup-closed message
+}
+
+// Flag to track if we need to refresh target popup after host modal closes
+let pendingTargetRefresh = false;
+
+// Called when host-modal is closed - refresh target popup content
+function onHostModalClosed() {
+    if (pendingTargetRefresh) {
+        pendingTargetRefresh = false;
+        refreshTargetPopupContent();
+    }
+    tempConfigs = [];
+    editingHostIndex = -1;
 }
 
 function editHost(index) { showHostModal(index); }
@@ -193,11 +231,10 @@ function editHost(index) { showHostModal(index); }
 
 function configsMapToArray(configsMap) {
     if (!configsMap) return [];
-    return Object.entries(configsMap).map(([portKey, cfg]) => ({
-        portKey: parseInt(portKey, 10),
-        protocol: cfg.protocol || 0,
+    return Object.entries(configsMap).map(([key, cfg]) => ({
+        protocol: cfg.protocol || parseInt(key, 10),
         addr: cfg.addr || '',
-        port: cfg.port || 0,
+        port: cfg.port || PROTOCOL_DEFAULT_PORTS[cfg.protocol] || 22,
         credId: cfg.credId || '',
         terminal: cfg.terminal || '',
         timeout: cfg.timeout || ''
@@ -207,7 +244,9 @@ function configsMapToArray(configsMap) {
 function configsArrayToMap(configsArray) {
     const map = {};
     configsArray.forEach(cfg => {
-        map[cfg.portKey] = {
+        // Use protocol as the key (as string)
+        const key = String(cfg.protocol);
+        map[key] = {
             protocol: cfg.protocol,
             addr: cfg.addr,
             port: cfg.port,
@@ -238,13 +277,15 @@ function generateConfigFormHtml(cfg) {
     const isEdit = !!cfg;
     const protocol = isEdit ? cfg.protocol : 1;
     const addr = isEdit ? escapeAttr(cfg.addr) : '';
-    const port = isEdit ? cfg.port : 22;
+    const port = isEdit ? cfg.port : PROTOCOL_DEFAULT_PORTS[1];
     const credId = isEdit ? cfg.credId : '';
+    const terminal = isEdit ? escapeAttr(cfg.terminal) : '';
+    const timeout = isEdit ? escapeAttr(cfg.timeout) : '60';
 
     return `
         <div class="form-group">
             <label for="config-protocol">Protocol</label>
-            <select id="config-protocol" name="config-protocol">
+            <select id="config-protocol" name="config-protocol" onchange="document.getElementById('targets-iframe').contentWindow.onProtocolChange(this.value)">
                 <option value="1" ${protocol === 1 ? 'selected' : ''}>SSH</option>
                 <option value="2" ${protocol === 2 ? 'selected' : ''}>SNMPV2</option>
                 <option value="3" ${protocol === 3 ? 'selected' : ''}>SNMPV3</option>
@@ -258,7 +299,7 @@ function generateConfigFormHtml(cfg) {
         <div class="form-row">
             <div class="form-group">
                 <label for="config-addr">Address</label>
-                <input type="text" id="config-addr" name="config-addr" value="${addr}" placeholder="e.g., 192.168.1.1" required>
+                <input type="text" id="config-addr" name="config-addr" value="${addr}" placeholder="e.g., 10.20.30.16" required>
             </div>
             <div class="form-group">
                 <label for="config-port">Port</label>
@@ -270,6 +311,16 @@ function generateConfigFormHtml(cfg) {
             <select id="config-cred-id" name="config-cred-id">
                 ${generateCredentialsOptions(credId)}
             </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="config-terminal">Terminal</label>
+                <input type="text" id="config-terminal" name="config-terminal" value="${terminal}" placeholder="e.g., vt100">
+            </div>
+            <div class="form-group">
+                <label for="config-timeout">Timeout (seconds)</label>
+                <input type="text" id="config-timeout" name="config-timeout" value="${timeout}" placeholder="e.g., 60">
+            </div>
         </div>
     `;
 }
@@ -307,25 +358,38 @@ function closeConfigModal() {
     }
 }
 
+// Flag to track if we need to refresh host popup after config modal closes
+let pendingHostRefresh = false;
+
 function handleConfigSave(formData) {
     const protocol = parseInt(formData['config-protocol'], 10);
     const addr = formData['config-addr'] ? formData['config-addr'].trim() : '';
-    const port = parseInt(formData['config-port'], 10);
+    const port = parseInt(formData['config-port'], 10) || PROTOCOL_DEFAULT_PORTS[protocol] || 22;
     const credId = formData['config-cred-id'] ? formData['config-cred-id'].trim() : '';
+    const terminal = formData['config-terminal'] ? formData['config-terminal'].trim() : '';
+    const timeout = formData['config-timeout'] ? formData['config-timeout'].trim() : '';
 
     if (!addr) {
         showToast('Address is required', 'warning');
         return;
     }
 
+    // Check if this protocol already exists (unless we're editing)
+    if (editingConfigIndex < 0) {
+        const existingIndex = tempConfigs.findIndex(c => c.protocol === protocol);
+        if (existingIndex >= 0) {
+            showToast('This protocol is already configured', 'warning');
+            return;
+        }
+    }
+
     const configObj = {
-        portKey: editingConfigIndex >= 0 ? tempConfigs[editingConfigIndex].portKey : Date.now(),
         protocol: protocol,
         addr: addr,
         port: port,
         credId: credId,
-        terminal: editingConfigIndex >= 0 ? tempConfigs[editingConfigIndex].terminal : '',
-        timeout: editingConfigIndex >= 0 ? tempConfigs[editingConfigIndex].timeout : ''
+        terminal: terminal,
+        timeout: timeout
     };
 
     if (editingConfigIndex >= 0) {
@@ -334,8 +398,31 @@ function handleConfigSave(formData) {
         tempConfigs.push(configObj);
     }
 
+    // Set flag to refresh host popup after config modal closes
+    pendingHostRefresh = true;
     closeConfigModal();
-    refreshHostPopupContent();
+    // Don't refresh immediately - wait for probler-popup-closed message
+}
+
+// Called when config-modal is closed - refresh host popup content
+function onConfigModalClosed() {
+    if (pendingHostRefresh) {
+        pendingHostRefresh = false;
+        refreshHostPopupContent();
+    }
+    editingConfigIndex = -1;
 }
 
 function editConfig(index) { showConfigModal(index); }
+
+// Handle protocol change - update port to default for selected protocol
+function onProtocolChange(protocolValue) {
+    const protocol = parseInt(protocolValue, 10);
+    const defaultPort = PROTOCOL_DEFAULT_PORTS[protocol] || 22;
+
+    // Access port input in the parent window's popup
+    const portInput = window.parent.document.getElementById('config-port');
+    if (portInput) {
+        portInput.value = defaultPort;
+    }
+}

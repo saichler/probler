@@ -6,12 +6,61 @@ let credentials = {};
 // State management
 let pendingDelete = null;
 let tempCredItems = [];
+let currentEditMode = 'add';
+let currentEditCredId = null;
+let currentCredItemEditIndex = -1;
 
 // Table instance
 let credentialsTable = null;
 
 // Authentication token (from localStorage or parent window)
 let bearerToken = localStorage.getItem('bearerToken') || null;
+
+// Listen for messages from parent popup
+window.addEventListener('message', function(event) {
+    if (!event.data || !event.data.type) return;
+
+    switch (event.data.type) {
+        case 'probler-popup-save':
+            handlePopupSave(event.data.id, event.data.formData);
+            break;
+        case 'probler-popup-closed':
+            handlePopupClosed(event.data.id);
+            break;
+    }
+});
+
+// Handle save from popup
+function handlePopupSave(modalId, formData) {
+    if (modalId === 'credentials-modal') {
+        handleCredentialsSave(formData);
+    } else if (modalId === 'cred-item-modal') {
+        handleCredItemSave(formData);
+    } else if (modalId === 'delete-confirm') {
+        confirmDelete();
+    }
+}
+
+// Flag to track if we need to refresh credentials popup after cred-item modal closes
+let pendingCredentialsRefresh = false;
+
+// Handle popup closed
+function handlePopupClosed(modalId) {
+    if (modalId === 'credentials-modal') {
+        currentEditMode = 'add';
+        currentEditCredId = null;
+        tempCredItems = [];
+    } else if (modalId === 'cred-item-modal') {
+        currentCredItemEditIndex = -1;
+        // Refresh credentials popup after cred-item modal is fully closed
+        if (pendingCredentialsRefresh) {
+            pendingCredentialsRefresh = false;
+            refreshCredentialsPopupContent();
+        }
+    } else if (modalId === 'delete-confirm') {
+        pendingDelete = null;
+    }
+}
 
 // Set bearer token for API authentication
 function setBearerToken(token) {
@@ -138,52 +187,172 @@ function renderCredentials() {
 // Credentials Modal Functions (L8Credentials)
 // ============================================
 
-function showCredentialsModal(credId) {
-    const modal = document.getElementById('credentials-modal');
-    const title = document.getElementById('credentials-modal-title');
-    const editMode = document.getElementById('creds-edit-mode');
-    const idInput = document.getElementById('creds-id');
-    const nameInput = document.getElementById('creds-name');
+// Generate credentials items table HTML for popup
+function generateCredItemsTableHtml() {
+    if (tempCredItems.length === 0) {
+        return `
+            <tr>
+                <td colspan="5" class="empty-nested-table">
+                    No credential items. Click "+ Add Item" to add one.
+                </td>
+            </tr>
+        `;
+    }
 
-    if (credId && credentials[credId]) {
-        title.textContent = 'Edit Credentials';
-        editMode.value = credId;
-        idInput.value = credentials[credId].id;
-        idInput.disabled = true;
-        nameInput.value = credentials[credId].name || '';
+    return tempCredItems.map((item, index) => `
+        <tr>
+            <td>${escapeHtml(item.key)}</td>
+            <td class="masked-value">${maskValue(item.aside)}</td>
+            <td class="masked-value">${maskValue(item.yside)}</td>
+            <td class="masked-value">${maskValue(item.zside)}</td>
+            <td class="action-btns">
+                <button type="button" class="btn btn-small" onclick="document.getElementById('credentials-iframe').contentWindow.editCredItem(${index})">
+                    Edit
+                </button>
+                <button type="button" class="btn btn-danger btn-small" onclick="document.getElementById('credentials-iframe').contentWindow.removeCredItemAndRefresh(${index})">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Generate credentials form HTML for popup
+function generateCredentialsFormHtml(credIdOrData) {
+    const isEditMode = currentEditMode !== 'add';
+    let credId = '';
+    let credName = '';
+
+    if (typeof credIdOrData === 'object' && credIdOrData !== null) {
+        // Form data passed (preserved values)
+        credId = credIdOrData.id || '';
+        credName = credIdOrData.name || '';
+    } else if (credIdOrData && credentials[credIdOrData]) {
+        // Credential ID passed
+        credId = credentials[credIdOrData].id || '';
+        credName = credentials[credIdOrData].name || '';
+    }
+
+    const itemsTableHtml = generateCredItemsTableHtml();
+
+    return `
+        <div class="form-group">
+            <label for="creds-id">ID</label>
+            <input type="text" id="creds-id" name="creds-id" value="${escapeHtml(credId)}" ${isEditMode ? 'disabled' : ''} required>
+        </div>
+        <div class="form-group">
+            <label for="creds-name">Name</label>
+            <input type="text" id="creds-name" name="creds-name" value="${escapeHtml(credName)}" required>
+        </div>
+        <div class="form-group">
+            <label>Credential Items</label>
+            <div class="nested-table-container">
+                <div class="nested-table-header">
+                    <span>Individual Credentials</span>
+                    <button type="button" class="btn btn-small" onclick="document.getElementById('credentials-iframe').contentWindow.showCredItemModal()">
+                        + Add Item
+                    </button>
+                </div>
+                <table class="nested-items-table">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>A-Side</th>
+                            <th>Y-Side</th>
+                            <th>Z-Side</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cred-items-tbody">
+                        ${itemsTableHtml}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function showCredentialsModal(credId) {
+    const isEdit = credId && credentials[credId];
+
+    if (isEdit) {
+        currentEditMode = credId;
+        currentEditCredId = credId;
         tempCredItems = credsMapToArray(credentials[credId].creds);
     } else {
-        title.textContent = 'Add Credentials';
-        editMode.value = 'add';
-        idInput.value = '';
-        idInput.disabled = false;
-        nameInput.value = '';
+        currentEditMode = 'add';
+        currentEditCredId = null;
         tempCredItems = [];
     }
 
-    renderCredItemsTable();
-    modal.classList.add('active');
+    const formHtml = generateCredentialsFormHtml(credId);
+
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-show',
+            config: {
+                id: 'credentials-modal',
+                title: isEdit ? 'Edit Credentials' : 'Add Credentials',
+                size: 'large',
+                content: formHtml,
+                iframeId: 'credentials-iframe',
+                saveButtonText: 'Save'
+            }
+        }, '*');
+    }
 }
 
 function closeCredentialsModal() {
-    document.getElementById('credentials-modal').classList.remove('active');
-    document.getElementById('credentials-form').reset();
+    currentEditMode = 'add';
+    currentEditCredId = null;
     tempCredItems = [];
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'probler-popup-close' }, '*');
+    }
 }
 
-async function saveCredentials(event) {
-    event.preventDefault();
+// Refresh the credentials popup content after item changes
+function refreshCredentialsPopupContent() {
+    // Preserve current form values from the parent popup before regenerating
+    let currentFormValues = null;
+    if (window.parent !== window) {
+        const idInput = window.parent.document.getElementById('creds-id');
+        const nameInput = window.parent.document.getElementById('creds-name');
+        if (idInput || nameInput) {
+            currentFormValues = {
+                id: idInput ? idInput.value : '',
+                name: nameInput ? nameInput.value : ''
+            };
+        }
+    }
 
-    const editMode = document.getElementById('creds-edit-mode').value;
-    const id = document.getElementById('creds-id').value.trim();
-    const name = document.getElementById('creds-name').value.trim();
+    // Use preserved form values if available, otherwise use original credential ID
+    const formHtml = generateCredentialsFormHtml(currentFormValues || currentEditCredId);
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-update',
+            content: formHtml
+        }, '*');
+    }
+}
+
+// Remove credential item and refresh popup
+function removeCredItemAndRefresh(index) {
+    tempCredItems.splice(index, 1);
+    refreshCredentialsPopupContent();
+}
+
+// Handle credentials save from popup
+async function handleCredentialsSave(formData) {
+    const id = formData['creds-id'] ? formData['creds-id'].trim() : '';
+    const name = formData['creds-name'] ? formData['creds-name'].trim() : '';
 
     if (!id || !name) {
         showToast('Please fill in all required fields', 'warning');
         return;
     }
 
-    if (editMode === 'add' && credentials[id]) {
+    if (currentEditMode === 'add' && credentials[id]) {
         showToast('Credentials ID already exists', 'warning');
         return;
     }
@@ -195,7 +364,7 @@ async function saveCredentials(event) {
     };
 
     try {
-        const method = editMode === 'add' ? 'POST' : 'PATCH';
+        const method = currentEditMode === 'add' ? 'POST' : 'PATCH';
         const response = await fetch(getCredsEndpoint(), {
             method: method,
             headers: getAuthHeaders(),
@@ -225,9 +394,20 @@ function editCredentials(credId) {
 
 function deleteCredentials(credId) {
     pendingDelete = credId;
-    document.getElementById('delete-message').textContent =
-        'Are you sure you want to delete credentials "' + credId + '"?';
-    document.getElementById('delete-modal').classList.add('active');
+
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-show',
+            config: {
+                id: 'delete-confirm',
+                title: 'Confirm Delete',
+                size: 'small',
+                content: '<p class="delete-message">Are you sure you want to delete credentials "' + escapeHtml(credId) + '"?</p>',
+                iframeId: 'credentials-iframe',
+                saveButtonText: 'Delete'
+            }
+        }, '*');
+    }
 }
 
 // ============================================
@@ -258,104 +438,89 @@ function credsArrayToMap(credsArray) {
     return map;
 }
 
-function renderCredItemsTable() {
-    const tbody = document.getElementById('cred-items-tbody');
-    tbody.innerHTML = '';
-
-    if (tempCredItems.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="5" class="empty-creds-table">
-                    No credential items. Click "+ Add Item" to add one.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    tempCredItems.forEach((item, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${escapeHtml(item.key)}</td>
-            <td class="masked-value">${maskValue(item.aside)}</td>
-            <td class="masked-value">${maskValue(item.yside)}</td>
-            <td class="masked-value">${maskValue(item.zside)}</td>
-            <td class="action-btns">
-                <button type="button" class="btn btn-small" onclick="editCredItem(${index})">
-                    Edit
-                </button>
-                <button type="button" class="btn btn-danger btn-small" onclick="removeCredItem(${index})">
-                    Delete
-                </button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
 function maskValue(value) {
     if (!value) return '<span class="empty-value">-</span>';
     return '********';
-}
-
-function removeCredItem(index) {
-    tempCredItems.splice(index, 1);
-    renderCredItemsTable();
 }
 
 // ============================================
 // Credential Item Modal Functions (Individual)
 // ============================================
 
+// Generate credential item form HTML for popup
+function generateCredItemFormHtml(index) {
+    const isEdit = index !== undefined && index >= 0 && tempCredItems[index];
+    const item = isEdit ? tempCredItems[index] : null;
+
+    return `
+        <div class="form-group">
+            <label for="cred-item-key">Key</label>
+            <input type="text" id="cred-item-key" name="cred-item-key" value="${isEdit ? escapeHtml(item.key) : ''}" placeholder="e.g., db, api, ssh" ${isEdit ? 'disabled' : ''} required>
+        </div>
+        <div class="form-group">
+            <label for="cred-item-aside">A-Side</label>
+            <div class="input-with-toggle">
+                <input type="password" id="cred-item-aside" name="cred-item-aside" value="${isEdit ? escapeAttr(item.aside) : ''}" placeholder="Enter value">
+                <button type="button" class="toggle-btn" onclick="document.getElementById('credentials-iframe').contentWindow.toggleFieldVisibilityInPopup('cred-item-aside', this)">
+                    Show
+                </button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="cred-item-yside">Y-Side</label>
+            <div class="input-with-toggle">
+                <input type="password" id="cred-item-yside" name="cred-item-yside" value="${isEdit ? escapeAttr(item.yside) : ''}" placeholder="Enter value">
+                <button type="button" class="toggle-btn" onclick="document.getElementById('credentials-iframe').contentWindow.toggleFieldVisibilityInPopup('cred-item-yside', this)">
+                    Show
+                </button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="cred-item-zside">Z-Side</label>
+            <div class="input-with-toggle">
+                <input type="password" id="cred-item-zside" name="cred-item-zside" value="${isEdit ? escapeAttr(item.zside) : ''}" placeholder="Enter value">
+                <button type="button" class="toggle-btn" onclick="document.getElementById('credentials-iframe').contentWindow.toggleFieldVisibilityInPopup('cred-item-zside', this)">
+                    Show
+                </button>
+            </div>
+        </div>
+    `;
+}
+
 function showCredItemModal(index) {
-    const modal = document.getElementById('cred-item-modal');
-    const title = document.getElementById('cred-item-modal-title');
-    const editIndex = document.getElementById('cred-item-edit-index');
-    const keyInput = document.getElementById('cred-item-key');
-    const asideInput = document.getElementById('cred-item-aside');
-    const ysideInput = document.getElementById('cred-item-yside');
-    const zsideInput = document.getElementById('cred-item-zside');
+    const isEdit = index !== undefined && index >= 0 && tempCredItems[index];
+    currentCredItemEditIndex = isEdit ? index : -1;
 
-    // Reset all fields to password type
-    asideInput.type = 'password';
-    ysideInput.type = 'password';
-    zsideInput.type = 'password';
-    updateToggleButtons();
+    const formHtml = generateCredItemFormHtml(index);
 
-    if (index !== undefined && index >= 0 && tempCredItems[index]) {
-        title.textContent = 'Edit Credential Item';
-        editIndex.value = index;
-        keyInput.value = tempCredItems[index].key;
-        keyInput.disabled = true;
-        asideInput.value = tempCredItems[index].aside;
-        ysideInput.value = tempCredItems[index].yside;
-        zsideInput.value = tempCredItems[index].zside;
-    } else {
-        title.textContent = 'Add Credential Item';
-        editIndex.value = -1;
-        keyInput.value = '';
-        keyInput.disabled = false;
-        asideInput.value = '';
-        ysideInput.value = '';
-        zsideInput.value = '';
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-show',
+            config: {
+                id: 'cred-item-modal',
+                title: isEdit ? 'Edit Credential Item' : 'Add Credential Item',
+                size: 'medium',
+                content: formHtml,
+                iframeId: 'credentials-iframe',
+                saveButtonText: 'Save Item'
+            }
+        }, '*');
     }
-
-    modal.classList.add('active');
 }
 
 function closeCredItemModal() {
-    document.getElementById('cred-item-modal').classList.remove('active');
-    document.getElementById('cred-item-form').reset();
+    currentCredItemEditIndex = -1;
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'probler-popup-close' }, '*');
+    }
 }
 
-function saveCredItem(event) {
-    event.preventDefault();
-
-    const editIndex = parseInt(document.getElementById('cred-item-edit-index').value, 10);
-    const key = document.getElementById('cred-item-key').value.trim();
-    const aside = document.getElementById('cred-item-aside').value;
-    const yside = document.getElementById('cred-item-yside').value;
-    const zside = document.getElementById('cred-item-zside').value;
+// Handle credential item save from popup
+function handleCredItemSave(formData) {
+    const key = formData['cred-item-key'] ? formData['cred-item-key'].trim() : '';
+    const aside = formData['cred-item-aside'] || '';
+    const yside = formData['cred-item-yside'] || '';
+    const zside = formData['cred-item-zside'] || '';
 
     if (!key) {
         showToast('Key is required', 'warning');
@@ -363,7 +528,7 @@ function saveCredItem(event) {
     }
 
     // Check for duplicate key (only for new items)
-    if (editIndex < 0) {
+    if (currentCredItemEditIndex < 0) {
         const existingIndex = tempCredItems.findIndex(item => item.key === key);
         if (existingIndex >= 0) {
             showToast('A credential with this key already exists', 'warning');
@@ -378,39 +543,38 @@ function saveCredItem(event) {
         zside: zside
     };
 
-    if (editIndex >= 0) {
-        tempCredItems[editIndex] = credItem;
+    if (currentCredItemEditIndex >= 0) {
+        tempCredItems[currentCredItemEditIndex] = credItem;
     } else {
         tempCredItems.push(credItem);
     }
 
+    // Set flag to refresh credentials popup after cred-item modal closes
+    pendingCredentialsRefresh = true;
     closeCredItemModal();
-    renderCredItemsTable();
+    // Don't refresh immediately - wait for probler-popup-closed message
 }
 
 function editCredItem(index) {
     showCredItemModal(index);
 }
 
-function toggleFieldVisibility(fieldId) {
-    const input = document.getElementById(fieldId);
-    if (input.type === 'password') {
-        input.type = 'text';
-    } else {
-        input.type = 'password';
-    }
-    updateToggleButtons();
-}
-
-function updateToggleButtons() {
-    const fields = ['cred-item-aside', 'cred-item-yside', 'cred-item-zside'];
-    fields.forEach(fieldId => {
-        const input = document.getElementById(fieldId);
-        const btn = input.parentElement.querySelector('.toggle-btn');
-        if (btn) {
-            btn.textContent = input.type === 'password' ? 'Show' : 'Hide';
+// Toggle field visibility in popup (called from parent window)
+function toggleFieldVisibilityInPopup(fieldId, btn) {
+    // The input is in the parent window's popup, so we need to access it there
+    const popup = window.parent.document.querySelector('.probler-popup-body');
+    if (popup) {
+        const input = popup.querySelector('#' + fieldId);
+        if (input) {
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                btn.textContent = 'Show';
+            }
         }
-    });
+    }
 }
 
 // ============================================
@@ -418,8 +582,10 @@ function updateToggleButtons() {
 // ============================================
 
 function closeDeleteModal() {
-    document.getElementById('delete-modal').classList.remove('active');
     pendingDelete = null;
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'probler-popup-close' }, '*');
+    }
 }
 
 async function confirmDelete() {
@@ -439,14 +605,14 @@ async function confirmDelete() {
         }
 
         delete credentials[pendingDelete];
+        closeDeleteModal();
         renderCredentials();
         showToast('Credentials deleted successfully', 'success');
     } catch (error) {
         console.error('Error deleting credentials:', error);
         showToast('Error deleting credentials', 'error');
+        closeDeleteModal();
     }
-
-    closeDeleteModal();
 }
 
 // ============================================

@@ -1,0 +1,24 @@
+/* Footer Styles */
+
+footer {
+    background: var(--bg-header);
+    backdrop-filter: blur(20px);
+    padding: 10px 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#status-bar {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.error {
+    color: var(--status-down);
+}
+
+.success {
+    color: var(--status-up);
+}

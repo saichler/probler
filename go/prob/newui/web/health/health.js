@@ -189,158 +189,197 @@ function displayErrorMessage(message) {
     }
 }
 
-// Show health detail modal
-function showHealthDetailsModal(rowData) {
-    const modal = document.getElementById('health-detail-modal');
-    const content = document.getElementById('health-detail-content');
-    const modalTitle = document.getElementById('health-modal-title');
-
+// Generate health detail content HTML
+function generateHealthDetailContent(rowData) {
     const rawData = healthDataMap.get(rowData.service);
 
     if (!rawData) {
-        return;
+        return '<div class="empty-state">No health data available.</div>';
     }
 
     const stats = rawData.stats || {};
     const services = rawData.services || {};
     const serviceToAreas = services.serviceToAreas || {};
 
-    modalTitle.textContent = `Service Health - ${rowData.service}`;
+    return `
+        <!-- Tabs -->
+        <div class="probler-popup-tabs">
+            <div class="probler-popup-tab active" data-tab="overview">Overview</div>
+            <div class="probler-popup-tab" data-tab="network">Network</div>
+            <div class="probler-popup-tab" data-tab="resources">Resources</div>
+            <div class="probler-popup-tab" data-tab="services">Services</div>
+        </div>
 
-    content.innerHTML = `
-        <div class="detail-grid">
-            <!-- Service Information -->
-            <div class="detail-section">
-                <div class="detail-section-title">Service Information</div>
-                <div class="detail-row">
-                    <span class="detail-label">Service Name</span>
-                    <span class="detail-value">${rowData.service}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Alias</span>
-                    <span class="detail-value">${rawData.alias || 'N/A'}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Start Time</span>
-                    <span class="detail-value">${rawData.startTime ? new Date(parseInt(rawData.startTime)).toLocaleString() : 'N/A'}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Up Time</span>
-                    <span class="detail-value">${rowData.upTime}</span>
+        <div class="probler-popup-tab-content">
+            <!-- Overview Tab -->
+            <div class="probler-popup-tab-pane active" data-pane="overview">
+                <div class="detail-grid">
+                    <div class="detail-section">
+                        <div class="detail-section-title">Service Information</div>
+                        <div class="detail-row">
+                            <span class="detail-label">Service Name</span>
+                            <span class="detail-value">${escapeHtml(rowData.service)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Alias</span>
+                            <span class="detail-value">${escapeHtml(rawData.alias || 'N/A')}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Start Time</span>
+                            <span class="detail-value">${rawData.startTime ? new Date(parseInt(rawData.startTime)).toLocaleString() : 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Up Time</span>
+                            <span class="detail-value">${escapeHtml(rowData.upTime)}</span>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-section-title">Quick Stats</div>
+                        <div class="detail-row">
+                            <span class="detail-label">Memory Usage</span>
+                            <span class="detail-value">${escapeHtml(rowData.memory)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">CPU Usage</span>
+                            <span class="detail-value">${escapeHtml(rowData.cpuPercent)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Last Pulse</span>
+                            <span class="detail-value">${escapeHtml(rowData.lastPulse)}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Network Statistics -->
-            <div class="detail-section">
-                <div class="detail-section-title">Network Statistics</div>
-                <div class="detail-row">
-                    <span class="detail-label">RX Messages</span>
-                    <span class="detail-value">${rowData.rx.toLocaleString()}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">RX Data</span>
-                    <span class="detail-value">${rowData.rxData}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">TX Messages</span>
-                    <span class="detail-value">${rowData.tx.toLocaleString()}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">TX Data</span>
-                    <span class="detail-value">${rowData.txData}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Last Message</span>
-                    <span class="detail-value">${stats.lastMsgTime ? new Date(parseInt(stats.lastMsgTime)).toLocaleString() : 'N/A'}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Time Since Last Msg</span>
-                    <span class="detail-value">${rowData.lastPulse}</span>
-                </div>
-            </div>
-
-            <!-- Resource Usage -->
-            <div class="detail-section">
-                <div class="detail-section-title">Resource Usage</div>
-                <div class="detail-row">
-                    <span class="detail-label">Memory Usage</span>
-                    <span class="detail-value">${rowData.memory}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">CPU Usage</span>
-                    <span class="detail-value">${rowData.cpuPercent}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Raw Memory (bytes)</span>
-                    <span class="detail-value">${(stats.memoryUsage || 0).toLocaleString()}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Raw CPU Value</span>
-                    <span class="detail-value">${stats.cpuUsage || 0}</span>
+            <!-- Network Tab -->
+            <div class="probler-popup-tab-pane" data-pane="network">
+                <div class="detail-grid">
+                    <div class="detail-section">
+                        <div class="detail-section-title">Receive Statistics</div>
+                        <div class="detail-row">
+                            <span class="detail-label">RX Messages</span>
+                            <span class="detail-value">${rowData.rx.toLocaleString()}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">RX Data</span>
+                            <span class="detail-value">${escapeHtml(rowData.rxData)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">RX Data (bytes)</span>
+                            <span class="detail-value">${(stats.rxDataCont || 0).toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-section-title">Transmit Statistics</div>
+                        <div class="detail-row">
+                            <span class="detail-label">TX Messages</span>
+                            <span class="detail-value">${rowData.tx.toLocaleString()}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">TX Data</span>
+                            <span class="detail-value">${escapeHtml(rowData.txData)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">TX Data (bytes)</span>
+                            <span class="detail-value">${(stats.txDataCount || 0).toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <div class="detail-section detail-full-width">
+                        <div class="detail-section-title">Message Timing</div>
+                        <div class="detail-row">
+                            <span class="detail-label">Last Message</span>
+                            <span class="detail-value">${stats.lastMsgTime ? new Date(parseInt(stats.lastMsgTime)).toLocaleString() : 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Time Since Last Msg</span>
+                            <span class="detail-value">${escapeHtml(rowData.lastPulse)}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Additional Details -->
-            <div class="detail-section">
-                <div class="detail-section-title">Additional Details</div>
-                <div class="detail-row">
-                    <span class="detail-label">RX Data Count</span>
-                    <span class="detail-value">${(stats.rxDataCont || 0).toLocaleString()} bytes</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">TX Data Count</span>
-                    <span class="detail-value">${(stats.txDataCount || 0).toLocaleString()} bytes</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Data Object</span>
-                    <span class="detail-value">${rawData.data || 'N/A'}</span>
+            <!-- Resources Tab -->
+            <div class="probler-popup-tab-pane" data-pane="resources">
+                <div class="detail-grid">
+                    <div class="detail-section">
+                        <div class="detail-section-title">Memory Usage</div>
+                        <div class="detail-row">
+                            <span class="detail-label">Formatted</span>
+                            <span class="detail-value">${escapeHtml(rowData.memory)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Raw (bytes)</span>
+                            <span class="detail-value">${(stats.memoryUsage || 0).toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-section-title">CPU Usage</div>
+                        <div class="detail-row">
+                            <span class="detail-label">Percentage</span>
+                            <span class="detail-value">${escapeHtml(rowData.cpuPercent)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Raw Value</span>
+                            <span class="detail-value">${stats.cpuUsage || 0}</span>
+                        </div>
+                    </div>
+                    <div class="detail-section detail-full-width">
+                        <div class="detail-section-title">Additional Details</div>
+                        <div class="detail-row">
+                            <span class="detail-label">Data Object</span>
+                            <span class="detail-value">${escapeHtml(rawData.data || 'N/A')}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Services -->
-            <div class="detail-section detail-full-width">
-                <div class="detail-section-title">Services</div>
-                ${Object.keys(serviceToAreas).length > 0 ?
-                    Object.entries(serviceToAreas).map(([serviceName, serviceData]) => {
-                        const areas = serviceData.areas || {};
-                        const areasList = Object.keys(areas).filter(area => areas[area]).join(', ');
-                        return `
-                            <div class="detail-row">
-                                <span class="detail-label">${serviceName}</span>
-                                <span class="detail-value">Areas: ${areasList || 'None'}</span>
-                            </div>
-                        `;
-                    }).join('')
-                    : '<div class="detail-row"><span class="detail-label">No services available</span></div>'
-                }
+            <!-- Services Tab -->
+            <div class="probler-popup-tab-pane" data-pane="services">
+                <div class="detail-grid">
+                    <div class="detail-section detail-full-width">
+                        <div class="detail-section-title">Registered Services</div>
+                        ${Object.keys(serviceToAreas).length > 0 ?
+                            Object.entries(serviceToAreas).map(([serviceName, serviceData]) => {
+                                const areas = serviceData.areas || {};
+                                const areasList = Object.keys(areas).filter(area => areas[area]).join(', ');
+                                return `
+                                    <div class="detail-row">
+                                        <span class="detail-label">${escapeHtml(serviceName)}</span>
+                                        <span class="detail-value">Areas: ${escapeHtml(areasList) || 'None'}</span>
+                                    </div>
+                                `;
+                            }).join('')
+                            : '<div class="detail-row"><span class="detail-label">No services available</span></div>'
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     `;
-
-    // Close modal on overlay click
-    modal.onclick = (e) => {
-        if (e.target === modal) {
-            closeHealthDetailModal();
-        }
-    };
-
-    // Close modal on Escape key
-    document.addEventListener('keydown', handleEscapeKey);
-
-    modal.classList.add('active');
 }
 
-// Close health detail modal
-function closeHealthDetailModal() {
-    const modal = document.getElementById('health-detail-modal');
-    modal.classList.remove('active');
-    document.removeEventListener('keydown', handleEscapeKey);
-}
+// Show health detail modal using generic popup
+function showHealthDetailsModal(rowData) {
+    const rawData = healthDataMap.get(rowData.service);
+    if (!rawData) {
+        return;
+    }
 
-// Handle Escape key to close modal
-function handleEscapeKey(e) {
-    if (e.key === 'Escape') {
-        closeHealthDetailModal();
+    const contentHtml = generateHealthDetailContent(rowData);
+
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-popup-show',
+            config: {
+                id: 'health-detail-modal',
+                title: 'Service Health - ' + rowData.service,
+                size: 'xlarge',
+                content: contentHtml,
+                showFooter: false,
+                noPadding: true,
+                iframeId: 'health-iframe'
+            }
+        }, '*');
     }
 }
 

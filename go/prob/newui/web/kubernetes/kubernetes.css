@@ -341,6 +341,7 @@ body {
     padding: 24px;
     overflow-y: auto;
     max-height: calc(85vh - 70px);
+    color: #2d3748;
 }
 
 /* Modal Tabs */

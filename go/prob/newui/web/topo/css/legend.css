@@ -1,0 +1,85 @@
+/* Legend Styles */
+
+.legend-section {
+    margin-bottom: 15px;
+    padding: 12px;
+    background: var(--bg-card);
+    border-radius: 8px;
+}
+
+.legend-section:last-child {
+    margin-bottom: 0;
+}
+
+.legend-title {
+    font-weight: 700;
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-primary);
+}
+
+.node-icon {
+    width: 14px;
+    height: 14px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
+}
+
+.link-line {
+    width: 30px;
+    height: 3px;
+    display: inline-block;
+    border-radius: 2px;
+}
+
+.link-line.direction-invalid {
+    background: repeating-linear-gradient(
+        90deg,
+        var(--status-invalid),
+        var(--status-invalid) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+}
+
+.link-line.direction-aside {
+    background: var(--primary-color);
+}
+
+.link-line.direction-zside {
+    background: var(--primary-color);
+}
+
+.link-line.direction-bi {
+    background: var(--status-up);
+}
+
+.link-line.status-legend-up {
+    background: var(--status-up);
+}
+
+.link-line.status-legend-down {
+    background: var(--status-down);
+}
+
+.link-line.status-legend-partial {
+    background: var(--status-partial);
+}

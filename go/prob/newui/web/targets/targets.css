@@ -393,9 +393,10 @@ input:disabled { background: #f7fafc; color: #718096; cursor: not-allowed; }
 .nested-items-table th, .nested-items-table td {
     padding: 10px 12px;
     font-size: 11px;
+    color: #2d3748;
 }
 
-.nested-items-table th { background: #f1f5f9; font-size: 9px; }
+.nested-items-table th { background: #f1f5f9; font-size: 9px; color: #0ea5e9; }
 .nested-items-table tbody tr:last-child td { border-bottom: none; }
 
 .empty-nested-table {

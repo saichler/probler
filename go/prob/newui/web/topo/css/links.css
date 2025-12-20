@@ -1,0 +1,43 @@
+/* Link Styles */
+
+.link {
+    stroke-width: 2;
+    fill: none;
+    opacity: 0.8;
+    transition: opacity 0.3s, stroke-width 0.3s;
+}
+
+.link.direction-0 {
+    stroke: var(--status-invalid);
+    stroke-dasharray: 4, 4;
+}
+
+.link.direction-1,
+.link.direction-2 {
+    stroke: var(--primary-color);
+}
+
+.link.direction-3 {
+    stroke: var(--status-up);
+}
+
+.link.status-1 {
+    stroke: var(--status-up);
+}
+
+.link.status-2 {
+    stroke: var(--status-down);
+}
+
+.link.status-3 {
+    stroke: var(--status-partial);
+}
+
+.link.status-0 {
+    stroke: var(--status-invalid);
+}
+
+.link:hover {
+    opacity: 1;
+    stroke-width: 4;
+}

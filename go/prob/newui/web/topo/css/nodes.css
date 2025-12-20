@@ -1,0 +1,41 @@
+/* Node Styles */
+
+.node {
+    cursor: pointer;
+    pointer-events: all;
+    transition: all 0.3s ease;
+}
+
+.node circle {
+    fill: var(--primary-color);
+    stroke: white;
+    stroke-width: 2;
+    filter: drop-shadow(0 2px 4px rgba(14, 165, 233, 0.4));
+}
+
+.node:hover circle {
+    fill: var(--primary-dark);
+    r: 8;
+    filter: drop-shadow(0 4px 8px rgba(14, 165, 233, 0.6));
+}
+
+.node text {
+    fill: var(--text-primary);
+    font-size: 11px;
+    font-weight: 700;
+    text-anchor: middle;
+    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.node .node-icon {
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: transform 0.2s ease;
+}
+
+.node:hover .node-icon {
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}

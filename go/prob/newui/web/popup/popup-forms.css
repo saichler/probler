@@ -87,6 +87,7 @@
     font-size: 11px;
     text-align: left;
     border-bottom: 1px solid #e2e8f0;
+    color: #2d3748;
 }
 
 .probler-popup-body .nested-items-table th {
@@ -192,6 +193,169 @@
     letter-spacing: 0.5px;
 }
 
+/* Checkbox List */
+.probler-popup-body .checkbox-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px;
+    background: #f7fafc;
+}
+
+.probler-popup-body .checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.probler-popup-body .checkbox-item:hover {
+    background: rgba(14, 165, 233, 0.1);
+}
+
+.probler-popup-body .checkbox-item input {
+    margin-right: 10px;
+    width: auto;
+}
+
+.probler-popup-body .checkbox-item label {
+    margin-bottom: 0;
+    font-weight: normal;
+    cursor: pointer;
+    text-transform: none;
+    font-size: 12px;
+}
+
+/* Delete Confirmation Message */
+.probler-popup-body .delete-message {
+    padding: 10px 0;
+    color: #4a5568;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Input with Toggle Button */
+.probler-popup-body .input-with-toggle {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.probler-popup-body .input-with-toggle input {
+    flex: 1;
+}
+
+.probler-popup-body .toggle-btn {
+    padding: 8px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f7fafc;
+    color: #4a5568;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-width: 60px;
+}
+
+.probler-popup-body .toggle-btn:hover {
+    background: #e2e8f0;
+    color: #2d3748;
+}
+
+/* Masked/Empty Value Styles */
+.probler-popup-body .masked-value {
+    color: #94a3b8;
+    font-family: monospace;
+    letter-spacing: 2px;
+}
+
+.probler-popup-body .empty-value {
+    color: #cbd5e1;
+    font-style: italic;
+}
+
+/* Rules Container (for Roles) */
+.probler-popup-body .rules-container {
+    margin-top: 15px;
+}
+
+.probler-popup-body .rule-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 3px solid #0ea5e9;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.probler-popup-body .rule-row .rule-info {
+    flex: 1;
+}
+
+.probler-popup-body .rule-row .rule-id {
+    font-weight: 700;
+    color: #2d3748;
+    font-size: 12px;
+}
+
+.probler-popup-body .rule-row .rule-details {
+    font-size: 11px;
+    color: #718096;
+    margin-top: 4px;
+}
+
+.probler-popup-body .tag.allow {
+    background: rgba(0, 200, 83, 0.1);
+    color: #00c853;
+    border: 1px solid #00c853;
+}
+
+.probler-popup-body .tag.deny {
+    background: rgba(255, 61, 0, 0.1);
+    color: #ff3d00;
+    border: 1px solid #ff3d00;
+}
+
+/* Action/Attribute Rows (Key-Value rows) */
+.probler-popup-body .kv-container {
+    margin-top: 10px;
+}
+
+.probler-popup-body .kv-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.probler-popup-body .kv-row input,
+.probler-popup-body .kv-row select {
+    flex: 1;
+}
+
+.probler-popup-body .kv-row .remove-btn {
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.probler-popup-body .kv-row .remove-btn:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .probler-popup-body .form-row {
@@ -200,5 +364,13 @@
 
     .probler-popup-body .action-btns {
         flex-direction: column;
+    }
+
+    .probler-popup-body .input-with-toggle {
+        flex-direction: column;
+    }
+
+    .probler-popup-body .toggle-btn {
+        width: 100%;
     }
 }
