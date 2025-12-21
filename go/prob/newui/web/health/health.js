@@ -4,6 +4,43 @@
 let healthTable = null;
 let healthDataMap = new Map();
 
+// Current filters for server-side filtering
+let currentFilters = {};
+
+// Column definitions with filterKey for server-side filtering
+const columns = [
+    { key: 'service', label: 'Service', filterKey: 'alias' },
+    { key: 'rx', label: 'RX', filterKey: 'stats.rxMsgCount' },
+    { key: 'rxData', label: 'RX Data', sortKey: 'rxDataRaw', filterKey: 'stats.rxDataCont' },
+    { key: 'tx', label: 'TX', filterKey: 'stats.txMsgCount' },
+    { key: 'txData', label: 'TX Data', sortKey: 'txDataRaw', filterKey: 'stats.txDataCount' },
+    { key: 'memory', label: 'Memory', sortKey: 'memoryRaw', filterKey: 'stats.memoryUsage' },
+    { key: 'cpuPercent', label: 'CPU %', sortKey: 'cpuPercentRaw', filterKey: 'stats.cpuUsage' },
+    { key: 'upTime', label: 'Up Time', filterKey: 'startTime' },
+    { key: 'lastPulse', label: 'Last Pulse', filterKey: 'stats.lastMsgTime' }
+];
+
+// Build query with filter conditions
+function buildFilteredQuery(page, filters) {
+    let whereClause = 'Id=*';
+    const invalidFilters = [];
+
+    for (const [columnKey, filterValue] of Object.entries(filters)) {
+        if (!filterValue) continue;
+
+        const column = columns.find(c => c.key === columnKey);
+        if (!column || !column.filterKey) continue;
+
+        // No enums in Health - use text with wildcard
+        whereClause += ` and ${column.filterKey}=${filterValue}*`;
+    }
+
+    return {
+        query: `select * from L8Health where ${whereClause} limit 15 page ${page}`,
+        invalidFilters: invalidFilters
+    };
+}
+
 // Authentication token (from localStorage or parent window)
 let bearerToken = localStorage.getItem('bearerToken') || null;
 
@@ -28,19 +65,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         bearerToken = window.parent.bearerToken;
     }
 
-    // Fetch health data
-    await fetchHealthData();
+    // Initialize health data
+    await initializeHealth();
 });
+
+// Initialize health table with server-side filtering
+async function initializeHealth() {
+    try {
+        currentFilters = {};
+        const { tableData, totalCount } = await fetchHealthData(1);
+        renderHealthTable(tableData, totalCount);
+    } catch (error) {
+        console.error('Error initializing health:', error);
+        displayErrorMessage('Failed to load health data. Please try again later.');
+    }
+}
 
 // Get API endpoint URL
 function getHealthEndpoint() {
     return HEALTH_CONFIG.apiPrefix + HEALTH_CONFIG.healthPath;
 }
 
-// Fetch health data from the server
-async function fetchHealthData() {
+// Fetch health data for a specific page
+async function fetchHealthData(page) {
+    const serverPage = (page || 1) - 1;
+    const { query } = buildFilteredQuery(serverPage, currentFilters);
+    return await fetchHealthDataWithQuery(query, serverPage);
+}
+
+// Fetch health data with a custom query
+async function fetchHealthDataWithQuery(queryText, serverPage) {
     try {
-        const bodyParam = JSON.stringify({ text: 'select * from L8Health' });
+        const bodyParam = JSON.stringify({ text: queryText });
         const url = `${getHealthEndpoint()}?body=${encodeURIComponent(bodyParam)}`;
 
         const response = await fetch(url, {
@@ -53,24 +109,22 @@ async function fetchHealthData() {
         }
 
         const data = await response.json();
-        processHealthData(data);
+        return processHealthDataForTable(data, serverPage);
     } catch (error) {
         console.error('Error fetching health data:', error);
-        displayErrorMessage('Failed to load health data. Please try again later.');
+        throw error;
     }
 }
 
-// Process and display health data
-function processHealthData(data) {
+// Process health data and return table data
+function processHealthDataForTable(data, serverPage) {
     if (!data || !data.list) {
-        displayErrorMessage('No health data available.');
-        return;
+        return { tableData: [], totalCount: 0 };
     }
 
-    // Clear the map and store raw data
+    // Clear and rebuild the map
     healthDataMap.clear();
 
-    // Transform data for table display
     const tableData = data.list
         .filter(item => item.stats)
         .map(item => {
@@ -94,23 +148,17 @@ function processHealthData(data) {
             };
         });
 
-    renderHealthTable(tableData);
+    // Get total count from metadata
+    let totalCount = tableData.length;
+    if (serverPage === 0 && data.metadata?.keyCount?.counts) {
+        totalCount = data.metadata.keyCount.counts.Total || tableData.length;
+    }
+
+    return { tableData, totalCount };
 }
 
 // Render health table
-function renderHealthTable(data) {
-    const columns = [
-        { key: 'service', label: 'Service' },
-        { key: 'rx', label: 'RX' },
-        { key: 'rxData', label: 'RX Data', sortKey: 'rxDataRaw' },
-        { key: 'tx', label: 'TX' },
-        { key: 'txData', label: 'TX Data', sortKey: 'txDataRaw' },
-        { key: 'memory', label: 'Memory', sortKey: 'memoryRaw' },
-        { key: 'cpuPercent', label: 'CPU %', sortKey: 'cpuPercentRaw' },
-        { key: 'upTime', label: 'Up Time' },
-        { key: 'lastPulse', label: 'Last Pulse' }
-    ];
-
+function renderHealthTable(data, totalCount) {
     healthTable = new ProblerTable('health-table-container', {
         columns: columns,
         data: data,
@@ -118,6 +166,23 @@ function renderHealthTable(data) {
         sortable: true,
         filterable: true,
         statusColumn: null,
+        serverSide: true,
+        totalCount: totalCount,
+        onPageChange: async (page) => {
+            const { tableData, totalCount } = await fetchHealthData(page);
+            healthTable.updateServerData(tableData, totalCount);
+        },
+        onFilterChange: async (filters, page) => {
+            currentFilters = filters;
+            const serverPage = page - 1;
+            const { query, invalidFilters } = buildFilteredQuery(serverPage, filters);
+
+            const { tableData, totalCount } = await fetchHealthDataWithQuery(query, serverPage);
+            healthTable.updateServerData(tableData, totalCount);
+
+            // Show visual feedback for invalid filters (after render)
+            healthTable.setInvalidFilters(invalidFilters);
+        },
         onRowClick: (rowData) => {
             showHealthDetailsModal(rowData);
         }
@@ -442,7 +507,7 @@ async function refreshData() {
     if (!HEALTH_CONFIG) {
         await loadConfig();
     }
-    await fetchHealthData();
+    await initializeHealth();
 }
 
 // Export for use by parent window

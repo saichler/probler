@@ -14,7 +14,9 @@ class ProblerTable {
             onRowClick: config.onRowClick || null,
             serverSide: config.serverSide || false,
             totalCount: config.totalCount || 0,
-            onPageChange: config.onPageChange || null
+            onPageChange: config.onPageChange || null,
+            onFilterChange: config.onFilterChange || null,
+            filterDebounceMs: config.filterDebounceMs || 1000
         };
 
         this.currentPage = 1;
@@ -27,7 +29,22 @@ class ProblerTable {
     }
 
     init() {
+        // Create debounced filter handler for server-side filtering
+        if (this.config.serverSide && this.config.onFilterChange) {
+            this.debouncedFilterHandler = this.debounce(() => {
+                this.currentPage = 1;
+                this.config.onFilterChange(this.filters, this.currentPage);
+            }, this.config.filterDebounceMs);
+        }
         this.render();
+    }
+
+    debounce(func, wait) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
     }
 
     render() {
@@ -192,7 +209,15 @@ class ProblerTable {
                 input.addEventListener('input', (e) => {
                     const column = input.dataset.column;
                     const value = input.value;
-                    this.filter(column, value);
+                    this.filters[column] = value;  // Update immediately for UI state
+
+                    if (this.config.serverSide && this.config.onFilterChange) {
+                        // Server-side: use debounced handler
+                        this.debouncedFilterHandler();
+                    } else {
+                        // Client-side: immediate filtering
+                        this.filter(column, value);
+                    }
                 });
             });
         }
@@ -309,5 +334,23 @@ class ProblerTable {
         this.config.data = newData;
         this.config.totalCount = totalCount;
         this.render();
+    }
+
+    setInvalidFilters(invalidColumns) {
+        const container = document.getElementById(this.containerId);
+        if (!container) return;
+
+        // Clear all invalid states first
+        container.querySelectorAll('.noc-filter-input').forEach(input => {
+            input.classList.remove('invalid');
+        });
+
+        // Mark specified columns as invalid
+        invalidColumns.forEach(columnKey => {
+            const input = container.querySelector(`.noc-filter-input[data-column="${columnKey}"]`);
+            if (input) {
+                input.classList.add('invalid');
+            }
+        });
     }
 }

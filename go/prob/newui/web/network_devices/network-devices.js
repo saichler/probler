@@ -9,6 +9,96 @@ let networkDevicesTable = null;
 // Cache for total count
 let cachedTotalCount = 0;
 
+// Current filters for server-side filtering
+let currentFilters = {};
+
+// Reverse enum mappings: display value → backend enum value
+const deviceStatusEnum = {
+    'online': 1,
+    'offline': 2,
+    'warning': 3,
+    'critical': 4,
+    'maintenance': 5,
+    'partial': 6,
+    'unknown': 0
+};
+
+const deviceTypeEnum = {
+    'router': 1,
+    'switch': 2,
+    'firewall': 3,
+    'server': 4,
+    'access point': 5,
+    'unknown': 0
+};
+
+// Find matching enum value from user input (case-insensitive partial match)
+function matchEnumValue(input, enumValues) {
+    const normalizedInput = input.toLowerCase().trim();
+    if (!normalizedInput) return null;
+
+    // Try exact match first
+    if (enumValues[normalizedInput] !== undefined) {
+        return enumValues[normalizedInput];
+    }
+
+    // Try partial match (input is prefix of enum key)
+    for (const [key, value] of Object.entries(enumValues)) {
+        if (key.startsWith(normalizedInput)) {
+            return value;
+        }
+    }
+
+    return null; // No match found
+}
+
+// Column definitions with filterKey for server-side filtering
+const columns = [
+    { key: 'name', label: 'Device Name', filterKey: 'equipmentinfo.sysName' },
+    { key: 'ipAddress', label: 'IP Address', filterKey: 'equipmentinfo.ipAddress' },
+    { key: 'deviceType', label: 'Type', filterKey: 'equipmentinfo.deviceType', enumValues: deviceTypeEnum },
+    { key: 'location', label: 'Location', filterKey: 'equipmentinfo.location' },
+    { key: 'status', label: 'Status', filterKey: 'equipmentinfo.deviceStatus', enumValues: deviceStatusEnum },
+    { key: 'cpuUsage', label: 'CPU %', formatter: (value) => `${value}%` },
+    { key: 'memoryUsage', label: 'Memory %', formatter: (value) => `${value}%` },
+    { key: 'uptime', label: 'Uptime', filterKey: 'equipmentinfo.uptime' }
+];
+
+// Build query with filter conditions
+function buildFilteredQuery(page, filters) {
+    let whereClause = 'Id=*';
+    const invalidFilters = [];  // Track columns with invalid enum values
+
+    for (const [columnKey, filterValue] of Object.entries(filters)) {
+        if (!filterValue) continue;
+
+        const column = columns.find(c => c.key === columnKey);
+        if (!column || !column.filterKey) continue;
+
+        let queryValue;
+        if (column.enumValues) {
+            // Enum column: validate and convert to enum value
+            const enumValue = matchEnumValue(filterValue, column.enumValues);
+            if (enumValue === null) {
+                // No match - mark as invalid, skip this filter
+                invalidFilters.push(columnKey);
+                continue;
+            }
+            queryValue = enumValue;  // Use numeric enum value
+        } else {
+            // Non-enum column: use text with wildcard
+            queryValue = `${filterValue}*`;
+        }
+
+        whereClause += ` and ${column.filterKey}=${queryValue}`;
+    }
+
+    return {
+        query: `select * from NetworkDevice where ${whereClause} limit 15 page ${page}`,
+        invalidFilters: invalidFilters
+    };
+}
+
 // Set bearer token
 function setBearerToken(token) {
     bearerToken = token;
@@ -124,14 +214,17 @@ function getDevicesEndpoint() {
 
 // Fetch devices for a specific page
 async function fetchNetworkDevices(page) {
+    const serverPage = page - 1;
+    const { query } = buildFilteredQuery(serverPage, currentFilters);
+    return await fetchNetworkDevicesWithQuery(query, serverPage);
+}
+
+// Fetch devices with a custom query
+async function fetchNetworkDevicesWithQuery(queryText, serverPage) {
     const container = document.getElementById('network-devices-table');
 
     try {
-        const serverPage = page - 1;
-
-        const query = JSON.stringify({
-            text: `select * from NetworkDevice where Id=* limit 15 page ${serverPage}`
-        });
+        const query = JSON.stringify({ text: queryText });
 
         const response = await fetch(getDevicesEndpoint() + '?body=' + encodeURIComponent(query), {
             method: 'GET',
@@ -181,19 +274,13 @@ async function fetchNetworkDevices(page) {
 // Initialize Network Devices
 async function initializeNetworkDevices() {
     try {
+        // Reset filters on initialization
+        currentFilters = {};
+
         const { devices, totalCount } = await fetchNetworkDevices(1);
 
         networkDevicesTable = new ProblerTable('network-devices-table', {
-            columns: [
-                { key: 'name', label: 'Device Name' },
-                { key: 'ipAddress', label: 'IP Address' },
-                { key: 'deviceType', label: 'Type' },
-                { key: 'location', label: 'Location' },
-                { key: 'status', label: 'Status' },
-                { key: 'cpuUsage', label: 'CPU %', formatter: (value) => `${value}%` },
-                { key: 'memoryUsage', label: 'Memory %', formatter: (value) => `${value}%` },
-                { key: 'uptime', label: 'Uptime' }
-            ],
+            columns: columns,
             data: devices,
             rowsPerPage: 15,
             sortable: true,
@@ -204,6 +291,17 @@ async function initializeNetworkDevices() {
             onPageChange: async (page) => {
                 const { devices, totalCount } = await fetchNetworkDevices(page);
                 networkDevicesTable.updateServerData(devices, totalCount);
+            },
+            onFilterChange: async (filters, page) => {
+                currentFilters = filters;
+                const serverPage = page - 1;
+                const { query, invalidFilters } = buildFilteredQuery(serverPage, filters);
+
+                const { devices, totalCount } = await fetchNetworkDevicesWithQuery(query, serverPage);
+                networkDevicesTable.updateServerData(devices, totalCount);
+
+                // Show visual feedback for invalid enum filters (must be AFTER updateServerData which calls render())
+                networkDevicesTable.setInvalidFilters(invalidFilters);
             },
             onRowClick: (rowData) => {
                 showDeviceDetailModal(rowData);
