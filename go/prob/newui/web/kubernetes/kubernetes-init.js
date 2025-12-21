@@ -54,18 +54,20 @@ function initNodesTable(clusterName, nodes) {
     if (!document.getElementById(`nodes-${clusterName}-table`)) return;
     new ProblerTable(`nodes-${clusterName}-table`, {
         columns: [
-            { key: 'name', label: 'NAME' },
-            { key: 'roles', label: 'ROLES' },
+            { key: 'name', label: 'NAME', filterKey: 'name' },
+            { key: 'roles', label: 'ROLES', filterKey: 'roles' },
             { key: 'age', label: 'AGE' },
-            { key: 'version', label: 'VERSION' },
-            { key: 'internalIp', label: 'INTERNAL-IP' },
-            { key: 'externalIp', label: 'EXTERNAL-IP' },
-            { key: 'osImage', label: 'OS-IMAGE' },
-            { key: 'kernelVersion', label: 'KERNEL-VERSION' },
-            { key: 'containerRuntime', label: 'CONTAINER-RUNTIME' }
+            { key: 'version', label: 'VERSION', filterKey: 'version' },
+            { key: 'internalIp', label: 'INTERNAL-IP', filterKey: 'internalIp' },
+            { key: 'externalIp', label: 'EXTERNAL-IP', filterKey: 'externalIp' },
+            { key: 'osImage', label: 'OS-IMAGE', filterKey: 'osImage' },
+            { key: 'kernelVersion', label: 'KERNEL-VERSION', filterKey: 'kernelVersion' },
+            { key: 'containerRuntime', label: 'CONTAINER-RUNTIME', filterKey: 'containerRuntime' }
         ],
         data: nodes,
         rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
         onRowClick: (node) => showNodeDetailModal(node, clusterName)
     });
 }
@@ -74,8 +76,8 @@ function initPodsTable(clusterName, pods) {
     if (!document.getElementById(`pods-${clusterName}-table`)) return;
     new ProblerTable(`pods-${clusterName}-table`, {
         columns: [
-            { key: 'namespace', label: 'NAMESPACE' },
-            { key: 'name', label: 'NAME' },
+            { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+            { key: 'name', label: 'NAME', filterKey: 'name' },
             {
                 key: 'ready', label: 'READY',
                 formatter: (value, row) => {
@@ -95,7 +97,7 @@ function initPodsTable(clusterName, pods) {
                 }
             },
             {
-                key: 'status', label: 'STATUS',
+                key: 'status', label: 'STATUS', filterKey: 'status',
                 formatter: (value) => {
                     const statusText = getPodStatusText(value);
                     const statusClass = getPodStatusClass(statusText);
@@ -112,13 +114,15 @@ function initPodsTable(clusterName, pods) {
                 }
             },
             { key: 'age', label: 'AGE' },
-            { key: 'ip', label: 'IP' },
-            { key: 'node', label: 'NODE' },
-            { key: 'nominatedNode', label: 'NOMINATED NODE' },
+            { key: 'ip', label: 'IP', filterKey: 'ip' },
+            { key: 'node', label: 'NODE', filterKey: 'node' },
+            { key: 'nominatedNode', label: 'NOMINATED NODE', filterKey: 'nominatedNode' },
             { key: 'readinessGates', label: 'READINESS GATES' }
         ],
         data: pods,
         rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
         onRowClick: (pod) => showPodDetailModal(pod, clusterName)
     });
 }
@@ -127,18 +131,20 @@ function initDeploymentsTable(clusterName, deployments) {
     if (!document.getElementById(`deployments-${clusterName}-table`)) return;
     new ProblerTable(`deployments-${clusterName}-table`, {
         columns: [
-            { key: 'namespace', label: 'NAMESPACE' },
-            { key: 'name', label: 'NAME' },
+            { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+            { key: 'name', label: 'NAME', filterKey: 'name' },
             { key: 'ready', label: 'READY' },
             { key: 'upToDate', label: 'UP-TO-DATE' },
             { key: 'available', label: 'AVAILABLE' },
             { key: 'age', label: 'AGE' },
-            { key: 'containers', label: 'CONTAINERS' },
-            { key: 'images', label: 'IMAGES' },
-            { key: 'selector', label: 'SELECTOR' }
+            { key: 'containers', label: 'CONTAINERS', filterKey: 'containers' },
+            { key: 'images', label: 'IMAGES', filterKey: 'images' },
+            { key: 'selector', label: 'SELECTOR', filterKey: 'selector' }
         ],
         data: deployments,
         rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
         onRowClick: (deployment) => showDeploymentDetailModal(deployment, clusterName)
     });
 }
@@ -147,15 +153,17 @@ function initStatefulSetsTable(clusterName, statefulsets) {
     if (!document.getElementById(`statefulsets-${clusterName}-table`)) return;
     new ProblerTable(`statefulsets-${clusterName}-table`, {
         columns: [
-            { key: 'namespace', label: 'NAMESPACE' },
-            { key: 'name', label: 'NAME' },
+            { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+            { key: 'name', label: 'NAME', filterKey: 'name' },
             { key: 'ready', label: 'READY' },
             { key: 'age', label: 'AGE' },
-            { key: 'containers', label: 'CONTAINERS' },
-            { key: 'images', label: 'IMAGES' }
+            { key: 'containers', label: 'CONTAINERS', filterKey: 'containers' },
+            { key: 'images', label: 'IMAGES', filterKey: 'images' }
         ],
         data: statefulsets,
         rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
         onRowClick: (statefulset) => showStatefulSetDetailModal(statefulset, clusterName)
     });
 }
@@ -164,21 +172,23 @@ function initDaemonSetsTable(clusterName, daemonsets) {
     if (!document.getElementById(`daemonsets-${clusterName}-table`)) return;
     new ProblerTable(`daemonsets-${clusterName}-table`, {
         columns: [
-            { key: 'namespace', label: 'NAMESPACE' },
-            { key: 'name', label: 'NAME' },
+            { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+            { key: 'name', label: 'NAME', filterKey: 'name' },
             { key: 'desired', label: 'DESIRED' },
             { key: 'current', label: 'CURRENT' },
             { key: 'ready', label: 'READY' },
             { key: 'upToDate', label: 'UP-TO-DATE' },
             { key: 'available', label: 'AVAILABLE' },
-            { key: 'nodeSelector', label: 'NODE SELECTOR' },
+            { key: 'nodeSelector', label: 'NODE SELECTOR', filterKey: 'nodeSelector' },
             { key: 'age', label: 'AGE' },
-            { key: 'containers', label: 'CONTAINERS' },
-            { key: 'images', label: 'IMAGES' },
-            { key: 'selector', label: 'SELECTOR' }
+            { key: 'containers', label: 'CONTAINERS', filterKey: 'containers' },
+            { key: 'images', label: 'IMAGES', filterKey: 'images' },
+            { key: 'selector', label: 'SELECTOR', filterKey: 'selector' }
         ],
         data: daemonsets,
         rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
         onRowClick: (daemonset) => showDaemonSetDetailModal(daemonset, clusterName)
     });
 }
@@ -187,17 +197,19 @@ function initServicesTable(clusterName, services) {
     if (!document.getElementById(`services-${clusterName}-table`)) return;
     new ProblerTable(`services-${clusterName}-table`, {
         columns: [
-            { key: 'namespace', label: 'NAMESPACE' },
-            { key: 'name', label: 'NAME' },
-            { key: 'type', label: 'TYPE' },
-            { key: 'clusterIp', label: 'CLUSTER-IP' },
-            { key: 'externalIp', label: 'EXTERNAL-IP' },
-            { key: 'ports', label: 'PORT(S)' },
+            { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+            { key: 'name', label: 'NAME', filterKey: 'name' },
+            { key: 'type', label: 'TYPE', filterKey: 'type' },
+            { key: 'clusterIp', label: 'CLUSTER-IP', filterKey: 'clusterIp' },
+            { key: 'externalIp', label: 'EXTERNAL-IP', filterKey: 'externalIp' },
+            { key: 'ports', label: 'PORT(S)', filterKey: 'ports' },
             { key: 'age', label: 'AGE' },
-            { key: 'selector', label: 'SELECTOR' }
+            { key: 'selector', label: 'SELECTOR', filterKey: 'selector' }
         ],
         data: services,
         rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
         onRowClick: (service) => showServiceDetailModal(service, clusterName)
     });
 }
@@ -206,12 +218,14 @@ function initNamespacesTable(clusterName, namespaces) {
     if (!document.getElementById(`namespaces-${clusterName}-table`)) return;
     new ProblerTable(`namespaces-${clusterName}-table`, {
         columns: [
-            { key: 'name', label: 'NAME' },
-            { key: 'status', label: 'STATUS' },
+            { key: 'name', label: 'NAME', filterKey: 'name' },
+            { key: 'status', label: 'STATUS', filterKey: 'status' },
             { key: 'age', label: 'AGE' }
         ],
         data: namespaces,
         rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
         onRowClick: (namespace) => showNamespaceDetailModal(namespace, clusterName)
     });
 }
@@ -220,13 +234,15 @@ function initNetworkPoliciesTable(clusterName, networkpolicies) {
     if (!document.getElementById(`networkpolicies-${clusterName}-table`)) return;
     new ProblerTable(`networkpolicies-${clusterName}-table`, {
         columns: [
-            { key: 'namespace', label: 'NAMESPACE' },
-            { key: 'name', label: 'NAME' },
-            { key: 'podSelector', label: 'POD-SELECTOR' },
+            { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+            { key: 'name', label: 'NAME', filterKey: 'name' },
+            { key: 'podSelector', label: 'POD-SELECTOR', filterKey: 'podSelector' },
             { key: 'age', label: 'AGE' }
         ],
         data: networkpolicies,
         rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
         onRowClick: (policy) => showNetworkPolicyDetailModal(policy, clusterName)
     });
 }
