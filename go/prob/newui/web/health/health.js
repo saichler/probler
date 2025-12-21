@@ -22,7 +22,7 @@ const columns = [
 
 // Build query with filter conditions
 function buildFilteredQuery(page, filters) {
-    let whereClause = 'Id=*';
+    let whereClause = 'AUuid=*';
     const invalidFilters = [];
 
     for (const [columnKey, filterValue] of Object.entries(filters)) {
