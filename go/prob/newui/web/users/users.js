@@ -5,7 +5,6 @@ let users = {};
 let roles = {};
 
 // State management
-let pendingDelete = null;
 let currentEditMode = 'add';
 let currentEditUserId = null;
 
@@ -26,15 +25,26 @@ window.addEventListener('message', function(event) {
         case 'probler-popup-closed':
             handlePopupClosed(event.data.id);
             break;
+        case 'probler-confirm-result':
+            handleConfirmResult(event.data.id, event.data.confirmed);
+            break;
     }
 });
+
+// Handle confirmation results from ProblerConfirm
+function handleConfirmResult(id, confirmed) {
+    if (!confirmed) return;
+
+    if (id && id.startsWith('delete-user-')) {
+        const userId = id.replace('delete-user-', '');
+        performDeleteUser(userId);
+    }
+}
 
 // Handle save from popup
 function handlePopupSave(modalId, formData) {
     if (modalId === 'user-modal') {
         handleUserSave(formData);
-    } else if (modalId === 'delete-confirm') {
-        confirmDelete();
     }
 }
 
@@ -43,8 +53,6 @@ function handlePopupClosed(modalId) {
     if (modalId === 'user-modal') {
         currentEditMode = 'add';
         currentEditUserId = null;
-    } else if (modalId === 'delete-confirm') {
-        pendingDelete = null;
     }
 }
 
@@ -364,36 +372,24 @@ function editUser(userId) {
 }
 
 function deleteUser(userId) {
-    pendingDelete = userId;
-
     if (window.parent !== window) {
         window.parent.postMessage({
-            type: 'probler-popup-show',
+            type: 'probler-confirm-show',
             config: {
-                id: 'delete-confirm',
-                title: 'Confirm Delete',
-                size: 'small',
-                content: '<p class="delete-message">Are you sure you want to delete user "' + escapeHtml(userId) + '"?</p>',
-                iframeId: 'users-iframe',
-                saveButtonText: 'Delete'
+                type: 'danger',
+                title: 'Delete User',
+                message: `Are you sure you want to delete user "${userId}"?`,
+                confirmText: 'Delete',
+                id: `delete-user-${userId}`
             }
         }, '*');
     }
 }
 
-// Close delete confirmation popup
-function closeDeleteModal() {
-    pendingDelete = null;
-    if (window.parent !== window) {
-        window.parent.postMessage({ type: 'probler-popup-close' }, '*');
-    }
-}
-
-async function confirmDelete() {
-    if (!pendingDelete) return;
-
+// Perform the actual delete after confirmation
+async function performDeleteUser(userId) {
     try {
-        const response = await fetch(getUsersEndpoint() + '/' + encodeURIComponent(pendingDelete), {
+        const response = await fetch(getUsersEndpoint() + '/' + encodeURIComponent(userId), {
             method: 'DELETE',
             headers: getAuthHeaders()
         });
@@ -401,18 +397,15 @@ async function confirmDelete() {
         if (!response.ok) {
             const errorMsg = await getApiErrorMessage(response, 'Failed to delete user');
             showToast(errorMsg, 'error');
-            closeDeleteModal();
             return;
         }
 
-        delete users[pendingDelete];
-        closeDeleteModal();
+        delete users[userId];
         renderUsers();
         showToast('User deleted successfully', 'success');
     } catch (error) {
         console.error('Error deleting user:', error);
         showToast('Error deleting user', 'error');
-        closeDeleteModal();
     }
 }
 

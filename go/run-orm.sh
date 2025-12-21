@@ -1,3 +1,3 @@
-docker run --network host -e NODE_IP="192.168.86.98" -v /data/:/data/ saichler/probler-orm:latest
+docker run -d --network host -e NODE_IP="192.168.6.183" -v /data/:/data/ saichler/probler-orm:latest
 echo "Sleeping 10 seconds"
-#sleep 10
+sleep 10

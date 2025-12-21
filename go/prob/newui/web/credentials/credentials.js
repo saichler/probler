@@ -4,7 +4,6 @@
 let credentials = {};
 
 // State management
-let pendingDelete = null;
 let tempCredItems = [];
 let currentEditMode = 'add';
 let currentEditCredId = null;
@@ -27,8 +26,21 @@ window.addEventListener('message', function(event) {
         case 'probler-popup-closed':
             handlePopupClosed(event.data.id);
             break;
+        case 'probler-confirm-result':
+            handleConfirmResult(event.data.id, event.data.confirmed);
+            break;
     }
 });
+
+// Handle confirmation results from ProblerConfirm
+function handleConfirmResult(id, confirmed) {
+    if (!confirmed) return;
+
+    if (id && id.startsWith('delete-cred-')) {
+        const credId = id.replace('delete-cred-', '');
+        performDeleteCredentials(credId);
+    }
+}
 
 // Handle save from popup
 function handlePopupSave(modalId, formData) {
@@ -36,8 +48,6 @@ function handlePopupSave(modalId, formData) {
         handleCredentialsSave(formData);
     } else if (modalId === 'cred-item-modal') {
         handleCredItemSave(formData);
-    } else if (modalId === 'delete-confirm') {
-        confirmDelete();
     }
 }
 
@@ -57,8 +67,6 @@ function handlePopupClosed(modalId) {
             pendingCredentialsRefresh = false;
             refreshCredentialsPopupContent();
         }
-    } else if (modalId === 'delete-confirm') {
-        pendingDelete = null;
     }
 }
 
@@ -393,18 +401,15 @@ function editCredentials(credId) {
 }
 
 function deleteCredentials(credId) {
-    pendingDelete = credId;
-
     if (window.parent !== window) {
         window.parent.postMessage({
-            type: 'probler-popup-show',
+            type: 'probler-confirm-show',
             config: {
-                id: 'delete-confirm',
-                title: 'Confirm Delete',
-                size: 'small',
-                content: '<p class="delete-message">Are you sure you want to delete credentials "' + escapeHtml(credId) + '"?</p>',
-                iframeId: 'credentials-iframe',
-                saveButtonText: 'Delete'
+                type: 'danger',
+                title: 'Delete Credentials',
+                message: `Are you sure you want to delete credentials "${credId}"?`,
+                confirmText: 'Delete',
+                id: `delete-cred-${credId}`
             }
         }, '*');
     }
@@ -577,22 +582,10 @@ function toggleFieldVisibilityInPopup(fieldId, btn) {
     }
 }
 
-// ============================================
-// Delete Modal Functions
-// ============================================
-
-function closeDeleteModal() {
-    pendingDelete = null;
-    if (window.parent !== window) {
-        window.parent.postMessage({ type: 'probler-popup-close' }, '*');
-    }
-}
-
-async function confirmDelete() {
-    if (!pendingDelete) return;
-
+// Perform the actual delete after confirmation
+async function performDeleteCredentials(credId) {
     try {
-        const response = await fetch(getCredsEndpoint() + '/' + encodeURIComponent(pendingDelete), {
+        const response = await fetch(getCredsEndpoint() + '/' + encodeURIComponent(credId), {
             method: 'DELETE',
             headers: getAuthHeaders()
         });
@@ -600,18 +593,15 @@ async function confirmDelete() {
         if (!response.ok) {
             const errorMsg = await getApiErrorMessage(response, 'Failed to delete credentials');
             showToast(errorMsg, 'error');
-            closeDeleteModal();
             return;
         }
 
-        delete credentials[pendingDelete];
-        closeDeleteModal();
+        delete credentials[credId];
         renderCredentials();
         showToast('Credentials deleted successfully', 'success');
     } catch (error) {
         console.error('Error deleting credentials:', error);
         showToast('Error deleting credentials', 'error');
-        closeDeleteModal();
     }
 }
 

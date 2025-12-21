@@ -60,6 +60,7 @@ echo "Building Topology"
 cd ../topology/
 go build -o topology_demo
 mv ./topology_demo ../../demo/.
+cp ./worldcities.csv ../../demo/.
 
 echo "Building Webui"
 cd ../newui/

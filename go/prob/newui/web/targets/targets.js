@@ -5,7 +5,6 @@ let targets = {};
 let credentials = {};
 
 // State management
-let pendingDelete = null;
 let tempHosts = [];
 let selectedInventoryType = 1;
 
@@ -64,8 +63,25 @@ window.addEventListener('message', function(event) {
         case 'probler-popup-closed':
             handlePopupClosed(event.data.id);
             break;
+        case 'probler-confirm-result':
+            handleConfirmResult(event.data.id, event.data.confirmed);
+            break;
     }
 });
+
+// Handle confirmation results from ProblerConfirm
+function handleConfirmResult(id, confirmed) {
+    if (!confirmed) return;
+
+    if (id && id.startsWith('delete-target-')) {
+        const targetId = id.replace('delete-target-', '');
+        performDeleteTarget(targetId);
+    } else if (id && id.startsWith('bulk-action-')) {
+        const parts = id.split('-');
+        const state = parseInt(parts[2], 10);
+        performBulkStateChange(state);
+    }
+}
 
 // Handle save from popup
 function handlePopupSave(modalId, formData) {
@@ -309,13 +325,27 @@ async function fetchCredentials() {
 }
 
 // Set state for all targets of the current inventory type
-async function setAllTargetsState(state) {
+function setAllTargetsState(state) {
     const action = state === 2 ? 'start' : 'stop';
     const typeName = INVENTORY_TYPES[selectedInventoryType] || 'targets';
 
-    if (!confirm(`Are you sure you want to ${action} all ${typeName}?`)) {
-        return;
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-confirm-show',
+            config: {
+                type: 'warning',
+                title: state === 2 ? 'Start All Targets' : 'Stop All Targets',
+                message: `Are you sure you want to ${action} all ${typeName}?`,
+                confirmText: action.charAt(0).toUpperCase() + action.slice(1),
+                id: `bulk-action-${state}`
+            }
+        }, '*');
     }
+}
+
+// Perform the bulk state change after confirmation
+async function performBulkStateChange(state) {
+    const typeName = INVENTORY_TYPES[selectedInventoryType] || 'targets';
 
     const payload = {
         actionType: selectedInventoryType,
@@ -610,28 +640,24 @@ async function toggleTargetState(targetId) {
 }
 
 function deleteTarget(targetId) {
-    pendingDelete = targetId;
-    document.getElementById('delete-message').textContent =
-        'Are you sure you want to delete target "' + targetId + '"?';
-    document.getElementById('delete-modal').classList.add('active');
-    notifyParentModalOpen();
+    if (window.parent !== window) {
+        window.parent.postMessage({
+            type: 'probler-confirm-show',
+            config: {
+                type: 'danger',
+                title: 'Delete Target',
+                message: `Are you sure you want to delete target "${targetId}"?`,
+                confirmText: 'Delete',
+                id: `delete-target-${targetId}`
+            }
+        }, '*');
+    }
 }
 
-// ============================================
-// Delete Modal Functions
-// ============================================
-
-function closeDeleteModal() {
-    document.getElementById('delete-modal').classList.remove('active');
-    pendingDelete = null;
-    notifyParentModalClose();
-}
-
-async function confirmDelete() {
-    if (!pendingDelete) return;
-
+// Perform the actual delete after confirmation
+async function performDeleteTarget(targetId) {
     try {
-        const query = { text: `select * from L8PTarget where targetId=${pendingDelete}` };
+        const query = { text: `select * from L8PTarget where targetId=${targetId}` };
         const response = await fetch(getTargetsEndpoint(), {
             method: 'DELETE',
             headers: getAuthHeaders(),
@@ -641,19 +667,16 @@ async function confirmDelete() {
         if (!response.ok) {
             const errorMsg = await getApiErrorMessage(response, 'Failed to delete target');
             showToast(errorMsg, 'error');
-            closeDeleteModal();
             return;
         }
 
-        delete targets[pendingDelete];
+        delete targets[targetId];
         renderTargets();
         showToast('Target deleted successfully', 'success');
     } catch (error) {
         console.error('Error deleting target:', error);
         showToast('Error deleting target', 'error');
     }
-
-    closeDeleteModal();
 }
 
 // ============================================

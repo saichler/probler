@@ -27,7 +27,6 @@ const ACTION_CODES = {
 
 // State management
 let currentEditingRuleIndex = null;
-let pendingDelete = null;
 let tempRules = [];
 let currentEditMode = 'add';
 let currentEditRoleId = null;
@@ -56,8 +55,21 @@ window.addEventListener('message', function(event) {
         case 'probler-popup-closed':
             handlePopupClosed(event.data.id);
             break;
+        case 'probler-confirm-result':
+            handleConfirmResult(event.data.id, event.data.confirmed);
+            break;
     }
 });
+
+// Handle confirmation results from ProblerConfirm
+function handleConfirmResult(id, confirmed) {
+    if (!confirmed) return;
+
+    if (id && id.startsWith('delete-role-')) {
+        const roleId = id.replace('delete-role-', '');
+        performDeleteRole(roleId);
+    }
+}
 
 // Handle save from popup
 function handlePopupSave(modalId, formData) {
@@ -65,8 +77,6 @@ function handlePopupSave(modalId, formData) {
         handleRoleSave(formData);
     } else if (modalId === 'rule-modal') {
         handleRuleSave(formData);
-    } else if (modalId === 'delete-confirm') {
-        confirmDelete();
     }
 }
 
@@ -88,8 +98,6 @@ function handlePopupClosed(modalId) {
         }
         tempRuleActions = {};
         tempRuleAttributes = {};
-    } else if (modalId === 'delete-confirm') {
-        pendingDelete = null;
     }
 }
 
@@ -468,18 +476,16 @@ function editRole(roleId) {
 }
 
 function deleteRole(roleId) {
-    pendingDelete = roleId;
-
     if (window.parent !== window) {
         window.parent.postMessage({
-            type: 'probler-popup-show',
+            type: 'probler-confirm-show',
             config: {
-                id: 'delete-confirm',
-                title: 'Confirm Delete',
-                size: 'small',
-                content: '<p class="delete-message">Are you sure you want to delete role "' + escapeHtml(roleId) + '"? Users with this role will lose these permissions.</p>',
-                iframeId: 'roles-iframe',
-                saveButtonText: 'Delete'
+                type: 'danger',
+                title: 'Delete Role',
+                message: `Are you sure you want to delete role "${roleId}"?`,
+                detail: 'Users with this role will lose these permissions.',
+                confirmText: 'Delete',
+                id: `delete-role-${roleId}`
             }
         }, '*');
     }
@@ -761,19 +767,10 @@ function handleRuleSave(formData) {
     // Don't refresh immediately - wait for probler-popup-closed message
 }
 
-// Delete Modal Functions
-function closeDeleteModal() {
-    pendingDelete = null;
-    if (window.parent !== window) {
-        window.parent.postMessage({ type: 'probler-popup-close' }, '*');
-    }
-}
-
-async function confirmDelete() {
-    if (!pendingDelete) return;
-
+// Perform the actual delete after confirmation
+async function performDeleteRole(roleId) {
     try {
-        const response = await fetch(getRolesEndpoint() + '/' + encodeURIComponent(pendingDelete), {
+        const response = await fetch(getRolesEndpoint() + '/' + encodeURIComponent(roleId), {
             method: 'DELETE',
             headers: getAuthHeaders()
         });
@@ -781,12 +778,10 @@ async function confirmDelete() {
         if (!response.ok) {
             const errorMsg = await getApiErrorMessage(response, 'Failed to delete role');
             showToast(errorMsg, 'error');
-            closeDeleteModal();
             return;
         }
 
-        delete roles[pendingDelete];
-        closeDeleteModal();
+        delete roles[roleId];
         renderRoles();
         showToast('Role deleted successfully', 'success');
 
@@ -795,7 +790,6 @@ async function confirmDelete() {
     } catch (error) {
         console.error('Error deleting role:', error);
         showToast('Error deleting role', 'error');
-        closeDeleteModal();
     }
 }
 

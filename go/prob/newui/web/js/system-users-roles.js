@@ -5,7 +5,6 @@ let urUsers = {};
 let urRoles = {};
 let urTempRules = [];
 let urCurrentRuleIndex = null;
-let urPendingDelete = { type: null, id: null };
 let urRegistryTypes = null;
 let usersTable = null;
 let rolesTable = null;
@@ -338,9 +337,17 @@ function editUser(userId) {
 }
 
 function deleteUser(userId) {
-    urPendingDelete = { type: 'user', id: userId };
-    document.getElementById('delete-message').textContent = `Delete user "${userId}"?`;
-    document.getElementById('delete-modal').classList.add('active');
+    if (typeof ProblerConfirm !== 'undefined') {
+        ProblerConfirm.show({
+            type: 'danger',
+            title: 'Delete User',
+            message: `Are you sure you want to delete user "${userId}"?`,
+            confirmText: 'Delete',
+            onConfirm: function() {
+                performDeleteUser(userId);
+            }
+        });
+    }
 }
 
 // === ROLE MODAL ===
@@ -435,9 +442,18 @@ function editRole(roleId) {
 }
 
 function deleteRole(roleId) {
-    urPendingDelete = { type: 'role', id: roleId };
-    document.getElementById('delete-message').textContent = `Delete role "${roleId}"?`;
-    document.getElementById('delete-modal').classList.add('active');
+    if (typeof ProblerConfirm !== 'undefined') {
+        ProblerConfirm.show({
+            type: 'danger',
+            title: 'Delete Role',
+            message: `Are you sure you want to delete role "${roleId}"?`,
+            detail: 'Users with this role will lose these permissions.',
+            confirmText: 'Delete',
+            onConfirm: function() {
+                performDeleteRole(roleId);
+            }
+        });
+    }
 }
 
 // === RULE MODAL ===
@@ -544,40 +560,39 @@ function addAttributeRowWithValues(k, v) {
     container.appendChild(div);
 }
 
-// === DELETE MODAL ===
-function closeDeleteModal() {
-    document.getElementById('delete-modal').classList.remove('active');
-    urPendingDelete = { type: null, id: null };
-}
-
-async function confirmDelete() {
-    const { type, id } = urPendingDelete;
+// Perform user delete after confirmation
+async function performDeleteUser(userId) {
     try {
-        if (type === 'user') {
-            const response = await makeAuthenticatedRequest(`/probler/73/users/${id}`, { method: 'DELETE' });
-            if (response && response.ok) {
-                fetchUsersData();
-                showUrToast('User deleted successfully', 'success');
-            } else {
-                const errorMsg = await getApiErrorMessage(response, 'Failed to delete user');
-                showUrToast(errorMsg, 'error');
-            }
-        } else if (type === 'role') {
-            const response = await makeAuthenticatedRequest(`/probler/74/roles/${id}`, { method: 'DELETE' });
-            if (response && response.ok) {
-                fetchRolesData();
-                fetchUsersData();
-                showUrToast('Role deleted successfully', 'success');
-            } else {
-                const errorMsg = await getApiErrorMessage(response, 'Failed to delete role');
-                showUrToast(errorMsg, 'error');
-            }
+        const response = await makeAuthenticatedRequest(`/probler/73/users/${userId}`, { method: 'DELETE' });
+        if (response && response.ok) {
+            fetchUsersData();
+            showUrToast('User deleted successfully', 'success');
+        } else {
+            const errorMsg = await getApiErrorMessage(response, 'Failed to delete user');
+            showUrToast(errorMsg, 'error');
         }
     } catch (e) {
-        console.error('Error deleting:', e);
-        showUrToast('Error deleting: ' + e.message, 'error');
+        console.error('Error deleting user:', e);
+        showUrToast('Error deleting user: ' + e.message, 'error');
     }
-    closeDeleteModal();
+}
+
+// Perform role delete after confirmation
+async function performDeleteRole(roleId) {
+    try {
+        const response = await makeAuthenticatedRequest(`/probler/74/roles/${roleId}`, { method: 'DELETE' });
+        if (response && response.ok) {
+            fetchRolesData();
+            fetchUsersData();
+            showUrToast('Role deleted successfully', 'success');
+        } else {
+            const errorMsg = await getApiErrorMessage(response, 'Failed to delete role');
+            showUrToast(errorMsg, 'error');
+        }
+    } catch (e) {
+        console.error('Error deleting role:', e);
+        showUrToast('Error deleting role: ' + e.message, 'error');
+    }
 }
 
 // === PASSWORD MODAL ===
