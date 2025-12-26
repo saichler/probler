@@ -7,6 +7,10 @@ let healthDataMap = new Map();
 // Current filters for server-side filtering
 let currentFilters = {};
 
+// Current sort state for server-side sorting
+let currentSortColumn = null;
+let currentSortDirection = 'asc';
+
 // Column definitions with filterKey for server-side filtering
 const columns = [
     { key: 'service', label: 'Service', filterKey: 'alias' },
@@ -20,8 +24,8 @@ const columns = [
     { key: 'lastPulse', label: 'Last Pulse', filterKey: 'stats.lastMsgTime' }
 ];
 
-// Build query with filter conditions
-function buildFilteredQuery(page, filters) {
+// Build query with filter and sort conditions
+function buildFilteredQuery(page, filters, sortColumn, sortDirection) {
     let whereClause = 'AUuid=*';
     const invalidFilters = [];
 
@@ -35,8 +39,19 @@ function buildFilteredQuery(page, filters) {
         whereClause += ` and ${column.filterKey}=${filterValue}*`;
     }
 
+    let query = `select * from L8Health where ${whereClause} limit 15 page ${page}`;
+
+    // Add sort clause if sorting is active (use filterKey for server-side sort field)
+    if (sortColumn) {
+        const column = columns.find(c => c.key === sortColumn);
+        if (column && column.filterKey) {
+            const descending = sortDirection === 'desc' ? ' descending' : '';
+            query += ` sort-by ${column.filterKey}${descending}`;
+        }
+    }
+
     return {
-        query: `select * from L8Health where ${whereClause} limit 15 page ${page}`,
+        query: query,
         invalidFilters: invalidFilters
     };
 }
@@ -73,6 +88,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function initializeHealth() {
     try {
         currentFilters = {};
+        currentSortColumn = null;
+        currentSortDirection = 'asc';
         const { tableData, totalCount } = await fetchHealthData(1);
         renderHealthTable(tableData, totalCount);
     } catch (error) {
@@ -89,7 +106,7 @@ function getHealthEndpoint() {
 // Fetch health data for a specific page
 async function fetchHealthData(page) {
     const serverPage = (page || 1) - 1;
-    const { query } = buildFilteredQuery(serverPage, currentFilters);
+    const { query } = buildFilteredQuery(serverPage, currentFilters, currentSortColumn, currentSortDirection);
     return await fetchHealthDataWithQuery(query, serverPage);
 }
 
@@ -175,12 +192,24 @@ function renderHealthTable(data, totalCount) {
         onFilterChange: async (filters, page) => {
             currentFilters = filters;
             const serverPage = page - 1;
-            const { query, invalidFilters } = buildFilteredQuery(serverPage, filters);
+            const { query, invalidFilters } = buildFilteredQuery(serverPage, filters, currentSortColumn, currentSortDirection);
 
             const { tableData, totalCount } = await fetchHealthDataWithQuery(query, serverPage);
             healthTable.updateServerData(tableData, totalCount);
 
             // Show visual feedback for invalid filters (after render)
+            healthTable.setInvalidFilters(invalidFilters);
+        },
+        onSortChange: async (sortColumn, sortDirection, page) => {
+            currentSortColumn = sortColumn;
+            currentSortDirection = sortDirection;
+            const serverPage = page - 1;
+            const { query, invalidFilters } = buildFilteredQuery(serverPage, currentFilters, sortColumn, sortDirection);
+
+            const { tableData, totalCount } = await fetchHealthDataWithQuery(query, serverPage);
+            healthTable.updateServerData(tableData, totalCount);
+
+            // Preserve invalid filter state after sort
             healthTable.setInvalidFilters(invalidFilters);
         },
         onRowClick: (rowData) => {

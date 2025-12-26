@@ -783,7 +783,7 @@
             <p class="hero-description">
                 Build sophisticated distributed systems with Protocol Buffer-based type definitions,
                 virtual networking, service discovery, and real-time health monitoring.
-                <strong>Version 1.4.0</strong>: Now with Map-Reduce framework, Leader Election, and Remote VNet support.
+                <strong>Version 1.5.0</strong>: Now with Two-Factor Authentication, Local Communication, and Enhanced SLA Decorators.
             </p>
             <div class="cta-container">
                 <a href="#install" class="cta-button cta-primary">Get Started</a>
@@ -795,57 +795,51 @@
     <!-- What's New Section -->
     <section class="section section-dark fade-in" id="whats-new">
         <div class="container">
-            <h2 class="section-title" style="color: white;">What's New in v1.4.0</h2>
-            <p class="section-subtitle" style="color: rgba(255,255,255,0.8);">Latest features for distributed computing and networking</p>
+            <h2 class="section-title" style="color: white;">What's New in v1.5.0</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.8);">Enhanced security, local communication, and advanced service management</p>
 
             <div class="features-grid">
                 <div class="feature-card" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
                     <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="30" cy="30" r="10" fill="#00b4d8"/>
-                        <circle cx="70" cy="30" r="10" fill="#00b4d8"/>
-                        <circle cx="30" cy="70" r="10" fill="#00b4d8"/>
-                        <circle cx="70" cy="70" r="10" fill="#00b4d8"/>
-                        <path d="M 30 40 L 50 50 L 30 60" stroke="#d4af37" stroke-width="2" fill="none"/>
-                        <path d="M 70 40 L 50 50 L 70 60" stroke="#d4af37" stroke-width="2" fill="none"/>
-                        <circle cx="50" cy="50" r="15" fill="#ff6b35"/>
-                        <text x="50" y="55" text-anchor="middle" fill="white" font-size="14" font-weight="bold">MR</text>
+                        <rect x="30" y="20" width="40" height="35" rx="5" fill="#00b4d8" opacity="0.3"/>
+                        <rect x="35" y="25" width="30" height="25" rx="3" fill="#00b4d8"/>
+                        <circle cx="50" cy="37" r="8" fill="#d4af37"/>
+                        <text x="50" y="41" text-anchor="middle" fill="white" font-size="10" font-weight="bold">2FA</text>
+                        <rect x="25" y="60" width="50" height="25" rx="3" fill="#06ffa5" opacity="0.5"/>
+                        <text x="50" y="76" text-anchor="middle" fill="white" font-size="10">******</text>
                     </svg>
-                    <h3 style="color: var(--primary-color);">Map-Reduce Framework</h3>
-                    <p style="color: rgba(255,255,255,0.8);">Distributed Map-Reduce capabilities for parallel data processing. New <code>IMapReduceService</code> interface and <code>Collect()</code> method for distributed computation across services.</p>
+                    <h3 style="color: var(--primary-color);">Two-Factor Authentication</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Complete TFA support with <code>TFASetup()</code> and <code>TFAVerify()</code> methods. Includes Captcha protection and secure user registration workflows.</p>
                 </div>
 
                 <div class="feature-card" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
                     <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="30" r="12" fill="#d4af37"/>
-                        <path d="M 45 27 L 50 22 L 55 27 L 55 33 L 50 38 L 45 33 Z" fill="white"/>
-                        <circle cx="30" cy="60" r="8" fill="#00b4d8"/>
-                        <circle cx="70" cy="60" r="8" fill="#00b4d8"/>
-                        <circle cx="50" cy="75" r="8" fill="#00b4d8"/>
-                        <line x1="50" y1="42" x2="30" y2="52" stroke="#06ffa5" stroke-width="2"/>
-                        <line x1="50" y1="42" x2="70" y2="52" stroke="#06ffa5" stroke-width="2"/>
-                        <line x1="50" y1="42" x2="50" y2="67" stroke="#06ffa5" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="30" fill="#00b4d8" opacity="0.3"/>
+                        <circle cx="35" cy="40" r="8" fill="#d4af37"/>
+                        <circle cx="65" cy="40" r="8" fill="#d4af37"/>
+                        <circle cx="35" cy="65" r="8" fill="#d4af37"/>
+                        <circle cx="65" cy="65" r="8" fill="#d4af37"/>
+                        <line x1="43" y1="40" x2="57" y2="40" stroke="#06ffa5" stroke-width="2"/>
+                        <line x1="35" y1="48" x2="35" y2="57" stroke="#06ffa5" stroke-width="2"/>
+                        <line x1="65" y1="48" x2="65" y2="57" stroke="#06ffa5" stroke-width="2"/>
+                        <line x1="43" y1="65" x2="57" y2="65" stroke="#06ffa5" stroke-width="2"/>
                     </svg>
-                    <h3 style="color: var(--primary-color);">Leader Election</h3>
-                    <p style="color: rgba(255,255,255,0.8);">Automatic leader election with failover support. New <code>Leader()</code> and <code>LeaderRequest()</code> methods in VNic for leader-only messaging patterns.</p>
+                    <h3 style="color: var(--primary-color);">Local Communication</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Same-VNic messaging optimization with <code>Local()</code> and <code>LocalRequest()</code> methods for reduced latency between co-located services.</p>
                 </div>
 
                 <div class="feature-card" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);">
                     <svg class="feature-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="15" y="25" width="30" height="20" rx="3" fill="#00b4d8" opacity="0.7"/>
-                        <rect x="55" y="25" width="30" height="20" rx="3" fill="#00b4d8" opacity="0.7"/>
-                        <rect x="15" y="55" width="30" height="20" rx="3" fill="#00b4d8" opacity="0.7"/>
-                        <rect x="55" y="55" width="30" height="20" rx="3" fill="#00b4d8" opacity="0.7"/>
-                        <circle cx="30" cy="35" r="3" fill="white"/>
-                        <circle cx="70" cy="35" r="3" fill="white"/>
-                        <circle cx="30" cy="65" r="3" fill="white"/>
-                        <circle cx="70" cy="65" r="3" fill="white"/>
-                        <path d="M 45 35 L 55 35" stroke="#d4af37" stroke-width="2"/>
-                        <path d="M 45 65 L 55 65" stroke="#d4af37" stroke-width="2"/>
-                        <path d="M 30 45 L 30 55" stroke="#d4af37" stroke-width="2"/>
-                        <path d="M 70 45 L 70 55" stroke="#d4af37" stroke-width="2"/>
+                        <rect x="20" y="25" width="60" height="50" rx="5" fill="#00b4d8" opacity="0.3"/>
+                        <rect x="25" y="30" width="50" height="10" rx="2" fill="#d4af37"/>
+                        <text x="50" y="38" text-anchor="middle" fill="white" font-size="8">SLA</text>
+                        <rect x="25" y="45" width="23" height="8" rx="2" fill="#06ffa5"/>
+                        <rect x="52" y="45" width="23" height="8" rx="2" fill="#ff6b35"/>
+                        <rect x="25" y="58" width="50" height="12" rx="2" fill="#00b4d8"/>
+                        <text x="50" y="67" text-anchor="middle" fill="white" font-size="7">NonUnique | Overwrite</text>
                     </svg>
-                    <h3 style="color: var(--primary-color);">Remote VNet Support</h3>
-                    <p style="color: rgba(255,255,255,0.8);">Enhanced multi-network connectivity with cross-network service discovery. Added <code>Vnet()</code> field to web services for seamless remote operations.</p>
+                    <h3 style="color: var(--primary-color);">Advanced SLA Decorators</h3>
+                    <p style="color: rgba(255,255,255,0.8);">New decorators for flexible service management: <code>SetNonUniqueKeys()</code> for flexible indexing and <code>SetAlwaysOverwrite()</code> for conflict resolution.</p>
                 </div>
             </div>
         </div>
@@ -1028,7 +1022,17 @@
                 <div class="timeline-item fade-in">
                     <div class="timeline-dot" style="background: var(--primary-color);"></div>
                     <div class="timeline-content">
-                        <h3 style="color: var(--primary-color);">Version 1.4.0 <span style="background: var(--gradient-1); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; margin-left: 10px;">Latest</span></h3>
+                        <h3 style="color: var(--primary-color);">Version 1.5.0 <span style="background: var(--gradient-1); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; margin-left: 10px;">Latest</span></h3>
+                        <p><strong>Enhanced Security</strong>: Two-Factor Authentication, Captcha, and User Registration</p>
+                        <p><strong>Local Communication</strong>: Same-VNic messaging with Local() and LocalRequest()</p>
+                        <p><strong>Advanced SLA Decorators</strong>: Non-Unique Keys and Always Overwrite support</p>
+                        <p><strong>Service Callbacks</strong>: Continuation indication for fine-grained lifecycle control</p>
+                    </div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3>Version 1.4.0</h3>
                         <p><strong>Map-Reduce Framework</strong>: Distributed computation and data aggregation capabilities</p>
                         <p><strong>Leader Election</strong>: Automatic leader election with failover and leader-based communication</p>
                         <p><strong>Remote VNet Support</strong>: Cross-network connectivity and service discovery</p>
@@ -1081,33 +1085,33 @@
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
-                        <span class="code-title">Map-Reduce Operations (v1.4.0)</span>
+                        <span class="code-title">Two-Factor Authentication (v1.5.0)</span>
                     </div>
-                    <pre><code><span class="syntax-comment">// Implement Map-Reduce service</span>
-<span class="syntax-keyword">type</span> <span class="syntax-type">MyMapReduceService</span> <span class="syntax-keyword">struct</span> {
-    cache <span class="syntax-type">IDistributedCache</span>
+                    <pre><code><span class="syntax-comment">// Setup TFA for a user</span>
+qrCode, secret, err := securityProvider.<span class="syntax-function">TFASetup</span>(
+    userId, vnic,
+)
+<span class="syntax-keyword">if</span> err != <span class="syntax-keyword">nil</span> {
+    log.<span class="syntax-function">Fatal</span>(<span class="syntax-string">"TFA setup failed:"</span>, err)
 }
+<span class="syntax-comment">// Display QR code for authenticator app</span>
 
-<span class="syntax-keyword">func</span> (s *<span class="syntax-type">MyMapReduceService</span>) <span class="syntax-function">Merge</span>(results <span class="syntax-keyword">map</span>[<span class="syntax-type">string</span>]<span class="syntax-type">IElements</span>) <span class="syntax-type">IElements</span> {
-    <span class="syntax-comment">// Merge results from multiple nodes</span>
-    merged := <span class="syntax-function">NewElements</span>()
-    <span class="syntax-keyword">for</span> nodeId, elements := <span class="syntax-keyword">range</span> results {
-        merged.<span class="syntax-function">Combine</span>(elements)
-    }
-    <span class="syntax-keyword">return</span> merged
-}
+<span class="syntax-comment">// Verify TFA code during login</span>
+err = securityProvider.<span class="syntax-function">TFAVerify</span>(
+    userId, totpCode, sessionId, vnic,
+)
 
-<span class="syntax-comment">// Use Collect for distributed filtering</span>
-results := cache.<span class="syntax-function">Collect</span>(<span class="syntax-keyword">func</span>(item <span class="syntax-type">interface{}</span>) (<span class="syntax-type">bool</span>, <span class="syntax-type">interface{}</span>) {
-    user := item.(*<span class="syntax-type">User</span>)
-    <span class="syntax-keyword">if</span> user.Age > <span class="syntax-number">18</span> && user.Status == <span class="syntax-string">"active"</span> {
-        <span class="syntax-keyword">return</span> <span class="syntax-keyword">true</span>, user.<span class="syntax-function">Summary</span>()
-    }
-    <span class="syntax-keyword">return</span> <span class="syntax-keyword">false</span>, <span class="syntax-keyword">nil</span>
-})
+<span class="syntax-comment">// Get captcha for bot protection</span>
+captchaImage := securityProvider.<span class="syntax-function">Captcha</span>()
 
-<span class="syntax-comment">// Enable Map-Reduce in queries</span>
-query.MapReduce = <span class="syntax-keyword">true</span></code></pre>
+<span class="syntax-comment">// Register new user securely</span>
+err = securityProvider.<span class="syntax-function">Register</span>(
+    email, password, captchaResponse, vnic,
+)
+
+<span class="syntax-comment">// Fetch credentials securely</span>
+user, pass, token, session, err :=
+    securityProvider.<span class="syntax-function">Credential</span>(key, scope, resources)</code></pre>
                 </div>
 
                 <div class="code-block">
@@ -1115,32 +1119,32 @@ query.MapReduce = <span class="syntax-keyword">true</span></code></pre>
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
                         <span class="code-dot"></span>
-                        <span class="code-title">Leader Election (v1.4.0)</span>
+                        <span class="code-title">Local Communication & Callbacks (v1.5.0)</span>
                     </div>
-                    <pre><code><span class="syntax-comment">// Send message to leader only</span>
-<span class="syntax-keyword">err</span> := vnic.<span class="syntax-function">Leader</span>(
-    <span class="syntax-string">"consensus-service"</span>,
-    <span class="syntax-number">1</span>,
-    ifs.POST,
-    proposal,
+                    <pre><code><span class="syntax-comment">// Local communication for co-located services</span>
+err := vnic.<span class="syntax-function">Local</span>(
+    <span class="syntax-string">"local-service"</span>, <span class="syntax-number">1</span>, ifs.POST, data,
 )
 
-<span class="syntax-comment">// Request with response from leader</span>
-<span class="syntax-keyword">response</span> := vnic.<span class="syntax-function">LeaderRequest</span>(
-    <span class="syntax-string">"state-service"</span>,
-    <span class="syntax-number">1</span>,
-    ifs.GET,
-    stateQuery,
-    timeout,
-    <span class="syntax-string">"optional-uuid"</span>,
+<span class="syntax-comment">// Local request with response</span>
+response := vnic.<span class="syntax-function">LocalRequest</span>(
+    <span class="syntax-string">"cache-service"</span>, <span class="syntax-number">1</span>, ifs.GET, query, timeout,
 )
 
-<span class="syntax-comment">// Leader election is automatic</span>
-<span class="syntax-comment">// with failover support</span>
-<span class="syntax-keyword">if</span> response.IsLeader() {
-    <span class="syntax-comment">// Process leader response</span>
-    handleLeaderData(response)
-}</code></pre>
+<span class="syntax-comment">// Service callbacks with continuation</span>
+<span class="syntax-keyword">type</span> <span class="syntax-type">MyCallback</span> <span class="syntax-keyword">struct</span>{}
+
+<span class="syntax-keyword">func</span> (c *<span class="syntax-type">MyCallback</span>) <span class="syntax-function">Before</span>(
+    data <span class="syntax-type">interface{}</span>, action ifs.Action,
+    isLocal <span class="syntax-type">bool</span>, vnic ifs.IVNic,
+) (<span class="syntax-type">interface{}</span>, <span class="syntax-type">bool</span>, <span class="syntax-type">error</span>) {
+    <span class="syntax-comment">// Return: modified data, continue flag, error</span>
+    <span class="syntax-keyword">return</span> preProcess(data), <span class="syntax-keyword">true</span>, <span class="syntax-keyword">nil</span>
+}
+
+<span class="syntax-comment">// Advanced SLA with new decorators</span>
+sla.<span class="syntax-function">SetNonUniqueKeys</span>(<span class="syntax-string">"category"</span>, <span class="syntax-string">"tag"</span>)
+sla.<span class="syntax-function">SetAlwaysOverwrite</span>(<span class="syntax-string">"timestamp"</span>, <span class="syntax-string">"version"</span>)</code></pre>
                 </div>
             </div>
         </div>
@@ -1150,10 +1154,10 @@ query.MapReduce = <span class="syntax-keyword">true</span></code></pre>
     <section class="section section-gradient fade-in" id="install">
         <div class="container">
             <h2 class="section-title">Quick Start Guide</h2>
-            <p class="section-subtitle">Get up and running in minutes with Layer 8 Types v1.4.0</p>
+            <p class="section-subtitle">Get up and running in minutes with Layer 8 Types v1.5.0</p>
 
             <div style="background: linear-gradient(135deg, #d4af37 0%, #b8960f 100%); padding: 1rem 2rem; border-radius: 15px; margin: 2rem auto 3rem; max-width: 800px; color: white; text-align: center;">
-                <strong>🚀 New in v1.4.0:</strong> Map-Reduce framework, Leader Election, and Remote VNet support! <a href="#whats-new" style="color: white; text-decoration: underline;">See what's new</a>
+                <strong>🚀 New in v1.5.0:</strong> Two-Factor Authentication, Local Communication, and Advanced SLA Decorators! <a href="#whats-new" style="color: white; text-decoration: underline;">See what's new</a>
             </div>
 
             <div class="features-grid">
@@ -1187,12 +1191,13 @@ go test -v -cover ./...</code></pre>
                     <h3>5. Build Your App</h3>
                     <pre style="background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-top: 1rem;"><code>import "github.com/saichler/l8types/go/ifs"
 
-// v1.4.0 - Use Map-Reduce
-query := &types.Query{MapReduce: true}
-// Leader communication
-vnic.Leader("service", 1, ifs.POST, data)
-// Remote VNet support
-webService.SetVnet(remoteVnetId)</code></pre>
+// v1.5.0 - Local communication
+vnic.Local("service", 1, ifs.POST, data)
+// Two-Factor Auth
+securityProvider.TFASetup(userId, vnic)
+// Advanced SLA decorators
+sla.SetNonUniqueKeys("category")
+sla.SetAlwaysOverwrite("timestamp")</code></pre>
                 </div>
 
                 <div class="feature-card">
@@ -1244,8 +1249,8 @@ docker run myapp</code></pre>
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; 2024 Layer 8 Types v1.4.0 | Open source distributed networking library for Go.</p>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Featuring Map-Reduce Framework, Leader Election, Remote VNet Support, and Protocol Enhancements</p>
+            <p>&copy; 2025 Layer 8 Types v1.5.0 | Open source distributed networking library for Go.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Featuring Two-Factor Authentication, Local Communication, Advanced SLA Decorators, and Service Callbacks</p>
         </div>
     </footer>
 

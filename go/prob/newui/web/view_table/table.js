@@ -16,6 +16,7 @@ class ProblerTable {
             totalCount: config.totalCount || 0,
             onPageChange: config.onPageChange || null,
             onFilterChange: config.onFilterChange || null,
+            onSortChange: config.onSortChange || null,
             filterDebounceMs: config.filterDebounceMs || 1000
         };
 
@@ -268,7 +269,14 @@ class ProblerTable {
             this.sortDirection = 'asc';
         }
 
-        // Find the column config to check for sortKey
+        // Server-side sorting: delegate to callback
+        if (this.config.serverSide && this.config.onSortChange) {
+            this.currentPage = 1;
+            this.config.onSortChange(this.sortColumn, this.sortDirection, this.currentPage);
+            return;
+        }
+
+        // Client-side sorting
         const columnConfig = this.config.columns.find(col => col.key === column);
         const sortKey = columnConfig && columnConfig.sortKey ? columnConfig.sortKey : column;
 

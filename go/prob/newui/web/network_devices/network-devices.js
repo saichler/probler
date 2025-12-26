@@ -12,6 +12,10 @@ let cachedTotalCount = 0;
 // Current filters for server-side filtering
 let currentFilters = {};
 
+// Current sort state for server-side sorting
+let currentSortColumn = null;
+let currentSortDirection = 'asc';
+
 // Reverse enum mappings: display value → backend enum value
 const deviceStatusEnum = {
     'online': 1,
@@ -52,20 +56,20 @@ function matchEnumValue(input, enumValues) {
     return null; // No match found
 }
 
-// Column definitions with filterKey for server-side filtering
+// Column definitions with filterKey for server-side filtering and sortKey for server-side sorting
 const columns = [
-    { key: 'name', label: 'Device Name', filterKey: 'equipmentinfo.sysName' },
-    { key: 'ipAddress', label: 'IP Address', filterKey: 'equipmentinfo.ipAddress' },
-    { key: 'deviceType', label: 'Type', filterKey: 'equipmentinfo.deviceType', enumValues: deviceTypeEnum },
-    { key: 'location', label: 'Location', filterKey: 'equipmentinfo.location' },
-    { key: 'status', label: 'Status', filterKey: 'equipmentinfo.deviceStatus', enumValues: deviceStatusEnum },
-    { key: 'cpuUsage', label: 'CPU %', formatter: (value) => `${value}%` },
-    { key: 'memoryUsage', label: 'Memory %', formatter: (value) => `${value}%` },
-    { key: 'uptime', label: 'Uptime', filterKey: 'equipmentinfo.uptime' }
+    { key: 'name', label: 'Device Name', filterKey: 'equipmentinfo.sysName', sortKey: 'equipmentinfo.sysName' },
+    { key: 'ipAddress', label: 'IP Address', filterKey: 'equipmentinfo.ipAddress', sortKey: 'equipmentinfo.ipAddress' },
+    { key: 'deviceType', label: 'Type', filterKey: 'equipmentinfo.deviceType', sortKey: 'equipmentinfo.deviceType', enumValues: deviceTypeEnum },
+    { key: 'location', label: 'Location', filterKey: 'equipmentinfo.location', sortKey: 'equipmentinfo.location' },
+    { key: 'status', label: 'Status', filterKey: 'equipmentinfo.deviceStatus', sortKey: 'equipmentinfo.deviceStatus', enumValues: deviceStatusEnum },
+    { key: 'cpuUsage', label: 'CPU %', sortKey: 'stats.cpuUsage', formatter: (value) => `${value}%` },
+    { key: 'memoryUsage', label: 'Memory %', sortKey: 'stats.memoryUsage', formatter: (value) => `${value}%` },
+    { key: 'uptime', label: 'Uptime', filterKey: 'equipmentinfo.uptime', sortKey: 'equipmentinfo.uptime' }
 ];
 
-// Build query with filter conditions
-function buildFilteredQuery(page, filters) {
+// Build query with filter and sort conditions
+function buildFilteredQuery(page, filters, sortColumn, sortDirection) {
     let whereClause = 'Id=*';
     const invalidFilters = [];  // Track columns with invalid enum values
 
@@ -93,8 +97,19 @@ function buildFilteredQuery(page, filters) {
         whereClause += ` and ${column.filterKey}=${queryValue}`;
     }
 
+    let query = `select * from NetworkDevice where ${whereClause} limit 15 page ${page}`;
+
+    // Add sort clause if sorting is active
+    if (sortColumn) {
+        const column = columns.find(c => c.key === sortColumn);
+        if (column && column.sortKey) {
+            const descending = sortDirection === 'desc' ? ' descending' : '';
+            query += ` sort-by ${column.sortKey}${descending}`;
+        }
+    }
+
     return {
-        query: `select * from NetworkDevice where ${whereClause} limit 15 page ${page}`,
+        query: query,
         invalidFilters: invalidFilters
     };
 }
@@ -274,8 +289,10 @@ async function fetchNetworkDevicesWithQuery(queryText, serverPage) {
 // Initialize Network Devices
 async function initializeNetworkDevices() {
     try {
-        // Reset filters on initialization
+        // Reset filters and sort state on initialization
         currentFilters = {};
+        currentSortColumn = null;
+        currentSortDirection = 'asc';
 
         const { devices, totalCount } = await fetchNetworkDevices(1);
 
@@ -289,18 +306,32 @@ async function initializeNetworkDevices() {
             serverSide: true,
             totalCount: totalCount,
             onPageChange: async (page) => {
-                const { devices, totalCount } = await fetchNetworkDevices(page);
+                const serverPage = page - 1;
+                const { query } = buildFilteredQuery(serverPage, currentFilters, currentSortColumn, currentSortDirection);
+                const { devices, totalCount } = await fetchNetworkDevicesWithQuery(query, serverPage);
                 networkDevicesTable.updateServerData(devices, totalCount);
             },
             onFilterChange: async (filters, page) => {
                 currentFilters = filters;
                 const serverPage = page - 1;
-                const { query, invalidFilters } = buildFilteredQuery(serverPage, filters);
+                const { query, invalidFilters } = buildFilteredQuery(serverPage, filters, currentSortColumn, currentSortDirection);
 
                 const { devices, totalCount } = await fetchNetworkDevicesWithQuery(query, serverPage);
                 networkDevicesTable.updateServerData(devices, totalCount);
 
                 // Show visual feedback for invalid enum filters (must be AFTER updateServerData which calls render())
+                networkDevicesTable.setInvalidFilters(invalidFilters);
+            },
+            onSortChange: async (sortColumn, sortDirection, page) => {
+                currentSortColumn = sortColumn;
+                currentSortDirection = sortDirection;
+                const serverPage = page - 1;
+                const { query, invalidFilters } = buildFilteredQuery(serverPage, currentFilters, sortColumn, sortDirection);
+
+                const { devices, totalCount } = await fetchNetworkDevicesWithQuery(query, serverPage);
+                networkDevicesTable.updateServerData(devices, totalCount);
+
+                // Preserve invalid filter state after sort
                 networkDevicesTable.setInvalidFilters(invalidFilters);
             },
             onRowClick: (rowData) => {
