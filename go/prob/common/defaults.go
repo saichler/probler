@@ -46,7 +46,7 @@ func init() {
 func CreateResources(alias string) ifs.IResources {
 	logger.SetLogToFile(alias)
 	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
-	log.SetLogLevel(ifs.Error_Level)
+	log.SetLogLevel(ifs.Info_Level)
 	res := resources.NewResources(log)
 
 	res.Set(registry.NewRegistry())

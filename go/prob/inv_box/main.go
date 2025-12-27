@@ -26,7 +26,6 @@ import (
 
 func main() {
 	res := common2.CreateResources("box")
-	res.Logger().SetLogLevel(ifs.Info_Level)
 	res.Logger().Info("Starting box")
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 
@@ -43,7 +42,6 @@ func main() {
 	invCenter := inventory.Inventory(res, s, a)
 	invCenter.AddMetadata("Online", Online)
 
-	res.Logger().SetLogLevel(ifs.Error_Level)
 	common2.WaitForSignal(nic.Resources())
 }
 

@@ -27,7 +27,6 @@ import (
 
 func main() {
 	resources := common2.CreateResources("parser")
-	resources.Logger().SetLogLevel(ifs.Info_Level)
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Start()
@@ -61,6 +60,5 @@ func main() {
 	//Activate Kubernetes parser
 	service.Activate(common2.K8s_Links_ID, &types3.K8SCluster{}, false, nic, "Name")
 
-	resources.Logger().SetLogLevel(ifs.Error_Level)
 	common2.WaitForSignal(resources)
 }

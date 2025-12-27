@@ -12,15 +12,15 @@ if [ -z "$1" ]; then
   nohup ./vnet_demo > vnet_demo.log 2>&1 &
   nohup ./logvnet_demo > logvnet_demo.log 2>&1 &
   sleep 5
-  #nohup ./orm_demo > orm_demo.log 2>&1 &
+  sudo nohup ./orm_demo > orm_demo.log 2>&1 &
   nohup ./collector_demo > collector_demo.log 2>&1 &
   nohup ./parser_demo > parser_demo.log 2>&1 &
   nohup ./box_demo > box_demo.log 2>&1 &
   nohup ./k8s_demo > k8s_demo.log 2>&1 &
   nohup ./topology_demo > topology_demo.log 2>&1 &
   nohup ./logagent_demo > logagent_demo.log 2>&1 &
-  ../run-orm.sh
-  sleep 1
+  #../run-orm.sh
+  sleep 5
   echo "Background services started."
 else
   echo "Running webui_demo only (background services should already be running)..."
