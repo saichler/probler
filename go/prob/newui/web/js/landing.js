@@ -100,51 +100,51 @@ document.addEventListener('keydown', function(event) {
 
 // Demo link functions
 function openCollectorDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8collector/refs/heads/main/web.html', '_blank');
+    window.open('docs/l8collector.html', '_blank');
 }
 
 function openParserDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8parser/refs/heads/main/web.html', '_blank');
+    window.open('docs/l8parser.html', '_blank');
 }
 
 function openInventoryBoxDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8inventory/refs/heads/main/web.html', '_blank');
+    window.open('docs/l8inventory.html', '_blank');
 }
 
 function openORMDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8orm/refs/heads/main/web.html', '_blank');
+    window.open('docs/l8orm.html', '_blank');
 }
 
 function openVNetDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/layer8/refs/heads/main/web.html', '_blank');
+    window.open('docs/l8bus.html', '_blank');
 }
 
 function openModelAgnosticServicesDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8services/refs/heads/main/web.html', '_blank');
+    window.open('docs/l8services.html', '_blank');
 }
 
 function openWebDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8web/refs/heads/main/web.html', '_blank');
+    window.open('docs/l8web.html', '_blank');
 }
 
 function openGSQLDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/gsql/refs/heads/master/web.html', '_blank');
+    window.open('docs/l8ql.html', '_blank');
 }
 
 function openReflectDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/reflect/refs/heads/main/web.html', '_blank');
+    window.open('docs/l8reflect.html', '_blank');
 }
 
 function openOpenSimulatorDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/opensim/refs/heads/main/web.html', '_blank');
+    window.open('https://www.probler.dev:9094/web.html', '_blank');
 }
 
 function openTestAndAutomationDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8test/refs/heads/main/web.html', '_blank');
+    window.open('docs/l8test.html', '_blank');
 }
 
-function openDistributedServicesDemo() {
-    window.open('https://html-preview.github.io/?url=https://raw.githubusercontent.com/saichler/l8services/refs/heads/main/web.html', '_blank');
+function openTopologyDemo() {
+    window.open('docs/l8topology.html', '_blank');
 }
 
 function openProjectGitHub(projectName) {
