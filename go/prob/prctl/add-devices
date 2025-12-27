@@ -1,1 +1,1 @@
-./prctl 192.168.86.98 add devices $1
+./prctl 192.168.86.93 add devices $1
