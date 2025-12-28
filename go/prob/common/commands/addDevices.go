@@ -87,6 +87,20 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		}
 	}
 
+	if cmd == "30K" {
+		ip := 1
+		sub := 40
+		for i := 1; i <= 30000; i++ {
+			device := creates.CreateDevice("60.50."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.NetworkDevice_Links_ID, "sim")
+			deviceList.List = append(deviceList.List, device)
+			ip++
+			if ip > 254 {
+				sub++
+				ip = 1
+			}
+		}
+	}
+
 	if cmd == "25K" {
 		ip := 1
 		sub := 40

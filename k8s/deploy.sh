@@ -11,7 +11,7 @@ kubectl apply -f k8s.yaml
 sleep 2
 kubectl apply -f orm.yaml
 sleep 2
-kubectl apply -f webui2.yaml
+#kubectl apply -f webui2.yaml
 sleep 2
 #kubectl apply -f topo.yaml
 kubectl apply -f log-agent.yaml
