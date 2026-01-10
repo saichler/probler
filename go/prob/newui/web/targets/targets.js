@@ -11,6 +11,9 @@ let selectedInventoryType = 1;
 // Table instance
 let targetsTable = null;
 
+// Current filters for server-side filtering
+let currentFilters = {};
+
 // Protocol enum mapping
 const PROTOCOLS = {
     0: 'Invalid',
@@ -43,6 +46,15 @@ const TARGET_STATES = {
     2: 'Up',
     3: 'Maintenance',
     4: 'Offline'
+};
+
+// Reverse enum mapping for filtering: display value → backend enum value
+const targetStateEnum = {
+    'invalid': 0,
+    'down': 1,
+    'up': 2,
+    'maintenance': 3,
+    'offline': 4
 };
 
 // Authentication token
@@ -182,12 +194,14 @@ function initInventoryTypeFilter() {
 // Handle inventory type filter change
 function onInventoryTypeChange(value) {
     selectedInventoryType = parseInt(value, 10);
-    // Update empty message for new inventory type
+    // Reset filters and update empty message for new inventory type
+    currentFilters = {};
     if (targetsTable) {
         targetsTable.emptyMessage = getEmptyMessage();
         targetsTable.currentPage = 1;
+        targetsTable.filters = {};  // Clear table's internal filter state
     }
-    fetchTargets(1, targetsTable ? targetsTable.pageSize : 20);
+    fetchTargets(1, targetsTable ? targetsTable.pageSize : 20, {});
 }
 
 // Get empty message based on selected inventory type
@@ -196,71 +210,71 @@ function getEmptyMessage() {
     return `No ${typeName} found. Click "Add Target" to create one.`;
 }
 
-// Initialize the targets table with server-side pagination
-function initTargetsTable() {
-    targetsTable = new L8Table({
-        containerId: 'targets-table-container',
-        tableId: 'targets-table',
-        pageSize: 20,
-        pageSizeOptions: [10, 20, 50, 100],
-        emptyMessage: getEmptyMessage(),
-        serverSide: true,
-        onPageChange: handlePageChange,
-        columns: [
-            { label: 'Target ID', key: 'targetId' },
-            {
-                label: 'Addresses',
-                render: (target) => getTargetAddresses(target) || '-'
-            },
-            {
-                label: 'Links ID',
-                render: (target) => escapeHtml(target.linksId || '-')
-            },
-            {
-                label: 'Hosts',
-                render: (target) => {
-                    const count = target.hosts ? Object.keys(target.hosts).length : 0;
-                    return L8Table.countBadge(count, 'host');
+// Find matching enum value from user input (case-insensitive partial match)
+function matchEnumValue(input, enumValues) {
+    const normalizedInput = input.toLowerCase().trim();
+    if (!normalizedInput) return null;
+
+    // Try exact match first
+    if (enumValues[normalizedInput] !== undefined) {
+        return enumValues[normalizedInput];
+    }
+
+    // Try partial match (input is prefix of enum key)
+    for (const [key, value] of Object.entries(enumValues)) {
+        if (key.startsWith(normalizedInput)) {
+            return value;
+        }
+    }
+
+    return null; // No match found
+}
+
+// Build query with filter conditions for server-side filtering
+function buildFilteredQuery(pageIndex, pageSize, filters) {
+    let whereClause = `inventoryType=${selectedInventoryType}`;
+    const invalidFilters = [];
+
+    if (filters && targetsTable) {
+        for (const [columnKey, filterValue] of Object.entries(filters)) {
+            if (!filterValue) continue;
+
+            // Find the column configuration to get filterKey
+            const column = targetsTable.columns.find(c => c.key === columnKey);
+            if (!column || !column.filterKey) continue;
+
+            let queryValue;
+            if (column.enumValues) {
+                // Enum column: validate and convert to enum value
+                const enumValue = matchEnumValue(filterValue, column.enumValues);
+                if (enumValue === null) {
+                    // No match - mark as invalid, skip this filter
+                    invalidFilters.push(columnKey);
+                    continue;
                 }
-            },
-            {
-                label: 'State',
-                render: (target) => L8Table.statusTag(target.state === 2)
+                queryValue = enumValue;
+            } else {
+                // Non-enum column: use text with wildcard
+                queryValue = `${filterValue}*`;
             }
-        ],
-        onAdd: () => showTargetModal(),
-        addButtonText: 'Add Target',
-        onEdit: editTarget,
-        onDelete: deleteTarget,
-        onToggleState: toggleTargetState,
-        getItemState: (target) => target.state === 2
-    });
-    targetsTable.init();
+
+            whereClause += ` and ${column.filterKey}=${queryValue}`;
+        }
+    }
+
+    return {
+        query: `select * from L8PTarget where ${whereClause} limit ${pageSize} page ${pageIndex}`,
+        invalidFilters: invalidFilters
+    };
 }
 
-// Handle page change for server-side pagination
-function handlePageChange(page, pageSize) {
-    fetchTargets(page, pageSize);
-}
-
-function getTargetsEndpoint() {
-    return TARGETS_CONFIG.apiPrefix + TARGETS_CONFIG.targetsPath;
-}
-
-function getCredsEndpoint() {
-    return TARGETS_CONFIG.apiPrefix + TARGETS_CONFIG.credsPath;
-}
-
-async function fetchTargets(page, pageSize) {
-    // Default to page 1 and table's page size if not provided
-    if (!page) page = 1;
-    if (!pageSize) pageSize = targetsTable ? targetsTable.pageSize : 20;
-
-    // Server uses 0-based page index
+// Handle filter change for server-side filtering
+async function handleFilterChange(filters, page, pageSize) {
+    currentFilters = filters;
     const pageIndex = page - 1;
+    const { query, invalidFilters } = buildFilteredQuery(pageIndex, pageSize, filters);
 
     try {
-        const query = `select * from L8PTarget where inventoryType=${selectedInventoryType} limit ${pageSize} page ${pageIndex}`;
         const body = encodeURIComponent(JSON.stringify({ text: query }));
         const response = await fetch(getTargetsEndpoint() + '?body=' + body, {
             method: 'GET',
@@ -293,6 +307,122 @@ async function fetchTargets(page, pageSize) {
         // Update table with server data
         if (targetsTable) {
             targetsTable.setServerData(data.list || [], totalItems);
+            // Show visual feedback for invalid enum filters
+            targetsTable.setInvalidFilters(invalidFilters);
+        }
+    } catch (error) {
+        console.error('Error fetching filtered targets:', error);
+    }
+}
+
+// Initialize the targets table with server-side pagination
+function initTargetsTable() {
+    targetsTable = new L8Table({
+        containerId: 'targets-table-container',
+        tableId: 'targets-table',
+        pageSize: 20,
+        pageSizeOptions: [10, 20, 50, 100],
+        emptyMessage: getEmptyMessage(),
+        serverSide: true,
+        onPageChange: handlePageChange,
+        onFilterChange: handleFilterChange,
+        columns: [
+            { label: 'Target ID', key: 'targetId', filterKey: 'targetId' },
+            {
+                label: 'Addresses',
+                key: 'addresses',
+                render: (target) => getTargetAddresses(target) || '-'
+            },
+            {
+                label: 'Links ID',
+                key: 'linksId',
+                filterKey: 'linksId',
+                render: (target) => escapeHtml(target.linksId || '-')
+            },
+            {
+                label: 'Hosts',
+                key: 'hosts',
+                render: (target) => {
+                    const count = target.hosts ? Object.keys(target.hosts).length : 0;
+                    return L8Table.countBadge(count, 'host');
+                }
+            },
+            {
+                label: 'State',
+                key: 'state',
+                filterKey: 'state',
+                enumValues: targetStateEnum,
+                render: (target) => L8Table.statusTag(target.state === 2)
+            }
+        ],
+        onAdd: () => showTargetModal(),
+        addButtonText: 'Add Target',
+        onEdit: editTarget,
+        onDelete: deleteTarget,
+        onToggleState: toggleTargetState,
+        getItemState: (target) => target.state === 2
+    });
+    targetsTable.init();
+}
+
+// Handle page change for server-side pagination
+function handlePageChange(page, pageSize) {
+    fetchTargets(page, pageSize, currentFilters);
+}
+
+function getTargetsEndpoint() {
+    return TARGETS_CONFIG.apiPrefix + TARGETS_CONFIG.targetsPath;
+}
+
+function getCredsEndpoint() {
+    return TARGETS_CONFIG.apiPrefix + TARGETS_CONFIG.credsPath;
+}
+
+async function fetchTargets(page, pageSize, filters) {
+    // Default to page 1 and table's page size if not provided
+    if (!page) page = 1;
+    if (!pageSize) pageSize = targetsTable ? targetsTable.pageSize : 20;
+    if (!filters) filters = currentFilters;
+
+    // Server uses 0-based page index
+    const pageIndex = page - 1;
+
+    try {
+        const { query, invalidFilters } = buildFilteredQuery(pageIndex, pageSize, filters);
+        const body = encodeURIComponent(JSON.stringify({ text: query }));
+        const response = await fetch(getTargetsEndpoint() + '?body=' + body, {
+            method: 'GET',
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) {
+            const errorMsg = await getApiErrorMessage(response, 'Failed to fetch targets');
+            console.error('Failed to fetch targets:', response.status, errorMsg);
+            showToast(errorMsg, 'error');
+            return;
+        }
+
+        const data = await response.json();
+
+        // Extract total count from metadata
+        let totalItems = 0;
+        if (data && data.metadata && data.metadata.keyCount && data.metadata.keyCount.counts) {
+            totalItems = data.metadata.keyCount.counts.Total || 0;
+        }
+
+        // Store targets in local cache
+        if (data && data.list) {
+            targets = {};
+            data.list.forEach(target => {
+                targets[target.targetId] = target;
+            });
+        }
+
+        // Update table with server data
+        if (targetsTable) {
+            targetsTable.setServerData(data.list || [], totalItems);
+            // Show visual feedback for invalid enum filters
+            targetsTable.setInvalidFilters(invalidFilters);
         }
     } catch (error) {
         console.error('Error fetching targets:', error);

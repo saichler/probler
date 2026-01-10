@@ -133,6 +133,74 @@
     letter-spacing: 1px;
 }
 
+/* Sortable Headers */
+.l8-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.l8-table th.sortable:hover {
+    background: rgba(14, 165, 233, 0.1);
+}
+
+.l8-table-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.l8-sort-indicator {
+    opacity: 0.5;
+    font-size: 10px;
+}
+
+/* Header row */
+.l8-table-header-row {
+    background: #f7fafc;
+}
+
+/* Filter Row */
+.l8-table-filter-row {
+    background: #f7fafc;
+}
+
+.l8-table-filter {
+    padding: 8px 16px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.l8-filter-input {
+    width: 100%;
+    padding: 6px 10px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #2d3748;
+    font-size: 11px;
+    font-family: 'Roboto Mono', monospace;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.l8-filter-input:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+}
+
+.l8-filter-input::placeholder {
+    color: #a0aec0;
+    font-size: 10px;
+}
+
+.l8-filter-input.invalid {
+    border-color: #e53e3e;
+    background-color: #fff5f5;
+    color: #e53e3e;
+}
+
 .l8-table td {
     color: #4a5568;
     font-size: 12px;

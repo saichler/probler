@@ -27,8 +27,30 @@ class L8Table {
         this.onToggleState = options.onToggleState || null;
         this.getItemState = options.getItemState || null;
 
+        // Sorting and filtering support
+        this.sortable = options.sortable !== false;
+        this.filterable = options.filterable !== false;
+        this.onFilterChange = options.onFilterChange || null;
+        this.onSortChange = options.onSortChange || null;
+        this.filterDebounceMs = options.filterDebounceMs || 1000;
+
+        // Sorting and filtering state
+        this.sortColumn = null;
+        this.sortDirection = 'asc';
+        this.filters = {};
+        this.filteredData = [];
+
         this.container = null;
         this.tableId = options.tableId || 'l8-table-' + Date.now();
+    }
+
+    // Debounce utility for server-side filtering
+    debounce(func, wait) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
     }
 
     // Initialize the table in the container
@@ -38,12 +60,22 @@ class L8Table {
             console.error('Container not found:', this.containerId);
             return;
         }
+
+        // Create debounced filter handler for server-side filtering
+        if (this.serverSide && this.onFilterChange) {
+            this.debouncedFilterHandler = this.debounce(() => {
+                this.currentPage = 1;
+                this.onFilterChange(this.filters, this.currentPage, this.pageSize);
+            }, this.filterDebounceMs);
+        }
+
         this.render();
     }
 
     // Set data and re-render (for client-side pagination)
     setData(data) {
         this.data = Array.isArray(data) ? data : Object.values(data);
+        this.filteredData = [...this.data];
         if (!this.serverSide) {
             this.currentPage = 1;
         }
@@ -63,15 +95,17 @@ class L8Table {
             // Server-side: data is already paginated
             return this.data;
         }
-        // Client-side: slice the data
+        // Client-side: use filteredData if filtering is enabled
+        const dataSource = this.filterable ? this.filteredData : this.data;
         const start = (this.currentPage - 1) * this.pageSize;
         const end = start + this.pageSize;
-        return this.data.slice(start, end);
+        return dataSource.slice(start, end);
     }
 
     // Get total items count
     getTotalItems() {
-        return this.serverSide ? this.totalItems : this.data.length;
+        if (this.serverSide) return this.totalItems;
+        return this.filterable ? this.filteredData.length : this.data.length;
     }
 
     // Get total pages
@@ -83,6 +117,15 @@ class L8Table {
     // Render the complete table component
     render() {
         if (!this.container) return;
+
+        // Save focus state before re-render
+        const activeElement = document.activeElement;
+        let focusedColumn = null;
+        let cursorPosition = null;
+        if (activeElement && activeElement.classList.contains('l8-filter-input')) {
+            focusedColumn = activeElement.dataset.column;
+            cursorPosition = activeElement.selectionStart;
+        }
 
         const totalItems = this.getTotalItems();
         const totalPages = this.getTotalPages();
@@ -96,9 +139,10 @@ class L8Table {
                 <div class="l8-table-container">
                     <table id="${this.tableId}" class="l8-table">
                         <thead>
-                            <tr>
+                            <tr class="l8-table-header-row">
                                 ${this.renderHeaders()}
                             </tr>
+                            ${this.renderFilterRow()}
                         </thead>
                         <tbody>
                             ${this.renderBody(paginatedData)}
@@ -110,6 +154,17 @@ class L8Table {
 
         this.container.innerHTML = html;
         this.attachEventListeners();
+
+        // Restore focus after re-render
+        if (focusedColumn) {
+            const input = this.container.querySelector(`.l8-filter-input[data-column="${focusedColumn}"]`);
+            if (input) {
+                input.focus();
+                if (cursorPosition !== null) {
+                    input.setSelectionRange(cursorPosition, cursorPosition);
+                }
+            }
+        }
     }
 
     // Render pagination controls (above table)
@@ -160,15 +215,47 @@ class L8Table {
 
     // Render table headers
     renderHeaders() {
-        let headers = this.columns.map(col =>
-            `<th>${this.escapeHtml(col.label)}</th>`
-        ).join('');
+        let headers = this.columns.map(col => {
+            const sortableClass = this.sortable ? 'sortable' : '';
+            let sortIndicator = '';
+            if (this.sortable) {
+                const icon = this.sortColumn === col.key
+                    ? (this.sortDirection === 'asc' ? '▲' : '▼')
+                    : '⇅';
+                sortIndicator = `<span class="l8-sort-indicator">${icon}</span>`;
+            }
+            return `<th class="${sortableClass}" data-column="${col.key}">
+                <div class="l8-table-header-content">
+                    <span>${this.escapeHtml(col.label)}</span>
+                    ${sortIndicator}
+                </div>
+            </th>`;
+        }).join('');
 
         if (this.showActions && (this.onEdit || this.onDelete || this.onToggleState)) {
             headers += '<th>Actions</th>';
         }
 
         return headers;
+    }
+
+    // Render filter row
+    renderFilterRow() {
+        if (!this.filterable) return '';
+
+        let filterCells = this.columns.map(col => {
+            const filterValue = this.filters[col.key] || '';
+            return `<th class="l8-table-filter">
+                <input type="text" class="l8-filter-input" data-column="${col.key}"
+                       value="${this.escapeAttr(filterValue)}" placeholder="Filter...">
+            </th>`;
+        }).join('');
+
+        if (this.showActions && (this.onEdit || this.onDelete || this.onToggleState)) {
+            filterCells += '<th class="l8-table-filter"></th>';
+        }
+
+        return `<tr class="l8-table-filter-row">${filterCells}</tr>`;
     }
 
     // Render table body
@@ -246,6 +333,33 @@ class L8Table {
     // Attach event listeners
     attachEventListeners() {
         if (!this.container) return;
+
+        // Sorting (click on headers)
+        if (this.sortable) {
+            this.container.querySelectorAll('th.sortable').forEach(header => {
+                header.addEventListener('click', (e) => {
+                    const column = header.dataset.column;
+                    if (column) this.sort(column);
+                });
+            });
+        }
+
+        // Filtering (input in filter row)
+        if (this.filterable) {
+            this.container.querySelectorAll('.l8-filter-input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const column = input.dataset.column;
+                    const value = input.value;
+                    this.filters[column] = value;
+
+                    if (this.serverSide && this.onFilterChange) {
+                        this.debouncedFilterHandler();
+                    } else {
+                        this.filter(column, value);
+                    }
+                });
+            });
+        }
 
         // Page size change
         const pageSizeSelect = this.container.querySelector('[data-action="pageSize"]');
@@ -341,6 +455,82 @@ class L8Table {
                 this.render();
             }
         }
+    }
+
+    // Sort by column
+    sort(column) {
+        if (this.sortColumn === column) {
+            this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            this.sortColumn = column;
+            this.sortDirection = 'asc';
+        }
+
+        // Server-side sorting
+        if (this.serverSide && this.onSortChange) {
+            this.currentPage = 1;
+            this.onSortChange(this.sortColumn, this.sortDirection, this.currentPage, this.pageSize);
+            return;
+        }
+
+        // Client-side sorting
+        const columnConfig = this.columns.find(col => col.key === column);
+        const sortKey = columnConfig && columnConfig.sortKey ? columnConfig.sortKey : column;
+
+        this.filteredData.sort((a, b) => {
+            let aVal = this.getNestedValue(a, sortKey);
+            let bVal = this.getNestedValue(b, sortKey);
+
+            // Handle numbers
+            if (!isNaN(aVal) && !isNaN(bVal)) {
+                aVal = parseFloat(aVal);
+                bVal = parseFloat(bVal);
+            }
+
+            if (aVal < bVal) return this.sortDirection === 'asc' ? -1 : 1;
+            if (aVal > bVal) return this.sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        this.currentPage = 1;
+        this.render();
+    }
+
+    // Filter data by column value
+    filter(column, value) {
+        this.filters[column] = value;
+
+        this.filteredData = this.data.filter(row => {
+            for (let col in this.filters) {
+                const filterValue = this.filters[col].toLowerCase();
+                if (filterValue) {
+                    const cellValue = String(this.getNestedValue(row, col)).toLowerCase();
+                    if (!cellValue.includes(filterValue)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
+
+        this.currentPage = 1;
+        this.render();
+    }
+
+    // Mark filter inputs as invalid (for server-side validation)
+    setInvalidFilters(invalidColumns) {
+        if (!this.container) return;
+
+        this.container.querySelectorAll('.l8-filter-input').forEach(input => {
+            input.classList.remove('invalid');
+        });
+
+        invalidColumns.forEach(columnKey => {
+            const input = this.container.querySelector(`.l8-filter-input[data-column="${columnKey}"]`);
+            if (input) {
+                input.classList.add('invalid');
+            }
+        });
     }
 
     // Escape HTML

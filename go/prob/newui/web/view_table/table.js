@@ -52,6 +52,15 @@ class ProblerTable {
         const container = document.getElementById(this.containerId);
         if (!container) return;
 
+        // Save focus state before re-render
+        const activeElement = document.activeElement;
+        let focusedColumn = null;
+        let cursorPosition = null;
+        if (activeElement && activeElement.classList.contains('noc-filter-input')) {
+            focusedColumn = activeElement.dataset.column;
+            cursorPosition = activeElement.selectionStart;
+        }
+
         // For server-side pagination, use totalCount; for client-side, use filteredData.length
         const totalCount = this.config.serverSide ? this.config.totalCount : this.filteredData.length;
         const totalPages = Math.ceil(totalCount / this.config.rowsPerPage);
@@ -158,6 +167,17 @@ class ProblerTable {
 
         container.innerHTML = html;
         this.attachEventListeners();
+
+        // Restore focus after re-render
+        if (focusedColumn) {
+            const input = container.querySelector(`.noc-filter-input[data-column="${focusedColumn}"]`);
+            if (input) {
+                input.focus();
+                if (cursorPosition !== null) {
+                    input.setSelectionRange(cursorPosition, cursorPosition);
+                }
+            }
+        }
     }
 
     getPageRange(current, total) {
