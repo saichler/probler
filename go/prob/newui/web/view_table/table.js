@@ -14,10 +14,13 @@ class ProblerTable {
             onRowClick: config.onRowClick || null,
             serverSide: config.serverSide || false,
             totalCount: config.totalCount || 0,
-            onPageChange: config.onPageChange || null,
-            onFilterChange: config.onFilterChange || null,
-            onSortChange: config.onSortChange || null,
-            filterDebounceMs: config.filterDebounceMs || 1000
+            filterDebounceMs: config.filterDebounceMs || 1000,
+            // Server-side auto-fetch options
+            endpoint: config.endpoint || null,
+            modelName: config.modelName || null,
+            baseWhereClause: config.baseWhereClause || null,
+            transformData: config.transformData || null,
+            onDataLoaded: config.onDataLoaded || null
         };
 
         this.currentPage = 1;
@@ -31,13 +34,18 @@ class ProblerTable {
 
     init() {
         // Create debounced filter handler for server-side filtering
-        if (this.config.serverSide && this.config.onFilterChange) {
+        if (this.config.serverSide) {
             this.debouncedFilterHandler = this.debounce(() => {
                 this.currentPage = 1;
-                this.config.onFilterChange(this.filters, this.currentPage);
+                this.fetchData(this.currentPage, this.config.rowsPerPage);
             }, this.config.filterDebounceMs);
         }
         this.render();
+
+        // Auto-fetch initial data if server-side with endpoint
+        if (this.config.serverSide && this.config.endpoint && this.config.modelName) {
+            this.fetchData(1, this.config.rowsPerPage);
+        }
     }
 
     debounce(func, wait) {
@@ -46,6 +54,146 @@ class ProblerTable {
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(this, args), wait);
         };
+    }
+
+    // Find matching enum value from user input (case-insensitive partial match)
+    matchEnumValue(input, enumValues) {
+        const normalizedInput = input.toLowerCase().trim();
+        if (!normalizedInput) return null;
+
+        // Try exact match first
+        if (enumValues[normalizedInput] !== undefined) {
+            return enumValues[normalizedInput];
+        }
+
+        // Try partial match (input is prefix of enum key)
+        for (const [key, value] of Object.entries(enumValues)) {
+            if (key.startsWith(normalizedInput)) {
+                return value;
+            }
+        }
+
+        return null; // No match found
+    }
+
+    // Build L8Query with filter and sort conditions
+    buildQuery(page, pageSize) {
+        const pageIndex = page - 1;
+        const invalidFilters = [];
+        const filterConditions = [];
+
+        // Start with base where clause if provided
+        if (this.config.baseWhereClause) {
+            filterConditions.push(this.config.baseWhereClause);
+        }
+
+        // Add filter conditions
+        for (const [columnKey, filterValue] of Object.entries(this.filters)) {
+            if (!filterValue) continue;
+
+            const column = this.config.columns.find(c => c.key === columnKey);
+            if (!column) continue;
+
+            const filterKey = column.filterKey || column.key;
+
+            let queryValue;
+            if (column.enumValues) {
+                // Enum column: validate and convert to enum value
+                const enumValue = this.matchEnumValue(filterValue, column.enumValues);
+                if (enumValue === null) {
+                    // No match - mark as invalid, skip this filter
+                    invalidFilters.push(columnKey);
+                    continue;
+                }
+                queryValue = enumValue;
+            } else {
+                // Non-enum column: use text with wildcard
+                queryValue = `${filterValue}*`;
+            }
+
+            filterConditions.push(`${filterKey}=${queryValue}`);
+        }
+
+        // Build query - only add WHERE clause if there are conditions
+        let query = `select * from ${this.config.modelName}`;
+        if (filterConditions.length > 0) {
+            query += ` where ${filterConditions.join(' and ')}`;
+        }
+        query += ` limit ${pageSize} page ${pageIndex}`;
+
+        // Add sort clause
+        if (this.sortColumn) {
+            const column = this.config.columns.find(c => c.key === this.sortColumn);
+            const sortKey = column?.sortKey || column?.filterKey || this.sortColumn;
+            const desc = this.sortDirection === 'desc' ? ' descending' : '';
+            query += ` sort-by ${sortKey}${desc}`;
+        }
+
+        return { query, invalidFilters };
+    }
+
+    // Fetch data from server
+    async fetchData(page, pageSize) {
+        if (!this.config.endpoint || !this.config.modelName) {
+            console.error('Table requires endpoint and modelName for server-side mode');
+            return;
+        }
+
+        const { query, invalidFilters } = this.buildQuery(page, pageSize);
+
+        try {
+            const body = encodeURIComponent(JSON.stringify({ text: query }));
+            const response = await fetch(this.config.endpoint + '?body=' + body, {
+                method: 'GET',
+                headers: typeof getAuthHeaders === 'function' ? getAuthHeaders() : { 'Content-Type': 'application/json' }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+
+            const data = await response.json();
+
+            // Extract total count from metadata
+            let totalCount = 0;
+            if (data.metadata?.keyCount?.counts) {
+                totalCount = data.metadata.keyCount.counts.Total || 0;
+            }
+
+            // Transform data if transformer provided
+            let items = data.list || [];
+            if (this.config.transformData) {
+                items = items.map(item => this.config.transformData(item)).filter(item => item !== null);
+            }
+
+            // Update table
+            this.updateServerData(items, totalCount);
+            this.setInvalidFilters(invalidFilters);
+
+            // Call optional callback for additional processing
+            if (this.config.onDataLoaded) {
+                this.config.onDataLoaded(data, items, totalCount);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            this.showError('Failed to load data');
+        }
+    }
+
+    // Update base where clause and re-fetch
+    setBaseWhereClause(whereClause) {
+        this.config.baseWhereClause = whereClause;
+        this.filters = {};  // Clear filters when base clause changes
+        this.currentPage = 1;
+        this.fetchData(this.currentPage, this.config.rowsPerPage);
+    }
+
+    // Show error message in table container
+    showError(message) {
+        const container = document.getElementById(this.containerId);
+        if (container) {
+            container.innerHTML = `<div style="padding: 20px; color: #718096; text-align: center;">${message}</div>`;
+        }
     }
 
     render() {
@@ -232,7 +380,7 @@ class ProblerTable {
                     const value = input.value;
                     this.filters[column] = value;  // Update immediately for UI state
 
-                    if (this.config.serverSide && this.config.onFilterChange) {
+                    if (this.config.serverSide) {
                         // Server-side: use debounced handler
                         this.debouncedFilterHandler();
                     } else {
@@ -289,10 +437,10 @@ class ProblerTable {
             this.sortDirection = 'asc';
         }
 
-        // Server-side sorting: delegate to callback
-        if (this.config.serverSide && this.config.onSortChange) {
+        // Server-side sorting: fetch with new sort
+        if (this.config.serverSide) {
             this.currentPage = 1;
-            this.config.onSortChange(this.sortColumn, this.sortDirection, this.currentPage);
+            this.fetchData(this.currentPage, this.config.rowsPerPage);
             return;
         }
 
@@ -342,9 +490,9 @@ class ProblerTable {
         if (page >= 1 && page <= totalPages) {
             this.currentPage = page;
 
-            // For server-side pagination, call the callback to fetch new data
-            if (this.config.serverSide && this.config.onPageChange) {
-                this.config.onPageChange(page);
+            // For server-side pagination, fetch new data
+            if (this.config.serverSide) {
+                this.fetchData(page, this.config.rowsPerPage);
             } else {
                 this.render();
             }

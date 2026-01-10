@@ -11,9 +11,6 @@ let selectedInventoryType = 1;
 // Table instance
 let targetsTable = null;
 
-// Current filters for server-side filtering
-let currentFilters = {};
-
 // Protocol enum mapping
 const PROTOCOLS = {
     0: 'Invalid',
@@ -166,9 +163,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         bearerToken = window.parent.bearerToken;
     }
     if (bearerToken) {
-        await Promise.all([fetchTargets(), fetchCredentials()]);
-    } else {
-        renderTargets();
+        // Table auto-fetches on init when serverSide=true with endpoint
+        await fetchCredentials();
     }
 });
 
@@ -194,14 +190,11 @@ function initInventoryTypeFilter() {
 // Handle inventory type filter change
 function onInventoryTypeChange(value) {
     selectedInventoryType = parseInt(value, 10);
-    // Reset filters and update empty message for new inventory type
-    currentFilters = {};
+    // Update empty message and use setBaseWhereClause to refresh with new inventory type
     if (targetsTable) {
         targetsTable.emptyMessage = getEmptyMessage();
-        targetsTable.currentPage = 1;
-        targetsTable.filters = {};  // Clear table's internal filter state
+        targetsTable.setBaseWhereClause(`inventoryType=${selectedInventoryType}`);
     }
-    fetchTargets(1, targetsTable ? targetsTable.pageSize : 20, {});
 }
 
 // Get empty message based on selected inventory type
@@ -210,127 +203,32 @@ function getEmptyMessage() {
     return `No ${typeName} found. Click "Add Target" to create one.`;
 }
 
-// Find matching enum value from user input (case-insensitive partial match)
-function matchEnumValue(input, enumValues) {
-    const normalizedInput = input.toLowerCase().trim();
-    if (!normalizedInput) return null;
-
-    // Try exact match first
-    if (enumValues[normalizedInput] !== undefined) {
-        return enumValues[normalizedInput];
-    }
-
-    // Try partial match (input is prefix of enum key)
-    for (const [key, value] of Object.entries(enumValues)) {
-        if (key.startsWith(normalizedInput)) {
-            return value;
-        }
-    }
-
-    return null; // No match found
-}
-
-// Build query with filter conditions for server-side filtering
-function buildFilteredQuery(pageIndex, pageSize, filters) {
-    let whereClause = `inventoryType=${selectedInventoryType}`;
-    const invalidFilters = [];
-
-    if (filters && targetsTable) {
-        for (const [columnKey, filterValue] of Object.entries(filters)) {
-            if (!filterValue) continue;
-
-            // Find the column configuration to get filterKey
-            const column = targetsTable.columns.find(c => c.key === columnKey);
-            if (!column || !column.filterKey) continue;
-
-            let queryValue;
-            if (column.enumValues) {
-                // Enum column: validate and convert to enum value
-                const enumValue = matchEnumValue(filterValue, column.enumValues);
-                if (enumValue === null) {
-                    // No match - mark as invalid, skip this filter
-                    invalidFilters.push(columnKey);
-                    continue;
-                }
-                queryValue = enumValue;
-            } else {
-                // Non-enum column: use text with wildcard
-                queryValue = `${filterValue}*`;
-            }
-
-            whereClause += ` and ${column.filterKey}=${queryValue}`;
-        }
-    }
-
-    return {
-        query: `select * from L8PTarget where ${whereClause} limit ${pageSize} page ${pageIndex}`,
-        invalidFilters: invalidFilters
-    };
-}
-
-// Handle filter change for server-side filtering
-async function handleFilterChange(filters, page, pageSize) {
-    currentFilters = filters;
-    const pageIndex = page - 1;
-    const { query, invalidFilters } = buildFilteredQuery(pageIndex, pageSize, filters);
-
-    try {
-        const body = encodeURIComponent(JSON.stringify({ text: query }));
-        const response = await fetch(getTargetsEndpoint() + '?body=' + body, {
-            method: 'GET',
-            headers: getAuthHeaders()
-        });
-
-        if (!response.ok) {
-            const errorMsg = await getApiErrorMessage(response, 'Failed to fetch targets');
-            console.error('Failed to fetch targets:', response.status, errorMsg);
-            showToast(errorMsg, 'error');
-            return;
-        }
-
-        const data = await response.json();
-
-        // Extract total count from metadata
-        let totalItems = 0;
-        if (data && data.metadata && data.metadata.keyCount && data.metadata.keyCount.counts) {
-            totalItems = data.metadata.keyCount.counts.Total || 0;
-        }
-
-        // Store targets in local cache
-        if (data && data.list) {
-            targets = {};
-            data.list.forEach(target => {
-                targets[target.targetId] = target;
-            });
-        }
-
-        // Update table with server data
-        if (targetsTable) {
-            targetsTable.setServerData(data.list || [], totalItems);
-            // Show visual feedback for invalid enum filters
-            targetsTable.setInvalidFilters(invalidFilters);
-        }
-    } catch (error) {
-        console.error('Error fetching filtered targets:', error);
-    }
-}
 
 // Initialize the targets table with server-side pagination
 function initTargetsTable() {
     targetsTable = new L8Table({
         containerId: 'targets-table-container',
         tableId: 'targets-table',
+        endpoint: getTargetsEndpoint(),
+        modelName: 'L8PTarget',
+        baseWhereClause: `inventoryType=${selectedInventoryType}`,
         pageSize: 20,
         pageSizeOptions: [10, 20, 50, 100],
         emptyMessage: getEmptyMessage(),
         serverSide: true,
-        onPageChange: handlePageChange,
-        onFilterChange: handleFilterChange,
+        onDataLoaded: (data, items, totalCount) => {
+            // Store targets in local cache for editing
+            targets = {};
+            items.forEach(target => {
+                targets[target.targetId] = target;
+            });
+        },
         columns: [
-            { label: 'Target ID', key: 'targetId', filterKey: 'targetId' },
+            { label: 'Target ID', key: 'targetId', filterKey: 'targetId', sortKey: 'targetId' },
             {
                 label: 'Addresses',
                 key: 'addresses',
+                sortKey: 'hosts.configs.addr',
                 render: (target) => getTargetAddresses(target) || '-'
             },
             {
@@ -365,68 +263,12 @@ function initTargetsTable() {
     targetsTable.init();
 }
 
-// Handle page change for server-side pagination
-function handlePageChange(page, pageSize) {
-    fetchTargets(page, pageSize, currentFilters);
-}
-
 function getTargetsEndpoint() {
     return TARGETS_CONFIG.apiPrefix + TARGETS_CONFIG.targetsPath;
 }
 
 function getCredsEndpoint() {
     return TARGETS_CONFIG.apiPrefix + TARGETS_CONFIG.credsPath;
-}
-
-async function fetchTargets(page, pageSize, filters) {
-    // Default to page 1 and table's page size if not provided
-    if (!page) page = 1;
-    if (!pageSize) pageSize = targetsTable ? targetsTable.pageSize : 20;
-    if (!filters) filters = currentFilters;
-
-    // Server uses 0-based page index
-    const pageIndex = page - 1;
-
-    try {
-        const { query, invalidFilters } = buildFilteredQuery(pageIndex, pageSize, filters);
-        const body = encodeURIComponent(JSON.stringify({ text: query }));
-        const response = await fetch(getTargetsEndpoint() + '?body=' + body, {
-            method: 'GET',
-            headers: getAuthHeaders()
-        });
-
-        if (!response.ok) {
-            const errorMsg = await getApiErrorMessage(response, 'Failed to fetch targets');
-            console.error('Failed to fetch targets:', response.status, errorMsg);
-            showToast(errorMsg, 'error');
-            return;
-        }
-
-        const data = await response.json();
-
-        // Extract total count from metadata
-        let totalItems = 0;
-        if (data && data.metadata && data.metadata.keyCount && data.metadata.keyCount.counts) {
-            totalItems = data.metadata.keyCount.counts.Total || 0;
-        }
-
-        // Store targets in local cache
-        if (data && data.list) {
-            targets = {};
-            data.list.forEach(target => {
-                targets[target.targetId] = target;
-            });
-        }
-
-        // Update table with server data
-        if (targetsTable) {
-            targetsTable.setServerData(data.list || [], totalItems);
-            // Show visual feedback for invalid enum filters
-            targetsTable.setInvalidFilters(invalidFilters);
-        }
-    } catch (error) {
-        console.error('Error fetching targets:', error);
-    }
 }
 
 async function fetchCredentials() {
@@ -496,7 +338,9 @@ async function performBulkStateChange(state) {
         }
 
         showToast(`All ${typeName} ${state === 2 ? 'started' : 'stopped'} successfully`, 'success');
-        await fetchTargets();
+        if (targetsTable) {
+            targetsTable.fetchData(targetsTable.currentPage, targetsTable.pageSize);
+        }
     } catch (error) {
         showToast('Network error: ' + error.message, 'error');
     }
@@ -520,9 +364,9 @@ function getTargetAddresses(target) {
 }
 
 function renderTargets() {
-    // For server-side pagination, fetch data from server
+    // For server-side pagination, refresh data from server
     if (targetsTable && targetsTable.serverSide) {
-        fetchTargets(targetsTable.currentPage, targetsTable.pageSize);
+        targetsTable.fetchData(targetsTable.currentPage, targetsTable.pageSize);
     } else if (targetsTable) {
         targetsTable.setData(targets);
     }
@@ -873,7 +717,11 @@ async function refreshData() {
     if (!TARGETS_CONFIG) {
         await loadConfig();
     }
-    await Promise.all([fetchTargets(), fetchCredentials()]);
+    // Refresh credentials and trigger table refresh
+    await fetchCredentials();
+    if (targetsTable) {
+        targetsTable.fetchData(targetsTable.currentPage, targetsTable.pageSize);
+    }
 }
 
 if (typeof window !== 'undefined') {

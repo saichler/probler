@@ -6,16 +6,6 @@ let bearerToken = localStorage.getItem('bearerToken') || null;
 // Global table instance
 let networkDevicesTable = null;
 
-// Cache for total count
-let cachedTotalCount = 0;
-
-// Current filters for server-side filtering
-let currentFilters = {};
-
-// Current sort state for server-side sorting
-let currentSortColumn = null;
-let currentSortDirection = 'asc';
-
 // Reverse enum mappings: display value → backend enum value
 const deviceStatusEnum = {
     'online': 1,
@@ -36,26 +26,6 @@ const deviceTypeEnum = {
     'unknown': 0
 };
 
-// Find matching enum value from user input (case-insensitive partial match)
-function matchEnumValue(input, enumValues) {
-    const normalizedInput = input.toLowerCase().trim();
-    if (!normalizedInput) return null;
-
-    // Try exact match first
-    if (enumValues[normalizedInput] !== undefined) {
-        return enumValues[normalizedInput];
-    }
-
-    // Try partial match (input is prefix of enum key)
-    for (const [key, value] of Object.entries(enumValues)) {
-        if (key.startsWith(normalizedInput)) {
-            return value;
-        }
-    }
-
-    return null; // No match found
-}
-
 // Column definitions with filterKey for server-side filtering and sortKey for server-side sorting
 const columns = [
     { key: 'name', label: 'Device Name', filterKey: 'equipmentinfo.sysName', sortKey: 'equipmentinfo.sysName' },
@@ -67,52 +37,6 @@ const columns = [
     { key: 'memoryUsage', label: 'Memory %', sortKey: 'stats.memoryUsage', formatter: (value) => `${value}%` },
     { key: 'uptime', label: 'Uptime', filterKey: 'equipmentinfo.uptime', sortKey: 'equipmentinfo.uptime' }
 ];
-
-// Build query with filter and sort conditions
-function buildFilteredQuery(page, filters, sortColumn, sortDirection) {
-    let whereClause = 'Id=*';
-    const invalidFilters = [];  // Track columns with invalid enum values
-
-    for (const [columnKey, filterValue] of Object.entries(filters)) {
-        if (!filterValue) continue;
-
-        const column = columns.find(c => c.key === columnKey);
-        if (!column || !column.filterKey) continue;
-
-        let queryValue;
-        if (column.enumValues) {
-            // Enum column: validate and convert to enum value
-            const enumValue = matchEnumValue(filterValue, column.enumValues);
-            if (enumValue === null) {
-                // No match - mark as invalid, skip this filter
-                invalidFilters.push(columnKey);
-                continue;
-            }
-            queryValue = enumValue;  // Use numeric enum value
-        } else {
-            // Non-enum column: use text with wildcard
-            queryValue = `${filterValue}*`;
-        }
-
-        whereClause += ` and ${column.filterKey}=${queryValue}`;
-    }
-
-    let query = `select * from NetworkDevice where ${whereClause} limit 15 page ${page}`;
-
-    // Add sort clause if sorting is active
-    if (sortColumn) {
-        const column = columns.find(c => c.key === sortColumn);
-        if (column && column.sortKey) {
-            const descending = sortDirection === 'desc' ? ' descending' : '';
-            query += ` sort-by ${column.sortKey}${descending}`;
-        }
-    }
-
-    return {
-        query: query,
-        invalidFilters: invalidFilters
-    };
-}
 
 // Set bearer token
 function setBearerToken(token) {
@@ -227,124 +151,44 @@ function getDevicesEndpoint() {
     return NETWORK_DEVICES_CONFIG.apiPrefix + NETWORK_DEVICES_CONFIG.devicesPath;
 }
 
-// Fetch devices for a specific page
-async function fetchNetworkDevices(page) {
-    const serverPage = page - 1;
-    const { query } = buildFilteredQuery(serverPage, currentFilters);
-    return await fetchNetworkDevicesWithQuery(query, serverPage);
-}
-
-// Fetch devices with a custom query
-async function fetchNetworkDevicesWithQuery(queryText, serverPage) {
-    const container = document.getElementById('network-devices-table');
-
+// Update hero subtitle with device stats
+function updateHeroStats(counts) {
+    if (!counts) return;
     try {
-        const query = JSON.stringify({ text: queryText });
-
-        const response = await fetch(getDevicesEndpoint() + '?body=' + encodeURIComponent(query), {
-            method: 'GET',
-            headers: getAuthHeaders()
-        });
-
-        if (!response.ok) {
-            const errorMsg = await getApiErrorMessage(response, 'Failed to fetch devices');
-            throw new Error(errorMsg);
+        const parentHeroSubtitle = window.parent.document.querySelector('.network-hero .hero-subtitle');
+        if (parentHeroSubtitle) {
+            const totalDevices = counts.Total || 0;
+            const onlineDevices = counts.Online || 0;
+            const uptime = totalDevices > 0 ? ((onlineDevices / totalDevices) * 100).toFixed(2) : 0;
+            parentHeroSubtitle.textContent = `Real-time monitoring • ${onlineDevices} Active Devices • ${uptime}% Uptime`;
         }
-
-        const data = await response.json();
-
-        // Transform the device list
-        const networkDevicesData = (data.list || []).map(device => transformDeviceData(device));
-
-        // Get counts from metadata
-        let totalDevices = cachedTotalCount;
-
-        if (serverPage === 0 && data.metadata?.keyCount?.counts) {
-            totalDevices = data.metadata.keyCount.counts.Total || 0;
-            const onlineDevices = data.metadata.keyCount.counts.Online || 0;
-            cachedTotalCount = totalDevices;
-
-            // Update parent hero subtitle if accessible
-            try {
-                const parentHeroSubtitle = window.parent.document.querySelector('.network-hero .hero-subtitle');
-                if (parentHeroSubtitle) {
-                    const uptime = totalDevices > 0 ? ((onlineDevices / totalDevices) * 100).toFixed(2) : 0;
-                    parentHeroSubtitle.textContent = `Real-time monitoring • ${onlineDevices} Active Devices • ${uptime}% Uptime`;
-                }
-            } catch (e) {
-                // Cross-origin restriction, ignore
-            }
-        }
-
-        return { devices: networkDevicesData, totalCount: totalDevices };
-    } catch (error) {
-        console.error('Error fetching network devices:', error);
-        if (container) {
-            container.innerHTML = '<div style="padding: 20px; color: #718096; text-align: center;">Failed to load network devices data</div>';
-        }
-        throw error;
+    } catch (e) {
+        // Cross-origin restriction, ignore
     }
 }
 
 // Initialize Network Devices
-async function initializeNetworkDevices() {
-    try {
-        // Reset filters and sort state on initialization
-        currentFilters = {};
-        currentSortColumn = null;
-        currentSortDirection = 'asc';
-
-        const { devices, totalCount } = await fetchNetworkDevices(1);
-
-        networkDevicesTable = new ProblerTable('network-devices-table', {
-            columns: columns,
-            data: devices,
-            rowsPerPage: 15,
-            sortable: true,
-            filterable: true,
-            statusColumn: 'status',
-            serverSide: true,
-            totalCount: totalCount,
-            onPageChange: async (page) => {
-                const serverPage = page - 1;
-                const { query } = buildFilteredQuery(serverPage, currentFilters, currentSortColumn, currentSortDirection);
-                const { devices, totalCount } = await fetchNetworkDevicesWithQuery(query, serverPage);
-                networkDevicesTable.updateServerData(devices, totalCount);
-            },
-            onFilterChange: async (filters, page) => {
-                currentFilters = filters;
-                const serverPage = page - 1;
-                const { query, invalidFilters } = buildFilteredQuery(serverPage, filters, currentSortColumn, currentSortDirection);
-
-                const { devices, totalCount } = await fetchNetworkDevicesWithQuery(query, serverPage);
-                networkDevicesTable.updateServerData(devices, totalCount);
-
-                // Show visual feedback for invalid enum filters (must be AFTER updateServerData which calls render())
-                networkDevicesTable.setInvalidFilters(invalidFilters);
-            },
-            onSortChange: async (sortColumn, sortDirection, page) => {
-                currentSortColumn = sortColumn;
-                currentSortDirection = sortDirection;
-                const serverPage = page - 1;
-                const { query, invalidFilters } = buildFilteredQuery(serverPage, currentFilters, sortColumn, sortDirection);
-
-                const { devices, totalCount } = await fetchNetworkDevicesWithQuery(query, serverPage);
-                networkDevicesTable.updateServerData(devices, totalCount);
-
-                // Preserve invalid filter state after sort
-                networkDevicesTable.setInvalidFilters(invalidFilters);
-            },
-            onRowClick: (rowData) => {
-                showDeviceDetailModal(rowData);
+function initializeNetworkDevices() {
+    networkDevicesTable = new ProblerTable('network-devices-table', {
+        endpoint: getDevicesEndpoint(),
+        modelName: 'NetworkDevice',
+        columns: columns,
+        rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
+        statusColumn: 'status',
+        serverSide: true,
+        transformData: transformDeviceData,
+        onDataLoaded: (data, items, totalCount) => {
+            // Update hero subtitle with device stats
+            if (data.metadata?.keyCount?.counts) {
+                updateHeroStats(data.metadata.keyCount.counts);
             }
-        });
-    } catch (error) {
-        console.error('Error initializing network devices:', error);
-        const container = document.getElementById('network-devices-table');
-        if (container) {
-            container.innerHTML = '<div style="padding: 20px; color: #718096; text-align: center;">Failed to load network devices data</div>';
+        },
+        onRowClick: (rowData) => {
+            showDeviceDetailModal(rowData);
         }
-    }
+    });
 }
 
 // Toast notifications
@@ -400,7 +244,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (bearerToken) {
-        await initializeNetworkDevices();
+        initializeNetworkDevices();
     } else {
         const container = document.getElementById('network-devices-table');
         if (container) {

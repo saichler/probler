@@ -17,7 +17,13 @@ class L8Table {
         // Server-side pagination support
         this.serverSide = options.serverSide || false;
         this.totalItems = 0;
-        this.onPageChange = options.onPageChange || null;
+
+        // Server-side auto-fetch options
+        this.endpoint = options.endpoint || null;
+        this.modelName = options.modelName || null;
+        this.baseWhereClause = options.baseWhereClause || null;
+        this.transformData = options.transformData || null;
+        this.onDataLoaded = options.onDataLoaded || null;
 
         // Add button support
         this.onAdd = options.onAdd || null;
@@ -30,8 +36,6 @@ class L8Table {
         // Sorting and filtering support
         this.sortable = options.sortable !== false;
         this.filterable = options.filterable !== false;
-        this.onFilterChange = options.onFilterChange || null;
-        this.onSortChange = options.onSortChange || null;
         this.filterDebounceMs = options.filterDebounceMs || 1000;
 
         // Sorting and filtering state
@@ -53,6 +57,145 @@ class L8Table {
         };
     }
 
+    // Find matching enum value from user input (case-insensitive partial match)
+    matchEnumValue(input, enumValues) {
+        const normalizedInput = input.toLowerCase().trim();
+        if (!normalizedInput) return null;
+
+        // Try exact match first
+        if (enumValues[normalizedInput] !== undefined) {
+            return enumValues[normalizedInput];
+        }
+
+        // Try partial match (input is prefix of enum key)
+        for (const [key, value] of Object.entries(enumValues)) {
+            if (key.startsWith(normalizedInput)) {
+                return value;
+            }
+        }
+
+        return null; // No match found
+    }
+
+    // Build L8Query with filter and sort conditions
+    buildQuery(page, pageSize) {
+        const pageIndex = page - 1;
+        const invalidFilters = [];
+        const filterConditions = [];
+
+        // Start with base where clause if provided
+        if (this.baseWhereClause) {
+            filterConditions.push(this.baseWhereClause);
+        }
+
+        // Add filter conditions
+        for (const [columnKey, filterValue] of Object.entries(this.filters)) {
+            if (!filterValue) continue;
+
+            const column = this.columns.find(c => c.key === columnKey);
+            if (!column) continue;
+
+            const filterKey = column.filterKey || column.key;
+
+            let queryValue;
+            if (column.enumValues) {
+                // Enum column: validate and convert to enum value
+                const enumValue = this.matchEnumValue(filterValue, column.enumValues);
+                if (enumValue === null) {
+                    // No match - mark as invalid, skip this filter
+                    invalidFilters.push(columnKey);
+                    continue;
+                }
+                queryValue = enumValue;
+            } else {
+                // Non-enum column: use text with wildcard
+                queryValue = `${filterValue}*`;
+            }
+
+            filterConditions.push(`${filterKey}=${queryValue}`);
+        }
+
+        // Build query - only add WHERE clause if there are conditions
+        let query = `select * from ${this.modelName}`;
+        if (filterConditions.length > 0) {
+            query += ` where ${filterConditions.join(' and ')}`;
+        }
+        query += ` limit ${pageSize} page ${pageIndex}`;
+
+        // Add sort clause
+        if (this.sortColumn) {
+            const column = this.columns.find(c => c.key === this.sortColumn);
+            const sortKey = column?.sortKey || column?.filterKey || this.sortColumn;
+            const desc = this.sortDirection === 'desc' ? ' descending' : '';
+            query += ` sort-by ${sortKey}${desc}`;
+        }
+
+        return { query, invalidFilters };
+    }
+
+    // Fetch data from server
+    async fetchData(page, pageSize) {
+        if (!this.endpoint || !this.modelName) {
+            console.error('Table requires endpoint and modelName for server-side mode');
+            return;
+        }
+
+        const { query, invalidFilters } = this.buildQuery(page, pageSize);
+
+        try {
+            const body = encodeURIComponent(JSON.stringify({ text: query }));
+            const response = await fetch(this.endpoint + '?body=' + body, {
+                method: 'GET',
+                headers: typeof getAuthHeaders === 'function' ? getAuthHeaders() : { 'Content-Type': 'application/json' }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+
+            const data = await response.json();
+
+            // Extract total count from metadata
+            let totalCount = 0;
+            if (data.metadata?.keyCount?.counts) {
+                totalCount = data.metadata.keyCount.counts.Total || 0;
+            }
+
+            // Transform data if transformer provided
+            let items = data.list || [];
+            if (this.transformData) {
+                items = items.map(item => this.transformData(item));
+            }
+
+            // Update table
+            this.setServerData(items, totalCount);
+            this.setInvalidFilters(invalidFilters);
+
+            // Call optional callback for additional processing
+            if (this.onDataLoaded) {
+                this.onDataLoaded(data, items, totalCount);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            this.showError('Failed to load data');
+        }
+    }
+
+    // Update base where clause and re-fetch
+    setBaseWhereClause(whereClause) {
+        this.baseWhereClause = whereClause;
+        this.filters = {};  // Clear filters when base clause changes
+        this.currentPage = 1;
+        this.fetchData(this.currentPage, this.pageSize);
+    }
+
+    // Show error message in table container
+    showError(message) {
+        if (this.container) {
+            this.container.innerHTML = `<div style="padding: 20px; color: #718096; text-align: center;">${message}</div>`;
+        }
+    }
+
     // Initialize the table in the container
     init() {
         this.container = document.getElementById(this.containerId);
@@ -62,14 +205,19 @@ class L8Table {
         }
 
         // Create debounced filter handler for server-side filtering
-        if (this.serverSide && this.onFilterChange) {
+        if (this.serverSide) {
             this.debouncedFilterHandler = this.debounce(() => {
                 this.currentPage = 1;
-                this.onFilterChange(this.filters, this.currentPage, this.pageSize);
+                this.fetchData(this.currentPage, this.pageSize);
             }, this.filterDebounceMs);
         }
 
         this.render();
+
+        // Auto-fetch initial data if server-side with endpoint
+        if (this.serverSide && this.endpoint && this.modelName) {
+            this.fetchData(1, this.pageSize);
+        }
     }
 
     // Set data and re-render (for client-side pagination)
@@ -352,7 +500,7 @@ class L8Table {
                     const value = input.value;
                     this.filters[column] = value;
 
-                    if (this.serverSide && this.onFilterChange) {
+                    if (this.serverSide) {
                         this.debouncedFilterHandler();
                     } else {
                         this.filter(column, value);
@@ -368,8 +516,8 @@ class L8Table {
                 const newPageSize = parseInt(e.target.value, 10);
                 this.pageSize = newPageSize;
                 this.currentPage = 1;
-                if (this.serverSide && this.onPageChange) {
-                    this.onPageChange(this.currentPage, this.pageSize);
+                if (this.serverSide) {
+                    this.fetchData(this.currentPage, this.pageSize);
                 } else {
                     this.render();
                 }
@@ -436,8 +584,8 @@ class L8Table {
         }
 
         if (this.currentPage !== oldPage) {
-            if (this.serverSide && this.onPageChange) {
-                this.onPageChange(this.currentPage, this.pageSize);
+            if (this.serverSide) {
+                this.fetchData(this.currentPage, this.pageSize);
             } else {
                 this.render();
             }
@@ -449,8 +597,8 @@ class L8Table {
         const totalPages = this.getTotalPages();
         if (page >= 1 && page <= totalPages && page !== this.currentPage) {
             this.currentPage = page;
-            if (this.serverSide && this.onPageChange) {
-                this.onPageChange(this.currentPage, this.pageSize);
+            if (this.serverSide) {
+                this.fetchData(this.currentPage, this.pageSize);
             } else {
                 this.render();
             }
@@ -467,9 +615,9 @@ class L8Table {
         }
 
         // Server-side sorting
-        if (this.serverSide && this.onSortChange) {
+        if (this.serverSide) {
             this.currentPage = 1;
-            this.onSortChange(this.sortColumn, this.sortDirection, this.currentPage, this.pageSize);
+            this.fetchData(this.currentPage, this.pageSize);
             return;
         }
 

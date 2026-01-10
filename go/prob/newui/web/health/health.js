@@ -4,57 +4,18 @@
 let healthTable = null;
 let healthDataMap = new Map();
 
-// Current filters for server-side filtering
-let currentFilters = {};
-
-// Current sort state for server-side sorting
-let currentSortColumn = null;
-let currentSortDirection = 'asc';
-
 // Column definitions with filterKey for server-side filtering
 const columns = [
-    { key: 'service', label: 'Service', filterKey: 'alias' },
-    { key: 'rx', label: 'RX', filterKey: 'stats.rxMsgCount' },
-    { key: 'rxData', label: 'RX Data', sortKey: 'rxDataRaw', filterKey: 'stats.rxDataCont' },
-    { key: 'tx', label: 'TX', filterKey: 'stats.txMsgCount' },
-    { key: 'txData', label: 'TX Data', sortKey: 'txDataRaw', filterKey: 'stats.txDataCount' },
-    { key: 'memory', label: 'Memory', sortKey: 'memoryRaw', filterKey: 'stats.memoryUsage' },
-    { key: 'cpuPercent', label: 'CPU %', sortKey: 'cpuPercentRaw', filterKey: 'stats.cpuUsage' },
-    { key: 'upTime', label: 'Up Time', filterKey: 'startTime' },
-    { key: 'lastPulse', label: 'Last Pulse', filterKey: 'stats.lastMsgTime' }
+    { key: 'service', label: 'Service', filterKey: 'alias', sortKey: 'alias' },
+    { key: 'rx', label: 'RX', filterKey: 'stats.rxMsgCount', sortKey: 'stats.rxMsgCount' },
+    { key: 'rxData', label: 'RX Data', filterKey: 'stats.rxDataCont', sortKey: 'stats.rxDataCont' },
+    { key: 'tx', label: 'TX', filterKey: 'stats.txMsgCount', sortKey: 'stats.txMsgCount' },
+    { key: 'txData', label: 'TX Data', filterKey: 'stats.txDataCount', sortKey: 'stats.txDataCount' },
+    { key: 'memory', label: 'Memory', filterKey: 'stats.memoryUsage', sortKey: 'stats.memoryUsage' },
+    { key: 'cpuPercent', label: 'CPU %', filterKey: 'stats.cpuUsage', sortKey: 'stats.cpuUsage' },
+    { key: 'upTime', label: 'Up Time', filterKey: 'startTime', sortKey: 'startTime' },
+    { key: 'lastPulse', label: 'Last Pulse', filterKey: 'stats.lastMsgTime', sortKey: 'stats.lastMsgTime' }
 ];
-
-// Build query with filter and sort conditions
-function buildFilteredQuery(page, filters, sortColumn, sortDirection) {
-    let whereClause = 'AUuid=*';
-    const invalidFilters = [];
-
-    for (const [columnKey, filterValue] of Object.entries(filters)) {
-        if (!filterValue) continue;
-
-        const column = columns.find(c => c.key === columnKey);
-        if (!column || !column.filterKey) continue;
-
-        // No enums in Health - use text with wildcard
-        whereClause += ` and ${column.filterKey}=${filterValue}*`;
-    }
-
-    let query = `select * from L8Health where ${whereClause} limit 15 page ${page}`;
-
-    // Add sort clause if sorting is active (use filterKey for server-side sort field)
-    if (sortColumn) {
-        const column = columns.find(c => c.key === sortColumn);
-        if (column && column.filterKey) {
-            const descending = sortDirection === 'desc' ? ' descending' : '';
-            query += ` sort-by ${column.filterKey}${descending}`;
-        }
-    }
-
-    return {
-        query: query,
-        invalidFilters: invalidFilters
-    };
-}
 
 // Authentication token (from localStorage or parent window)
 let bearerToken = localStorage.getItem('bearerToken') || null;
@@ -85,17 +46,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // Initialize health table with server-side filtering
-async function initializeHealth() {
-    try {
-        currentFilters = {};
-        currentSortColumn = null;
-        currentSortDirection = 'asc';
-        const { tableData, totalCount } = await fetchHealthData(1);
-        renderHealthTable(tableData, totalCount);
-    } catch (error) {
-        console.error('Error initializing health:', error);
-        displayErrorMessage('Failed to load health data. Please try again later.');
-    }
+function initializeHealth() {
+    healthTable = new ProblerTable('health-table-container', {
+        endpoint: getHealthEndpoint(),
+        modelName: 'L8Health',
+        columns: columns,
+        rowsPerPage: 15,
+        sortable: true,
+        filterable: true,
+        statusColumn: null,
+        serverSide: true,
+        transformData: transformHealthData,
+        onDataLoaded: (data, items, totalCount) => {
+            // Rebuild healthDataMap from raw API response
+            healthDataMap.clear();
+            if (data && data.list) {
+                data.list.forEach(item => {
+                    if (item.stats) {
+                        const serviceName = item.alias || 'Unknown';
+                        healthDataMap.set(serviceName, item);
+                    }
+                });
+            }
+        },
+        onRowClick: (rowData) => {
+            showHealthDetailsModal(rowData);
+        }
+    });
 }
 
 // Get API endpoint URL
@@ -103,119 +80,25 @@ function getHealthEndpoint() {
     return HEALTH_CONFIG.apiPrefix + HEALTH_CONFIG.healthPath;
 }
 
-// Fetch health data for a specific page
-async function fetchHealthData(page) {
-    const serverPage = (page || 1) - 1;
-    const { query } = buildFilteredQuery(serverPage, currentFilters, currentSortColumn, currentSortDirection);
-    return await fetchHealthDataWithQuery(query, serverPage);
-}
+// Transform raw health data to table format
+function transformHealthData(item) {
+    if (!item.stats) return null;
 
-// Fetch health data with a custom query
-async function fetchHealthDataWithQuery(queryText, serverPage) {
-    try {
-        const bodyParam = JSON.stringify({ text: queryText });
-        const url = `${getHealthEndpoint()}?body=${encodeURIComponent(bodyParam)}`;
-
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: getAuthHeaders()
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return processHealthDataForTable(data, serverPage);
-    } catch (error) {
-        console.error('Error fetching health data:', error);
-        throw error;
-    }
-}
-
-// Process health data and return table data
-function processHealthDataForTable(data, serverPage) {
-    if (!data || !data.list) {
-        return { tableData: [], totalCount: 0 };
-    }
-
-    // Clear and rebuild the map
-    healthDataMap.clear();
-
-    const tableData = data.list
-        .filter(item => item.stats)
-        .map(item => {
-            const serviceName = item.alias || 'Unknown';
-            healthDataMap.set(serviceName, item);
-
-            return {
-                service: serviceName,
-                rx: item.stats.rxMsgCount || 0,
-                rxData: formatBytes(item.stats.rxDataCont || 0),
-                rxDataRaw: item.stats.rxDataCont || 0,
-                tx: item.stats.txMsgCount || 0,
-                txData: formatBytes(item.stats.txDataCount || 0),
-                txDataRaw: item.stats.txDataCount || 0,
-                memory: formatBytes(item.stats.memoryUsage || 0),
-                memoryRaw: item.stats.memoryUsage || 0,
-                cpuPercent: formatCPU(item.stats.cpuUsage || 0),
-                cpuPercentRaw: item.stats.cpuUsage || 0,
-                upTime: formatUptime(item.startTime),
-                lastPulse: formatLastPulse(item.stats.lastMsgTime)
-            };
-        });
-
-    // Get total count from metadata
-    let totalCount = tableData.length;
-    if (serverPage === 0 && data.metadata?.keyCount?.counts) {
-        totalCount = data.metadata.keyCount.counts.Total || tableData.length;
-    }
-
-    return { tableData, totalCount };
-}
-
-// Render health table
-function renderHealthTable(data, totalCount) {
-    healthTable = new ProblerTable('health-table-container', {
-        columns: columns,
-        data: data,
-        rowsPerPage: 15,
-        sortable: true,
-        filterable: true,
-        statusColumn: null,
-        serverSide: true,
-        totalCount: totalCount,
-        onPageChange: async (page) => {
-            const { tableData, totalCount } = await fetchHealthData(page);
-            healthTable.updateServerData(tableData, totalCount);
-        },
-        onFilterChange: async (filters, page) => {
-            currentFilters = filters;
-            const serverPage = page - 1;
-            const { query, invalidFilters } = buildFilteredQuery(serverPage, filters, currentSortColumn, currentSortDirection);
-
-            const { tableData, totalCount } = await fetchHealthDataWithQuery(query, serverPage);
-            healthTable.updateServerData(tableData, totalCount);
-
-            // Show visual feedback for invalid filters (after render)
-            healthTable.setInvalidFilters(invalidFilters);
-        },
-        onSortChange: async (sortColumn, sortDirection, page) => {
-            currentSortColumn = sortColumn;
-            currentSortDirection = sortDirection;
-            const serverPage = page - 1;
-            const { query, invalidFilters } = buildFilteredQuery(serverPage, currentFilters, sortColumn, sortDirection);
-
-            const { tableData, totalCount } = await fetchHealthDataWithQuery(query, serverPage);
-            healthTable.updateServerData(tableData, totalCount);
-
-            // Preserve invalid filter state after sort
-            healthTable.setInvalidFilters(invalidFilters);
-        },
-        onRowClick: (rowData) => {
-            showHealthDetailsModal(rowData);
-        }
-    });
+    return {
+        service: item.alias || 'Unknown',
+        rx: item.stats.rxMsgCount || 0,
+        rxData: formatBytes(item.stats.rxDataCont || 0),
+        rxDataRaw: item.stats.rxDataCont || 0,
+        tx: item.stats.txMsgCount || 0,
+        txData: formatBytes(item.stats.txDataCount || 0),
+        txDataRaw: item.stats.txDataCount || 0,
+        memory: formatBytes(item.stats.memoryUsage || 0),
+        memoryRaw: item.stats.memoryUsage || 0,
+        cpuPercent: formatCPU(item.stats.cpuUsage || 0),
+        cpuPercentRaw: item.stats.cpuUsage || 0,
+        upTime: formatUptime(item.startTime),
+        lastPulse: formatLastPulse(item.stats.lastMsgTime)
+    };
 }
 
 // Helper function to format bytes to human-readable format
@@ -536,7 +419,11 @@ async function refreshData() {
     if (!HEALTH_CONFIG) {
         await loadConfig();
     }
-    await initializeHealth();
+    if (healthTable) {
+        healthTable.fetchData(healthTable.currentPage, healthTable.config.rowsPerPage);
+    } else {
+        initializeHealth();
+    }
 }
 
 // Export for use by parent window
