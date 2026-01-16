@@ -376,11 +376,43 @@
             return this.config.serverSide ? this.config.data : this.filteredData;
         }
 
-        updateData(newData) {
-            this.config.data = newData;
-            this.filteredData = [...newData];
-            this.currentPage = 1;
+        /**
+         * Set data for client-side pagination (like desktop L8Table.setData)
+         * @param {Array|Object} data - Array or object of items
+         */
+        setData(data) {
+            // Convert object to array if needed (like desktop L8Table)
+            this.config.data = Array.isArray(data) ? data : Object.values(data);
+
+            // Apply transform if provided
+            if (this.config.transformData) {
+                this.config.data = this.config.data.map(item => this.config.transformData(item)).filter(item => item !== null);
+            }
+
+            this.filteredData = [...this.config.data];
+
+            if (!this.config.serverSide) {
+                this.currentPage = 1;
+            }
+
             this.render();
+        }
+
+        /**
+         * Set data with server-side pagination metadata
+         * @param {Array} data - Page of items
+         * @param {number} totalCount - Total count of all items
+         */
+        setServerData(data, totalCount) {
+            this.config.data = Array.isArray(data) ? data : Object.values(data);
+            this.config.totalCount = totalCount || 0;
+            this.isLoading = false;
+            this.hasError = false;
+            this.render();
+        }
+
+        updateData(newData) {
+            this.setData(newData);
         }
 
         // ============================================

@@ -1,4 +1,4 @@
-<!-- Mobile Security Section - Placeholder -->
+<!-- Mobile Security Section -->
 <style>
     .mobile-section { padding: var(--spacing-sm); }
     .section-header {
@@ -8,11 +8,1086 @@
     }
     .section-header h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: var(--spacing-xs); }
     .section-header p { font-size: 0.85rem; opacity: 0.9; }
-    .coming-soon { text-align: center; padding: var(--spacing-xl); color: var(--text-muted); }
-    .coming-soon .icon { font-size: 3rem; margin-bottom: var(--spacing-md); }
-    .coming-soon h3 { font-size: 1.2rem; color: var(--text-dark); margin-bottom: var(--spacing-sm); }
+
+    /* Security Tabs */
+    .security-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        background: var(--bg-light, #f5f7fa);
+        padding: 6px;
+        border-radius: 12px;
+    }
+    .security-tab {
+        flex: 1;
+        padding: 10px 12px;
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted, #718096);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .security-tab.active {
+        background: white;
+        color: var(--primary-blue, #0ea5e9);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .security-tab:active:not(.active) {
+        background: rgba(255,255,255,0.5);
+    }
+
+    .security-content {
+        display: none;
+    }
+    .security-content.active {
+        display: block;
+    }
+
+    /* Form styles for popup */
+    .security-form .form-group {
+        margin-bottom: 16px;
+    }
+    .security-form label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-dark, #2d3748);
+        margin-bottom: 6px;
+    }
+    .security-form input[type="text"],
+    .security-form input[type="password"],
+    .security-form select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+    .security-form input:focus,
+    .security-form select:focus {
+        outline: none;
+        border-color: var(--primary-blue, #0ea5e9);
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+    .security-form input:disabled {
+        background: var(--bg-light, #f5f7fa);
+        color: var(--text-muted, #718096);
+    }
+
+    /* Roles multi-select */
+    .roles-select-container {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 8px;
+        padding: 8px;
+    }
+    .role-checkbox-item {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border-radius: 6px;
+    }
+    .role-checkbox-item:active {
+        background: var(--bg-light, #f5f7fa);
+    }
+    .role-checkbox-item input {
+        width: 18px;
+        height: 18px;
+        margin-right: 10px;
+    }
+    .role-checkbox-item label {
+        flex: 1;
+        margin-bottom: 0;
+        font-weight: normal;
+    }
+
+    /* Credential items list */
+    .cred-items-list {
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .cred-items-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        background: var(--bg-light, #f5f7fa);
+        border-bottom: 1px solid var(--border-light, #e2e8f0);
+    }
+    .cred-items-header span {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted, #718096);
+    }
+    .cred-add-item-btn {
+        padding: 6px 12px;
+        background: var(--primary-blue, #0ea5e9);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    .cred-item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border-light, #e2e8f0);
+    }
+    .cred-item-row:last-child {
+        border-bottom: none;
+    }
+    .cred-item-key {
+        font-weight: 500;
+        color: var(--text-dark, #2d3748);
+    }
+    .cred-item-actions {
+        display: flex;
+        gap: 8px;
+    }
+    .cred-item-btn {
+        padding: 4px 10px;
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 4px;
+        font-size: 12px;
+        background: white;
+        cursor: pointer;
+    }
+    .cred-item-btn.delete {
+        color: #ef4444;
+        border-color: #ef4444;
+    }
+    .cred-items-empty {
+        padding: 20px;
+        text-align: center;
+        color: var(--text-muted, #718096);
+        font-size: 13px;
+    }
+
+    /* Password input with toggle */
+    .password-input-wrapper {
+        position: relative;
+    }
+    .password-input-wrapper input {
+        padding-right: 60px;
+    }
+    .password-toggle-btn {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 4px 10px;
+        background: var(--bg-light, #f5f7fa);
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 4px;
+        font-size: 11px;
+        cursor: pointer;
+    }
 </style>
+
 <div class="mobile-section">
-    <div class="section-header"><h2>🔒 Security</h2><p>Users, roles, and credentials</p></div>
-    <div class="coming-soon"><div class="icon">🔒</div><h3>Security Management</h3><p>Coming in future stages.</p></div>
+    <div class="section-header">
+        <h2>Security</h2>
+        <p>Users, roles, and credentials management</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="security-tabs">
+        <button class="security-tab active" data-tab="users">Users</button>
+        <button class="security-tab" data-tab="roles">Roles</button>
+        <button class="security-tab" data-tab="credentials">Credentials</button>
+    </div>
+
+    <!-- Users Tab -->
+    <div id="security-users" class="security-content active">
+        <div id="users-table-container"></div>
+    </div>
+
+    <!-- Roles Tab -->
+    <div id="security-roles" class="security-content">
+        <div id="roles-table-container"></div>
+    </div>
+
+    <!-- Credentials Tab -->
+    <div id="security-credentials" class="security-content">
+        <div id="credentials-table-container"></div>
+    </div>
 </div>
+
+<script>
+// Security section state - data stores (like desktop)
+let users = {};
+let roles = {};
+let credentials = {};
+
+// Table instances
+let securityUsersTable = null;
+let securityRolesTable = null;
+let securityCredsTable = null;
+
+// Temp storage for credential items during edit
+let tempCredItems = [];
+let currentCredEditMode = 'add';
+let currentCredEditId = null;
+let currentCredItemEditIndex = -1;
+
+// API endpoints (EXACTLY like desktop config)
+// Users: /probler/73/users
+// Roles: /probler/74/roles
+// Credentials: /probler/75/Creds
+function getUsersEndpoint() {
+    return MobileConfig.getUsersEndpoint();
+}
+
+function getRolesEndpoint() {
+    return MobileConfig.getRolesEndpoint();
+}
+
+function getCredsEndpoint() {
+    return MobileConfig.getCredsEndpoint();
+}
+
+function initMobileSecurity() {
+    initSecurityTabs();
+    initUsersTable();
+    initRolesTable();
+    initCredsTable();
+
+    // Fetch all data (client-side mode like desktop)
+    fetchRoles().then(() => fetchUsers());
+    fetchCredentials();
+}
+
+// Tab navigation
+function initSecurityTabs() {
+    document.querySelectorAll('.security-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabName = this.dataset.tab;
+
+            // Update active tab button
+            document.querySelectorAll('.security-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            // Update active content
+            document.querySelectorAll('.security-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('security-' + tabName).classList.add('active');
+        });
+    });
+}
+
+// ============================================
+// FETCH ALL DATA (Client-side mode like desktop)
+// ============================================
+
+async function fetchUsers() {
+    try {
+        const body = encodeURIComponent('{"text":"select * from L8User"}');
+        const response = await fetch(getUsersEndpoint() + '?body=' + body, {
+            method: 'GET',
+            headers: MobileAuth.getAuthHeaders()
+        });
+
+        if (!response.ok) {
+            console.error('Failed to fetch users:', response.status);
+            return;
+        }
+
+        const data = await response.json();
+        if (data && data.list) {
+            users = {};
+            data.list.forEach(user => {
+                users[user.userId] = user;
+            });
+        }
+        renderUsers();
+    } catch (error) {
+        console.error('Error fetching users:', error);
+    }
+}
+
+async function fetchRoles() {
+    try {
+        const body = encodeURIComponent('{"text":"select * from L8Role"}');
+        const response = await fetch(getRolesEndpoint() + '?body=' + body, {
+            method: 'GET',
+            headers: MobileAuth.getAuthHeaders()
+        });
+
+        if (!response.ok) {
+            console.error('Failed to fetch roles:', response.status);
+            return;
+        }
+
+        const data = await response.json();
+        if (data && data.list) {
+            roles = {};
+            data.list.forEach(role => {
+                roles[role.roleId] = role;
+            });
+        }
+        renderRoles();
+    } catch (error) {
+        console.error('Error fetching roles:', error);
+    }
+}
+
+async function fetchCredentials() {
+    try {
+        const body = encodeURIComponent('{"text":"select * from L8Credentials"}');
+        const response = await fetch(getCredsEndpoint() + '?body=' + body, {
+            method: 'GET',
+            headers: MobileAuth.getAuthHeaders()
+        });
+
+        if (!response.ok) {
+            console.error('Failed to fetch credentials:', response.status);
+            return;
+        }
+
+        const data = await response.json();
+        if (data && data.list) {
+            credentials = {};
+            data.list.forEach(cred => {
+                credentials[cred.id] = cred;
+            });
+        }
+        renderCredentials();
+    } catch (error) {
+        console.error('Error fetching credentials:', error);
+    }
+}
+
+// Render functions (set data to table for client-side pagination)
+function renderUsers() {
+    if (securityUsersTable) {
+        securityUsersTable.setData(users);
+    }
+}
+
+function renderRoles() {
+    if (securityRolesTable) {
+        securityRolesTable.setData(roles);
+    }
+}
+
+function renderCredentials() {
+    if (securityCredsTable) {
+        securityCredsTable.setData(credentials);
+    }
+}
+
+// ============================================
+// USERS TABLE (Client-side mode)
+// ============================================
+
+function initUsersTable() {
+    securityUsersTable = new MobileEditTable('users-table-container', {
+        serverSide: false,  // CLIENT-SIDE pagination like desktop
+        rowsPerPage: 10,
+        filterable: true,
+
+        columns: [
+            { key: 'userId', label: 'User ID', primary: true },
+            { key: 'fullName', label: 'Full Name' },
+            { key: 'rolesCount', label: 'Roles' }
+        ],
+
+        transformData: (item) => ({
+            ...item,
+            rolesCount: item.roles ? Object.keys(item.roles).filter(r => item.roles[r]).length : 0
+        }),
+
+        getItemId: (item) => item.userId,
+
+        onAdd: () => showUserForm(),
+        addButtonText: 'Add User',
+        onEdit: (id, item) => showUserForm(users[id]),
+        onDelete: (id, item) => deleteUser(id),
+
+        emptyMessage: 'No users found. Click "Add User" to create one.',
+        emptyIcon: '&#x1F464;'
+    });
+}
+
+function showUserForm(user) {
+    const isEdit = !!user;
+
+    // Generate roles checkboxes
+    let rolesHtml = '';
+    if (Object.keys(roles).length > 0) {
+        rolesHtml = '<div class="roles-select-container">';
+        Object.values(roles).forEach(role => {
+            const isChecked = user && user.roles && user.roles[role.roleId] ? 'checked' : '';
+            rolesHtml += `
+                <div class="role-checkbox-item">
+                    <input type="checkbox" id="role-${role.roleId}" name="roles" value="${escapeAttr(role.roleId)}" ${isChecked}>
+                    <label for="role-${role.roleId}">${escapeHtml(role.roleName || role.roleId)}</label>
+                </div>
+            `;
+        });
+        rolesHtml += '</div>';
+    } else {
+        rolesHtml = '<p style="color: var(--text-muted); font-size: 13px;">No roles available. Create roles first.</p>';
+    }
+
+    const formHtml = `
+        <div class="security-form">
+            <div class="form-group">
+                <label for="user-id">User ID *</label>
+                <input type="text" id="user-id" name="userId" value="${isEdit ? escapeAttr(user.userId) : ''}" ${isEdit ? 'disabled' : ''} required>
+            </div>
+            <div class="form-group">
+                <label for="user-fullname">Full Name</label>
+                <input type="text" id="user-fullname" name="fullName" value="${isEdit ? escapeAttr(user.fullName || '') : ''}">
+            </div>
+            ${!isEdit ? `
+            <div class="form-group">
+                <label for="user-password">Password *</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="user-password" name="password" value="" required>
+                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('user-password', this)">Show</button>
+                </div>
+            </div>
+            ` : ''}
+            <div class="form-group">
+                <label>Assigned Roles</label>
+                ${rolesHtml}
+            </div>
+        </div>
+    `;
+
+    MobilePopup.show({
+        title: isEdit ? 'Edit User' : 'Add User',
+        content: formHtml,
+        onSave: (popup) => saveUser(popup, isEdit, user)
+    });
+}
+
+async function saveUser(popup, isEdit, originalUser) {
+    const userId = popup.querySelector('#user-id').value.trim();
+    const fullName = popup.querySelector('#user-fullname').value.trim();
+    const passwordInput = popup.querySelector('#user-password');
+    const password = passwordInput ? passwordInput.value : '';
+
+    if (!userId) {
+        MobilePopup.showToast('User ID is required', 'warning');
+        return;
+    }
+    if (!isEdit && !password) {
+        MobilePopup.showToast('Password is required', 'warning');
+        return;
+    }
+
+    // Check for duplicate (add mode only)
+    if (!isEdit && users[userId]) {
+        MobilePopup.showToast('User ID already exists', 'warning');
+        return;
+    }
+
+    // Collect selected roles
+    const selectedRoles = {};
+    popup.querySelectorAll('input[name="roles"]:checked').forEach(cb => {
+        selectedRoles[cb.value] = true;
+    });
+
+    let userObj;
+    if (isEdit) {
+        userObj = { ...originalUser };
+        userObj.fullName = fullName;
+        userObj.roles = selectedRoles;
+    } else {
+        userObj = {
+            userId: userId,
+            fullName: fullName,
+            password: { hash: password },
+            roles: selectedRoles
+        };
+    }
+
+    try {
+        const method = isEdit ? 'PATCH' : 'POST';
+        const response = await fetch(getUsersEndpoint(), {
+            method: method,
+            headers: MobileAuth.getAuthHeaders(),
+            body: JSON.stringify(userObj)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            MobilePopup.showToast(errorText || 'Failed to save user', 'error');
+            return;
+        }
+
+        users[userId] = userObj;
+        MobilePopup.close();
+        MobilePopup.showToast(isEdit ? 'User updated' : 'User created', 'success');
+        renderUsers();
+    } catch (e) {
+        console.error('Error saving user:', e);
+        MobilePopup.showToast('Error saving user', 'error');
+    }
+}
+
+async function deleteUser(userId) {
+    const confirmed = await MobileConfirm.delete(`user "${userId}"`);
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(getUsersEndpoint() + '/' + encodeURIComponent(userId), {
+            method: 'DELETE',
+            headers: MobileAuth.getAuthHeaders()
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            MobilePopup.showToast(errorText || 'Failed to delete user', 'error');
+            return;
+        }
+
+        delete users[userId];
+        MobilePopup.showToast('User deleted', 'success');
+        renderUsers();
+    } catch (e) {
+        console.error('Error deleting user:', e);
+        MobilePopup.showToast('Error deleting user', 'error');
+    }
+}
+
+// ============================================
+// ROLES TABLE (Client-side mode)
+// ============================================
+
+function initRolesTable() {
+    securityRolesTable = new MobileEditTable('roles-table-container', {
+        serverSide: false,  // CLIENT-SIDE pagination like desktop
+        rowsPerPage: 10,
+        filterable: true,
+
+        columns: [
+            { key: 'roleId', label: 'Role ID', primary: true },
+            { key: 'roleName', label: 'Role Name' },
+            { key: 'rulesCount', label: 'Rules' }
+        ],
+
+        transformData: (item) => ({
+            ...item,
+            rulesCount: item.rules ? Object.keys(item.rules).length : 0
+        }),
+
+        getItemId: (item) => item.roleId,
+
+        onAdd: () => showRoleForm(),
+        addButtonText: 'Add Role',
+        onEdit: (id, item) => showRoleForm(roles[id]),
+        onDelete: (id, item) => deleteRole(id),
+
+        emptyMessage: 'No roles found. Click "Add Role" to create one.',
+        emptyIcon: '&#x1F6E1;'
+    });
+}
+
+// Action codes for rules (like desktop)
+const ACTION_NAMES = {
+    '-999': 'ALL',
+    '1': 'POST',
+    '2': 'PUT',
+    '3': 'PATCH',
+    '4': 'DELETE',
+    '5': 'GET'
+};
+
+function showRoleForm(role) {
+    const isEdit = !!role;
+
+    // Generate rules list (view only on mobile)
+    let rulesHtml = '';
+    if (isEdit && role.rules && Object.keys(role.rules).length > 0) {
+        rulesHtml = '<div class="cred-items-list" style="margin-top: 8px;">';
+        Object.values(role.rules).forEach((rule, index) => {
+            const actionNames = Object.keys(rule.actions || {})
+                .filter(k => rule.actions[k])
+                .map(k => ACTION_NAMES[k] || k)
+                .join(', ');
+            rulesHtml += `
+                <div class="cred-item-row">
+                    <span class="cred-item-key">${escapeHtml(rule.ruleId)}: ${escapeHtml(rule.elemType || '*')} - ${actionNames || 'None'}</span>
+                </div>
+            `;
+        });
+        rulesHtml += '</div>';
+    } else {
+        rulesHtml = '<p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">No rules defined. (Rules can be edited on desktop.)</p>';
+    }
+
+    const formHtml = `
+        <div class="security-form">
+            <div class="form-group">
+                <label for="role-id">Role ID *</label>
+                <input type="text" id="role-id" name="roleId" value="${isEdit ? escapeAttr(role.roleId) : ''}" ${isEdit ? 'disabled' : ''} required>
+            </div>
+            <div class="form-group">
+                <label for="role-name">Role Name *</label>
+                <input type="text" id="role-name" name="roleName" value="${isEdit ? escapeAttr(role.roleName || '') : ''}" required>
+            </div>
+            <div class="form-group">
+                <label>Rules (view only on mobile)</label>
+                ${rulesHtml}
+            </div>
+        </div>
+    `;
+
+    MobilePopup.show({
+        title: isEdit ? 'Edit Role' : 'Add Role',
+        content: formHtml,
+        onSave: (popup) => saveRole(popup, isEdit, role)
+    });
+}
+
+async function saveRole(popup, isEdit, originalRole) {
+    const roleId = popup.querySelector('#role-id').value.trim();
+    const roleName = popup.querySelector('#role-name').value.trim();
+
+    if (!roleId || !roleName) {
+        MobilePopup.showToast('Role ID and Name are required', 'warning');
+        return;
+    }
+
+    // Check for duplicate (add mode only)
+    if (!isEdit && roles[roleId]) {
+        MobilePopup.showToast('Role ID already exists', 'warning');
+        return;
+    }
+
+    const roleObj = {
+        roleId: roleId,
+        roleName: roleName,
+        rules: isEdit && originalRole ? originalRole.rules : {}
+    };
+
+    try {
+        const method = isEdit ? 'PATCH' : 'POST';
+        const response = await fetch(getRolesEndpoint(), {
+            method: method,
+            headers: MobileAuth.getAuthHeaders(),
+            body: JSON.stringify(roleObj)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            MobilePopup.showToast(errorText || 'Failed to save role', 'error');
+            return;
+        }
+
+        roles[roleId] = roleObj;
+        MobilePopup.close();
+        MobilePopup.showToast(isEdit ? 'Role updated' : 'Role created', 'success');
+        renderRoles();
+    } catch (e) {
+        console.error('Error saving role:', e);
+        MobilePopup.showToast('Error saving role', 'error');
+    }
+}
+
+async function deleteRole(roleId) {
+    const confirmed = await MobileConfirm.delete(`role "${roleId}"`);
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(getRolesEndpoint() + '/' + encodeURIComponent(roleId), {
+            method: 'DELETE',
+            headers: MobileAuth.getAuthHeaders()
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            MobilePopup.showToast(errorText || 'Failed to delete role', 'error');
+            return;
+        }
+
+        delete roles[roleId];
+        MobilePopup.showToast('Role deleted', 'success');
+        renderRoles();
+    } catch (e) {
+        console.error('Error deleting role:', e);
+        MobilePopup.showToast('Error deleting role', 'error');
+    }
+}
+
+// ============================================
+// CREDENTIALS TABLE (Client-side mode)
+// ============================================
+
+function initCredsTable() {
+    securityCredsTable = new MobileEditTable('credentials-table-container', {
+        serverSide: false,  // CLIENT-SIDE pagination like desktop
+        rowsPerPage: 10,
+        filterable: true,
+
+        columns: [
+            { key: 'id', label: 'ID', primary: true },
+            { key: 'name', label: 'Name' },
+            { key: 'credsCount', label: 'Items' }
+        ],
+
+        transformData: (item) => ({
+            ...item,
+            credsCount: item.creds ? Object.keys(item.creds).length : 0
+        }),
+
+        getItemId: (item) => item.id,
+
+        onAdd: () => showCredentialsForm(),
+        addButtonText: 'Add Credentials',
+        onEdit: (id, item) => showCredentialsForm(credentials[id]),
+        onDelete: (id, item) => deleteCredentials(id),
+
+        emptyMessage: 'No credentials found. Click "Add Credentials" to create one.',
+        emptyIcon: '&#x1F511;'
+    });
+}
+
+function showCredentialsForm(cred) {
+    const isEdit = !!cred;
+    currentCredEditMode = isEdit ? 'edit' : 'add';
+    currentCredEditId = isEdit ? cred.id : null;
+
+    // Convert creds map to array for editing
+    if (isEdit && cred.creds) {
+        tempCredItems = Object.entries(cred.creds).map(([key, val]) => ({
+            key: key,
+            aside: val.aside || '',
+            yside: val.yside || '',
+            zside: val.zside || ''
+        }));
+    } else {
+        tempCredItems = [];
+    }
+
+    const formHtml = generateCredentialsFormHtml(cred);
+
+    MobilePopup.show({
+        title: isEdit ? 'Edit Credentials' : 'Add Credentials',
+        content: formHtml,
+        onSave: (popup) => saveCredentials(popup, isEdit)
+    });
+}
+
+function generateCredentialsFormHtml(cred) {
+    const isEdit = !!cred;
+
+    let itemsHtml = '';
+    if (tempCredItems.length > 0) {
+        itemsHtml = tempCredItems.map((item, index) => `
+            <div class="cred-item-row">
+                <span class="cred-item-key">${escapeHtml(item.key)}</span>
+                <div class="cred-item-actions">
+                    <button type="button" class="cred-item-btn" onclick="editCredItem(${index})">Edit</button>
+                    <button type="button" class="cred-item-btn delete" onclick="removeCredItem(${index})">Del</button>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        itemsHtml = '<div class="cred-items-empty">No credential items. Click "+ Add Item" to add.</div>';
+    }
+
+    return `
+        <div class="security-form">
+            <div class="form-group">
+                <label for="cred-id">ID *</label>
+                <input type="text" id="cred-id" name="id" value="${isEdit ? escapeAttr(cred.id) : ''}" ${isEdit ? 'disabled' : ''} required>
+            </div>
+            <div class="form-group">
+                <label for="cred-name">Name *</label>
+                <input type="text" id="cred-name" name="name" value="${isEdit ? escapeAttr(cred.name || '') : ''}" required>
+            </div>
+            <div class="form-group">
+                <label>Credential Items</label>
+                <div class="cred-items-list">
+                    <div class="cred-items-header">
+                        <span>${tempCredItems.length} item(s)</span>
+                        <button type="button" class="cred-add-item-btn" onclick="showCredItemForm()">+ Add Item</button>
+                    </div>
+                    <div id="cred-items-container">
+                        ${itemsHtml}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function refreshCredentialsForm() {
+    // Get current form values
+    const popup = document.querySelector('.mobile-popup-body');
+    if (!popup) return;
+
+    // Rebuild items HTML
+    let itemsHtml = '';
+    if (tempCredItems.length > 0) {
+        itemsHtml = tempCredItems.map((item, index) => `
+            <div class="cred-item-row">
+                <span class="cred-item-key">${escapeHtml(item.key)}</span>
+                <div class="cred-item-actions">
+                    <button type="button" class="cred-item-btn" onclick="editCredItem(${index})">Edit</button>
+                    <button type="button" class="cred-item-btn delete" onclick="removeCredItem(${index})">Del</button>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        itemsHtml = '<div class="cred-items-empty">No credential items. Click "+ Add Item" to add.</div>';
+    }
+
+    // Update items container and count
+    const container = popup.querySelector('#cred-items-container');
+    if (container) {
+        container.innerHTML = itemsHtml;
+    }
+    const header = popup.querySelector('.cred-items-header span');
+    if (header) {
+        header.textContent = `${tempCredItems.length} item(s)`;
+    }
+}
+
+function showCredItemForm(index) {
+    const isEdit = index !== undefined && tempCredItems[index];
+    currentCredItemEditIndex = isEdit ? index : -1;
+    const item = isEdit ? tempCredItems[index] : null;
+
+    const formHtml = `
+        <div class="security-form">
+            <div class="form-group">
+                <label for="item-key">Key *</label>
+                <input type="text" id="item-key" name="key" value="${isEdit ? escapeAttr(item.key) : ''}" ${isEdit ? 'disabled' : ''} required placeholder="e.g., db, api, ssh">
+            </div>
+            <div class="form-group">
+                <label for="item-aside">A-Side</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="item-aside" name="aside" value="${isEdit ? escapeAttr(item.aside) : ''}">
+                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('item-aside', this)">Show</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="item-yside">Y-Side</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="item-yside" name="yside" value="${isEdit ? escapeAttr(item.yside) : ''}">
+                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('item-yside', this)">Show</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="item-zside">Z-Side</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="item-zside" name="zside" value="${isEdit ? escapeAttr(item.zside) : ''}">
+                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('item-zside', this)">Show</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Show nested popup for credential item
+    MobilePopup.show({
+        title: isEdit ? 'Edit Credential Item' : 'Add Credential Item',
+        content: formHtml,
+        onSave: (popup) => saveCredItem(popup)
+    });
+}
+
+function saveCredItem(popup) {
+    const key = popup.querySelector('#item-key').value.trim();
+    const aside = popup.querySelector('#item-aside').value;
+    const yside = popup.querySelector('#item-yside').value;
+    const zside = popup.querySelector('#item-zside').value;
+
+    if (!key) {
+        MobilePopup.showToast('Key is required', 'warning');
+        return;
+    }
+
+    // Check duplicate key (only for new items)
+    if (currentCredItemEditIndex < 0) {
+        const exists = tempCredItems.find(i => i.key === key);
+        if (exists) {
+            MobilePopup.showToast('Key already exists', 'warning');
+            return;
+        }
+    }
+
+    const credItem = { key, aside, yside, zside };
+
+    if (currentCredItemEditIndex >= 0) {
+        tempCredItems[currentCredItemEditIndex] = credItem;
+    } else {
+        tempCredItems.push(credItem);
+    }
+
+    currentCredItemEditIndex = -1;
+    MobilePopup.close();
+
+    // Re-show credentials form with updated items
+    setTimeout(() => {
+        const cred = currentCredEditMode === 'edit' ? {
+            id: currentCredEditId,
+            name: credentials[currentCredEditId]?.name || ''
+        } : null;
+        showCredentialsForm(cred);
+    }, 100);
+}
+
+function editCredItem(index) {
+    // Store form values before showing item form
+    const popup = document.querySelector('.mobile-popup-body');
+    if (popup) {
+        const idInput = popup.querySelector('#cred-id');
+        if (idInput) currentCredEditId = idInput.value;
+    }
+    showCredItemForm(index);
+}
+
+function removeCredItem(index) {
+    tempCredItems.splice(index, 1);
+    refreshCredentialsForm();
+}
+
+async function saveCredentials(popup, isEdit) {
+    const id = popup.querySelector('#cred-id').value.trim();
+    const name = popup.querySelector('#cred-name').value.trim();
+
+    if (!id || !name) {
+        MobilePopup.showToast('ID and Name are required', 'warning');
+        return;
+    }
+
+    // Check for duplicate (add mode only)
+    if (!isEdit && credentials[id]) {
+        MobilePopup.showToast('Credentials ID already exists', 'warning');
+        return;
+    }
+
+    // Convert items array to map
+    const credsMap = {};
+    tempCredItems.forEach(item => {
+        credsMap[item.key] = {
+            aside: item.aside,
+            yside: item.yside,
+            zside: item.zside
+        };
+    });
+
+    const credObj = {
+        id: id,
+        name: name,
+        creds: credsMap
+    };
+
+    try {
+        const method = isEdit ? 'PATCH' : 'POST';
+        const response = await fetch(getCredsEndpoint(), {
+            method: method,
+            headers: MobileAuth.getAuthHeaders(),
+            body: JSON.stringify(credObj)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            MobilePopup.showToast(errorText || 'Failed to save credentials', 'error');
+            return;
+        }
+
+        credentials[id] = credObj;
+        MobilePopup.close();
+        MobilePopup.showToast(isEdit ? 'Credentials updated' : 'Credentials created', 'success');
+        tempCredItems = [];
+        currentCredEditMode = 'add';
+        currentCredEditId = null;
+        renderCredentials();
+    } catch (e) {
+        console.error('Error saving credentials:', e);
+        MobilePopup.showToast('Error saving credentials', 'error');
+    }
+}
+
+async function deleteCredentials(credId) {
+    const confirmed = await MobileConfirm.delete(`credentials "${credId}"`);
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(getCredsEndpoint() + '/' + encodeURIComponent(credId), {
+            method: 'DELETE',
+            headers: MobileAuth.getAuthHeaders()
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            MobilePopup.showToast(errorText || 'Failed to delete credentials', 'error');
+            return;
+        }
+
+        delete credentials[credId];
+        MobilePopup.showToast('Credentials deleted', 'success');
+        renderCredentials();
+    } catch (e) {
+        console.error('Error deleting credentials:', e);
+        MobilePopup.showToast('Error deleting credentials', 'error');
+    }
+}
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
+function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) {
+        // Try finding in popup
+        const popup = document.querySelector('.mobile-popup-body');
+        if (popup) {
+            const popupInput = popup.querySelector('#' + inputId);
+            if (popupInput) {
+                if (popupInput.type === 'password') {
+                    popupInput.type = 'text';
+                    btn.textContent = 'Hide';
+                } else {
+                    popupInput.type = 'password';
+                    btn.textContent = 'Show';
+                }
+            }
+        }
+        return;
+    }
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Hide';
+    } else {
+        input.type = 'password';
+        btn.textContent = 'Show';
+    }
+}
+
+function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
+    const div = document.createElement('div');
+    div.textContent = String(text);
+    return div.innerHTML;
+}
+
+function escapeAttr(text) {
+    if (text === null || text === undefined) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+// Initialize when loaded
+initMobileSecurity();
+</script>
