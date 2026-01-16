@@ -1,0 +1,596 @@
+<!-- Mobile Inventory Section - Using MobileEditTable Component -->
+<div class="mobile-section">
+    <!-- Inventory Header -->
+    <div class="section-header inventory-header">
+        <h2>Inventory</h2>
+        <p>Target and asset management</p>
+    </div>
+
+    <!-- Inventory Type Selector -->
+    <div class="inventory-type-selector">
+        <label for="inventory-type-select">Inventory Type</label>
+        <select id="inventory-type-select" class="inventory-type-dropdown">
+            <option value="1">Network Device</option>
+            <option value="2">GPUs</option>
+            <option value="3">Hosts</option>
+            <option value="4">Virtual Machine</option>
+            <option value="5">K8s Cluster</option>
+            <option value="6">Storage</option>
+            <option value="7">Power</option>
+        </select>
+    </div>
+
+    <!-- Targets Table Container (MobileEditTable will render here) -->
+    <div id="inventory-table-container"></div>
+</div>
+
+<script>
+// Mobile Inventory Section - using MobileEditTable component
+(function() {
+    'use strict';
+
+    // Inventory type enum mapping (L8PTargetType)
+    const INVENTORY_TYPES = {
+        0: 'Invalid',
+        1: 'Network Device',
+        2: 'GPUs',
+        3: 'Hosts',
+        4: 'Virtual Machine',
+        5: 'K8s Cluster',
+        6: 'Storage',
+        7: 'Power'
+    };
+
+    // Target state enum mapping (L8PTargetState)
+    const TARGET_STATES = {
+        0: 'Invalid',
+        1: 'Down',
+        2: 'Up',
+        3: 'Maintenance',
+        4: 'Offline'
+    };
+
+    // Reverse enum mapping for filtering
+    const targetStateEnum = {
+        'down': 1,
+        'up': 2,
+        'maintenance': 3,
+        'offline': 4
+    };
+
+    // State
+    let selectedInventoryType = 1;
+    let inventoryTable = null;
+    let targetsCache = {};
+
+    // Get targets endpoint
+    function getTargetsEndpoint() {
+        // Use targets endpoint from config or default
+        return MobileConfig.getApiPrefix() + '/91/Targets';
+    }
+
+    // Transform raw target data for display
+    function transformTarget(target) {
+        const hostsCount = target.hosts ? Object.keys(target.hosts).length : 0;
+        const addresses = getTargetAddresses(target);
+
+        return {
+            targetId: target.targetId || 'Unknown',
+            linksId: target.linksId || '--',
+            hostsCount: hostsCount,
+            addresses: addresses || '--',
+            state: target.state || 1,
+            stateDisplay: TARGET_STATES[target.state] || 'Unknown',
+            inventoryType: target.inventoryType || selectedInventoryType,
+            raw: target
+        };
+    }
+
+    // Extract addresses from target hosts
+    function getTargetAddresses(target) {
+        if (!target.hosts) return '';
+        const addressSet = new Set();
+        Object.values(target.hosts).forEach(host => {
+            if (host.configs) {
+                Object.values(host.configs).forEach(cfg => {
+                    if (cfg.addr) {
+                        addressSet.add(cfg.addr);
+                    }
+                });
+            }
+        });
+        const addresses = Array.from(addressSet);
+        if (addresses.length === 0) return '';
+        if (addresses.length <= 2) return addresses.join(', ');
+        return addresses.slice(0, 2).join(', ') + ' +' + (addresses.length - 2);
+    }
+
+    // Get status class for state
+    function getStateClass(state) {
+        switch (state) {
+            case 2: return 'operational';  // Up
+            case 1: return 'offline';      // Down
+            case 3: return 'maintenance';  // Maintenance
+            case 4: return 'critical';     // Offline
+            default: return 'offline';
+        }
+    }
+
+    // Custom card renderer for targets
+    function renderTargetCard(target, index, table) {
+        const statusClass = getStateClass(target.state);
+
+        return `
+            <div class="mobile-edit-table-card" data-index="${index}" data-id="${escapeAttr(target.targetId)}">
+                <div class="mobile-edit-table-card-header">
+                    <div>
+                        <h4 class="mobile-edit-table-card-title">${escapeHtml(target.targetId)}</h4>
+                        <p class="mobile-edit-table-card-subtitle">${escapeHtml(target.addresses)}</p>
+                    </div>
+                    <div class="mobile-edit-table-status ${statusClass}">
+                        <span class="mobile-edit-table-status-indicator"></span>
+                        <span>${target.stateDisplay}</span>
+                    </div>
+                </div>
+                <div class="mobile-edit-table-card-body">
+                    <div class="mobile-edit-table-card-row">
+                        <span class="mobile-edit-table-card-label">Links ID</span>
+                        <span class="mobile-edit-table-card-value">${escapeHtml(target.linksId)}</span>
+                    </div>
+                    <div class="mobile-edit-table-card-row">
+                        <span class="mobile-edit-table-card-label">Hosts</span>
+                        <span class="mobile-edit-table-card-value">${target.hostsCount} host${target.hostsCount !== 1 ? 's' : ''}</span>
+                    </div>
+                </div>
+                <div class="mobile-edit-table-card-actions">
+                    <button class="mobile-edit-table-action-btn toggle ${target.state === 2 ? 'active' : ''}"
+                            data-action="toggle" data-id="${escapeAttr(target.targetId)}"
+                            title="${target.state === 2 ? 'Stop' : 'Start'}">
+                        ${target.state === 2 ? '&#x23F9;' : '&#x25B6;'}
+                    </button>
+                    <button class="mobile-edit-table-action-btn edit"
+                            data-action="edit" data-id="${escapeAttr(target.targetId)}">Edit</button>
+                    <button class="mobile-edit-table-action-btn delete"
+                            data-action="delete" data-id="${escapeAttr(target.targetId)}">Delete</button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Generate target form for add/edit
+    function generateTargetForm(target) {
+        const isEdit = !!target;
+        const targetId = isEdit ? escapeAttr(target.targetId) : '';
+        const linksId = isEdit ? escapeAttr(target.linksId || '') : '';
+        const state = isEdit ? target.state : 1;
+
+        return `
+            <div class="mobile-form">
+                <div class="mobile-form-group">
+                    <label for="target-id">Target ID</label>
+                    <input type="text" id="target-id" name="target-id"
+                           value="${targetId}"
+                           ${isEdit ? 'disabled' : ''}
+                           placeholder="Enter target ID"
+                           required>
+                </div>
+                <div class="mobile-form-group">
+                    <label for="target-links-id">Links ID</label>
+                    <input type="text" id="target-links-id" name="target-links-id"
+                           value="${linksId}"
+                           placeholder="Optional links reference">
+                </div>
+                <div class="mobile-form-group">
+                    <label for="target-state">State</label>
+                    <select id="target-state" name="target-state">
+                        <option value="1" ${state === 1 ? 'selected' : ''}>Down</option>
+                        <option value="2" ${state === 2 ? 'selected' : ''}>Up</option>
+                        <option value="3" ${state === 3 ? 'selected' : ''}>Maintenance</option>
+                        <option value="4" ${state === 4 ? 'selected' : ''}>Offline</option>
+                    </select>
+                </div>
+                ${isEdit && target.hostsCount > 0 ? `
+                <div class="mobile-form-info">
+                    <span class="info-icon">&#x2139;</span>
+                    <span>This target has ${target.hostsCount} host${target.hostsCount !== 1 ? 's' : ''} configured.
+                    Use the desktop version to manage host configurations.</span>
+                </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    // Show add target modal
+    function showAddTargetModal() {
+        MobilePopup.show({
+            title: 'Add Target',
+            content: generateTargetForm(null),
+            size: 'medium',
+            showFooter: true,
+            saveText: 'Save',
+            onSave: async (popup) => {
+                await handleTargetSave(popup, 'add', null);
+            }
+        });
+    }
+
+    // Show edit target modal
+    function showEditTargetModal(targetId, target) {
+        MobilePopup.show({
+            title: 'Edit Target',
+            content: generateTargetForm(target),
+            size: 'medium',
+            showFooter: true,
+            saveText: 'Save',
+            onSave: async (popup) => {
+                await handleTargetSave(popup, 'edit', targetId);
+            }
+        });
+    }
+
+    // Handle target save (add/edit)
+    async function handleTargetSave(popup, mode, existingTargetId) {
+        const targetIdInput = document.getElementById('target-id');
+        const linksIdInput = document.getElementById('target-links-id');
+        const stateSelect = document.getElementById('target-state');
+
+        const targetId = targetIdInput ? targetIdInput.value.trim() : '';
+        const linksId = linksIdInput ? linksIdInput.value.trim() : '';
+        const state = stateSelect ? parseInt(stateSelect.value, 10) : 1;
+
+        // Validation
+        if (!targetId) {
+            showToast('Target ID is required', 'warning');
+            return;
+        }
+
+        // Build target object
+        const targetObj = {
+            targetId: targetId,
+            linksId: linksId,
+            state: state,
+            inventoryType: selectedInventoryType
+        };
+
+        // For edit, preserve existing hosts
+        if (mode === 'edit' && targetsCache[existingTargetId]) {
+            targetObj.hosts = targetsCache[existingTargetId].hosts || {};
+        }
+
+        try {
+            const method = mode === 'add' ? 'POST' : 'PATCH';
+            const response = await MobileAuth.makeAuthenticatedRequest(getTargetsEndpoint(), {
+                method: method,
+                body: JSON.stringify(targetObj)
+            });
+
+            if (!response || !response.ok) {
+                const errorMsg = response ? await response.text() : 'Failed to save target';
+                showToast(errorMsg || 'Failed to save target', 'error');
+                return;
+            }
+
+            MobilePopup.close();
+            showToast('Target saved successfully', 'success');
+            inventoryTable.refresh();
+        } catch (error) {
+            console.error('Error saving target:', error);
+            showToast('Error saving target', 'error');
+        }
+    }
+
+    // Delete target
+    async function deleteTarget(targetId, target) {
+        const confirmed = await MobileConfirm.show({
+            type: 'danger',
+            title: 'Delete Target',
+            message: `Are you sure you want to delete target "${targetId}"?`,
+            confirmText: 'Delete'
+        });
+
+        if (!confirmed) return;
+
+        try {
+            const query = { text: `select * from L8PTarget where targetId=${targetId}` };
+            const response = await MobileAuth.makeAuthenticatedRequest(getTargetsEndpoint(), {
+                method: 'DELETE',
+                body: JSON.stringify(query)
+            });
+
+            if (!response || !response.ok) {
+                const errorMsg = response ? await response.text() : 'Failed to delete target';
+                showToast(errorMsg || 'Failed to delete target', 'error');
+                return;
+            }
+
+            delete targetsCache[targetId];
+            showToast('Target deleted successfully', 'success');
+            inventoryTable.refresh();
+        } catch (error) {
+            console.error('Error deleting target:', error);
+            showToast('Error deleting target', 'error');
+        }
+    }
+
+    // Toggle target state
+    async function toggleTargetState(targetId, target) {
+        const cachedTarget = targetsCache[targetId];
+        if (!cachedTarget) return;
+
+        // Toggle: Down(1) -> Up(2), Up(2) -> Down(1)
+        const newState = cachedTarget.state === 2 ? 1 : 2;
+
+        const targetObj = {
+            targetId: cachedTarget.targetId,
+            linksId: cachedTarget.linksId || '',
+            hosts: cachedTarget.hosts || {},
+            state: newState,
+            inventoryType: cachedTarget.inventoryType || selectedInventoryType
+        };
+
+        try {
+            const response = await MobileAuth.makeAuthenticatedRequest(getTargetsEndpoint(), {
+                method: 'PATCH',
+                body: JSON.stringify(targetObj)
+            });
+
+            if (!response || !response.ok) {
+                const errorMsg = response ? await response.text() : 'Failed to toggle state';
+                showToast(errorMsg || 'Failed to toggle state', 'error');
+                return;
+            }
+
+            cachedTarget.state = newState;
+            showToast(`Target ${newState === 2 ? 'started' : 'stopped'} successfully`, 'success');
+            inventoryTable.refresh();
+        } catch (error) {
+            console.error('Error toggling target state:', error);
+            showToast('Error toggling target state', 'error');
+        }
+    }
+
+    // Show toast notification
+    function showToast(message, type) {
+        if (window.MobileToast) {
+            MobileToast.show(message, type);
+        } else {
+            console.log(`[${type}] ${message}`);
+        }
+    }
+
+    // Handle inventory type change
+    function onInventoryTypeChange(value) {
+        selectedInventoryType = parseInt(value, 10);
+        targetsCache = {};
+        if (inventoryTable) {
+            inventoryTable.setBaseWhereClause(`inventoryType=${selectedInventoryType}`);
+        }
+    }
+
+    // Helper: escape HTML
+    function escapeHtml(text) {
+        if (text == null || text === '--') return '--';
+        const div = document.createElement('div');
+        div.textContent = String(text);
+        return div.innerHTML;
+    }
+
+    // Helper: escape attribute
+    function escapeAttr(text) {
+        if (text == null) return '';
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    // Initialize Mobile Inventory section
+    function initMobileInventory() {
+        // Set up inventory type selector
+        const typeSelect = document.getElementById('inventory-type-select');
+        if (typeSelect) {
+            typeSelect.value = selectedInventoryType;
+            typeSelect.addEventListener('change', (e) => {
+                onInventoryTypeChange(e.target.value);
+            });
+        }
+
+        // Create the MobileEditTable instance
+        inventoryTable = new MobileEditTable('inventory-table-container', {
+            // Data source
+            endpoint: getTargetsEndpoint(),
+            modelName: 'L8PTarget',
+            baseWhereClause: `inventoryType=${selectedInventoryType}`,
+
+            // Pagination
+            rowsPerPage: 15,
+            serverSide: true,
+
+            // Column definitions for filtering
+            columns: [
+                { key: 'targetId', label: 'Target ID', filterKey: 'targetId', primary: true },
+                { key: 'linksId', label: 'Links ID', filterKey: 'linksId' },
+                { key: 'state', label: 'State', filterKey: 'state', enumValues: targetStateEnum }
+            ],
+
+            // Data transformation
+            transformData: transformTarget,
+
+            // Status field for card badges
+            statusField: 'state',
+            getStatusClass: getStateClass,
+            getItemId: (item) => item.targetId,
+            getItemState: (item) => item.state === 2,
+
+            // Custom card rendering
+            renderCard: renderTargetCard,
+
+            // Empty state
+            emptyMessage: `No ${INVENTORY_TYPES[selectedInventoryType] || 'targets'} found. Click "Add Target" to create one.`,
+            emptyIcon: '&#x1F4E6;',
+
+            // CRUD callbacks
+            onAdd: showAddTargetModal,
+            addButtonText: 'Add Target',
+
+            onEdit: (id, item) => {
+                showEditTargetModal(id, item);
+            },
+
+            onDelete: deleteTarget,
+
+            onToggleState: toggleTargetState,
+
+            // Data loaded callback - cache targets
+            onDataLoaded: function(response, items, totalCount) {
+                items.forEach(item => {
+                    if (item.raw) {
+                        targetsCache[item.targetId] = item.raw;
+                    }
+                });
+            },
+
+            onError: function(error) {
+                console.error('Inventory table error:', error);
+            }
+        });
+    }
+
+    // Export init function for section loader
+    window.initMobileInventory = initMobileInventory;
+
+})();
+</script>
+
+<style>
+/* Section-specific styles for inventory section */
+.inventory-header {
+    text-align: center;
+    padding: 20px 16px 24px !important;
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+    margin: -12px -12px 8px !important;
+    border-radius: 0;
+    color: white !important;
+}
+
+.inventory-header p {
+    color: rgba(255, 255, 255, 0.8) !important;
+    margin: 0;
+    opacity: 1;
+}
+
+.inventory-header h2 {
+    color: white !important;
+    margin: 0 0 4px;
+    font-size: 1.4rem;
+}
+
+/* Inventory type selector */
+.inventory-type-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-light, #f5f7fa);
+    border-bottom: 1px solid var(--border-light, #e2e8f0);
+    margin-bottom: 0;
+}
+
+.inventory-type-selector label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted, #718096);
+    white-space: nowrap;
+}
+
+.inventory-type-dropdown {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--text-dark, #1a1a2e);
+    background: white;
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23718096' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+.inventory-type-dropdown:focus {
+    border-color: var(--primary-blue, #0ea5e9);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+/* Mobile form styles */
+.mobile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mobile-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mobile-form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark, #2d3748);
+}
+
+.mobile-form-group input,
+.mobile-form-group select {
+    padding: 12px;
+    font-size: 16px;
+    color: var(--text-dark, #1a1a2e);
+    background: white;
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.mobile-form-group input:focus,
+.mobile-form-group select:focus {
+    border-color: var(--primary-blue, #0ea5e9);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.mobile-form-group input:disabled {
+    background: var(--bg-light, #f5f7fa);
+    color: var(--text-muted, #718096);
+    cursor: not-allowed;
+}
+
+.mobile-form-group input::placeholder {
+    color: var(--text-muted, #a0aec0);
+}
+
+.mobile-form-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    color: var(--text-muted, #718096);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.mobile-form-info .info-icon {
+    color: #3b82f6;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+</style>

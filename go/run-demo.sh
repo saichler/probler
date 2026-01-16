@@ -20,7 +20,6 @@ if [ -z "$1" ]; then
   nohup ./topology_demo > topology_demo.log 2>&1 &
   nohup ./logagent_demo > logagent_demo.log 2>&1 &
   #../run-orm.sh
-  sleep 25
   echo "Background services started."
 else
   echo "Running webui_demo only (background services should already be running)..."

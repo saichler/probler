@@ -1,0 +1,576 @@
+/**
+ * MobileEditTable Styles
+ * Desktop Equivalent: edit_table/table.css
+ * Card-based data display with CRUD operations
+ */
+
+/* ============================================ */
+/* TABLE WRAPPER */
+/* ============================================ */
+
+.mobile-edit-table-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 200px;
+}
+
+/* ============================================ */
+/* FILTER BAR */
+/* ============================================ */
+
+.mobile-edit-table-filters {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-light, #f5f7fa);
+    padding: 8px 12px;
+}
+
+.mobile-edit-table-filter-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.mobile-edit-table-column-select {
+    flex: 0 0 auto;
+    min-width: 120px;
+    max-width: 140px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--text-dark, #1a1a2e);
+    background: white;
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23718096' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+    transition: all 0.2s ease;
+}
+
+.mobile-edit-table-column-select:focus {
+    border-color: var(--primary-blue, #0ea5e9);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.mobile-edit-table-search-input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--text-dark, #1a1a2e);
+    background: white;
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.mobile-edit-table-search-input:focus {
+    border-color: var(--primary-blue, #0ea5e9);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.mobile-edit-table-search-input::placeholder {
+    color: var(--text-muted, #a0aec0);
+}
+
+/* Invalid filter state (enum not found) */
+.mobile-edit-table-search-input.invalid {
+    border-color: #e53e3e;
+    background-color: #fff5f5;
+    color: #e53e3e;
+}
+
+.mobile-edit-table-search-input.invalid:focus {
+    border-color: #e53e3e;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+/* ============================================ */
+/* PAGINATION (TOP) with Add Button */
+/* ============================================ */
+
+.mobile-edit-table-pagination {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg-light, #f7fafc);
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+}
+
+.mobile-edit-table-pagination-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mobile-edit-table-pagination-info {
+    font-size: 13px;
+    color: var(--text-muted, #718096);
+}
+
+/* Add Button */
+.mobile-edit-table-add-btn {
+    padding: 8px 16px;
+    background: var(--primary-blue, #0ea5e9);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s ease;
+}
+
+.mobile-edit-table-add-btn:active {
+    background: var(--primary-dark, #0284c7);
+    transform: scale(0.98);
+}
+
+.mobile-edit-table-add-btn.large {
+    padding: 12px 24px;
+    font-size: 15px;
+    margin-bottom: 16px;
+}
+
+.mobile-edit-table-pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.mobile-edit-table-pagination-btn {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-light, #f5f7fa);
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 8px;
+    color: var(--text-muted, #4a5568);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-edit-table-pagination-btn:active:not(.disabled) {
+    transform: scale(0.95);
+}
+
+.mobile-edit-table-pagination-btn.active {
+    background: var(--primary-blue, #0ea5e9);
+    border-color: var(--primary-blue, #0ea5e9);
+    color: white;
+}
+
+.mobile-edit-table-pagination-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.mobile-edit-table-pagination-btn.nav-btn {
+    padding: 0 16px;
+}
+
+.mobile-edit-table-pagination-ellipsis {
+    padding: 0 8px;
+    color: var(--text-dim, #a0aec0);
+    font-size: 14px;
+}
+
+/* ============================================ */
+/* CARDS CONTAINER */
+/* ============================================ */
+
+.mobile-edit-table-cards {
+    flex: 1;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: white;
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+}
+
+/* ============================================ */
+/* INDIVIDUAL CARD */
+/* ============================================ */
+
+.mobile-edit-table-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-light, #e2e8f0);
+    overflow: hidden;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-edit-table-card.clickable .mobile-edit-table-card-body {
+    cursor: pointer;
+}
+
+.mobile-edit-table-card.clickable .mobile-edit-table-card-body:active {
+    background: var(--bg-light, #f7fafc);
+}
+
+/* Card Header */
+.mobile-edit-table-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 14px 14px 10px;
+    border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+.mobile-edit-table-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-dark, #1a1a2e);
+    margin: 0;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.mobile-edit-table-card-subtitle {
+    font-size: 13px;
+    color: var(--text-muted, #718096);
+    margin: 4px 0 0;
+}
+
+/* Card Body */
+.mobile-edit-table-card-body {
+    padding: 12px 14px;
+    transition: background 0.2s ease;
+}
+
+.mobile-edit-table-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+}
+
+.mobile-edit-table-card-row:not(:last-child) {
+    border-bottom: 1px solid var(--border-light, #f5f5f5);
+}
+
+.mobile-edit-table-card-label {
+    font-size: 12px;
+    color: var(--text-muted, #718096);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mobile-edit-table-card-value {
+    font-size: 13px;
+    color: var(--text-dark, #2d3748);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+    max-width: 60%;
+}
+
+/* ============================================ */
+/* CARD ACTION BUTTONS (Footer) */
+/* ============================================ */
+
+.mobile-edit-table-card-actions {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--bg-light, #f7fafc);
+    border-top: 1px solid var(--border-light, #e2e8f0);
+}
+
+.mobile-edit-table-action-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.mobile-edit-table-action-btn:active {
+    transform: scale(0.95);
+}
+
+/* Toggle button */
+.mobile-edit-table-action-btn.toggle {
+    flex: 0 0 50px;
+    background: var(--bg-light, #f5f7fa);
+    color: var(--text-muted, #718096);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-edit-table-action-btn.toggle.active {
+    background: rgba(0, 200, 83, 0.1);
+    color: #00c853;
+    border-color: rgba(0, 200, 83, 0.3);
+}
+
+.mobile-edit-table-action-btn.toggle:active {
+    background: var(--border-light, #e2e8f0);
+}
+
+/* Edit button */
+.mobile-edit-table-action-btn.edit {
+    color: var(--primary-blue, #0ea5e9);
+    border-color: var(--primary-blue, #0ea5e9);
+}
+
+.mobile-edit-table-action-btn.edit:active {
+    background: rgba(14, 165, 233, 0.1);
+}
+
+/* Delete button */
+.mobile-edit-table-action-btn.delete {
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+.mobile-edit-table-action-btn.delete:active {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* ============================================ */
+/* STATUS BADGES */
+/* ============================================ */
+
+.mobile-edit-table-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.mobile-edit-table-status-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+/* Status Variants */
+.mobile-edit-table-status.operational {
+    background: rgba(0, 200, 83, 0.1);
+    color: #00c853;
+}
+
+.mobile-edit-table-status.operational .mobile-edit-table-status-indicator {
+    background: #00c853;
+}
+
+.mobile-edit-table-status.warning {
+    background: rgba(255, 193, 7, 0.15);
+    color: #e6a700;
+}
+
+.mobile-edit-table-status.warning .mobile-edit-table-status-indicator {
+    background: #ffc107;
+}
+
+.mobile-edit-table-status.critical {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.mobile-edit-table-status.critical .mobile-edit-table-status-indicator {
+    background: #ef4444;
+}
+
+.mobile-edit-table-status.offline {
+    background: rgba(117, 117, 117, 0.1);
+    color: #757575;
+}
+
+.mobile-edit-table-status.offline .mobile-edit-table-status-indicator {
+    background: #757575;
+}
+
+.mobile-edit-table-status.maintenance {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.mobile-edit-table-status.maintenance .mobile-edit-table-status-indicator {
+    background: #3b82f6;
+}
+
+/* ============================================ */
+/* LOADING STATE */
+/* ============================================ */
+
+.mobile-edit-table-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--text-muted, #718096);
+}
+
+.mobile-edit-table-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-light, #e2e8f0);
+    border-top-color: var(--primary-blue, #0ea5e9);
+    border-radius: 50%;
+    animation: mobile-edit-table-spin 0.8s linear infinite;
+    margin-bottom: 12px;
+}
+
+@keyframes mobile-edit-table-spin {
+    to { transform: rotate(360deg); }
+}
+
+.mobile-edit-table-loading-text {
+    font-size: 14px;
+}
+
+/* ============================================ */
+/* EMPTY STATE */
+/* ============================================ */
+
+.mobile-edit-table-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--text-muted, #718096);
+    text-align: center;
+}
+
+.mobile-edit-table-empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.mobile-edit-table-empty-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark, #2d3748);
+    margin: 0 0 8px;
+}
+
+.mobile-edit-table-empty-message {
+    font-size: 14px;
+    margin: 0;
+}
+
+/* ============================================ */
+/* ERROR STATE */
+/* ============================================ */
+
+.mobile-edit-table-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--status-critical, #ef4444);
+    text-align: center;
+}
+
+.mobile-edit-table-error-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.mobile-edit-table-error-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px;
+}
+
+.mobile-edit-table-error-message {
+    font-size: 14px;
+    color: var(--text-muted, #718096);
+    margin: 0 0 16px;
+}
+
+.mobile-edit-table-error-retry {
+    padding: 10px 24px;
+    background: var(--primary-blue, #0ea5e9);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-edit-table-error-retry:active {
+    opacity: 0.8;
+}
+
+/* ============================================ */
+/* TABLET ADJUSTMENTS */
+/* ============================================ */
+
+@media (min-width: 768px) {
+    .mobile-edit-table-cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .mobile-edit-table-pagination-controls {
+        gap: 8px;
+    }
+
+    .mobile-edit-table-pagination-btn {
+        min-width: 44px;
+        height: 44px;
+    }
+
+    .mobile-edit-table-action-btn {
+        padding: 12px 16px;
+    }
+
+    .mobile-edit-table-action-btn.toggle {
+        flex: 0 0 60px;
+    }
+}
+
+/* Large tablet/small laptop */
+@media (min-width: 1024px) {
+    .mobile-edit-table-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

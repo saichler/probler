@@ -1,0 +1,418 @@
+<!-- Mobile Network Devices Section - Using MobileTable Component -->
+<div class="mobile-section">
+    <!-- Network Header -->
+    <div class="section-header network-header">
+        <h2>Network Devices</h2>
+        <p>Monitor and manage network infrastructure</p>
+        <div class="network-stats">
+            <div class="network-stat">
+                <div class="network-stat-value" id="net-total">--</div>
+                <div class="network-stat-label">Total</div>
+            </div>
+            <div class="network-stat">
+                <div class="network-stat-value" id="net-online">--</div>
+                <div class="network-stat-label">Online</div>
+            </div>
+            <div class="network-stat">
+                <div class="network-stat-value" id="net-offline">--</div>
+                <div class="network-stat-label">Offline</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Devices Table Container (MobileTable will render here) -->
+    <div id="devices-table-container"></div>
+</div>
+
+<script>
+// Network section - using MobileTable component
+(function() {
+    'use strict';
+
+    // Device type mapping
+    const DEVICE_TYPES = {
+        0: { name: 'Unknown', icon: '?' },
+        1: { name: 'Router', icon: '~' },
+        2: { name: 'Switch', icon: '#' },
+        3: { name: 'Firewall', icon: '!' },
+        4: { name: 'Server', icon: '@' },
+        5: { name: 'Access Point', icon: '*' },
+        'DEVICE_TYPE_ROUTER': { name: 'Router', icon: '~' },
+        'DEVICE_TYPE_SWITCH': { name: 'Switch', icon: '#' },
+        'DEVICE_TYPE_FIREWALL': { name: 'Firewall', icon: '!' },
+        'DEVICE_TYPE_SERVER': { name: 'Server', icon: '@' },
+        'DEVICE_TYPE_ACCESS_POINT': { name: 'Access Point', icon: '*' }
+    };
+
+    // Device status mapping (number → display name)
+    const DEVICE_STATUS = {
+        0: 'unknown',
+        1: 'online',
+        2: 'offline',
+        3: 'warning',
+        4: 'critical',
+        5: 'maintenance',
+        6: 'partial',
+        'DEVICE_STATUS_ONLINE': 'online',
+        'DEVICE_STATUS_OFFLINE': 'offline',
+        'DEVICE_STATUS_WARNING': 'warning',
+        'DEVICE_STATUS_CRITICAL': 'critical',
+        'DEVICE_STATUS_MAINTENANCE': 'maintenance',
+        'DEVICE_STATUS_PARTIAL': 'partial'
+    };
+
+    // Device status enum for filtering (display name → backend value)
+    const deviceStatusEnum = {
+        'online': 1,
+        'offline': 2,
+        'warning': 3,
+        'critical': 4,
+        'maintenance': 5,
+        'partial': 6,
+        'unknown': 0
+    };
+
+    // Store table reference
+    let deviceTable = null;
+
+    // Cache stats from page 1 (only page 1 has valid metadata)
+    let cachedNetworkStats = null;
+
+    // Transform raw device data
+    function transformDevice(device) {
+        const info = device.equipmentinfo || {};
+        const statusKey = info.deviceStatus || 0;
+        const typeKey = info.deviceType || 0;
+
+        return {
+            id: device.id || info.ipAddress || 'Unknown',
+            name: info.sysName || device.id || 'Unknown Device',
+            ip: info.ipAddress || device.id || '--',
+            vendor: info.vendor || 'Unknown',
+            model: info.model || '--',
+            status: DEVICE_STATUS[statusKey] || 'unknown',
+            statusRaw: statusKey,
+            type: DEVICE_TYPES[typeKey] || DEVICE_TYPES[0],
+            location: info.location || '--',
+            uptime: formatUptime(info.uptime),
+            software: info.software || '--',
+            hardware: info.hardware || '--',
+            sysOid: info.sysOid || '--',
+            raw: device
+        };
+    }
+
+    // Format uptime from centiseconds
+    function formatUptime(centiseconds) {
+        if (!centiseconds) return '--';
+        const totalSeconds = Math.floor(parseInt(centiseconds) / 100);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+        if (days > 0) return days + 'd ' + hours + 'h';
+        if (hours > 0) return hours + 'h ' + minutes + 'm';
+        return minutes + 'm';
+    }
+
+    // Custom card renderer for network devices
+    function renderDeviceCard(device, index, table) {
+        const statusClass = table.config.getStatusClass(device.status);
+
+        return `
+            <div class="mobile-table-card clickable" data-index="${index}">
+                <div class="mobile-table-card-header">
+                    <div>
+                        <h4 class="mobile-table-card-title">${escapeHtml(device.name)}</h4>
+                        <p class="mobile-table-card-subtitle">${escapeHtml(device.ip)}</p>
+                    </div>
+                    <div class="mobile-table-status ${statusClass}">
+                        <span class="mobile-table-status-indicator"></span>
+                        <span>${capitalize(device.status)}</span>
+                    </div>
+                </div>
+                <div class="mobile-table-card-body">
+                    <div class="mobile-table-card-row">
+                        <span class="mobile-table-card-label">Type</span>
+                        <span class="mobile-table-card-value">${device.type.icon} ${device.type.name}</span>
+                    </div>
+                    <div class="mobile-table-card-row">
+                        <span class="mobile-table-card-label">Vendor</span>
+                        <span class="mobile-table-card-value">${escapeHtml(device.vendor)}</span>
+                    </div>
+                    <div class="mobile-table-card-row">
+                        <span class="mobile-table-card-label">Uptime</span>
+                        <span class="mobile-table-card-value">${device.uptime}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Show device detail using MobilePopup
+    function showDeviceDetail(device) {
+        const statusClass = getStatusClass(device.status);
+
+        const content = `
+            <div class="detail-section">
+                <div class="detail-section-title">Status</div>
+                <div style="text-align: center; padding: 16px;">
+                    <span class="mobile-table-status ${statusClass}" style="font-size: 0.9rem; padding: 8px 16px;">
+                        <span class="mobile-table-status-indicator"></span>
+                        ${device.status.toUpperCase()}
+                    </span>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-title">Basic Information</div>
+                <div class="detail-row">
+                    <span class="detail-label">IP Address</span>
+                    <span class="detail-value">${escapeHtml(device.ip)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Device Type</span>
+                    <span class="detail-value">${device.type.icon} ${device.type.name}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Vendor</span>
+                    <span class="detail-value">${escapeHtml(device.vendor)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Model</span>
+                    <span class="detail-value">${escapeHtml(device.model)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Location</span>
+                    <span class="detail-value">${escapeHtml(device.location)}</span>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-title">Performance</div>
+                <div class="detail-row">
+                    <span class="detail-label">Uptime</span>
+                    <span class="detail-value">${device.uptime}</span>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-title">System Information</div>
+                <div class="detail-row">
+                    <span class="detail-label">Software</span>
+                    <span class="detail-value" style="font-size: 0.75rem;">${escapeHtml(device.software)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Hardware</span>
+                    <span class="detail-value" style="font-size: 0.75rem;">${escapeHtml(device.hardware)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">SysOID</span>
+                    <span class="detail-value" style="font-size: 0.75rem;">${escapeHtml(device.sysOid)}</span>
+                </div>
+            </div>
+        `;
+
+        MobilePopup.show({
+            title: device.name,
+            content: content,
+            size: 'large',
+            showFooter: false
+        });
+    }
+
+    // Update network stats from API response
+    // Only page 1 has valid metadata, so cache on first load and reuse
+    function updateNetworkStats(response, items, totalCount) {
+        // Only cache stats on first load (when cache is empty)
+        // This ensures we only use page 1 metadata which is the only valid one
+        if (!cachedNetworkStats) {
+            const counts = response.metadata?.keyCount?.counts;
+            if (counts && counts.Total !== undefined) {
+                cachedNetworkStats = {
+                    total: counts.Total || 0,
+                    online: counts.Online || 0
+                };
+                // Update display
+                document.getElementById('net-total').textContent = cachedNetworkStats.total;
+                document.getElementById('net-online').textContent = cachedNetworkStats.online;
+                document.getElementById('net-offline').textContent = cachedNetworkStats.total - cachedNetworkStats.online;
+            }
+        }
+        // If already cached, don't update - keep showing the original stats
+    }
+
+    // Get status class for styling
+    function getStatusClass(status) {
+        if (!status) return 'offline';
+        const s = String(status).toLowerCase();
+        if (s === 'online' || s.includes('operational')) return 'operational';
+        if (s === 'warning' || s.includes('degraded')) return 'warning';
+        if (s === 'critical' || s === 'error' || s === 'down') return 'critical';
+        if (s === 'maintenance') return 'maintenance';
+        return 'offline';
+    }
+
+    // Helper: escape HTML
+    function escapeHtml(text) {
+        if (text == null || text === '--') return '--';
+        const div = document.createElement('div');
+        div.textContent = String(text);
+        return div.innerHTML;
+    }
+
+    // Helper: capitalize
+    function capitalize(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // Initialize Mobile Network section
+    function initMobileNetwork() {
+        // Create the MobileTable instance
+        deviceTable = new MobileTable('devices-table-container', {
+            // Data source
+            endpoint: MobileConfig.getCacheEndpoint(),
+            modelName: 'NetworkDevice',
+
+            // Pagination
+            rowsPerPage: 15,
+            serverSide: true,
+
+            // Column definitions for filtering (matches desktop pattern)
+            columns: [
+                { key: 'name', label: 'Name', filterKey: 'equipmentinfo.sysName' },
+                { key: 'ip', label: 'IP Address', filterKey: 'equipmentinfo.ipAddress' },
+                { key: 'status', label: 'Status', filterKey: 'equipmentinfo.deviceStatus', enumValues: deviceStatusEnum },
+                { key: 'vendor', label: 'Vendor', filterKey: 'equipmentinfo.vendor' },
+                { key: 'id', label: 'ID', filterKey: 'Id' }
+            ],
+
+            // Data transformation
+            transformData: transformDevice,
+
+            // Status field for card badges
+            statusField: 'status',
+            getStatusClass: getStatusClass,
+
+            // Custom card rendering
+            renderCard: renderDeviceCard,
+
+            // Empty state
+            emptyMessage: 'No devices found. Try adjusting your search or filters.',
+            emptyIcon: '&#x1F50D;',
+
+            // Callbacks
+            onDataLoaded: updateNetworkStats,
+            onCardClick: showDeviceDetail,
+
+            onError: function(error) {
+                console.error('Network devices error:', error);
+            }
+        });
+    }
+
+    // Export init function for section loader
+    window.initMobileNetwork = initMobileNetwork;
+
+    // Initialization is handled by app-core.js initSectionScripts()
+
+})();
+</script>
+
+<style>
+/* Section-specific styles for network section */
+.network-header {
+    text-align: center;
+    padding: 20px 16px 24px !important;
+    background: linear-gradient(135deg, var(--gradient-start, #0f2027) 0%, var(--gradient-mid, #203a43) 50%, var(--gradient-end, #2c5364) 100%) !important;
+    margin: -12px -12px 8px !important;
+    border-radius: 0;
+    color: white !important;
+}
+
+.network-header p {
+    color: rgba(255, 255, 255, 0.8) !important;
+    margin: 0;
+    opacity: 1;
+}
+
+.network-header h2 {
+    color: white !important;
+    margin: 0 0 4px;
+    font-size: 1.4rem;
+}
+
+.network-header .network-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 12px;
+    color: white;
+}
+
+.network-header .network-stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white !important;
+    line-height: 1;
+}
+
+.network-header .network-stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+.network-header .network-stat {
+    text-align: center;
+}
+
+/* Detail popup styles */
+.detail-section {
+    margin-bottom: 20px;
+}
+
+.detail-section:last-child {
+    margin-bottom: 0;
+}
+
+.detail-section-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.detail-value {
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+    margin-left: 16px;
+}
+</style>

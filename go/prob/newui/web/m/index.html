@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#0f2027">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Probler - Data Center Infrastructure Management (DCIM) Platform</title>
+    <!-- Mobile CSS Files -->
+    <link rel="stylesheet" href="css/mobile-base.css">
+    <link rel="stylesheet" href="css/mobile-header.css">
+    <link rel="stylesheet" href="css/mobile-hero.css">
+    <link rel="stylesheet" href="css/mobile-sections.css">
+    <link rel="stylesheet" href="css/mobile-footer.css">
+    <link rel="stylesheet" href="css/mobile-modals.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <div class="logo-main">
+                    <img src="../logo.gif" alt="Probler Logo">
+                    <span class="gradient-text">Probler</span>
+                </div>
+                <div class="logo-powered">Powered by <img src="../Layer8Logo.gif" alt="Layer 8"></div>
+            </div>
+            <button class="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Navigation Drawer -->
+    <div class="nav-drawer">
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#architecture">Architecture</a></li>
+            <li><a href="#getting-started">Get Started</a></li>
+            <li><a href="#docs">Docs</a></li>
+            <li><a href="https://github.com/saichler/probler" target="_blank">View on GitHub</a></li>
+            <li><a href="#" onclick="openAboutModal(); return false;">About</a></li>
+            <li><a href="#" onclick="openDeveloperModal(); return false;" class="about-emphasized">Developer</a></li>
+        </ul>
+        <div class="nav-buttons">
+            <a href="https://www.probler.dev:9094/web.html" target="_blank" class="demo-button">Simulators</a>
+            <a href="#" onclick="showDemoCredentials(); return false;" class="demo-button">Demo</a>
+            <a href="#getting-started" class="cta-button">Try Now</a>
+        </div>
+        <div class="nav-sponsor">
+            <iframe src="https://github.com/sponsors/saichler/button" title="Sponsor" height="32" width="114"></iframe>
+        </div>
+    </div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1>Data Center Infrastructure Management Platform</h1>
+                <p>A comprehensive DCIM solution built on microservices architecture, managing network, power, environmental, and capacity infrastructure with the core philosophy: <strong>Poll → Parse → Model → Cache → Persist</strong></p>
+
+                <!-- Simplified SVG Animation -->
+                <div class="hero-illustration">
+                    <svg width="280" height="140" viewBox="0 0 280 140">
+                        <defs>
+                            <linearGradient id="nodeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0ea5e9"/>
+                                <stop offset="100%" style="stop-color:#0284c7"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Connections -->
+                        <line x1="60" y1="70" x2="140" y2="30" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4,4"/>
+                        <line x1="140" y1="30" x2="220" y2="70" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4,4"/>
+                        <line x1="60" y1="70" x2="140" y2="110" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4,4"/>
+                        <line x1="220" y1="70" x2="140" y2="110" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4,4"/>
+                        <!-- Nodes -->
+                        <circle cx="140" cy="70" r="20" fill="url(#nodeGrad)" opacity="0.9"/>
+                        <text x="140" y="75" text-anchor="middle" fill="white" font-size="16">⚙️</text>
+                        <circle cx="60" cy="70" r="15" fill="rgba(255,255,255,0.9)"/>
+                        <text x="60" y="75" text-anchor="middle" fill="#0ea5e9" font-size="14">🔀</text>
+                        <circle cx="220" cy="70" r="15" fill="rgba(255,255,255,0.9)"/>
+                        <text x="220" y="75" text-anchor="middle" fill="#0ea5e9" font-size="14">🔀</text>
+                        <circle cx="140" cy="30" r="14" fill="rgba(255,255,255,0.9)"/>
+                        <text x="140" y="35" text-anchor="middle" fill="#0ea5e9" font-size="12">🗄️</text>
+                        <circle cx="140" cy="110" r="14" fill="rgba(255,255,255,0.9)"/>
+                        <text x="140" y="115" text-anchor="middle" fill="#0ea5e9" font-size="12">📊</text>
+                    </svg>
+                </div>
+
+                <div class="hero-buttons">
+                    <a href="#getting-started" class="btn-primary">🚀 Get Started</a>
+                    <a href="https://github.com/saichler/probler" target="_blank" class="btn-secondary">📖 View on GitHub</a>
+                </div>
+
+                <div class="badges-row">
+                    <span class="badge">Go 1.23.8</span>
+                    <span class="badge">Kubernetes Ready</span>
+                    <span class="badge">Apache 2.0</span>
+                    <span class="badge">DCIM</span>
+                </div>
+            </div>
+
+            <div class="scroll-indicator">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M7 10l5 5 5-5z"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="section-header">
+                <h2>🎯 Why Choose Probler?</h2>
+                <p>Probler addresses the fundamental pain points of building scalable, maintainable microservices architectures for network operations.</p>
+            </div>
+            <div class="section-content">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h3>Model-Agnostic Services</h3>
+                        <p>Services that adapt to any data structure without requiring code changes, making your infrastructure future-proof.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <h3>Virtual Networking</h3>
+                        <p>Seamless service-to-service communication through intelligent virtual network overlay with built-in service discovery.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🛡️</div>
+                        <h3>Built-in Security</h3>
+                        <p>Comprehensive security layer with authentication, authorization, and built-in monitoring for all network operations.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>Horizontal Scaling</h3>
+                        <p>Scale collectors and parsers horizontally based on device count and data processing volume automatically.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔧</div>
+                        <h3>Platform Agnostic</h3>
+                        <p>Deploy on bare metal, Docker, or Kubernetes with the same configuration and management interface.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Real-time Monitoring</h3>
+                        <p>Interactive NOC dashboard with enhanced topology visualization, alarm management, and performance metrics.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🚀</div>
+                        <h3>Traffic Engineering</h3>
+                        <p>Advanced MPLS & SR policy management with interactive global network visualization and BGP analytics.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💚</div>
+                        <h3>System Health</h3>
+                        <p>Comprehensive process monitoring with configurable timeouts, enhanced startup logging, and real-time metrics.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Power & Energy Management</h3>
+                        <p>Monitor PDUs, UPS, and generators with PUE calculations, circuit capacity alerts, and energy cost modeling.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌡️</div>
+                        <h3>Environmental Monitoring</h3>
+                        <p>Track temperature, humidity, airflow sensors with heat-map visualizations and threshold alerts.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📐</div>
+                        <h3>Capacity Planning</h3>
+                        <p>What-if engine for space, power, cooling, and network capacity with forecasting and headroom checks.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🚨</div>
+                        <h3>Incident & Alerting</h3>
+                        <p>Advanced alerting with anomaly detection, event correlation, RCA capabilities, and ticketing integration.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h3>Workflow Automation</h3>
+                        <p>DAG-based workflow engine for provisioning, maintenance, decommissioning with IPMI/Redfish actions.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🖥️</div>
+                        <h3>Remote Management</h3>
+                        <p>IPMI and Redfish integration for remote server control, power cycling, firmware management, and KVM access.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>RBAC & Compliance</h3>
+                        <p>Role-based access control, immutable audit logging, and compliance dashboards for ISO/SOC2 controls.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">☁️</div>
+                        <h3>Hybrid Cloud Integration</h3>
+                        <p>Unified visibility across on-premises, Kubernetes, AWS, Azure, and GCP with cost tracking.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌱</div>
+                        <h3>Sustainability & ESG</h3>
+                        <p>Carbon footprint tracking, CO₂ dashboards per site/rack, energy efficiency trends for ESG reporting.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <h3>Log Aggregation</h3>
+                        <p>Integrated L8LogFusion for distributed log collection and centralized browsing with real-time streaming.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Section -->
+        <section class="architecture" id="architecture">
+            <div class="section-header">
+                <h2>🏗️ Architecture Overview</h2>
+                <p>Comprehensive DCIM microservices architecture with network, power, environmental, and capacity management</p>
+            </div>
+            <div class="section-content">
+                <div class="container">
+                    <div class="arch-diagram">
+                        <h3>Microservices Architecture</h3>
+                        <svg width="320" height="260" viewBox="0 0 320 260">
+                            <defs>
+                                <linearGradient id="boxGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#0ea5e9"/>
+                                    <stop offset="100%" style="stop-color:#0284c7"/>
+                                </linearGradient>
+                                <linearGradient id="boxGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#06b6d4"/>
+                                    <stop offset="100%" style="stop-color:#0891b2"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Top Row -->
+                            <rect x="20" y="20" width="80" height="50" rx="6" fill="url(#boxGrad1)"/>
+                            <text x="60" y="42" text-anchor="middle" fill="white" font-weight="bold" font-size="10">Collector</text>
+                            <text x="60" y="55" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="8">(Polling)</text>
+
+                            <rect x="120" y="20" width="80" height="50" rx="6" fill="url(#boxGrad1)"/>
+                            <text x="160" y="42" text-anchor="middle" fill="white" font-weight="bold" font-size="10">Parser</text>
+                            <text x="160" y="55" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="8">(Model-Agnostic)</text>
+
+                            <rect x="220" y="20" width="80" height="50" rx="6" fill="url(#boxGrad1)"/>
+                            <text x="260" y="42" text-anchor="middle" fill="white" font-weight="bold" font-size="10">Inventory</text>
+                            <text x="260" y="55" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="8">(State)</text>
+
+                            <!-- Middle Row -->
+                            <rect x="20" y="100" width="80" height="50" rx="6" fill="url(#boxGrad2)"/>
+                            <text x="60" y="122" text-anchor="middle" fill="white" font-weight="bold" font-size="10">VNet</text>
+                            <text x="60" y="135" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="8">(Web UI)</text>
+
+                            <rect x="120" y="100" width="80" height="50" rx="6" fill="url(#boxGrad2)"/>
+                            <text x="160" y="122" text-anchor="middle" fill="white" font-weight="bold" font-size="10">ORM</text>
+                            <text x="160" y="135" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="8">(Persistence)</text>
+
+                            <rect x="220" y="100" width="80" height="50" rx="6" fill="url(#boxGrad2)"/>
+                            <text x="260" y="122" text-anchor="middle" fill="white" font-weight="bold" font-size="10">PostgreSQL</text>
+                            <text x="260" y="135" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="8">(Database)</text>
+
+                            <!-- Bottom Row -->
+                            <rect x="20" y="180" width="70" height="50" rx="6" fill="#64748b"/>
+                            <text x="55" y="202" text-anchor="middle" fill="white" font-weight="bold" font-size="9">TE App</text>
+                            <text x="55" y="215" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="7">(Traffic)</text>
+
+                            <rect x="95" y="180" width="70" height="50" rx="6" fill="#64748b"/>
+                            <text x="130" y="202" text-anchor="middle" fill="white" font-weight="bold" font-size="9">Topology</text>
+                            <text x="130" y="215" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="7">(Maps)</text>
+
+                            <rect x="170" y="180" width="70" height="50" rx="6" fill="#64748b"/>
+                            <text x="205" y="202" text-anchor="middle" fill="white" font-weight="bold" font-size="9">Security</text>
+                            <text x="205" y="215" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="7">(Auth)</text>
+
+                            <rect x="245" y="180" width="55" height="50" rx="6" fill="#64748b"/>
+                            <text x="272" y="202" text-anchor="middle" fill="white" font-weight="bold" font-size="9">Logs</text>
+                            <text x="272" y="215" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="7">(Stream)</text>
+
+                            <!-- Arrows -->
+                            <path d="M100 45 L120 45" stroke="#0ea5e9" stroke-width="2" fill="none"/>
+                            <path d="M200 45 L220 45" stroke="#0ea5e9" stroke-width="2" fill="none"/>
+                            <path d="M60 70 L60 100" stroke="#06b6d4" stroke-width="2" stroke-dasharray="4,4" fill="none"/>
+                            <path d="M160 70 L160 100" stroke="#06b6d4" stroke-width="2" stroke-dasharray="4,4" fill="none"/>
+                            <path d="M260 70 L260 100" stroke="#06b6d4" stroke-width="2" stroke-dasharray="4,4" fill="none"/>
+                            <path d="M100 125 L120 125" stroke="#06b6d4" stroke-width="2" fill="none"/>
+                            <path d="M200 125 L220 125" stroke="#06b6d4" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+
+                    <div class="services-grid">
+                        <div class="service-card clickable" onclick="openCollectorDemo()">
+                            <h4>🔍 Collector</h4>
+                            <p>Network device polling & data collection with horizontal scaling</p>
+                        </div>
+                        <div class="service-card clickable" onclick="openParserDemo()">
+                            <h4>⚙️ Parser</h4>
+                            <p>Model-agnostic data parsing & transformation</p>
+                        </div>
+                        <div class="service-card clickable" onclick="openInventoryBoxDemo()">
+                            <h4>📦 Inventory Box</h4>
+                            <p>Network device inventory management</p>
+                        </div>
+                        <div class="service-card">
+                            <h4>☸️ Inventory K8s</h4>
+                            <p>Kubernetes cluster inventory</p>
+                        </div>
+                        <div class="service-card clickable" onclick="openORMDemo()">
+                            <h4>🗄️ ORM</h4>
+                            <p>Object-relational mapping & persistence</p>
+                        </div>
+                        <div class="service-card clickable" onclick="openVNetDemo()">
+                            <h4>🌐 VNet</h4>
+                            <p>Virtual network overlay & web interface</p>
+                        </div>
+                        <div class="service-card">
+                            <h4>🚀 TE App</h4>
+                            <p>Traffic Engineering & SR policies</p>
+                        </div>
+                        <div class="service-card clickable" onclick="openTopologyDemo()">
+                            <h4>🗺️ Topology</h4>
+                            <p>Network topology with world-cities integration</p>
+                        </div>
+                        <div class="service-card">
+                            <h4>🛡️ Security</h4>
+                            <p>Authentication & authorization</p>
+                        </div>
+                        <div class="service-card clickable" onclick="openModelAgnosticServicesDemo()">
+                            <h4>🤖 Model-Agnostic</h4>
+                            <p>Universal services with dynamic modeling</p>
+                        </div>
+                        <div class="service-card clickable" onclick="openWebDemo()">
+                            <h4>🌐 Web Services</h4>
+                            <p>Modern UI components</p>
+                        </div>
+                        <div class="service-card clickable" onclick="openGSQLDemo()">
+                            <h4>📊 GSQL</h4>
+                            <p>Graph SQL for topology data</p>
+                        </div>
+                        <div class="service-card clickable" onclick="openReflectDemo()">
+                            <h4>🔍 Reflection</h4>
+                            <p>Dynamic type introspection</p>
+                        </div>
+                        <div class="service-card clickable" onclick="openOpenSimulatorDemo()">
+                            <h4>🎮 Open Simulator</h4>
+                            <p>Simulation framework</p>
+                        </div>
+                        <div class="service-card clickable" onclick="openTestAndAutomationDemo()">
+                            <h4>🧪 Test & Automation</h4>
+                            <p>Testing and validation framework</p>
+                        </div>
+                        <div class="service-card">
+                            <h4>⚡ L8Power</h4>
+                            <p>Power & energy management</p>
+                        </div>
+                        <div class="service-card">
+                            <h4>🌡️ L8Env</h4>
+                            <p>Environmental monitoring</p>
+                        </div>
+                        <div class="service-card">
+                            <h4>🚨 L8Alert</h4>
+                            <p>Alerting & incident management</p>
+                        </div>
+                        <div class="service-card">
+                            <h4>🔄 L8Workflow</h4>
+                            <p>DAG-based automation</p>
+                        </div>
+                        <div class="service-card">
+                            <h4>📝 L8LogFusion</h4>
+                            <p>Distributed log aggregation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h3>20+</h3>
+                        <p>Microservices</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>100%</h3>
+                        <p>Go Language</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>K8s</h3>
+                        <p>Ready</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>∞</h3>
+                        <p>Scalable</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Getting Started Section -->
+        <section class="getting-started" id="getting-started">
+            <div class="section-header" style="background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);">
+                <h2>🚀 Quick Start</h2>
+                <p>Get Probler up and running in minutes with our simple deployment process</p>
+            </div>
+            <div class="section-content">
+                <div class="container">
+                    <div class="steps-grid">
+                        <div class="step-card expanded">
+                            <div class="step-header">
+                                <div class="step-number">1</div>
+                                <h3>Clone Repository</h3>
+                                <span class="step-toggle">▼</span>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-content-inner">
+                                    <p>Get the latest version of Probler from GitHub</p>
+                                    <div class="code-block">
+<span class="comment"># Clone the repository</span>
+<span class="command">git clone</span> https://github.com/saichler/probler.git
+<span class="command">cd</span> probler
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-header">
+                                <div class="step-number">2</div>
+                                <h3>Build Services</h3>
+                                <span class="step-toggle">▼</span>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-content-inner">
+                                    <p>Build all microservices using the provided script</p>
+                                    <div class="code-block">
+<span class="comment"># Build all services</span>
+<span class="command">cd</span> go && ./build-images.sh
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-header">
+                                <div class="step-number">3</div>
+                                <h3>Deploy Platform</h3>
+                                <span class="step-toggle">▼</span>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-content-inner">
+                                    <p>Choose your deployment method</p>
+                                    <div class="code-block">
+<span class="comment"># Docker Compose (Dev)</span>
+<span class="command">docker-compose up -d</span>
+
+<span class="comment"># Kubernetes (Prod)</span>
+<span class="command">cd</span> k8s && ./apply-all.sh
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-header">
+                                <div class="step-number">4</div>
+                                <h3>Access Dashboard</h3>
+                                <span class="step-toggle">▼</span>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-content-inner">
+                                    <p>Open the Network Operations Center</p>
+                                    <div class="code-block">
+<span class="comment"># Local access</span>
+open https://localhost:443/probler/
+
+<span class="comment"># Default: admin / admin</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="prerequisites">
+                        <h3>Prerequisites</h3>
+                        <div class="badges-row">
+                            <span class="badge">Go 1.23.8+</span>
+                            <span class="badge">Docker</span>
+                            <span class="badge">Kubernetes</span>
+                            <span class="badge">PostgreSQL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documentation Section -->
+        <section class="features docs-section" id="docs">
+            <div class="section-content">
+                <div class="container">
+                    <h2 class="section-title">📚 Documentation & Resources</h2>
+                    <div class="docs-grid">
+                        <div class="doc-card">
+                            <div class="feature-icon">📋</div>
+                            <h3>API Documentation</h3>
+                            <p>REST API and gRPC service documentation with examples</p>
+                        </div>
+                        <div class="doc-card">
+                            <div class="feature-icon">🌍</div>
+                            <h3>NOC Dashboard</h3>
+                            <p>Interactive dashboard with topology visualization</p>
+                        </div>
+                        <div class="doc-card">
+                            <div class="feature-icon">🔧</div>
+                            <h3>Configuration</h3>
+                            <p>Detailed configuration options for all services</p>
+                        </div>
+                        <div class="doc-card">
+                            <div class="feature-icon">🤝</div>
+                            <h3>Contributing</h3>
+                            <p>Development guidelines and contribution workflow</p>
+                        </div>
+                        <div class="doc-card">
+                            <div class="feature-icon">🎯</div>
+                            <h3>Use Cases</h3>
+                            <p>NOC, Service Provider, Cloud Infrastructure</p>
+                        </div>
+                        <div class="doc-card">
+                            <div class="feature-icon">🆘</div>
+                            <h3>Support</h3>
+                            <p>GitHub Issues, feature requests, troubleshooting</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modal Container -->
+        <div id="modal-container"></div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><img src="../logo.gif" alt="Probler">Probler</h3>
+                    <p>Making microservices painless, one service at a time.</p>
+                    <p>Data Center Infrastructure Management Platform</p>
+                </div>
+
+                <div class="footer-links-row">
+                    <div class="footer-section">
+                        <h3>Quick Links</h3>
+                        <a href="#features">Features</a>
+                        <a href="#architecture">Architecture</a>
+                        <a href="#getting-started">Getting Started</a>
+                        <a href="https://github.com/saichler/probler" target="_blank">GitHub</a>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Technology</h3>
+                        <a href="#">Go 1.23.8</a>
+                        <a href="#">Kubernetes</a>
+                        <a href="#">PostgreSQL</a>
+                        <a href="#">gRPC & REST</a>
+                    </div>
+                </div>
+
+                <div class="footer-sponsor">
+                    <iframe src="https://github.com/sponsors/saichler/card" title="Sponsor" height="180" width="100%" style="max-width: 280px;"></iframe>
+                </div>
+
+                <div class="version-toggle">
+                    <a href="#" onclick="switchToDesktop(); return false;">🖥️ View Desktop Version</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024-2025 Probler. Licensed under Apache License 2.0.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/mobile-landing.js"></script>
+</body>
+</html>

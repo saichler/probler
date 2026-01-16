@@ -1,0 +1,180 @@
+/**
+ * MobileConfirm Styles
+ * Desktop Equivalent: confirm/confirm.css
+ */
+
+/* Overlay */
+.mobile-confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 16px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0));
+}
+
+.mobile-confirm-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Dialog */
+.mobile-confirm-dialog {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    overflow: hidden;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.mobile-confirm-overlay.open .mobile-confirm-dialog {
+    transform: translateY(0);
+}
+
+/* Icon */
+.mobile-confirm-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 24px 16px;
+}
+
+.mobile-confirm-icon svg {
+    width: 48px;
+    height: 48px;
+}
+
+/* Danger icon */
+.mobile-confirm-dialog.danger .mobile-confirm-icon svg {
+    color: var(--status-critical, #f44336);
+}
+
+/* Warning icon */
+.mobile-confirm-dialog.warning .mobile-confirm-icon svg {
+    color: var(--status-warning, #ff9800);
+}
+
+/* Info icon */
+.mobile-confirm-dialog.info .mobile-confirm-icon svg {
+    color: var(--primary-blue, #3b82f6);
+}
+
+/* Content */
+.mobile-confirm-content {
+    text-align: center;
+    padding: 0 24px 24px;
+}
+
+.mobile-confirm-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-dark, #1a1a2e);
+    margin: 0 0 8px;
+}
+
+.mobile-confirm-message {
+    font-size: 0.95rem;
+    color: var(--text-muted, #6c757d);
+    margin: 0 0 8px;
+    line-height: 1.5;
+}
+
+.mobile-confirm-detail {
+    font-size: 0.85rem;
+    color: var(--text-dim, #adb5bd);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Actions */
+.mobile-confirm-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 16px 16px;
+}
+
+.mobile-confirm-btn {
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s ease;
+}
+
+.mobile-confirm-btn:active {
+    opacity: 0.7;
+}
+
+.mobile-confirm-btn-cancel {
+    background: var(--bg-light, #f5f5f5);
+    color: var(--text-dark, #1a1a2e);
+}
+
+.mobile-confirm-btn-confirm {
+    color: white;
+}
+
+/* Type-specific confirm button colors */
+.mobile-confirm-dialog.danger .mobile-confirm-btn-confirm {
+    background: var(--status-critical, #f44336);
+}
+
+.mobile-confirm-dialog.warning .mobile-confirm-btn-confirm {
+    background: var(--status-warning, #ff9800);
+}
+
+.mobile-confirm-dialog.info .mobile-confirm-btn-confirm {
+    background: var(--primary-blue, #3b82f6);
+}
+
+/* Tablet styles - centered dialog */
+@media (min-width: 768px) {
+    .mobile-confirm-overlay {
+        align-items: center;
+        padding-bottom: 16px;
+    }
+
+    .mobile-confirm-dialog {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    .mobile-confirm-overlay.open .mobile-confirm-dialog {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    .mobile-confirm-actions {
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+
+    .mobile-confirm-btn {
+        width: auto;
+        min-width: 100px;
+    }
+
+    .mobile-confirm-btn-cancel {
+        order: 1;
+    }
+
+    .mobile-confirm-btn-confirm {
+        order: 2;
+    }
+}

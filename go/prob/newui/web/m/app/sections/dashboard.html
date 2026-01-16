@@ -1,0 +1,297 @@
+<!-- Mobile Dashboard Section -->
+<div class="mobile-section mobile-dashboard">
+    <!-- Dashboard Header -->
+    <div class="section-header dashboard-header">
+        <h2>Datacenter Overview</h2>
+        <p>Real-time infrastructure monitoring</p>
+        <div class="dashboard-status" id="dashboard-status">
+            <span class="status-dot"></span>
+            <span id="status-text">Connecting...</span>
+        </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="metrics-grid">
+        <div class="metric-card" onclick="navigateToSection('network')">
+            <div class="metric-icon">🌐</div>
+            <div class="metric-value" id="network-total">--</div>
+            <div class="metric-label">Network Devices</div>
+            <div class="metric-status operational" id="network-status">
+                <span id="network-online">--</span> Online
+            </div>
+        </div>
+
+        <div class="metric-card" onclick="navigateToSection('gpus')">
+            <div class="metric-icon">🖧</div>
+            <div class="metric-value" id="gpu-count">--</div>
+            <div class="metric-label">GPU Clusters</div>
+            <div class="metric-status operational">
+                Active
+            </div>
+        </div>
+
+        <div class="metric-card" onclick="navigateToSection('hosts')">
+            <div class="metric-icon">🖥️</div>
+            <div class="metric-value" id="host-count">--</div>
+            <div class="metric-label">Hosts & VMs</div>
+            <div class="metric-status operational">
+                Running
+            </div>
+        </div>
+
+        <div class="metric-card" onclick="navigateToSection('kubernetes')">
+            <div class="metric-icon">☸️</div>
+            <div class="metric-value" id="k8s-count">--</div>
+            <div class="metric-label">K8s Clusters</div>
+            <div class="metric-status operational">
+                Healthy
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Row -->
+    <div class="metrics-row">
+        <div class="metric-card" style="flex: 1;">
+            <div class="metric-icon">⚠️</div>
+            <div class="metric-value" id="warning-count">0</div>
+            <div class="metric-label">Warnings</div>
+        </div>
+        <div class="metric-card" style="flex: 1;">
+            <div class="metric-icon">🚨</div>
+            <div class="metric-value" id="critical-count">0</div>
+            <div class="metric-label">Critical</div>
+        </div>
+        <div class="metric-card" style="flex: 1;">
+            <div class="metric-icon">📡</div>
+            <div class="metric-value" id="offline-count">0</div>
+            <div class="metric-label">Offline</div>
+        </div>
+    </div>
+
+    <!-- Top Alarms -->
+    <div class="alarms-section">
+        <h3 class="section-title">🔔 Recent Alarms</h3>
+        <div id="alarms-list">
+            <div class="list-loading">
+                <div class="spinner"></div>
+                <span>Loading alarms...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mobile Dashboard Configuration
+const DASHBOARD_API = {
+    prefix: '/probler',
+    cachePath: '/0/NCache'
+};
+
+// Store interval ID for cleanup
+let dashboardRefreshInterval = null;
+
+// Initialize Mobile Dashboard
+function initMobileDashboard() {
+    // Clear any existing interval
+    if (dashboardRefreshInterval) {
+        clearInterval(dashboardRefreshInterval);
+    }
+
+    fetchDashboardData();
+    // Refresh every 30 seconds
+    dashboardRefreshInterval = setInterval(fetchDashboardData, 30000);
+}
+
+// Cleanup function - called when navigating away
+function cleanupMobileDashboard() {
+    if (dashboardRefreshInterval) {
+        clearInterval(dashboardRefreshInterval);
+        dashboardRefreshInterval = null;
+    }
+}
+
+// Check if dashboard is currently visible
+function isDashboardActive() {
+    return document.getElementById('dashboard-status') !== null;
+}
+
+// Get auth headers
+function getDashboardAuthHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    const bearerToken = sessionStorage.getItem('bearerToken') || localStorage.getItem('bearerToken');
+    if (bearerToken) {
+        headers['Authorization'] = 'Bearer ' + bearerToken;
+    }
+    return headers;
+}
+
+// Fetch dashboard data
+async function fetchDashboardData() {
+    // Skip if dashboard is no longer active (user navigated away)
+    if (!isDashboardActive()) {
+        cleanupMobileDashboard();
+        return;
+    }
+
+    try {
+        // Fetch network device stats
+        const networkStats = await fetchNetworkStats();
+
+        // Check again after async operation
+        if (!isDashboardActive()) return;
+
+        updateNetworkCard(networkStats);
+        updateSystemStatus(networkStats);
+
+        // Update other placeholder metrics (will be real when APIs available)
+        updatePlaceholderMetrics();
+
+        // Fetch recent alarms (placeholder for now)
+        updateAlarmsSection();
+
+    } catch (error) {
+        console.error('Dashboard data fetch error:', error);
+        if (isDashboardActive()) {
+            updateSystemStatus(null, true);
+        }
+    }
+}
+
+// Fetch network device statistics
+async function fetchNetworkStats() {
+    const query = 'select * from NetworkDevice where Id=* limit 1 page 0';
+    const url = DASHBOARD_API.prefix + DASHBOARD_API.cachePath +
+        '?body=' + encodeURIComponent(JSON.stringify({ text: query }));
+
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: getDashboardAuthHeaders()
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch network stats');
+    }
+
+    const data = await response.json();
+    return data.metadata?.keyCount?.counts || null;
+}
+
+// Update network devices card
+function updateNetworkCard(stats) {
+    const totalEl = document.getElementById('network-total');
+    const onlineEl = document.getElementById('network-online');
+    const statusEl = document.getElementById('network-status');
+    const offlineEl = document.getElementById('offline-count');
+
+    // Safety check - elements may not exist if user navigated away
+    if (!totalEl || !onlineEl || !statusEl) return;
+
+    if (stats) {
+        const total = stats.Total || 0;
+        const online = stats.Online || 0;
+        const offline = total - online;
+
+        totalEl.textContent = total;
+        onlineEl.textContent = online;
+        if (offlineEl) offlineEl.textContent = offline;
+
+        // Update status color based on offline count
+        statusEl.classList.remove('operational', 'warning', 'critical');
+        if (offline === 0) {
+            statusEl.classList.add('operational');
+        } else if (offline < total * 0.1) {
+            statusEl.classList.add('warning');
+        } else {
+            statusEl.classList.add('critical');
+        }
+    } else {
+        totalEl.textContent = '--';
+        onlineEl.textContent = '--';
+    }
+}
+
+// Update system status indicator
+function updateSystemStatus(stats, error = false) {
+    const statusContainer = document.getElementById('dashboard-status');
+    const statusText = document.getElementById('status-text');
+
+    // Safety check - elements may not exist if user navigated away
+    if (!statusContainer || !statusText) return;
+
+    statusContainer.classList.remove('warning', 'critical');
+
+    if (error) {
+        statusContainer.classList.add('critical');
+        statusText.textContent = 'Connection Error';
+        return;
+    }
+
+    if (!stats) {
+        statusText.textContent = 'No Data';
+        return;
+    }
+
+    const total = stats.Total || 0;
+    const online = stats.Online || 0;
+    const offline = total - online;
+
+    if (offline === 0) {
+        statusText.textContent = 'All Systems Operational';
+    } else if (offline < total * 0.1) {
+        statusContainer.classList.add('warning');
+        statusText.textContent = offline + ' Device' + (offline > 1 ? 's' : '') + ' Offline';
+    } else {
+        statusContainer.classList.add('critical');
+        statusText.textContent = offline + ' Devices Offline';
+    }
+}
+
+// Update placeholder metrics (to be replaced with real APIs)
+function updatePlaceholderMetrics() {
+    // These will be populated when respective APIs are available
+    const gpuEl = document.getElementById('gpu-count');
+    const hostEl = document.getElementById('host-count');
+    const k8sEl = document.getElementById('k8s-count');
+    const warningEl = document.getElementById('warning-count');
+    const criticalEl = document.getElementById('critical-count');
+
+    // Safety check - elements may not exist if user navigated away
+    if (!gpuEl) return;
+
+    gpuEl.textContent = '--';
+    if (hostEl) hostEl.textContent = '--';
+    if (k8sEl) k8sEl.textContent = '--';
+    if (warningEl) warningEl.textContent = '0';
+    if (criticalEl) criticalEl.textContent = '0';
+}
+
+// Update alarms section
+function updateAlarmsSection() {
+    const alarmsList = document.getElementById('alarms-list');
+
+    // Safety check - element may not exist if user navigated away
+    if (!alarmsList) return;
+
+    // Placeholder alarms until real events API is available
+    alarmsList.innerHTML = `
+        <div class="alarm-card info">
+            <span class="alarm-icon">ℹ️</span>
+            <div class="alarm-content">
+                <div class="alarm-title">System Connected</div>
+                <div class="alarm-device">probler-mobile</div>
+                <div class="alarm-time">Just now</div>
+            </div>
+        </div>
+        <p class="placeholder-note">
+            Real-time alarms will appear here when connected to events API
+        </p>
+    `;
+}
+
+// Auto-initialize
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(initMobileDashboard, 100);
+} else {
+    document.addEventListener('DOMContentLoaded', initMobileDashboard);
+}
+</script>

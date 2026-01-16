@@ -1,0 +1,190 @@
+/* Mobile App - Bottom Navigation Styles */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-nav-height);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Navigation Item */
+.nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 4px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    position: relative;
+    min-width: 0;
+    max-width: 100px;
+}
+
+.nav-item:active {
+    background: rgba(14, 165, 233, 0.05);
+}
+
+/* Active state */
+.nav-item.active {
+    color: var(--primary-blue);
+}
+
+.nav-item.active .nav-icon {
+    transform: scale(1.1);
+}
+
+/* Active indicator line */
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 3px;
+    background: var(--primary-blue);
+    border-radius: 0 0 3px 3px;
+}
+
+/* Navigation Icon */
+.nav-item .nav-icon {
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+    transition: transform 0.2s ease;
+    line-height: 1;
+}
+
+/* Navigation Label */
+.nav-item .nav-label {
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* More Button in Bottom Nav */
+.nav-item-more {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 4px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    min-width: 0;
+    max-width: 100px;
+}
+
+.nav-item-more:active {
+    background: rgba(14, 165, 233, 0.05);
+}
+
+.nav-item-more.active {
+    color: var(--primary-blue);
+}
+
+.nav-item-more .nav-icon {
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+}
+
+.nav-item-more .nav-label {
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Badge for notifications/events count */
+.nav-badge {
+    position: absolute;
+    top: 4px;
+    right: 50%;
+    transform: translateX(12px);
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: var(--status-critical);
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 700;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.nav-badge.warning {
+    background: var(--status-warning);
+    color: var(--text-dark);
+}
+
+.nav-badge.info {
+    background: var(--primary-blue);
+}
+
+/* Hide badge if zero */
+.nav-badge:empty,
+.nav-badge[data-count="0"] {
+    display: none;
+}
+
+/* Landscape mode adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+    .bottom-nav {
+        height: 48px;
+    }
+
+    .nav-item,
+    .nav-item-more {
+        flex-direction: row;
+        gap: 6px;
+    }
+
+    .nav-item .nav-icon,
+    .nav-item-more .nav-icon {
+        font-size: 1.2rem;
+        margin-bottom: 0;
+    }
+
+    .nav-item .nav-label,
+    .nav-item-more .nav-label {
+        font-size: 0.7rem;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 600px) {
+    .nav-item,
+    .nav-item-more {
+        max-width: 120px;
+    }
+
+    .nav-item .nav-label,
+    .nav-item-more .nav-label {
+        font-size: 0.75rem;
+    }
+}

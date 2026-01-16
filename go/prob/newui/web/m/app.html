@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="theme-color" content="#0f2027">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Probler - Mobile App</title>
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <!-- Mobile App CSS - Base -->
+    <link rel="stylesheet" href="app/css/app-base.css">
+    <link rel="stylesheet" href="app/css/app-header.css">
+    <link rel="stylesheet" href="app/css/app-nav.css">
+    <!-- Mobile App CSS - Components -->
+    <link rel="stylesheet" href="app/css/app-components.css">
+    <link rel="stylesheet" href="app/css/app-sections.css">
+    <link rel="stylesheet" href="app/css/mobile-popup.css">
+    <link rel="stylesheet" href="app/css/mobile-confirm.css">
+    <link rel="stylesheet" href="app/css/mobile-table.css">
+    <link rel="stylesheet" href="app/css/mobile-edit-table.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <img src="../images/logo.gif" alt="Probler" class="header-logo">
+                <div class="header-title">
+                    <h1>Probler</h1>
+                    <p class="header-subtitle">Mobile Operations</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <span class="username">Admin</span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div id="content-area">
+                <div class="loading">Loading</div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation (order matches desktop: Dashboard, Inventory, Network, ...) -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" data-section="dashboard">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-section="inventory">
+                <span class="nav-icon">📦</span>
+                <span class="nav-label">Inventory</span>
+            </a>
+            <a href="#" class="nav-item" data-section="network">
+                <span class="nav-icon">🌐</span>
+                <span class="nav-label">Network</span>
+            </a>
+            <a href="#" class="nav-item" data-section="events">
+                <span class="nav-icon">🔔</span>
+                <span class="nav-label">Events</span>
+                <span class="nav-badge" id="events-badge"></span>
+            </a>
+            <button class="nav-item-more" aria-label="More options">
+                <span class="nav-icon">☰</span>
+                <span class="nav-label">More</span>
+            </button>
+        </nav>
+
+        <!-- More Menu Drawer -->
+        <div class="more-drawer">
+            <div class="more-drawer-content">
+                <div class="more-drawer-header">
+                    <h3>More Sections</h3>
+                    <button class="close-drawer-btn" aria-label="Close">&times;</button>
+                </div>
+                <ul class="more-menu-list">
+                    <li><a href="#" class="more-menu-item" data-section="gpus">
+                        <span class="nav-icon">🖧</span>
+                        <span>GPUs</span>
+                    </a></li>
+                    <li><a href="#" class="more-menu-item" data-section="hosts">
+                        <span class="nav-icon">🖥️</span>
+                        <span>Hosts & VMs</span>
+                    </a></li>
+                    <li><a href="#" class="more-menu-item" data-section="kubernetes">
+                        <span class="nav-icon">☸️</span>
+                        <span>Kubernetes</span>
+                    </a></li>
+                    <li><a href="#" class="more-menu-item" data-section="security">
+                        <span class="nav-icon">🔒</span>
+                        <span>Security</span>
+                    </a></li>
+                    <li><a href="#" class="more-menu-item" data-section="system">
+                        <span class="nav-icon">👥</span>
+                        <span>System</span>
+                    </a></li>
+                </ul>
+                <div class="desktop-link">
+                    <a href="#" onclick="switchToDesktop(); return false;">
+                        🖥️ View Desktop Version
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile App JavaScript - Core Infrastructure (Phase 1) -->
+    <script src="app/js/mobile-config.js"></script>
+    <script src="app/js/mobile-auth.js"></script>
+    <script src="app/js/mobile-popup.js"></script>
+    <script src="app/js/mobile-confirm.js"></script>
+    <!-- Mobile App JavaScript - Components (Phase 2) -->
+    <script src="app/js/mobile-table.js"></script>
+    <script src="app/js/mobile-edit-table.js"></script>
+    <!-- Mobile App JavaScript - Utilities -->
+    <script src="app/js/app-components.js"></script>
+    <!-- Mobile App JavaScript - App Core -->
+    <script src="app/js/app-core.js"></script>
+</body>
+</html>

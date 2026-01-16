@@ -1,0 +1,237 @@
+/* Mobile App - Base Styles */
+/* Probler Mobile Application - NOC Theme */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* NOC Theme Colors (from desktop) */
+    --noc-black: #000000;
+    --noc-dark: #0a0a0a;
+    --noc-charcoal: #121212;
+    --noc-slate: #1a1a1a;
+    --noc-gray: #1e1e1e;
+
+    /* Accent Colors */
+    --noc-cyan: #1565c0;
+    --noc-green: #00ff41;
+    --noc-amber: #ffb300;
+    --noc-red: #ff1744;
+    --noc-blue: #0d47a1;
+    --noc-indigo: #448aff;
+    --primary-blue: #0ea5e9;
+    --primary-dark: #0284c7;
+
+    /* Status Colors */
+    --status-operational: #00c853;
+    --status-warning: #ffc107;
+    --status-critical: #ff3d00;
+    --status-offline: #757575;
+    --status-maintenance: #2196f3;
+
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #b0bec5;
+    --text-muted: #78909c;
+    --text-dim: #546e7a;
+    --text-dark: #2d3748;
+    --text-gray: #4a5568;
+
+    /* Background Colors */
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
+    --bg-tertiary: #121212;
+    --bg-card: #1a1a1a;
+    --bg-elevated: #1e1e1e;
+    --bg-light: #ffffff;
+    --bg-gray: #f7fafc;
+
+    /* Border Colors */
+    --border-subtle: #212121;
+    --border-default: #2a2a2a;
+    --border-emphasis: #333333;
+    --border-light: #e2e8f0;
+
+    /* Mobile-specific spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+
+    /* Touch targets */
+    --tap-target: 48px;
+    --header-height: 56px;
+    --bottom-nav-height: 56px;
+
+    /* Status Glows */
+    --glow-green: 0 0 10px rgba(0, 255, 65, 0.6);
+    --glow-amber: 0 0 10px rgba(255, 179, 0, 0.6);
+    --glow-red: 0 0 10px rgba(255, 23, 68, 0.6);
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-dark);
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    padding-bottom: var(--bottom-nav-height);
+}
+
+/* App Container */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--bg-gray);
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    padding-top: var(--header-height);
+    padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#content-area {
+    min-height: calc(100vh - var(--header-height) - var(--bottom-nav-height));
+}
+
+/* Utility Classes */
+.container {
+    width: 100%;
+    padding: 0 var(--spacing-sm);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-operational {
+    background: var(--status-operational);
+    box-shadow: var(--glow-green);
+}
+
+.status-warning {
+    background: var(--status-warning);
+    box-shadow: var(--glow-amber);
+}
+
+.status-critical {
+    background: var(--status-critical);
+    box-shadow: var(--glow-red);
+    animation: pulse-critical 1s infinite;
+}
+
+.status-offline {
+    background: var(--status-offline);
+}
+
+@keyframes pulse-critical {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Prevent text selection on buttons */
+button, .btn, .nav-item {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+/* Focus states for accessibility */
+a:focus, button:focus {
+    outline: 2px solid var(--primary-blue);
+    outline-offset: 2px;
+}
+
+/* Smooth transitions */
+a, button {
+    transition: all 0.2s ease;
+}
+
+/* Image handling */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Section styling */
+.section-container {
+    background: var(--bg-light);
+    min-height: 100%;
+}
+
+/* Loading state */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: var(--text-muted);
+}
+
+.loading::after {
+    content: '';
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-light);
+    border-top-color: var(--primary-blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-left: var(--spacing-sm);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+    border-radius: 2px;
+}
+
+/* Safe area for notched devices */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    body {
+        padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
+    }
+}

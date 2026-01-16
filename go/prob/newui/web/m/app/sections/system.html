@@ -1,0 +1,870 @@
+<!-- Mobile System Section - Health, Settings, Logs -->
+<div class="mobile-section">
+    <!-- System Header -->
+    <div class="section-header system-header">
+        <h2>System</h2>
+        <p>Health monitoring and system logs</p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="system-tabs">
+        <button class="system-tab active" data-tab="health">Health</button>
+        <button class="system-tab" data-tab="settings">Settings</button>
+        <button class="system-tab" data-tab="logs">Logs</button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="system-tab-content">
+        <!-- Health Tab -->
+        <div id="health-tab" class="tab-panel active">
+            <div id="health-table-container"></div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings-tab" class="tab-panel">
+            <div class="coming-soon">
+                <div class="coming-soon-icon">&#x2699;</div>
+                <h3>Settings</h3>
+                <p>System configuration coming soon.</p>
+            </div>
+        </div>
+
+        <!-- Logs Tab -->
+        <div id="logs-tab" class="tab-panel">
+            <div id="logs-browser-container">
+                <!-- File tree will be rendered here -->
+                <div id="logs-tree-view" class="logs-tree-view">
+                    <div class="logs-loading">Loading log files...</div>
+                </div>
+                <!-- Log content viewer (shown when file selected) -->
+                <div id="logs-content-view" class="logs-content-view" style="display: none;">
+                    <div class="logs-content-header">
+                        <button id="logs-back-btn" class="logs-back-btn">&#8592; Back</button>
+                        <span id="logs-file-path" class="logs-file-path"></span>
+                    </div>
+                    <div class="logs-pagination">
+                        <span id="logs-page-info">Page 1</span>
+                        <div class="logs-pagination-btns">
+                            <button id="logs-prev-btn" class="logs-nav-btn" disabled>&#9664; Prev</button>
+                            <button id="logs-next-btn" class="logs-nav-btn" disabled>Next &#9654;</button>
+                        </div>
+                    </div>
+                    <pre id="logs-content" class="logs-content"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mobile System Section
+(function() {
+    'use strict';
+
+    // State
+    let healthTable = null;
+    let logsInitialized = false;
+    let activeTab = 'health';
+
+    // Logs state
+    let logsTreeData = null;
+    let selectedFile = null;
+    let currentLogContent = '';
+    let currentPage = 0;
+    let totalBytes = 0;
+    const bytesPerPage = 5120; // 5KB per page (matches desktop)
+
+    // Get health endpoint
+    function getHealthEndpoint() {
+        return MobileConfig.getApiPrefix() + '/0/Health';
+    }
+
+    // Get logs endpoint
+    function getLogsEndpoint() {
+        return MobileConfig.getApiPrefix() + '/87/logs';
+    }
+
+    // Format bytes to human readable
+    function formatBytes(bytes) {
+        if (!bytes || bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    // Format uptime from start time
+    function formatUptime(startTime) {
+        if (!startTime) return '--';
+        const now = Date.now();
+        const start = typeof startTime === 'number' ? startTime : new Date(startTime).getTime();
+        const diff = Math.floor((now - start) / 1000);
+
+        const days = Math.floor(diff / 86400);
+        const hours = Math.floor((diff % 86400) / 3600);
+        const minutes = Math.floor((diff % 3600) / 60);
+
+        if (days > 0) return days + 'd ' + hours + 'h';
+        if (hours > 0) return hours + 'h ' + minutes + 'm';
+        return minutes + 'm';
+    }
+
+    // Format time since last pulse
+    function formatTimeSince(timestamp) {
+        if (!timestamp) return '--';
+        const now = Date.now();
+        const time = typeof timestamp === 'number' ? timestamp : new Date(timestamp).getTime();
+        const diff = Math.floor((now - time) / 1000);
+
+        if (diff < 60) return diff + 's ago';
+        if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+        return Math.floor(diff / 86400) + 'd ago';
+    }
+
+    // Transform health data for display
+    function transformHealthData(item) {
+        if (!item.stats) return null;
+        const stats = item.stats;
+        return {
+            alias: item.alias || 'Unknown',
+            rxMsgCount: stats.rxMsgCount || 0,
+            rxData: formatBytes(stats.rxDataCont || 0),
+            txMsgCount: stats.txMsgCount || 0,
+            txData: formatBytes(stats.txDataCount || 0),
+            memoryUsage: formatBytes(stats.memoryUsage || 0),
+            cpuUsage: (stats.cpuUsage || 0).toFixed(1) + '%',
+            uptime: formatUptime(item.startTime),
+            lastPulse: formatTimeSince(stats.lastMsgTime),
+            raw: item
+        };
+    }
+
+    // Get status class based on CPU usage
+    function getHealthStatusClass(item) {
+        const cpu = item.raw?.stats?.cpuUsage || 0;
+        if (cpu > 80) return 'critical';
+        if (cpu > 60) return 'warning';
+        return 'operational';
+    }
+
+    // Custom card renderer for health
+    function renderHealthCard(item, index, table) {
+        const statusClass = getHealthStatusClass(item);
+
+        return `
+            <div class="mobile-table-card clickable" data-index="${index}">
+                <div class="mobile-table-card-header">
+                    <div>
+                        <h4 class="mobile-table-card-title">${escapeHtml(item.alias)}</h4>
+                        <p class="mobile-table-card-subtitle">Up: ${item.uptime}</p>
+                    </div>
+                    <div class="mobile-table-status ${statusClass}">
+                        <span class="mobile-table-status-indicator"></span>
+                        <span>${item.cpuUsage} CPU</span>
+                    </div>
+                </div>
+                <div class="mobile-table-card-body">
+                    <div class="mobile-table-card-row">
+                        <span class="mobile-table-card-label">Memory</span>
+                        <span class="mobile-table-card-value">${item.memoryUsage}</span>
+                    </div>
+                    <div class="mobile-table-card-row">
+                        <span class="mobile-table-card-label">RX / TX</span>
+                        <span class="mobile-table-card-value">${item.rxMsgCount} / ${item.txMsgCount}</span>
+                    </div>
+                    <div class="mobile-table-card-row">
+                        <span class="mobile-table-card-label">Last Pulse</span>
+                        <span class="mobile-table-card-value">${item.lastPulse}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Show health detail popup
+    function showHealthDetail(item) {
+        const content = `
+            <div class="detail-section">
+                <div class="detail-section-title">Overview</div>
+                <div class="detail-row">
+                    <span class="detail-label">Service</span>
+                    <span class="detail-value">${escapeHtml(item.alias)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Uptime</span>
+                    <span class="detail-value">${item.uptime}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Last Pulse</span>
+                    <span class="detail-value">${item.lastPulse}</span>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-title">Resources</div>
+                <div class="detail-row">
+                    <span class="detail-label">CPU Usage</span>
+                    <span class="detail-value">${item.cpuUsage}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Memory</span>
+                    <span class="detail-value">${item.memoryUsage}</span>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-title">Network</div>
+                <div class="detail-row">
+                    <span class="detail-label">RX Messages</span>
+                    <span class="detail-value">${item.rxMsgCount}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">RX Data</span>
+                    <span class="detail-value">${item.rxData}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">TX Messages</span>
+                    <span class="detail-value">${item.txMsgCount}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">TX Data</span>
+                    <span class="detail-value">${item.txData}</span>
+                </div>
+            </div>
+        `;
+
+        MobilePopup.show({
+            title: item.alias,
+            content: content,
+            size: 'large',
+            showFooter: false
+        });
+    }
+
+    // Helper: escape HTML
+    function escapeHtml(text) {
+        if (text == null) return '';
+        const div = document.createElement('div');
+        div.textContent = String(text);
+        return div.innerHTML;
+    }
+
+    // ============================================
+    // LOGS - File Tree Browser (NOT MobileTable)
+    // ============================================
+
+    // Load logs tree data using special query
+    async function loadLogsTree() {
+        const treeView = document.getElementById('logs-tree-view');
+        treeView.innerHTML = '<div class="logs-loading">Loading log files...</div>';
+
+        try {
+            // Use the correct query format: select * from l8file where path="*" mapreduce true
+            const queryText = 'select * from l8file where path="*" mapreduce true';
+            const bodyParam = JSON.stringify({ text: queryText });
+            const url = getLogsEndpoint() + '?body=' + encodeURIComponent(bodyParam);
+
+            const response = await MobileAuth.get(url);
+            logsTreeData = response;
+            renderLogsTree(response);
+        } catch (error) {
+            console.error('Error loading logs tree:', error);
+            treeView.innerHTML = '<div class="logs-error">Error loading log files. Please try again.</div>';
+        }
+    }
+
+    // Render the file tree
+    function renderLogsTree(data) {
+        const treeView = document.getElementById('logs-tree-view');
+        treeView.innerHTML = '';
+
+        if (data.files && data.files.length > 0) {
+            data.files.forEach(item => {
+                const itemElement = createTreeItem(item, 0);
+                treeView.appendChild(itemElement);
+            });
+        } else {
+            treeView.innerHTML = '<div class="logs-empty">No log files available</div>';
+        }
+    }
+
+    // Create a tree item element
+    function createTreeItem(item, level) {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'logs-tree-item';
+        itemDiv.style.paddingLeft = (level * 16) + 'px';
+
+        const nodeDiv = document.createElement('div');
+        nodeDiv.className = item.isDirectory ? 'logs-tree-node directory' : 'logs-tree-node file';
+
+        // Icon
+        const icon = document.createElement('span');
+        icon.className = 'logs-tree-icon';
+        icon.innerHTML = item.isDirectory ? '&#128193;' : '&#128196;'; // 📁 or 📄
+
+        // Name
+        const name = document.createElement('span');
+        name.className = 'logs-tree-name';
+        name.textContent = item.name;
+
+        nodeDiv.appendChild(icon);
+        nodeDiv.appendChild(name);
+        itemDiv.appendChild(nodeDiv);
+
+        if (item.isDirectory) {
+            // Expand/collapse indicator
+            const expandIcon = document.createElement('span');
+            expandIcon.className = 'logs-expand-icon';
+            expandIcon.innerHTML = '&#9654;'; // ▶
+            nodeDiv.insertBefore(expandIcon, icon);
+
+            // Click handler for directories
+            nodeDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                expandIcon.classList.toggle('expanded');
+                expandIcon.innerHTML = expandIcon.classList.contains('expanded') ? '&#9660;' : '&#9654;'; // ▼ or ▶
+                const children = nodeDiv.nextElementSibling;
+                if (children && children.classList.contains('logs-tree-children')) {
+                    children.classList.toggle('collapsed');
+                }
+            });
+
+            // Create children container
+            if (item.files && item.files.length > 0) {
+                const childrenDiv = document.createElement('div');
+                childrenDiv.className = 'logs-tree-children collapsed';
+
+                item.files.forEach(child => {
+                    const childItem = createTreeItem(child, level + 1);
+                    childrenDiv.appendChild(childItem);
+                });
+
+                itemDiv.appendChild(childrenDiv);
+            }
+        } else {
+            // Click handler for files - load content
+            nodeDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectLogFile(item);
+            });
+        }
+
+        return itemDiv;
+    }
+
+    // Select a log file and show content
+    async function selectLogFile(fileItem) {
+        selectedFile = fileItem;
+        currentPage = 0;
+
+        // Show content view, hide tree view
+        document.getElementById('logs-tree-view').style.display = 'none';
+        document.getElementById('logs-content-view').style.display = 'block';
+
+        // Update file path
+        const fullPath = fileItem.path + '/' + fileItem.name;
+        document.getElementById('logs-file-path').textContent = fullPath;
+
+        // Load first page
+        await loadLogPage(fullPath, 0);
+    }
+
+    // Load a page of log content
+    async function loadLogPage(filePath, page) {
+        const contentEl = document.getElementById('logs-content');
+        contentEl.textContent = 'Loading...';
+
+        try {
+            // Parse path and name
+            const lastSlashIndex = filePath.lastIndexOf('/');
+            const path = filePath.substring(0, lastSlashIndex);
+            const name = filePath.substring(lastSlashIndex + 1);
+
+            // Use correct query format
+            const queryText = `select * from l8file where path=${path} and name = ${name} limit 1 page ${page} mapreduce true`;
+            const bodyParam = JSON.stringify({ text: queryText });
+            const url = getLogsEndpoint() + '?body=' + encodeURIComponent(bodyParam);
+
+            const response = await MobileAuth.get(url);
+
+            if (response.data) {
+                currentLogContent = response.data.content || '';
+                totalBytes = response.data.size || 0;
+                currentPage = page;
+            } else {
+                currentLogContent = '';
+                totalBytes = 0;
+            }
+
+            displayLogContent();
+        } catch (error) {
+            console.error('Error loading log page:', error);
+            contentEl.textContent = 'Error loading log content.';
+        }
+    }
+
+    // Display the current log content
+    function displayLogContent() {
+        const contentEl = document.getElementById('logs-content');
+        const pageInfo = document.getElementById('logs-page-info');
+        const prevBtn = document.getElementById('logs-prev-btn');
+        const nextBtn = document.getElementById('logs-next-btn');
+
+        if (totalBytes === 0) {
+            contentEl.textContent = 'No content available';
+            pageInfo.textContent = 'Empty file';
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
+            return;
+        }
+
+        contentEl.textContent = currentLogContent;
+
+        // Calculate pagination info
+        const totalPages = Math.ceil(totalBytes / bytesPerPage);
+        const startByte = currentPage * bytesPerPage + 1;
+        const endByte = Math.min(startByte + currentLogContent.length - 1, totalBytes);
+
+        pageInfo.textContent = `Page ${currentPage + 1}/${totalPages} (${formatBytes(startByte)}-${formatBytes(endByte)} of ${formatBytes(totalBytes)})`;
+
+        prevBtn.disabled = currentPage === 0;
+        nextBtn.disabled = (currentPage + 1) >= totalPages;
+    }
+
+    // Go back to tree view
+    function showLogsTreeView() {
+        document.getElementById('logs-tree-view').style.display = 'block';
+        document.getElementById('logs-content-view').style.display = 'none';
+        selectedFile = null;
+    }
+
+    // Initialize logs browser
+    function initLogsBrowser() {
+        if (logsInitialized) return;
+        logsInitialized = true;
+
+        // Back button
+        document.getElementById('logs-back-btn').addEventListener('click', showLogsTreeView);
+
+        // Pagination buttons
+        document.getElementById('logs-prev-btn').addEventListener('click', async () => {
+            if (currentPage > 0 && selectedFile) {
+                const fullPath = selectedFile.path + '/' + selectedFile.name;
+                await loadLogPage(fullPath, currentPage - 1);
+            }
+        });
+
+        document.getElementById('logs-next-btn').addEventListener('click', async () => {
+            const maxPage = Math.ceil(totalBytes / bytesPerPage) - 1;
+            if (currentPage < maxPage && selectedFile) {
+                const fullPath = selectedFile.path + '/' + selectedFile.name;
+                await loadLogPage(fullPath, currentPage + 1);
+            }
+        });
+
+        // Load tree data
+        loadLogsTree();
+    }
+
+    // ============================================
+    // TAB SWITCHING & INITIALIZATION
+    // ============================================
+
+    // Switch tabs
+    function switchTab(tabName) {
+        activeTab = tabName;
+
+        // Update tab buttons
+        document.querySelectorAll('.system-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.tab === tabName);
+        });
+
+        // Update tab panels
+        document.querySelectorAll('.tab-panel').forEach(panel => {
+            panel.classList.toggle('active', panel.id === tabName + '-tab');
+        });
+
+        // Initialize content if needed
+        if (tabName === 'health' && !healthTable) {
+            initHealthTable();
+        } else if (tabName === 'logs' && !logsInitialized) {
+            initLogsBrowser();
+        }
+    }
+
+    // Initialize Health table with all columns (matching desktop)
+    function initHealthTable() {
+        healthTable = new MobileTable('health-table-container', {
+            endpoint: getHealthEndpoint(),
+            modelName: 'L8Health',
+
+            rowsPerPage: 15,
+            serverSide: true,
+
+            // All columns matching desktop health.js
+            columns: [
+                { key: 'alias', label: 'Service', filterKey: 'alias', sortKey: 'alias', primary: true },
+                { key: 'rxMsgCount', label: 'RX', filterKey: 'stats.rxMsgCount', sortKey: 'stats.rxMsgCount' },
+                { key: 'rxData', label: 'RX Data', filterKey: 'stats.rxDataCont', sortKey: 'stats.rxDataCont' },
+                { key: 'txMsgCount', label: 'TX', filterKey: 'stats.txMsgCount', sortKey: 'stats.txMsgCount' },
+                { key: 'txData', label: 'TX Data', filterKey: 'stats.txDataCount', sortKey: 'stats.txDataCount' },
+                { key: 'memoryUsage', label: 'Memory', filterKey: 'stats.memoryUsage', sortKey: 'stats.memoryUsage' },
+                { key: 'cpuUsage', label: 'CPU %', filterKey: 'stats.cpuUsage', sortKey: 'stats.cpuUsage' },
+                { key: 'uptime', label: 'Up Time', filterKey: 'startTime', sortKey: 'startTime' },
+                { key: 'lastPulse', label: 'Last Pulse', filterKey: 'stats.lastMsgTime', sortKey: 'stats.lastMsgTime' }
+            ],
+
+            transformData: transformHealthData,
+            getStatusClass: getHealthStatusClass,
+            renderCard: renderHealthCard,
+
+            emptyMessage: 'No health data available.',
+            emptyIcon: '&#x1F4CA;',
+
+            onCardClick: showHealthDetail,
+
+            onError: function(error) {
+                console.error('Health table error:', error);
+            }
+        });
+    }
+
+    // Initialize Mobile System section
+    function initMobileSystem() {
+        // Set up tab switching
+        document.querySelectorAll('.system-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchTab(tab.dataset.tab);
+            });
+        });
+
+        // Initialize default tab (health)
+        initHealthTable();
+    }
+
+    // Export init function for section loader
+    window.initMobileSystem = initMobileSystem;
+
+})();
+</script>
+
+<style>
+/* Section-specific styles for system section */
+.system-header {
+    text-align: center;
+    padding: 20px 16px 24px !important;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+    margin: -12px -12px 0 !important;
+    border-radius: 0;
+    color: white !important;
+}
+
+.system-header p {
+    color: rgba(255, 255, 255, 0.8) !important;
+    margin: 0;
+    opacity: 1;
+}
+
+.system-header h2 {
+    color: white !important;
+    margin: 0 0 4px;
+    font-size: 1.4rem;
+}
+
+/* Tab Navigation */
+.system-tabs {
+    display: flex;
+    background: var(--bg-light, #f5f7fa);
+    border-bottom: 1px solid var(--border-light, #e2e8f0);
+    padding: 0;
+    margin: 0 -12px;
+}
+
+.system-tab {
+    flex: 1;
+    padding: 14px 12px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted, #718096);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.system-tab:active {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.system-tab.active {
+    color: var(--primary-blue, #0ea5e9);
+    border-bottom-color: var(--primary-blue, #0ea5e9);
+}
+
+/* Tab Content */
+.system-tab-content {
+    margin: 0 -12px;
+}
+
+.tab-panel {
+    display: none;
+    padding: 12px;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+/* Coming Soon */
+.coming-soon {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted, #718096);
+}
+
+.coming-soon-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.coming-soon h3 {
+    font-size: 18px;
+    color: var(--text-dark, #2d3748);
+    margin: 0 0 8px;
+}
+
+.coming-soon p {
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Detail popup styles */
+.detail-section {
+    margin-bottom: 20px;
+}
+
+.detail-section:last-child {
+    margin-bottom: 0;
+}
+
+.detail-section-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.detail-value {
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+    margin-left: 16px;
+}
+
+/* ============================================ */
+/* LOGS FILE BROWSER STYLES */
+/* ============================================ */
+
+#logs-browser-container {
+    min-height: 300px;
+}
+
+/* Tree View */
+.logs-tree-view {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--border-light, #e2e8f0);
+    padding: 12px;
+    min-height: 200px;
+}
+
+.logs-loading,
+.logs-empty,
+.logs-error {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted, #718096);
+    font-size: 14px;
+}
+
+.logs-error {
+    color: #ef4444;
+}
+
+/* Tree Items */
+.logs-tree-item {
+    margin: 2px 0;
+}
+
+.logs-tree-node {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.logs-tree-node:active {
+    background: rgba(14, 165, 233, 0.1);
+}
+
+.logs-tree-node.file:hover {
+    background: var(--bg-light, #f5f7fa);
+}
+
+.logs-expand-icon {
+    width: 20px;
+    font-size: 10px;
+    color: var(--text-muted, #718096);
+    transition: transform 0.2s ease;
+}
+
+.logs-expand-icon.expanded {
+    transform: rotate(90deg);
+}
+
+.logs-tree-icon {
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+.logs-tree-name {
+    font-size: 14px;
+    color: var(--text-dark, #2d3748);
+    word-break: break-all;
+}
+
+.logs-tree-node.file .logs-tree-name {
+    color: var(--primary-blue, #0ea5e9);
+}
+
+.logs-tree-children {
+    margin-left: 8px;
+    border-left: 1px solid var(--border-light, #e2e8f0);
+}
+
+.logs-tree-children.collapsed {
+    display: none;
+}
+
+/* Content View */
+.logs-content-view {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--border-light, #e2e8f0);
+    overflow: hidden;
+}
+
+.logs-content-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-light, #f5f7fa);
+    border-bottom: 1px solid var(--border-light, #e2e8f0);
+}
+
+.logs-back-btn {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--text-dark, #2d3748);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.logs-back-btn:active {
+    background: var(--bg-light, #f5f7fa);
+}
+
+.logs-file-path {
+    flex: 1;
+    font-size: 12px;
+    color: var(--text-muted, #718096);
+    word-break: break-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.logs-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--bg-light, #f5f7fa);
+    border-bottom: 1px solid var(--border-light, #e2e8f0);
+    font-size: 12px;
+    color: var(--text-muted, #718096);
+}
+
+.logs-pagination-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.logs-nav-btn {
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-dark, #2d3748);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.logs-nav-btn:active:not(:disabled) {
+    background: var(--bg-light, #f5f7fa);
+}
+
+.logs-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.logs-content {
+    margin: 0;
+    padding: 12px;
+    background: #1a1a2e;
+    color: #00ff41;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    min-height: 200px;
+    max-height: 400px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+</style>

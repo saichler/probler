@@ -1,0 +1,151 @@
+/* Mobile Landing Page - Hero Section Styles */
+
+.hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    position: relative;
+    padding: 80px var(--spacing-sm) var(--spacing-xl);
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-dark-mid) 50%, var(--bg-dark-light) 100%);
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 1;
+}
+
+.hero .container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+
+.hero h1 {
+    font-size: 1.8rem;
+    margin-bottom: var(--spacing-sm);
+    font-weight: 700;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hero p {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0 var(--spacing-xs);
+}
+
+.hero p strong {
+    color: white;
+}
+
+/* Simplified SVG for mobile */
+.hero-illustration {
+    margin: var(--spacing-lg) 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.hero-illustration svg {
+    max-width: 300px;
+    height: auto;
+}
+
+/* Hero Buttons */
+.hero-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--primary-dark);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    min-height: var(--tap-target);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+    background: white;
+}
+
+.btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    min-height: var(--tap-target);
+}
+
+.btn-secondary:active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Badges row in hero */
+.hero .badges-row {
+    margin-top: var(--spacing-md);
+}
+
+.hero .badge {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.25);
+    font-size: 0.75rem;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    animation: bounce 2s infinite;
+}
+
+.scroll-indicator svg {
+    width: 28px;
+    height: 28px;
+    fill: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    40% {
+        transform: translateX(-50%) translateY(-8px);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-4px);
+    }
+}
