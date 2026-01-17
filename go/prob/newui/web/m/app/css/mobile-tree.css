@@ -1,0 +1,342 @@
+/**
+ * MobileTree - Hierarchical tree view styles for mobile
+ * Desktop Equivalent: Tree styles in css/components-misc.css
+ */
+
+/* ============================================ */
+/* TREE CONTAINER */
+/* ============================================ */
+
+.mobile-tree-container {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto Mono', monospace;
+    font-size: 13px;
+    overflow-y: auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Custom scrollbar for webkit */
+.mobile-tree-container::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+.mobile-tree-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mobile-tree-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 2px;
+}
+
+/* ============================================ */
+/* TREE NODES */
+/* ============================================ */
+
+.mobile-tree-node {
+    margin: 2px 0;
+}
+
+.mobile-tree-node-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    border-radius: 8px;
+    white-space: nowrap;
+    min-height: 44px; /* Touch target size */
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-tree-node-header:hover {
+    background: rgba(14, 165, 233, 0.08);
+}
+
+.mobile-tree-node-header:active,
+.mobile-tree-node-header.active {
+    background: rgba(14, 165, 233, 0.15);
+    transform: scale(0.98);
+}
+
+/* ============================================ */
+/* EXPAND/COLLAPSE ICON */
+/* ============================================ */
+
+.mobile-tree-expand-icon {
+    color: #0ea5e9;
+    font-size: 10px;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    user-select: none;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: rgba(14, 165, 233, 0.1);
+}
+
+.mobile-tree-expand-icon.expanded {
+    transform: rotate(0deg);
+    background: rgba(14, 165, 233, 0.2);
+}
+
+.mobile-tree-expand-icon.mobile-tree-no-children {
+    opacity: 0;
+    background: transparent;
+    pointer-events: none;
+}
+
+/* ============================================ */
+/* EMOJI ICON */
+/* ============================================ */
+
+.mobile-tree-emoji {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+/* ============================================ */
+/* KEY (LABEL) */
+/* ============================================ */
+
+.mobile-tree-key {
+    color: #0369a1;
+    font-weight: 600;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ============================================ */
+/* VALUE TYPES */
+/* ============================================ */
+
+.mobile-tree-value {
+    color: #2d3748;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.mobile-tree-string {
+    color: #059669;
+}
+
+.mobile-tree-number {
+    color: #d97706;
+}
+
+.mobile-tree-boolean {
+    color: #7c3aed;
+    font-weight: 600;
+}
+
+.mobile-tree-null,
+.mobile-tree-undefined {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.mobile-tree-empty {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* ============================================ */
+/* TYPE/COUNT INDICATOR */
+/* ============================================ */
+
+.mobile-tree-type,
+.mobile-tree-count {
+    color: #94a3b8;
+    font-size: 11px;
+    font-style: italic;
+    margin-left: 4px;
+}
+
+/* ============================================ */
+/* LEAF NODES */
+/* ============================================ */
+
+.mobile-tree-leaf {
+    padding: 8px 12px;
+    margin: 2px 0;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+}
+
+/* ============================================ */
+/* CHILDREN CONTAINER */
+/* ============================================ */
+
+.mobile-tree-children {
+    border-left: 2px solid #e2e8f0;
+    margin-left: 22px;
+    padding-left: 4px;
+    animation: mobile-tree-expand 0.2s ease-out;
+}
+
+@keyframes mobile-tree-expand {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================ */
+/* RESPONSIVE ADJUSTMENTS */
+/* ============================================ */
+
+/* Smaller screens - tighter spacing */
+@media (max-width: 375px) {
+    .mobile-tree-container {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .mobile-tree-node-header {
+        padding: 8px 10px;
+        gap: 6px;
+    }
+
+    .mobile-tree-emoji {
+        font-size: 14px;
+    }
+
+    .mobile-tree-key {
+        font-size: 12px;
+    }
+
+    .mobile-tree-value {
+        font-size: 12px;
+        max-width: 150px;
+    }
+
+    .mobile-tree-children {
+        margin-left: 18px;
+    }
+}
+
+/* Tablet / Larger screens */
+@media (min-width: 768px) {
+    .mobile-tree-container {
+        padding: 16px;
+        font-size: 14px;
+    }
+
+    .mobile-tree-node-header {
+        padding: 12px 16px;
+        gap: 10px;
+    }
+
+    .mobile-tree-value {
+        max-width: 400px;
+    }
+
+    .mobile-tree-children {
+        margin-left: 26px;
+    }
+}
+
+/* ============================================ */
+/* DARK MODE SUPPORT */
+/* ============================================ */
+
+@media (prefers-color-scheme: dark) {
+    .mobile-tree-container {
+        background: #1e293b;
+        border-color: #334155;
+    }
+
+    .mobile-tree-node-header:hover {
+        background: rgba(14, 165, 233, 0.15);
+    }
+
+    .mobile-tree-node-header:active,
+    .mobile-tree-node-header.active {
+        background: rgba(14, 165, 233, 0.25);
+    }
+
+    .mobile-tree-expand-icon {
+        background: rgba(14, 165, 233, 0.2);
+    }
+
+    .mobile-tree-expand-icon.expanded {
+        background: rgba(14, 165, 233, 0.3);
+    }
+
+    .mobile-tree-key {
+        color: #38bdf8;
+    }
+
+    .mobile-tree-value {
+        color: #e2e8f0;
+    }
+
+    .mobile-tree-string {
+        color: #34d399;
+    }
+
+    .mobile-tree-number {
+        color: #fbbf24;
+    }
+
+    .mobile-tree-boolean {
+        color: #a78bfa;
+    }
+
+    .mobile-tree-null,
+    .mobile-tree-undefined,
+    .mobile-tree-empty {
+        color: #64748b;
+    }
+
+    .mobile-tree-children {
+        border-left-color: #475569;
+    }
+
+    .mobile-tree-container::-webkit-scrollbar-thumb {
+        background: #475569;
+    }
+}
+
+/* ============================================ */
+/* ACCESSIBILITY */
+/* ============================================ */
+
+/* Focus states for keyboard navigation */
+.mobile-tree-node-header:focus {
+    outline: 2px solid #0ea5e9;
+    outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .mobile-tree-node-header {
+        transition: none;
+    }
+
+    .mobile-tree-expand-icon {
+        transition: none;
+    }
+
+    .mobile-tree-children {
+        animation: none;
+    }
+}

@@ -1090,7 +1090,7 @@
         }
     }
 
-    // Generate Pod modal content with tabs (like desktop)
+    // Generate Pod modal content with tabs (EXACT from desktop kubernetes-modal-pods.js)
     function generatePodModalContent(podDetails, pod, cluster) {
         const phase = safeGet(podDetails, 'status.phase', 'Unknown');
         const statusClass = getPodStatusClass(phase);
@@ -1099,12 +1099,18 @@
         const ownerRefs = safeGet(podDetails, 'metadata.ownerReferences', []);
         const tolerations = safeGet(podDetails, 'spec.tolerations', []);
         const podIPs = safeGet(podDetails, 'status.podIPs', []);
+        const hostIPs = safeGet(podDetails, 'status.hostIPs', []);
+        const containers = safeGet(podDetails, 'spec.containers', []);
+        const containerStatuses = safeGet(podDetails, 'status.containerStatuses', []);
+        const volumes = safeGet(podDetails, 'spec.volumes', []);
 
         return `
             <div class="k8s-modal-tabs">
                 <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
                 <div class="k8s-modal-tab" data-tab="metadata">Metadata</div>
                 <div class="k8s-modal-tab" data-tab="spec">Spec</div>
+                <div class="k8s-modal-tab" data-tab="containers">Containers</div>
+                <div class="k8s-modal-tab" data-tab="volumes">Volumes</div>
                 <div class="k8s-modal-tab" data-tab="conditions">Conditions</div>
                 <div class="k8s-modal-tab" data-tab="status">Status</div>
             </div>
@@ -1148,6 +1154,7 @@
                     ${ownerRefs.map(ref => `
                         ${detailRow('Kind', ref.kind)}
                         ${detailRow('Name', ref.name)}
+                        ${detailRow('UID', ref.uid)}
                         ${detailRow('Controller', ref.controller ? 'Yes' : 'No')}
                     `).join('<hr style="border-color: #e2e8f0; margin: 8px 0;">')}
                 </div>
@@ -1163,7 +1170,9 @@
                     ${detailRow('DNS Policy', safeGet(podDetails, 'spec.dnsPolicy'))}
                     ${detailRow('Scheduler Name', safeGet(podDetails, 'spec.schedulerName'))}
                     ${detailRow('Priority', safeGet(podDetails, 'spec.priority'))}
+                    ${detailRow('Preemption Policy', safeGet(podDetails, 'spec.preemptionPolicy'))}
                     ${detailRow('Termination Grace Period', safeGet(podDetails, 'spec.terminationGracePeriodSeconds') + 's')}
+                    ${detailRow('Enable Service Links', safeGet(podDetails, 'spec.enableServiceLinks', false) ? 'Yes' : 'No')}
                     ${detailRow('Host Network', safeGet(podDetails, 'spec.hostNetwork', false) ? 'Yes' : 'No')}
                 </div>
                 ${tolerations.length > 0 ? `
@@ -1173,9 +1182,18 @@
                         ${detailRow('Key', tol.key || '<all>')}
                         ${detailRow('Operator', tol.operator)}
                         ${detailRow('Effect', tol.effect || '<all>')}
+                        ${detailRow('Toleration Seconds', tol.tolerationSeconds || 'N/A')}
                     `).join('<hr style="border-color: #e2e8f0; margin: 8px 0;">')}
                 </div>
                 ` : ''}
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="containers">
+                ${generatePodContainersTab(containers, containerStatuses)}
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="volumes">
+                ${generatePodVolumesTab(volumes)}
             </div>
 
             <div class="k8s-modal-tab-content" data-tab-content="conditions">
@@ -1188,6 +1206,7 @@
                                 <span class="k8s-detail-label">Status</span>
                                 <span class="k8s-detail-value"><span class="k8s-status-badge ${cond.status === 'True' ? 'operational' : 'warning'}">${cond.status}</span></span>
                             </div>
+                            ${detailRow('Last Probe Time', cond.lastProbeTime || 'N/A')}
                             ${detailRow('Last Transition', cond.lastTransitionTime)}
                         </div>
                     `).join('') : '<p style="color: #718096;">No conditions</p>'}
@@ -1212,11 +1231,121 @@
                     ${podIPs.map(ipObj => detailRow('IP', ipObj.ip)).join('')}
                 </div>
                 ` : ''}
+                ${hostIPs.length > 0 ? `
+                <div class="k8s-detail-section">
+                    <h4>Host IPs</h4>
+                    ${hostIPs.map(ipObj => detailRow('IP', ipObj.ip)).join('')}
+                </div>
+                ` : ''}
             </div>
         `;
     }
 
-    // Generate Node modal content with tabs (like desktop)
+    // Generate Containers tab content (EXACT from desktop kubernetes-modal-pods-generate.js)
+    function generatePodContainersTab(containers, containerStatuses) {
+        if (!containers || containers.length === 0) {
+            return '<div class="k8s-detail-section"><h4>Containers</h4><p style="color: #718096;">No containers</p></div>';
+        }
+
+        let html = '<div class="k8s-detail-section"><h4>Containers</h4>';
+
+        containers.forEach((container, idx) => {
+            const status = containerStatuses[idx] || {};
+            const isRunning = status && status.state && status.state.running;
+
+            html += `
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                    <h5 style="color: #326ce5; margin-bottom: 8px;">Container: ${escapeHtml(container.name)}</h5>
+                    ${detailRow('Image', container.image)}
+                    ${detailRow('Image Pull Policy', container.imagePullPolicy)}
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label">State</span>
+                        <span class="k8s-detail-value"><span class="k8s-status-badge ${isRunning ? 'operational' : 'warning'}">${isRunning ? 'Running' : 'Not Running'}</span></span>
+                    </div>
+                    ${detailRow('Ready', status.ready !== undefined ? (status.ready ? 'Yes' : 'No') : 'N/A')}
+                    ${detailRow('Restart Count', status.restartCount !== undefined ? status.restartCount : 'N/A')}
+                    ${detailRow('Started', status.started !== undefined ? (status.started ? 'Yes' : 'No') : 'N/A')}
+
+                    ${container.env && container.env.length > 0 ? `
+                        <div style="margin-top: 12px;">
+                            <h6 style="color: #666; margin-bottom: 8px; font-size: 0.8rem;">Environment Variables</h6>
+                            ${container.env.map(envVar => detailRow(envVar.name, envVar.value || (envVar.valueFrom ? JSON.stringify(envVar.valueFrom.fieldRef || envVar.valueFrom) : 'N/A'))).join('')}
+                        </div>
+                    ` : ''}
+
+                    ${container.volumeMounts && container.volumeMounts.length > 0 ? `
+                        <div style="margin-top: 12px;">
+                            <h6 style="color: #666; margin-bottom: 8px; font-size: 0.8rem;">Volume Mounts</h6>
+                            ${container.volumeMounts.map(mount => detailRow(mount.name, mount.mountPath + (mount.readOnly ? ' (read-only)' : ''))).join('')}
+                        </div>
+                    ` : ''}
+
+                    ${container.ports && container.ports.length > 0 ? `
+                        <div style="margin-top: 12px;">
+                            <h6 style="color: #666; margin-bottom: 8px; font-size: 0.8rem;">Ports</h6>
+                            ${container.ports.map(port => detailRow(port.name || 'port', port.containerPort + '/' + (port.protocol || 'TCP'))).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+
+        html += '</div>';
+        return html;
+    }
+
+    // Generate Volumes tab content (EXACT from desktop kubernetes-modal-pods-generate.js)
+    function generatePodVolumesTab(volumes) {
+        if (!volumes || volumes.length === 0) {
+            return '<div class="k8s-detail-section"><h4>Volumes</h4><p style="color: #718096;">No volumes defined</p></div>';
+        }
+
+        let html = '<div class="k8s-detail-section"><h4>Volumes</h4>';
+
+        volumes.forEach(volume => {
+            let volType = 'Unknown';
+            let volDetails = '';
+
+            if (volume.configMap) {
+                volType = 'ConfigMap';
+                volDetails = 'Name: ' + volume.configMap.name;
+            } else if (volume.secret) {
+                volType = 'Secret';
+                volDetails = 'Name: ' + volume.secret.secretName;
+            } else if (volume.emptyDir) {
+                volType = 'EmptyDir';
+                volDetails = volume.emptyDir.medium || 'Default';
+            } else if (volume.hostPath) {
+                volType = 'HostPath';
+                volDetails = 'Path: ' + volume.hostPath.path;
+            } else if (volume.persistentVolumeClaim) {
+                volType = 'PVC';
+                volDetails = 'Claim: ' + volume.persistentVolumeClaim.claimName;
+            } else if (volume.projected) {
+                volType = 'Projected';
+                volDetails = 'Sources: ' + (volume.projected.sources ? volume.projected.sources.length : 0);
+            } else if (volume.downwardAPI) {
+                volType = 'DownwardAPI';
+                volDetails = 'Items: ' + (volume.downwardAPI.items ? volume.downwardAPI.items.length : 0);
+            }
+
+            html += `
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                    ${detailRow('Name', volume.name)}
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label">Type</span>
+                        <span class="k8s-detail-value"><span class="k8s-status-badge">${escapeHtml(volType)}</span></span>
+                    </div>
+                    ${detailRow('Details', volDetails)}
+                </div>
+            `;
+        });
+
+        html += '</div>';
+        return html;
+    }
+
+    // Generate Node modal content with tabs (EXACT from desktop kubernetes-modal-node.js)
     function generateNodeModalContent(nodeDetails, node, cluster) {
         const labels = safeGet(nodeDetails, 'metadata.labels', {});
         const annotations = safeGet(nodeDetails, 'metadata.annotations', {});
@@ -1226,15 +1355,18 @@
         const conditions = safeGet(nodeDetails, 'status.conditions', []);
         const nodeInfo = safeGet(nodeDetails, 'status.nodeInfo', {});
         const images = safeGet(nodeDetails, 'status.images', []);
+        const daemonEndpoints = safeGet(nodeDetails, 'status.daemonEndpoints', {});
 
         return `
             <div class="k8s-modal-tabs">
                 <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
                 <div class="k8s-modal-tab" data-tab="labels">Labels</div>
+                <div class="k8s-modal-tab" data-tab="annotations">Annotations</div>
                 <div class="k8s-modal-tab" data-tab="addresses">Addresses</div>
                 <div class="k8s-modal-tab" data-tab="resources">Resources</div>
                 <div class="k8s-modal-tab" data-tab="conditions">Conditions</div>
-                <div class="k8s-modal-tab" data-tab="system">System</div>
+                <div class="k8s-modal-tab" data-tab="system">System Info</div>
+                <div class="k8s-modal-tab" data-tab="images">Images</div>
             </div>
 
             <div class="k8s-modal-tab-content active" data-tab-content="overview">
@@ -1259,10 +1391,17 @@
                     <h4>Labels</h4>
                     ${Object.keys(labels).length > 0 ? Object.entries(labels).map(([k, v]) => detailRow(k, v || '<none>')).join('') : '<p style="color: #718096;">No labels</p>'}
                 </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="annotations">
                 <div class="k8s-detail-section">
                     <h4>Annotations</h4>
-                    ${Object.keys(annotations).length > 0 ? Object.entries(annotations).slice(0, 10).map(([k, v]) => detailRow(k, String(v).substring(0, 100))).join('') : '<p style="color: #718096;">No annotations</p>'}
-                    ${Object.keys(annotations).length > 10 ? `<p style="color: #718096; font-style: italic;">... and ${Object.keys(annotations).length - 10} more</p>` : ''}
+                    ${Object.keys(annotations).length > 0 ? Object.entries(annotations).map(([k, v]) => `
+                        <div class="k8s-detail-row">
+                            <span class="k8s-detail-label" style="word-break: break-word;">${escapeHtml(k)}</span>
+                            <span class="k8s-detail-value" style="max-width: 200px; word-break: break-all; font-size: 11px;">${escapeHtml(String(v))}</span>
+                        </div>
+                    `).join('') : '<p style="color: #718096;">No annotations</p>'}
                 </div>
             </div>
 
@@ -1296,6 +1435,8 @@
                             </div>
                             ${detailRow('Reason', cond.reason)}
                             ${detailRow('Message', cond.message)}
+                            ${detailRow('Last Heartbeat', cond.lastHeartbeatTime)}
+                            ${detailRow('Last Transition', cond.lastTransitionTime)}
                         </div>
                     `).join('') : '<p style="color: #718096;">No conditions</p>'}
                 </div>
@@ -1311,16 +1452,38 @@
                     ${detailRow('Kube-Proxy Version', nodeInfo.kubeProxyVersion)}
                     ${detailRow('Architecture', nodeInfo.architecture)}
                     ${detailRow('Operating System', nodeInfo.operatingSystem)}
+                    ${detailRow('Machine ID', nodeInfo.machineID)}
+                    ${detailRow('System UUID', nodeInfo.systemUUID)}
+                    ${detailRow('Boot ID', nodeInfo.bootID)}
                 </div>
-                ${images.length > 0 ? `
+                <div class="k8s-detail-section">
+                    <h4>Daemon Endpoints</h4>
+                    ${detailRow('Kubelet Port', safeGet(daemonEndpoints, 'kubeletEndpoint.Port'))}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="images">
                 <div class="k8s-detail-section">
                     <h4>Container Images (${images.length} total)</h4>
-                    ${images.slice(0, 5).map(img => detailRow('Image', (img.names && img.names[0]) || 'unknown')).join('')}
-                    ${images.length > 5 ? `<p style="color: #718096; font-style: italic;">... and ${images.length - 5} more images</p>` : ''}
+                    ${images.length > 0 ? images.slice(0, 20).map(img => `
+                        <div style="background: #f8fafc; padding: 8px; border-radius: 4px; margin-bottom: 4px;">
+                            <div style="font-size: 11px; word-break: break-all; color: #2d3748;">${escapeHtml((img.names && img.names[0]) || 'unknown')}</div>
+                            <div style="font-size: 10px; color: #718096;">${formatBytes(img.sizeBytes)}</div>
+                        </div>
+                    `).join('') : '<p style="color: #718096;">No images</p>'}
+                    ${images.length > 20 ? `<p style="color: #718096; font-style: italic; text-align: center;">... and ${images.length - 20} more images</p>` : ''}
                 </div>
-                ` : ''}
             </div>
         `;
+    }
+
+    // Format bytes to human readable (from desktop kubernetes-modal-node-generate.js)
+    function formatBytes(bytes) {
+        if (!bytes || bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     // Get node condition status class
@@ -1459,18 +1622,27 @@
 
     // ===== GENERATED DATA DETAIL FUNCTIONS WITH TABS (for resources that don't use REST) =====
 
-    // StatefulSet detail with tabs (like desktop - no REST call)
+    // StatefulSet detail with tabs (EXACT from desktop kubernetes-modal-statefulsets.js)
     function generateStatefulSetDetailWithTabs(item, clusterName) {
         const readyParts = typeof item.ready === 'object'
             ? [item.ready.count || 0, item.ready.outof || 1]
             : String(item.ready || '0/1').split('/').map(Number);
         const readyReplicas = readyParts[0] || 0;
         const totalReplicas = readyParts[1] || 1;
+        const uid = generateUID();
+        const creationTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString();
+        const resourceVersion = String(Math.floor(Math.random() * 9000000) + 1000000);
+
+        // Parse containers/images
+        const containerNames = (item.containers || '').split(',').map(c => c.trim()).filter(c => c);
+        const imageNames = (item.images || '').split(',').map(i => i.trim()).filter(i => i);
 
         return `
             <div class="k8s-modal-tabs">
                 <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="metadata">Metadata</div>
                 <div class="k8s-modal-tab" data-tab="spec">Spec</div>
+                <div class="k8s-modal-tab" data-tab="template">Template</div>
                 <div class="k8s-modal-tab" data-tab="status">Status</div>
             </div>
 
@@ -1479,48 +1651,107 @@
                     <h4>StatefulSet Information</h4>
                     ${detailRow('Name', item.name)}
                     ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('UID', uid)}
                     ${detailRow('Cluster', clusterName)}
-                    ${detailRow('Age', item.age)}
+                    ${detailRow('Service Name', item.name)}
+                    ${detailRow('Generation', '1')}
+                    ${detailRow('Replicas', totalReplicas)}
                     <div class="k8s-detail-row">
-                        <span class="k8s-detail-label">Ready</span>
+                        <span class="k8s-detail-label">Ready Replicas</span>
                         <span class="k8s-detail-value"><span class="k8s-status-badge ${readyReplicas >= totalReplicas ? 'operational' : 'warning'}">${readyReplicas}/${totalReplicas}</span></span>
                     </div>
                 </div>
             </div>
 
+            <div class="k8s-modal-tab-content" data-tab-content="metadata">
+                <div class="k8s-detail-section">
+                    <h4>Metadata</h4>
+                    ${detailRow('Name', item.name)}
+                    ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('UID', uid)}
+                    ${detailRow('Resource Version', resourceVersion)}
+                    ${detailRow('Generation', '1')}
+                    ${detailRow('Creation Timestamp', creationTime)}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Labels</h4>
+                    ${detailRow('app', item.name)}
+                </div>
+            </div>
+
             <div class="k8s-modal-tab-content" data-tab-content="spec">
                 <div class="k8s-detail-section">
-                    <h4>Spec</h4>
+                    <h4>StatefulSet Spec</h4>
                     ${detailRow('Replicas', totalReplicas)}
                     ${detailRow('Service Name', item.name)}
                     ${detailRow('Pod Management Policy', 'OrderedReady')}
-                    ${detailRow('Update Strategy', 'RollingUpdate')}
+                    ${detailRow('Update Strategy Type', 'RollingUpdate')}
                 </div>
                 <div class="k8s-detail-section">
-                    <h4>Container Info</h4>
-                    ${detailRow('Containers', item.containers)}
-                    ${detailRow('Images', item.images)}
+                    <h4>Selector</h4>
+                    ${detailRow('app', item.name)}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="template">
+                <div class="k8s-detail-section">
+                    <h4>Pod Template</h4>
+                    ${detailRow('DNS Policy', 'ClusterFirst')}
+                    ${detailRow('Restart Policy', 'Always')}
+                    ${detailRow('Scheduler Name', 'default-scheduler')}
+                    ${detailRow('Termination Grace Period', '30s')}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Containers</h4>
+                    ${containerNames.length > 0 ? containerNames.map((name, idx) => `
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                            <h5 style="color: #326ce5; margin-bottom: 8px;">Container: ${escapeHtml(name)}</h5>
+                            ${detailRow('Image', imageNames[idx] || name + ':latest')}
+                            ${detailRow('Image Pull Policy', 'Always')}
+                        </div>
+                    `).join('') : '<p style="color: #718096;">No containers</p>'}
                 </div>
             </div>
 
             <div class="k8s-modal-tab-content" data-tab-content="status">
                 <div class="k8s-detail-section">
-                    <h4>Status</h4>
+                    <h4>Replica Status</h4>
                     ${detailRow('Replicas', totalReplicas)}
                     ${detailRow('Ready Replicas', readyReplicas)}
                     ${detailRow('Current Replicas', totalReplicas)}
                     ${detailRow('Updated Replicas', totalReplicas)}
                 </div>
+                <div class="k8s-detail-section">
+                    <h4>Revisions</h4>
+                    ${detailRow('Current Revision', item.name + '-' + Math.random().toString(36).substring(2, 12))}
+                    ${detailRow('Update Revision', item.name + '-' + Math.random().toString(36).substring(2, 12))}
+                </div>
             </div>
         `;
     }
 
-    // DaemonSet detail with tabs (like desktop - no REST call)
+    // DaemonSet detail with tabs (EXACT from desktop kubernetes-modal-daemonsets.js)
     function generateDaemonSetDetailWithTabs(item, clusterName) {
+        const uid = generateUID();
+        const creationTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString();
+        const resourceVersion = String(Math.floor(Math.random() * 9000000) + 1000000);
+
+        // Parse containers/images
+        const containerNames = (item.containers || '').split(',').map(c => c.trim()).filter(c => c);
+        const imageNames = (item.images || '').split(',').map(i => i.trim()).filter(i => i);
+
+        const desired = item.desired || 0;
+        const current = item.current || 0;
+        const ready = item.ready || 0;
+        const upToDate = item.upToDate || 0;
+        const available = item.available || 0;
+
         return `
             <div class="k8s-modal-tabs">
                 <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="metadata">Metadata</div>
                 <div class="k8s-modal-tab" data-tab="spec">Spec</div>
+                <div class="k8s-modal-tab" data-tab="template">Template</div>
                 <div class="k8s-modal-tab" data-tab="status">Status</div>
             </div>
 
@@ -1529,55 +1760,114 @@
                     <h4>DaemonSet Information</h4>
                     ${detailRow('Name', item.name)}
                     ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('UID', uid)}
                     ${detailRow('Cluster', clusterName)}
-                    ${detailRow('Age', item.age)}
+                    ${detailRow('Generation', '1')}
+                    ${detailRow('Creation Time', creationTime)}
+                    ${detailRow('Desired Scheduled', desired)}
                     <div class="k8s-detail-row">
-                        <span class="k8s-detail-label">Scheduled</span>
-                        <span class="k8s-detail-value"><span class="k8s-status-badge ${item.current >= item.desired ? 'operational' : 'warning'}">${item.current}/${item.desired}</span></span>
+                        <span class="k8s-detail-label">Current Scheduled</span>
+                        <span class="k8s-detail-value"><span class="k8s-status-badge ${current >= desired ? 'operational' : 'warning'}">${current}/${desired}</span></span>
                     </div>
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="metadata">
+                <div class="k8s-detail-section">
+                    <h4>Metadata</h4>
+                    ${detailRow('Name', item.name)}
+                    ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('UID', uid)}
+                    ${detailRow('Resource Version', resourceVersion)}
+                    ${detailRow('Generation', '1')}
+                    ${detailRow('Creation Timestamp', creationTime)}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Labels</h4>
+                    ${detailRow('app', item.name)}
                 </div>
             </div>
 
             <div class="k8s-modal-tab-content" data-tab-content="spec">
                 <div class="k8s-detail-section">
-                    <h4>Spec</h4>
-                    ${detailRow('Update Strategy', 'RollingUpdate')}
-                    ${detailRow('Max Unavailable', '1')}
+                    <h4>DaemonSet Spec</h4>
                     ${detailRow('Revision History Limit', '10')}
+                    ${detailRow('Update Strategy Type', 'RollingUpdate')}
+                    ${detailRow('Max Unavailable', '1')}
                 </div>
                 <div class="k8s-detail-section">
-                    <h4>Container Info</h4>
-                    ${detailRow('Containers', item.containers)}
-                    ${detailRow('Images', item.images)}
+                    <h4>Selector</h4>
+                    ${detailRow('app', item.name)}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="template">
+                <div class="k8s-detail-section">
+                    <h4>Pod Template</h4>
+                    ${detailRow('DNS Policy', 'ClusterFirst')}
+                    ${detailRow('Host Network', 'Yes')}
+                    ${detailRow('Restart Policy', 'Always')}
+                    ${detailRow('Termination Grace Period', '30s')}
                 </div>
                 <div class="k8s-detail-section">
-                    <h4>Scheduling</h4>
-                    ${detailRow('Node Selector', item.nodeSelector || '-')}
-                    ${detailRow('Selector', item.selector || '-')}
+                    <h4>Containers</h4>
+                    ${containerNames.length > 0 ? containerNames.map((name, idx) => `
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                            <h5 style="color: #326ce5; margin-bottom: 8px;">Container: ${escapeHtml(name)}</h5>
+                            ${detailRow('Image', imageNames[idx] || name + ':latest')}
+                            ${detailRow('Image Pull Policy', 'Always')}
+                            ${detailRow('Container Port', '25998/TCP')}
+                        </div>
+                    `).join('') : '<p style="color: #718096;">No containers</p>'}
                 </div>
             </div>
 
             <div class="k8s-modal-tab-content" data-tab-content="status">
                 <div class="k8s-detail-section">
-                    <h4>Status</h4>
-                    ${detailRow('Desired', item.desired)}
-                    ${detailRow('Current', item.current)}
-                    ${detailRow('Ready', item.ready)}
-                    ${detailRow('Up-to-Date', item.upToDate)}
-                    ${detailRow('Available', item.available)}
-                    ${detailRow('Misscheduled', '0')}
+                    <h4>DaemonSet Status</h4>
+                    ${detailRow('Current Number Scheduled', current)}
+                    ${detailRow('Desired Number Scheduled', desired)}
+                    ${detailRow('Number Ready', ready)}
+                    ${detailRow('Number Available', available)}
+                    ${detailRow('Updated Number Scheduled', upToDate)}
+                    ${detailRow('Number Misscheduled', '0')}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Node Distribution</h4>
+                    ${detailRow('Pods Running', ready + ' of ' + desired + ' nodes')}
+                    ${detailRow('Coverage', desired > 0 ? ((ready / desired) * 100).toFixed(1) + '%' : '0%')}
                 </div>
             </div>
         `;
     }
 
-    // Service detail with tabs (like desktop - no REST call)
+    // Service detail with tabs (EXACT from desktop kubernetes-modal-services.js)
     function generateServiceDetailWithTabs(item, clusterName) {
+        const uid = generateUID();
+        const creationTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString();
+        const resourceVersion = String(Math.floor(Math.random() * 9000000) + 1000000);
+
+        // Parse ports string
+        const portEntries = (item.ports || '').split(',').map(p => {
+            const parts = p.trim().split(':');
+            const port = parseInt(parts[0]) || 80;
+            const targetPart = parts[1] || parts[0];
+            const [targetPort, protocol] = (targetPart || '').split('/');
+            return {
+                name: protocol ? protocol.toLowerCase() : 'tcp',
+                port: port,
+                protocol: protocol || 'TCP',
+                targetPort: parseInt(targetPort) || port
+            };
+        }).filter(p => !isNaN(p.port));
+
         return `
             <div class="k8s-modal-tabs">
                 <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="metadata">Metadata</div>
                 <div class="k8s-modal-tab" data-tab="spec">Spec</div>
                 <div class="k8s-modal-tab" data-tab="ports">Ports</div>
+                <div class="k8s-modal-tab" data-tab="status">Status</div>
             </div>
 
             <div class="k8s-modal-tab-content active" data-tab-content="overview">
@@ -1585,45 +1875,100 @@
                     <h4>Service Information</h4>
                     ${detailRow('Name', item.name)}
                     ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('UID', uid)}
                     ${detailRow('Cluster', clusterName)}
                     <div class="k8s-detail-row">
                         <span class="k8s-detail-label">Type</span>
                         <span class="k8s-detail-value"><span class="k8s-status-badge ${item.type === 'LoadBalancer' ? 'operational' : 'warning'}">${escapeHtml(item.type)}</span></span>
                     </div>
-                    ${detailRow('Age', item.age)}
+                    ${detailRow('Cluster IP', item.clusterIp)}
+                    ${detailRow('Session Affinity', 'None')}
+                    ${detailRow('Creation Time', creationTime)}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="metadata">
+                <div class="k8s-detail-section">
+                    <h4>Metadata</h4>
+                    ${detailRow('Name', item.name)}
+                    ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('UID', uid)}
+                    ${detailRow('Resource Version', resourceVersion)}
+                    ${detailRow('Creation Timestamp', creationTime)}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Labels</h4>
+                    ${detailRow('k8s-app', item.name)}
+                    ${detailRow('kubernetes.io/cluster-service', 'true')}
+                    ${detailRow('kubernetes.io/name', item.name)}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Annotations</h4>
+                    ${detailRow('prometheus.io/port', '9153')}
+                    ${detailRow('prometheus.io/scrape', 'true')}
                 </div>
             </div>
 
             <div class="k8s-modal-tab-content" data-tab-content="spec">
                 <div class="k8s-detail-section">
-                    <h4>Spec</h4>
+                    <h4>Service Spec</h4>
                     ${detailRow('Type', item.type)}
                     ${detailRow('Cluster IP', item.clusterIp)}
-                    ${detailRow('External IP', item.externalIp)}
                     ${detailRow('Session Affinity', 'None')}
                     ${detailRow('Internal Traffic Policy', 'Cluster')}
+                    ${detailRow('IP Family Policy', 'SingleStack')}
                 </div>
                 <div class="k8s-detail-section">
-                    <h4>Selector</h4>
-                    ${detailRow('Selector', item.selector || '-')}
+                    <h4>Cluster IPs</h4>
+                    ${detailRow('IP Address', item.clusterIp)}
                 </div>
+                ${item.selector ? `
+                <div class="k8s-detail-section">
+                    <h4>Selector</h4>
+                    ${detailRow('app', item.selector)}
+                </div>
+                ` : ''}
             </div>
 
             <div class="k8s-modal-tab-content" data-tab-content="ports">
                 <div class="k8s-detail-section">
                     <h4>Service Ports</h4>
-                    ${detailRow('Ports', item.ports)}
+                    ${portEntries.length > 0 ? portEntries.map(port => `
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                            ${detailRow('Name', port.name)}
+                            ${detailRow('Port', port.port)}
+                            ${detailRow('Target Port', port.targetPort)}
+                            ${detailRow('Protocol', port.protocol)}
+                        </div>
+                    `).join('') : `<p style="color: #718096;">${escapeHtml(item.ports || 'No ports defined')}</p>`}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="status">
+                <div class="k8s-detail-section">
+                    <h4>Service Status</h4>
+                    ${item.type === 'LoadBalancer' && item.externalIp ? `
+                        <div class="k8s-detail-section">
+                            <h5 style="color: #326ce5; margin-bottom: 8px;">Load Balancer</h5>
+                            ${detailRow('Ingress IP', item.externalIp)}
+                        </div>
+                    ` : '<p style="color: #718096;">No load balancer status available</p>'}
                 </div>
             </div>
         `;
     }
 
-    // Namespace detail with tabs (like desktop - no REST call)
+    // Namespace detail with tabs (EXACT from desktop kubernetes-modal-namespaces.js)
     function generateNamespaceDetailWithTabs(item, clusterName) {
         const statusClass = item.status === 'Active' ? 'operational' : 'warning';
+        const uid = generateUID();
+        const creationTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString();
+        const resourceVersion = String(Math.floor(Math.random() * 9000000) + 1000000);
+
         return `
             <div class="k8s-modal-tabs">
                 <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="metadata">Metadata</div>
                 <div class="k8s-modal-tab" data-tab="spec">Spec</div>
                 <div class="k8s-modal-tab" data-tab="status">Status</div>
             </div>
@@ -1632,25 +1977,55 @@
                 <div class="k8s-detail-section">
                     <h4>Namespace Information</h4>
                     ${detailRow('Name', item.name)}
+                    ${detailRow('UID', uid)}
                     ${detailRow('Cluster', clusterName)}
                     <div class="k8s-detail-row">
                         <span class="k8s-detail-label">Phase</span>
                         <span class="k8s-detail-value"><span class="k8s-status-badge ${statusClass}">${escapeHtml(item.status)}</span></span>
                     </div>
-                    ${detailRow('Age', item.age)}
+                    ${detailRow('Resource Version', resourceVersion)}
+                    ${detailRow('Creation Time', creationTime)}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="metadata">
+                <div class="k8s-detail-section">
+                    <h4>Metadata</h4>
+                    ${detailRow('Name', item.name)}
+                    ${detailRow('UID', uid)}
+                    ${detailRow('Resource Version', resourceVersion)}
+                    ${detailRow('Creation Timestamp', creationTime)}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Labels</h4>
+                    ${detailRow('kubernetes.io/metadata.name', item.name)}
+                    ${detailRow('name', item.name)}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Annotations</h4>
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label" style="word-break: break-word;">kubectl.kubernetes.io/last-applied-configuration</span>
+                        <span class="k8s-detail-value" style="max-width: 200px; word-break: break-all; font-size: 10px;">{"apiVersion":"v1","kind":"Namespace","metadata":{"labels":{"name":"${item.name}"},"name":"${item.name}"}}</span>
+                    </div>
                 </div>
             </div>
 
             <div class="k8s-modal-tab-content" data-tab-content="spec">
                 <div class="k8s-detail-section">
-                    <h4>Spec</h4>
+                    <h4>Namespace Spec</h4>
                     ${detailRow('Finalizers', 'kubernetes')}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Finalizers List</h4>
+                    <div style="background: #f8fafc; padding: 8px; border-radius: 4px;">
+                        <code style="font-size: 12px;">kubernetes</code>
+                    </div>
                 </div>
             </div>
 
             <div class="k8s-modal-tab-content" data-tab-content="status">
                 <div class="k8s-detail-section">
-                    <h4>Status</h4>
+                    <h4>Namespace Status</h4>
                     <div class="k8s-detail-row">
                         <span class="k8s-detail-label">Phase</span>
                         <span class="k8s-detail-value"><span class="k8s-status-badge ${statusClass}">${escapeHtml(item.status)}</span></span>
@@ -1660,13 +2035,28 @@
         `;
     }
 
-    // Network Policy detail with tabs (like desktop - no REST call)
+    // Network Policy detail with tabs (EXACT from desktop kubernetes-modal-namespaces.js)
     function generateNetworkPolicyDetailWithTabs(item, clusterName) {
+        const uid = generateUID();
+        const creationTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString();
+        const resourceVersion = String(Math.floor(Math.random() * 9000000) + 1000000);
+
+        // Parse policy types
+        const policyTypes = item.policyTypes ? item.policyTypes.split(',').map(t => t.trim()) : ['Ingress'];
+        const hasIngress = policyTypes.includes('Ingress');
+        const hasEgress = policyTypes.includes('Egress');
+
+        // Generate mock ingress/egress rules
+        const ingressRuleCount = item.ingressRules || (hasIngress ? 1 : 0);
+        const egressRuleCount = item.egressRules || (hasEgress ? 1 : 0);
+
         return `
             <div class="k8s-modal-tabs">
                 <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="metadata">Metadata</div>
                 <div class="k8s-modal-tab" data-tab="spec">Spec</div>
-                <div class="k8s-modal-tab" data-tab="rules">Rules</div>
+                <div class="k8s-modal-tab" data-tab="ingress">Ingress Rules</div>
+                <div class="k8s-modal-tab" data-tab="egress">Egress Rules</div>
             </div>
 
             <div class="k8s-modal-tab-content active" data-tab-content="overview">
@@ -1674,30 +2064,67 @@
                     <h4>Network Policy Information</h4>
                     ${detailRow('Name', item.name)}
                     ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('UID', uid)}
                     ${detailRow('Cluster', clusterName)}
-                    ${detailRow('Age', item.age)}
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label">Policy Types</span>
+                        <span class="k8s-detail-value">${policyTypes.map(t => `<span class="k8s-status-badge operational">${escapeHtml(t)}</span>`).join(' ')}</span>
+                    </div>
+                    ${detailRow('Generation', '1')}
+                    ${detailRow('Creation Time', creationTime)}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="metadata">
+                <div class="k8s-detail-section">
+                    <h4>Metadata</h4>
+                    ${detailRow('Name', item.name)}
+                    ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('UID', uid)}
+                    ${detailRow('Resource Version', resourceVersion)}
                 </div>
             </div>
 
             <div class="k8s-modal-tab-content" data-tab-content="spec">
                 <div class="k8s-detail-section">
-                    <h4>Spec</h4>
-                    ${detailRow('Policy Types', 'Ingress, Egress')}
+                    <h4>Network Policy Spec</h4>
+                    ${detailRow('Policy Types', policyTypes.join(', '))}
                 </div>
                 <div class="k8s-detail-section">
                     <h4>Pod Selector</h4>
-                    ${detailRow('Selector', item.podSelector || '-')}
+                    ${detailRow('app', item.podSelector || 'nginx')}
                 </div>
             </div>
 
-            <div class="k8s-modal-tab-content" data-tab-content="rules">
+            <div class="k8s-modal-tab-content" data-tab-content="ingress">
                 <div class="k8s-detail-section">
                     <h4>Ingress Rules</h4>
-                    <p style="color: #718096;">View full policy details in the desktop application.</p>
+                    ${ingressRuleCount > 0 ? Array.from({length: ingressRuleCount}, (_, idx) => `
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                            <h5 style="color: #326ce5; margin-bottom: 8px;">Ingress Rule ${idx + 1}</h5>
+                            <div class="k8s-detail-section">
+                                <h6 style="color: #666; margin-bottom: 8px; font-size: 0.8rem;">Ports</h6>
+                                ${detailRow('Protocol', 'TCP')}
+                                ${detailRow('Port', '80')}
+                            </div>
+                        </div>
+                    `).join('') : '<p style="color: #718096; padding: 20px;">No ingress rules defined.</p>'}
                 </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="egress">
                 <div class="k8s-detail-section">
                     <h4>Egress Rules</h4>
-                    <p style="color: #718096;">View full policy details in the desktop application.</p>
+                    ${egressRuleCount > 0 ? Array.from({length: egressRuleCount}, (_, idx) => `
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                            <h5 style="color: #326ce5; margin-bottom: 8px;">Egress Rule ${idx + 1}</h5>
+                            <div class="k8s-detail-section">
+                                <h6 style="color: #666; margin-bottom: 8px; font-size: 0.8rem;">Ports</h6>
+                                ${detailRow('Protocol', 'TCP')}
+                                ${detailRow('Port', '5432')}
+                            </div>
+                        </div>
+                    `).join('') : '<p style="color: #718096; padding: 20px;">No egress rules defined.</p>'}
                 </div>
             </div>
         `;

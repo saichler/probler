@@ -67,8 +67,8 @@ function setupEventListeners() {
 function checkExistingSession() {
     const token = sessionStorage.getItem('bearerToken');
     if (token && LOGIN_CONFIG.redirectUrl) {
-        // Redirect if token exists
-        window.location.href = LOGIN_CONFIG.redirectUrl;
+        // Redirect if token exists - use mobile detection
+        window.location.href = getRedirectUrl();
         return;
     }
 
@@ -155,6 +155,49 @@ async function authenticate(username, password) {
     return { success: true, token: data.token };
 }
 
+// Detect if device is mobile
+function isMobileDevice() {
+    // Check for mobile user agent
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    if (mobileRegex.test(navigator.userAgent)) {
+        return true;
+    }
+
+    // Also check screen width as a fallback
+    if (window.innerWidth <= 768) {
+        return true;
+    }
+
+    // Check for touch capability combined with small screen
+    if ('ontouchstart' in window && window.innerWidth <= 1024) {
+        return true;
+    }
+
+    return false;
+}
+
+// Get appropriate redirect URL based on device type
+function getRedirectUrl() {
+    const baseRedirectUrl = LOGIN_CONFIG.redirectUrl || '../app.html';
+
+    // If already pointing to mobile, use as-is
+    if (baseRedirectUrl.includes('/m/')) {
+        return baseRedirectUrl;
+    }
+
+    // If mobile device, redirect to mobile app
+    if (isMobileDevice()) {
+        // Convert ../app.html to ../m/app.html
+        if (baseRedirectUrl.endsWith('app.html')) {
+            return baseRedirectUrl.replace('app.html', 'm/app.html');
+        }
+        // Fallback for other patterns
+        return '../m/app.html';
+    }
+
+    return baseRedirectUrl;
+}
+
 // Handle successful login
 function handleLoginSuccess(result, username, rememberMe) {
     // Store bearer token in sessionStorage (cleared when tab is closed)
@@ -177,10 +220,10 @@ function handleLoginSuccess(result, username, rememberMe) {
 
     showToast('Login successful!', 'success');
 
-    // Redirect or callback
+    // Redirect or callback - detect mobile and redirect appropriately
     if (LOGIN_CONFIG.redirectUrl) {
         setTimeout(() => {
-            window.location.href = LOGIN_CONFIG.redirectUrl;
+            window.location.href = getRedirectUrl();
         }, 500);
     } else if (typeof onLoginSuccess === 'function') {
         onLoginSuccess(result.token, username);
