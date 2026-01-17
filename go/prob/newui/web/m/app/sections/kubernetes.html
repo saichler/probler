@@ -1,10 +1,12 @@
-<!-- Mobile Kubernetes Section - Placeholder -->
+<!-- Mobile Kubernetes Section -->
 <style>
-    .mobile-section {
+    .mobile-k8s-section {
         padding: var(--spacing-sm);
+        padding-bottom: 80px;
     }
 
-    .section-header {
+    /* Section Header */
+    .k8s-section-header {
         background: linear-gradient(135deg, #326ce5 0%, #1d4ed8 100%);
         color: white;
         padding: var(--spacing-lg) var(--spacing-sm);
@@ -13,49 +15,1865 @@
         text-align: center;
     }
 
-    .section-header h2 {
+    .k8s-section-header h2 {
         font-size: 1.3rem;
         font-weight: 600;
         margin-bottom: var(--spacing-xs);
     }
 
-    .section-header p {
+    .k8s-section-header p {
         font-size: 0.85rem;
         opacity: 0.9;
     }
 
-    .coming-soon {
+    /* Cluster Tabs */
+    .k8s-cluster-tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 8px 0;
+        margin-bottom: 12px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .k8s-cluster-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .k8s-cluster-tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: white;
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-dark, #2d3748);
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .k8s-cluster-tab.active {
+        background: #326ce5;
+        border-color: #326ce5;
+        color: white;
+    }
+
+    .k8s-cluster-tab:active:not(.active) {
+        background: var(--bg-light, #f7fafc);
+    }
+
+    .k8s-cluster-status {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #22c55e;
+    }
+
+    .k8s-cluster-tab.active .k8s-cluster-status {
+        background: #86efac;
+    }
+
+    /* Cluster Stats */
+    .k8s-cluster-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .k8s-stat-item {
+        background: white;
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 8px;
+        padding: 10px 8px;
         text-align: center;
-        padding: var(--spacing-xl);
-        color: var(--text-muted);
     }
 
-    .coming-soon .icon {
-        font-size: 3rem;
-        margin-bottom: var(--spacing-md);
-    }
-
-    .coming-soon h3 {
+    .k8s-stat-value {
         font-size: 1.2rem;
-        color: var(--text-dark);
-        margin-bottom: var(--spacing-sm);
+        font-weight: 600;
+        color: #326ce5;
     }
 
-    .coming-soon p {
-        font-size: 0.9rem;
+    .k8s-stat-label {
+        font-size: 0.7rem;
+        color: var(--text-muted, #718096);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Resource Tabs */
+    .k8s-resource-tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 8px 0;
+        margin-bottom: 12px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .k8s-resource-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .k8s-resource-tab {
+        padding: 8px 14px;
+        background: white;
+        border: 1px solid var(--border-light, #e2e8f0);
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted, #718096);
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .k8s-resource-tab.active {
+        background: #326ce5;
+        border-color: #326ce5;
+        color: white;
+    }
+
+    .k8s-resource-tab:active:not(.active) {
+        background: var(--bg-light, #f7fafc);
+    }
+
+    /* Resource Content */
+    .k8s-resource-content {
+        display: none;
+    }
+
+    .k8s-resource-content.active {
+        display: block;
+    }
+
+    /* Cluster Content */
+    .k8s-cluster-content {
+        display: none;
+    }
+
+    .k8s-cluster-content.active {
+        display: block;
+    }
+
+    /* Loading State */
+    .k8s-loading {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted, #718096);
+    }
+
+    .k8s-loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--border-light, #e2e8f0);
+        border-top-color: #326ce5;
+        border-radius: 50%;
+        animation: k8s-spin 1s linear infinite;
+        margin: 0 auto 16px;
+    }
+
+    @keyframes k8s-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .k8s-empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted, #718096);
+    }
+
+    .k8s-empty-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+    }
+
+    .k8s-empty h3 {
+        font-size: 1.1rem;
+        color: var(--text-dark, #2d3748);
+        margin-bottom: 8px;
+    }
+
+    /* Pod Status Colors */
+    .k8s-status-running { color: #22c55e; }
+    .k8s-status-pending { color: #f59e0b; }
+    .k8s-status-failed { color: #ef4444; }
+    .k8s-status-succeeded { color: #22c55e; }
+    .k8s-status-unknown { color: #6b7280; }
+
+    /* Detail Popup Styles */
+    .k8s-detail-section {
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border-light, #e2e8f0);
+    }
+
+    .k8s-detail-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .k8s-detail-section h4 {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #326ce5;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+    }
+
+    .k8s-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border-light, #f1f5f9);
+    }
+
+    .k8s-detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .k8s-detail-label {
+        font-size: 0.85rem;
+        color: var(--text-muted, #718096);
+        flex-shrink: 0;
+        margin-right: 12px;
+    }
+
+    .k8s-detail-value {
+        font-size: 0.85rem;
+        color: var(--text-dark, #2d3748);
+        text-align: right;
+        word-break: break-word;
+    }
+
+    .k8s-status-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .k8s-status-badge.operational {
+        background: rgba(34, 197, 94, 0.1);
+        color: #16a34a;
+    }
+
+    .k8s-status-badge.warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+    }
+
+    .k8s-status-badge.critical {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+    }
+
+    /* Modal Tabs Styles (like desktop) */
+    .k8s-modal-tabs {
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        padding: 8px 0;
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--border-light, #e2e8f0);
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .k8s-modal-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .k8s-modal-tab {
+        padding: 8px 12px;
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-muted, #718096);
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .k8s-modal-tab.active {
+        background: #326ce5;
+        color: white;
+    }
+
+    .k8s-modal-tab:active:not(.active) {
+        background: var(--bg-light, #f7fafc);
+    }
+
+    .k8s-modal-tab-content {
+        display: none;
+    }
+
+    .k8s-modal-tab-content.active {
+        display: block;
     }
 </style>
 
-<div class="mobile-section">
-    <div class="section-header">
-        <h2>☸️ Kubernetes</h2>
-        <p>Manage Kubernetes clusters and workloads</p>
+<div class="mobile-k8s-section">
+    <div class="k8s-section-header">
+        <h2>Kubernetes</h2>
+        <p>Manage clusters and workloads</p>
     </div>
 
-    <div class="coming-soon">
-        <div class="icon">☸️</div>
-        <h3>Kubernetes Management</h3>
-        <p>Full Kubernetes management coming in Stage 3.</p>
-        <p style="margin-top: var(--spacing-sm); font-size: 0.8rem;">Cluster selector, resource cards, pod/service details.</p>
+    <!-- Loading State -->
+    <div id="k8s-loading" class="k8s-loading">
+        <div class="k8s-loading-spinner"></div>
+        <p>Loading clusters...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div id="k8s-empty" class="k8s-empty" style="display: none;">
+        <div class="k8s-empty-icon">&#9096;</div>
+        <h3>No Clusters Found</h3>
+        <p>No Kubernetes clusters are currently configured.</p>
+    </div>
+
+    <!-- Main Content (hidden until loaded) -->
+    <div id="k8s-main-content" style="display: none;">
+        <!-- Cluster Tabs -->
+        <div id="k8s-cluster-tabs" class="k8s-cluster-tabs"></div>
+
+        <!-- Cluster Content Container -->
+        <div id="k8s-clusters-container"></div>
     </div>
 </div>
+
+<script>
+// Mobile Kubernetes Section
+(function() {
+    'use strict';
+
+    // Pod Status Enum (EXACT from desktop kubernetes-tables.js)
+    const PodStatusEnum = {
+        0: "Invalid",
+        1: "Running",
+        2: "Pending",
+        3: "Succeeded",
+        4: "Failed",
+        5: "Unknown",
+        6: "CrashLoopBackOff",
+        7: "Terminating",
+        8: "ContainerCreating",
+        9: "ImagePullBackOff",
+        10: "Error",
+        11: "Completed"
+    };
+
+    // Global storage for cluster data
+    let k8sClustersData = {};
+    let k8sTables = {};  // Store MobileTable instances
+
+    // Convert Pod Status enum to text
+    function getPodStatusText(statusValue) {
+        if (typeof statusValue === 'string') {
+            return statusValue;
+        }
+        return PodStatusEnum[statusValue] || 'Unknown';
+    }
+
+    // Get status class for Pod Status
+    function getPodStatusClass(statusText) {
+        const statusLower = (statusText || '').toLowerCase();
+        if (statusLower === 'running' || statusLower === 'succeeded' || statusLower === 'completed') {
+            return 'operational';
+        }
+        if (statusLower === 'pending' || statusLower === 'containercreating' || statusLower === 'terminating') {
+            return 'warning';
+        }
+        return 'critical';
+    }
+
+    // Transform Object to Array (EXACT from desktop kubernetes-init.js)
+    function transformObjectToArray(obj) {
+        if (!obj) return [];
+        return Object.values(obj);
+    }
+
+    // Fetch Kubernetes clusters (EXACT endpoint and query from desktop)
+    // Endpoint: /probler/1/KCache
+    // Query: select * from K8sCluster
+    async function fetchK8sClusters() {
+        try {
+            const url = '/probler/1/KCache?body=' + encodeURIComponent(JSON.stringify({
+                text: 'select * from K8sCluster'
+            }));
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: MobileAuth.getAuthHeaders()
+            });
+
+            if (!response || !response.ok) {
+                console.error('Failed to fetch K8s clusters:', response?.status);
+                return [];
+            }
+
+            const data = await response.json();
+            return data.list || [];
+        } catch (error) {
+            console.error('Error fetching K8s clusters:', error);
+            return [];
+        }
+    }
+
+    // Column definitions for each resource type (EXACT from desktop)
+    const columnDefs = {
+        nodes: [
+            { key: 'name', label: 'Name', filterKey: 'name', primary: true },
+            { key: 'roles', label: 'Roles', filterKey: 'roles' },
+            { key: 'age', label: 'Age' },
+            { key: 'version', label: 'Version', filterKey: 'version' },
+            { key: 'internalIp', label: 'Internal IP', filterKey: 'internalIp' },
+            { key: 'externalIp', label: 'External IP', filterKey: 'externalIp' },
+            { key: 'osImage', label: 'OS Image', filterKey: 'osImage' },
+            { key: 'kernelVersion', label: 'Kernel', filterKey: 'kernelVersion' },
+            { key: 'containerRuntime', label: 'Runtime', filterKey: 'containerRuntime' }
+        ],
+        pods: [
+            { key: 'name', label: 'Name', filterKey: 'name', primary: true },
+            { key: 'namespace', label: 'Namespace', filterKey: 'namespace' },
+            { key: 'ready', label: 'Ready' },
+            { key: 'status', label: 'Status', filterKey: 'status' },
+            { key: 'restarts', label: 'Restarts' },
+            { key: 'age', label: 'Age' },
+            { key: 'ip', label: 'IP', filterKey: 'ip' },
+            { key: 'node', label: 'Node', filterKey: 'node' }
+        ],
+        deployments: [
+            { key: 'name', label: 'Name', filterKey: 'name', primary: true },
+            { key: 'namespace', label: 'Namespace', filterKey: 'namespace' },
+            { key: 'ready', label: 'Ready' },
+            { key: 'upToDate', label: 'Up-to-Date' },
+            { key: 'available', label: 'Available' },
+            { key: 'age', label: 'Age' },
+            { key: 'containers', label: 'Containers', filterKey: 'containers' },
+            { key: 'images', label: 'Images', filterKey: 'images' }
+        ],
+        statefulsets: [
+            { key: 'name', label: 'Name', filterKey: 'name', primary: true },
+            { key: 'namespace', label: 'Namespace', filterKey: 'namespace' },
+            { key: 'ready', label: 'Ready' },
+            { key: 'age', label: 'Age' },
+            { key: 'containers', label: 'Containers', filterKey: 'containers' },
+            { key: 'images', label: 'Images', filterKey: 'images' }
+        ],
+        daemonsets: [
+            { key: 'name', label: 'Name', filterKey: 'name', primary: true },
+            { key: 'namespace', label: 'Namespace', filterKey: 'namespace' },
+            { key: 'desired', label: 'Desired' },
+            { key: 'current', label: 'Current' },
+            { key: 'ready', label: 'Ready' },
+            { key: 'upToDate', label: 'Up-to-Date' },
+            { key: 'available', label: 'Available' },
+            { key: 'age', label: 'Age' }
+        ],
+        services: [
+            { key: 'name', label: 'Name', filterKey: 'name', primary: true },
+            { key: 'namespace', label: 'Namespace', filterKey: 'namespace' },
+            { key: 'type', label: 'Type', filterKey: 'type' },
+            { key: 'clusterIp', label: 'Cluster IP', filterKey: 'clusterIp' },
+            { key: 'externalIp', label: 'External IP', filterKey: 'externalIp' },
+            { key: 'ports', label: 'Ports', filterKey: 'ports' },
+            { key: 'age', label: 'Age' }
+        ],
+        namespaces: [
+            { key: 'name', label: 'Name', filterKey: 'name', primary: true },
+            { key: 'status', label: 'Status', filterKey: 'status' },
+            { key: 'age', label: 'Age' }
+        ],
+        networkpolicies: [
+            { key: 'name', label: 'Name', filterKey: 'name', primary: true },
+            { key: 'namespace', label: 'Namespace', filterKey: 'namespace' },
+            { key: 'podSelector', label: 'Pod Selector', filterKey: 'podSelector' },
+            { key: 'age', label: 'Age' }
+        ]
+    };
+
+    // Resource tab labels
+    const resourceLabels = {
+        nodes: 'Nodes',
+        pods: 'Pods',
+        deployments: 'Deploys',
+        statefulsets: 'StatefulSets',
+        daemonsets: 'DaemonSets',
+        services: 'Services',
+        namespaces: 'Namespaces',
+        networkpolicies: 'NetPolicies'
+    };
+
+    // Create cluster tab HTML
+    function createClusterTab(clusterName, isActive) {
+        const tab = document.createElement('button');
+        tab.className = 'k8s-cluster-tab' + (isActive ? ' active' : '');
+        tab.setAttribute('data-cluster', clusterName);
+        tab.innerHTML = `
+            <span class="k8s-cluster-status"></span>
+            <span>${escapeHtml(clusterName)}</span>
+        `;
+        return tab;
+    }
+
+    // Create cluster content HTML
+    function createClusterContent(clusterName, clusterData, isActive) {
+        const div = document.createElement('div');
+        div.className = 'k8s-cluster-content' + (isActive ? ' active' : '');
+        div.setAttribute('data-cluster-content', clusterName);
+
+        // Calculate counts
+        const counts = {
+            nodes: clusterData.nodes ? Object.keys(clusterData.nodes).length : 0,
+            pods: clusterData.pods ? Object.keys(clusterData.pods).length : 0,
+            deployments: clusterData.deployments ? Object.keys(clusterData.deployments).length : 0,
+            statefulsets: clusterData.statefulsets ? Object.keys(clusterData.statefulsets).length : 0,
+            daemonsets: clusterData.daemonsets ? Object.keys(clusterData.daemonsets).length : 0,
+            services: clusterData.services ? Object.keys(clusterData.services).length : 0,
+            namespaces: clusterData.namespaces ? Object.keys(clusterData.namespaces).length : 0,
+            networkpolicies: clusterData.networkpolicies ? Object.keys(clusterData.networkpolicies).length : 0
+        };
+
+        // Build HTML
+        let html = '';
+
+        // Stats grid (show top 4 counts)
+        html += '<div class="k8s-cluster-stats">';
+        html += `<div class="k8s-stat-item"><div class="k8s-stat-value">${counts.nodes}</div><div class="k8s-stat-label">Nodes</div></div>`;
+        html += `<div class="k8s-stat-item"><div class="k8s-stat-value">${counts.pods}</div><div class="k8s-stat-label">Pods</div></div>`;
+        html += `<div class="k8s-stat-item"><div class="k8s-stat-value">${counts.deployments}</div><div class="k8s-stat-label">Deploys</div></div>`;
+        html += `<div class="k8s-stat-item"><div class="k8s-stat-value">${counts.services}</div><div class="k8s-stat-label">Services</div></div>`;
+        html += '</div>';
+
+        // Resource tabs
+        html += '<div class="k8s-resource-tabs">';
+        const resources = ['nodes', 'pods', 'deployments', 'statefulsets', 'daemonsets', 'services', 'namespaces', 'networkpolicies'];
+        resources.forEach((resource, index) => {
+            const activeClass = index === 0 ? ' active' : '';
+            html += `<button class="k8s-resource-tab${activeClass}" data-resource="${resource}" data-cluster="${clusterName}">${resourceLabels[resource]}</button>`;
+        });
+        html += '</div>';
+
+        // Resource content containers
+        resources.forEach((resource, index) => {
+            const activeClass = index === 0 ? ' active' : '';
+            html += `<div class="k8s-resource-content${activeClass}" data-resource-content="${resource}-${clusterName}">`;
+            html += `<div id="${resource}-${clusterName}-table"></div>`;
+            html += '</div>';
+        });
+
+        div.innerHTML = html;
+        return div;
+    }
+
+    // Initialize MobileTable for a resource
+    function initResourceTable(clusterName, resource, data) {
+        const containerId = `${resource}-${clusterName}-table`;
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        // Get columns for this resource
+        const columns = columnDefs[resource] || [];
+
+        // Transform data for pods (status enum)
+        let transformedData = data;
+        if (resource === 'pods') {
+            transformedData = data.map(pod => ({
+                ...pod,
+                statusText: getPodStatusText(pod.status),
+                readyDisplay: formatReady(pod.ready),
+                restartsDisplay: formatRestarts(pod.restarts)
+            }));
+        }
+
+        // Create MobileTable
+        const tableKey = `${resource}-${clusterName}`;
+        k8sTables[tableKey] = new MobileTable(containerId, {
+            columns: columns,
+            data: transformedData,
+            serverSide: false,  // CLIENT-SIDE pagination
+            rowsPerPage: 15,
+            sortable: true,
+            filterable: true,
+            emptyMessage: `No ${resourceLabels[resource]} found`,
+            emptyIcon: '&#9096;',
+
+            // Status field for pods
+            statusField: resource === 'pods' ? 'status' : (resource === 'namespaces' ? 'status' : null),
+            getStatusClass: (value, item) => {
+                if (resource === 'pods') {
+                    return getPodStatusClass(getPodStatusText(value));
+                }
+                if (resource === 'namespaces') {
+                    return value === 'Active' ? 'operational' : 'warning';
+                }
+                return null;
+            },
+
+            // Transform display values
+            transformData: (item) => {
+                if (resource === 'pods') {
+                    return {
+                        ...item,
+                        status: getPodStatusText(item.status),
+                        ready: formatReady(item.ready),
+                        restarts: formatRestarts(item.restarts)
+                    };
+                }
+                if (resource === 'deployments' || resource === 'statefulsets' || resource === 'daemonsets') {
+                    return {
+                        ...item,
+                        ready: formatReady(item.ready)
+                    };
+                }
+                return item;
+            },
+
+            // Card click handler - show detail popup
+            onCardClick: (item, index) => {
+                showResourceDetailPopup(resource, item, clusterName);
+            }
+        });
+    }
+
+    // ===== DETAIL POPUP FUNCTIONS =====
+
+    // Show resource detail popup - ASYNC for REST calls (like desktop)
+    async function showResourceDetailPopup(resource, item, clusterName) {
+        const titleMap = {
+            nodes: 'Node',
+            pods: 'Pod',
+            deployments: 'Deployment',
+            statefulsets: 'StatefulSet',
+            daemonsets: 'DaemonSet',
+            services: 'Service',
+            namespaces: 'Namespace',
+            networkpolicies: 'Network Policy'
+        };
+
+        const title = `${titleMap[resource] || resource}: ${item.name}`;
+
+        // Show loading popup first
+        const popupId = MobilePopup.show({
+            title: title,
+            content: `<div class="k8s-loading" style="padding: 40px 20px;">
+                <div class="k8s-loading-spinner"></div>
+                <p>Loading details...</p>
+            </div>`,
+            size: 'large',
+            showFooter: true,
+            showCancelButton: false,
+            saveButtonText: 'Close',
+            onSave: (p) => {
+                MobilePopup.close(p.id);
+            }
+        });
+
+        // Fetch detailed data for resources that use REST (like desktop)
+        let content;
+        try {
+            content = await generateDetailContent(resource, item, clusterName);
+        } catch (error) {
+            console.error('Error generating detail content:', error);
+            content = generateFallbackDetail(item, clusterName);
+        }
+
+        // Update popup content using MobilePopup API
+        const bodyEl = MobilePopup.getBody(popupId);
+        if (bodyEl) {
+            bodyEl.innerHTML = content;
+            setupMobileDetailTabs(bodyEl);
+        }
+    }
+
+    // Setup tab switching for mobile detail popups
+    function setupMobileDetailTabs(container) {
+        const tabs = container.querySelectorAll('.k8s-modal-tab');
+        const contents = container.querySelectorAll('.k8s-modal-tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.getAttribute('data-tab');
+
+                // Update tab active states
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Update content active states
+                contents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.getAttribute('data-tab-content') === targetTab) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+    }
+
+    // Generate detail content based on resource type (ASYNC for REST resources)
+    async function generateDetailContent(resource, item, clusterName) {
+        switch (resource) {
+            // Resources that use REST calls (like desktop)
+            case 'nodes': return await fetchAndGenerateNodeDetail(item, clusterName);
+            case 'pods': return await fetchAndGeneratePodDetail(item, clusterName);
+            case 'deployments': return await fetchAndGenerateDeploymentDetail(item, clusterName);
+            // Resources that use generated data (like desktop)
+            case 'statefulsets': return generateStatefulSetDetailWithTabs(item, clusterName);
+            case 'daemonsets': return generateDaemonSetDetailWithTabs(item, clusterName);
+            case 'services': return generateServiceDetailWithTabs(item, clusterName);
+            case 'namespaces': return generateNamespaceDetailWithTabs(item, clusterName);
+            case 'networkpolicies': return generateNetworkPolicyDetailWithTabs(item, clusterName);
+            default: return generateFallbackDetail(item, clusterName);
+        }
+    }
+
+    // ===== REST-BASED DETAIL FUNCTIONS (like desktop) =====
+
+    // Fetch and generate Pod detail (like desktop kubernetes-modal-pods.js)
+    async function fetchAndGeneratePodDetail(item, clusterName) {
+        let podDetails;
+        try {
+            const response = await MobileAuth.makeAuthenticatedRequest('/probler/0/exec', {
+                method: 'POST',
+                body: JSON.stringify({
+                    targetId: 'lab',
+                    hostId: 'lab',
+                    pollarisName: 'kubernetes',
+                    jobName: 'poddetails',
+                    arguments: { namespace: item.namespace, podname: item.name }
+                })
+            });
+
+            if (!response || !response.ok) {
+                podDetails = generatePodDetailsFallback(item, clusterName);
+            } else {
+                const data = await response.json();
+                if (data && data.result) {
+                    try {
+                        let decodedResult = atob(data.result);
+                        const jsonStart = decodedResult.indexOf('{');
+                        if (jsonStart > 0) decodedResult = decodedResult.substring(jsonStart);
+                        const parsedData = JSON.parse(decodedResult);
+
+                        if (parsedData && parsedData.items && parsedData.items.length > 0) {
+                            podDetails = parsedData.items.find(p => p.metadata.name === item.name) || parsedData.items[0];
+                        } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
+                            podDetails = parsedData;
+                        } else {
+                            podDetails = generatePodDetailsFallback(item, clusterName);
+                        }
+                    } catch (error) {
+                        podDetails = generatePodDetailsFallback(item, clusterName);
+                    }
+                } else {
+                    podDetails = generatePodDetailsFallback(item, clusterName);
+                }
+            }
+        } catch (error) {
+            podDetails = generatePodDetailsFallback(item, clusterName);
+        }
+
+        return generatePodModalContent(podDetails, item, clusterName);
+    }
+
+    // Fetch and generate Node detail (like desktop kubernetes-modal-node.js)
+    async function fetchAndGenerateNodeDetail(item, clusterName) {
+        let nodeDetails;
+        try {
+            const response = await MobileAuth.makeAuthenticatedRequest('/probler/0/exec', {
+                method: 'POST',
+                body: JSON.stringify({
+                    targetId: 'lab',
+                    hostId: 'lab',
+                    pollarisName: 'kubernetes',
+                    jobName: 'nodedetails',
+                    arguments: { nodename: item.name }
+                })
+            });
+
+            if (!response || !response.ok) {
+                nodeDetails = generateNodeDetailsFallback(item, clusterName);
+            } else {
+                const data = await response.json();
+                if (data && data.result) {
+                    try {
+                        let decodedResult = atob(data.result);
+                        const jsonStart = decodedResult.indexOf('{');
+                        if (jsonStart > 0) decodedResult = decodedResult.substring(jsonStart);
+                        const parsedData = JSON.parse(decodedResult);
+
+                        if (parsedData && parsedData.items && parsedData.items.length > 0) {
+                            nodeDetails = parsedData.items.find(n => n.metadata.name === item.name) || parsedData.items[0];
+                        } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
+                            nodeDetails = parsedData;
+                        } else {
+                            nodeDetails = generateNodeDetailsFallback(item, clusterName);
+                        }
+                    } catch (error) {
+                        nodeDetails = generateNodeDetailsFallback(item, clusterName);
+                    }
+                } else {
+                    nodeDetails = generateNodeDetailsFallback(item, clusterName);
+                }
+            }
+        } catch (error) {
+            nodeDetails = generateNodeDetailsFallback(item, clusterName);
+        }
+
+        return generateNodeModalContent(nodeDetails, item, clusterName);
+    }
+
+    // Fetch and generate Deployment detail (like desktop kubernetes-modal-deployments.js)
+    async function fetchAndGenerateDeploymentDetail(item, clusterName) {
+        let deploymentDetails;
+        try {
+            const response = await MobileAuth.makeAuthenticatedRequest('/probler/0/exec', {
+                method: 'POST',
+                body: JSON.stringify({
+                    targetId: 'lab',
+                    hostId: 'lab',
+                    pollarisName: 'kubernetes',
+                    jobName: 'deploymentdetails',
+                    arguments: { namespace: item.namespace, deploymentname: item.name }
+                })
+            });
+
+            if (!response || !response.ok) {
+                deploymentDetails = generateDeploymentDetailsFallback(item, clusterName);
+            } else {
+                const data = await response.json();
+                if (data && data.result) {
+                    try {
+                        let decodedResult = atob(data.result);
+                        const jsonStart = decodedResult.indexOf('{');
+                        if (jsonStart > 0) decodedResult = decodedResult.substring(jsonStart);
+                        const parsedData = JSON.parse(decodedResult);
+
+                        if (parsedData && parsedData.items && parsedData.items.length > 0) {
+                            deploymentDetails = parsedData.items.find(d => d.metadata.name === item.name) || parsedData.items[0];
+                        } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
+                            deploymentDetails = parsedData;
+                        } else {
+                            deploymentDetails = generateDeploymentDetailsFallback(item, clusterName);
+                        }
+                    } catch (error) {
+                        deploymentDetails = generateDeploymentDetailsFallback(item, clusterName);
+                    }
+                } else {
+                    deploymentDetails = generateDeploymentDetailsFallback(item, clusterName);
+                }
+            }
+        } catch (error) {
+            deploymentDetails = generateDeploymentDetailsFallback(item, clusterName);
+        }
+
+        return generateDeploymentModalContent(deploymentDetails, item, clusterName);
+    }
+
+    // ===== FALLBACK GENERATORS (like desktop *-generate.js files) =====
+
+    function generateUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    // Generate fallback Pod details (like desktop kubernetes-modal-pods-generate.js)
+    function generatePodDetailsFallback(pod, cluster) {
+        const statusText = getPodStatusText(pod.status);
+        return {
+            apiVersion: "v1",
+            kind: "Pod",
+            metadata: {
+                name: pod.name,
+                namespace: pod.namespace,
+                uid: generateUID(),
+                resourceVersion: String(Math.floor(Math.random() * 9000000) + 1000000),
+                creationTimestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+                generateName: pod.name.replace(/-[a-z0-9]+$/, '-'),
+                labels: { "app": pod.name.split('-')[0] },
+                annotations: {},
+                ownerReferences: []
+            },
+            spec: {
+                nodeName: pod.node || 'unknown',
+                serviceAccountName: 'default',
+                restartPolicy: 'Always',
+                dnsPolicy: 'ClusterFirst',
+                schedulerName: 'default-scheduler',
+                priority: 0,
+                preemptionPolicy: 'PreemptLowerPriority',
+                terminationGracePeriodSeconds: 30,
+                enableServiceLinks: true,
+                hostNetwork: false,
+                containers: [],
+                tolerations: [],
+                volumes: []
+            },
+            status: {
+                phase: statusText,
+                podIP: pod.ip || '',
+                hostIP: '',
+                startTime: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+                qosClass: 'BestEffort',
+                conditions: [
+                    { type: 'Initialized', status: 'True', lastTransitionTime: new Date().toISOString() },
+                    { type: 'Ready', status: statusText === 'Running' ? 'True' : 'False', lastTransitionTime: new Date().toISOString() },
+                    { type: 'ContainersReady', status: statusText === 'Running' ? 'True' : 'False', lastTransitionTime: new Date().toISOString() },
+                    { type: 'PodScheduled', status: 'True', lastTransitionTime: new Date().toISOString() }
+                ],
+                containerStatuses: [],
+                podIPs: pod.ip ? [{ ip: pod.ip }] : [],
+                hostIPs: []
+            }
+        };
+    }
+
+    // Generate fallback Node details (like desktop kubernetes-modal-node-generate.js)
+    function generateNodeDetailsFallback(node, cluster) {
+        return {
+            apiVersion: "v1",
+            kind: "Node",
+            metadata: {
+                name: node.name,
+                uid: generateUID(),
+                resourceVersion: String(Math.floor(Math.random() * 9000000) + 1000000),
+                creationTimestamp: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                labels: {
+                    "kubernetes.io/hostname": node.name,
+                    "kubernetes.io/os": "linux",
+                    "kubernetes.io/arch": "amd64",
+                    "node-role.kubernetes.io/control-plane": node.roles?.includes('control-plane') ? "" : undefined
+                },
+                annotations: {}
+            },
+            spec: {
+                podCIDR: '10.244.0.0/24',
+                podCIDRs: ['10.244.0.0/24']
+            },
+            status: {
+                addresses: [
+                    { type: 'InternalIP', address: node.internalIp || '10.0.0.1' },
+                    { type: 'Hostname', address: node.name }
+                ],
+                capacity: {
+                    cpu: '4',
+                    memory: '16Gi',
+                    pods: '110',
+                    'ephemeral-storage': '100Gi'
+                },
+                allocatable: {
+                    cpu: '3800m',
+                    memory: '15Gi',
+                    pods: '110',
+                    'ephemeral-storage': '90Gi'
+                },
+                conditions: [
+                    { type: 'Ready', status: 'True', reason: 'KubeletReady', message: 'kubelet is posting ready status', lastHeartbeatTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() },
+                    { type: 'MemoryPressure', status: 'False', reason: 'KubeletHasSufficientMemory', message: 'kubelet has sufficient memory available', lastHeartbeatTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() },
+                    { type: 'DiskPressure', status: 'False', reason: 'KubeletHasNoDiskPressure', message: 'kubelet has no disk pressure', lastHeartbeatTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() },
+                    { type: 'PIDPressure', status: 'False', reason: 'KubeletHasSufficientPID', message: 'kubelet has sufficient PID available', lastHeartbeatTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() }
+                ],
+                nodeInfo: {
+                    osImage: node.osImage || 'Ubuntu 22.04 LTS',
+                    kernelVersion: node.kernelVersion || '5.15.0-generic',
+                    containerRuntimeVersion: node.containerRuntime || 'containerd://1.6.0',
+                    kubeletVersion: node.version || 'v1.28.0',
+                    kubeProxyVersion: node.version || 'v1.28.0',
+                    architecture: 'amd64',
+                    operatingSystem: 'linux',
+                    machineID: generateUID().replace(/-/g, ''),
+                    systemUUID: generateUID().toUpperCase(),
+                    bootID: generateUID()
+                },
+                daemonEndpoints: {
+                    kubeletEndpoint: { Port: 10250 }
+                },
+                images: []
+            }
+        };
+    }
+
+    // Generate fallback Deployment details (like desktop kubernetes-modal-deployments-generate.js)
+    function generateDeploymentDetailsFallback(deployment, cluster) {
+        const readyParts = typeof deployment.ready === 'object'
+            ? [deployment.ready.count || 0, deployment.ready.outof || 1]
+            : String(deployment.ready || '0/1').split('/').map(Number);
+        const readyReplicas = readyParts[0] || 0;
+        const totalReplicas = readyParts[1] || 1;
+
+        return {
+            apiVersion: "apps/v1",
+            kind: "Deployment",
+            metadata: {
+                name: deployment.name,
+                namespace: deployment.namespace,
+                uid: generateUID(),
+                resourceVersion: String(Math.floor(Math.random() * 9000000) + 1000000),
+                generation: 1,
+                creationTimestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+                labels: { "app": deployment.name },
+                annotations: { "deployment.kubernetes.io/revision": "1" }
+            },
+            spec: {
+                replicas: totalReplicas,
+                revisionHistoryLimit: 10,
+                progressDeadlineSeconds: 600,
+                selector: { matchLabels: { "app": deployment.name } },
+                strategy: {
+                    type: 'RollingUpdate',
+                    rollingUpdate: { maxUnavailable: '25%', maxSurge: '25%' }
+                },
+                template: {
+                    metadata: { labels: { "app": deployment.name } },
+                    spec: {
+                        containers: (deployment.containers || '').split(',').map((name, idx) => ({
+                            name: name.trim() || 'container',
+                            image: (deployment.images || '').split(',')[idx]?.trim() || 'nginx:latest',
+                            imagePullPolicy: 'Always'
+                        })),
+                        restartPolicy: 'Always',
+                        dnsPolicy: 'ClusterFirst',
+                        schedulerName: 'default-scheduler',
+                        terminationGracePeriodSeconds: 30
+                    }
+                }
+            },
+            status: {
+                replicas: totalReplicas,
+                updatedReplicas: totalReplicas,
+                readyReplicas: readyReplicas,
+                availableReplicas: readyReplicas,
+                observedGeneration: 1,
+                conditions: [
+                    { type: 'Available', status: readyReplicas > 0 ? 'True' : 'False', reason: readyReplicas > 0 ? 'MinimumReplicasAvailable' : 'MinimumReplicasUnavailable', message: readyReplicas > 0 ? 'Deployment has minimum availability.' : 'Deployment does not have minimum availability.', lastUpdateTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() },
+                    { type: 'Progressing', status: 'True', reason: 'NewReplicaSetAvailable', message: 'ReplicaSet has successfully progressed.', lastUpdateTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() }
+                ]
+            }
+        };
+    }
+
+    // ===== MODAL CONTENT GENERATORS WITH TABS =====
+
+    // Detail row helper
+    function detailRow(label, value) {
+        const displayValue = value !== undefined && value !== null && value !== '' ? escapeHtml(String(value)) : '-';
+        return `<div class="k8s-detail-row"><span class="k8s-detail-label">${escapeHtml(label)}</span><span class="k8s-detail-value">${displayValue}</span></div>`;
+    }
+
+    // Safe access helper for nested properties
+    function safeGet(obj, path, defaultValue = '-') {
+        try {
+            const value = path.split('.').reduce((o, k) => (o || {})[k], obj);
+            return value !== undefined && value !== null ? value : defaultValue;
+        } catch (e) {
+            return defaultValue;
+        }
+    }
+
+    // Generate Pod modal content with tabs (like desktop)
+    function generatePodModalContent(podDetails, pod, cluster) {
+        const phase = safeGet(podDetails, 'status.phase', 'Unknown');
+        const statusClass = getPodStatusClass(phase);
+        const conditions = safeGet(podDetails, 'status.conditions', []);
+        const labels = safeGet(podDetails, 'metadata.labels', {});
+        const ownerRefs = safeGet(podDetails, 'metadata.ownerReferences', []);
+        const tolerations = safeGet(podDetails, 'spec.tolerations', []);
+        const podIPs = safeGet(podDetails, 'status.podIPs', []);
+
+        return `
+            <div class="k8s-modal-tabs">
+                <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="metadata">Metadata</div>
+                <div class="k8s-modal-tab" data-tab="spec">Spec</div>
+                <div class="k8s-modal-tab" data-tab="conditions">Conditions</div>
+                <div class="k8s-modal-tab" data-tab="status">Status</div>
+            </div>
+
+            <div class="k8s-modal-tab-content active" data-tab-content="overview">
+                <div class="k8s-detail-section">
+                    <h4>Pod Information</h4>
+                    ${detailRow('Name', safeGet(podDetails, 'metadata.name'))}
+                    ${detailRow('Namespace', safeGet(podDetails, 'metadata.namespace'))}
+                    ${detailRow('UID', safeGet(podDetails, 'metadata.uid'))}
+                    ${detailRow('Cluster', cluster)}
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label">Phase</span>
+                        <span class="k8s-detail-value"><span class="k8s-status-badge ${statusClass}">${escapeHtml(phase)}</span></span>
+                    </div>
+                    ${detailRow('QoS Class', safeGet(podDetails, 'status.qosClass'))}
+                    ${detailRow('Node', safeGet(podDetails, 'spec.nodeName'))}
+                    ${detailRow('Pod IP', safeGet(podDetails, 'status.podIP'))}
+                    ${detailRow('Host IP', safeGet(podDetails, 'status.hostIP'))}
+                    ${detailRow('Start Time', safeGet(podDetails, 'status.startTime'))}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="metadata">
+                <div class="k8s-detail-section">
+                    <h4>Metadata</h4>
+                    ${detailRow('Name', safeGet(podDetails, 'metadata.name'))}
+                    ${detailRow('Generate Name', safeGet(podDetails, 'metadata.generateName'))}
+                    ${detailRow('Namespace', safeGet(podDetails, 'metadata.namespace'))}
+                    ${detailRow('UID', safeGet(podDetails, 'metadata.uid'))}
+                    ${detailRow('Resource Version', safeGet(podDetails, 'metadata.resourceVersion'))}
+                    ${detailRow('Creation Timestamp', safeGet(podDetails, 'metadata.creationTimestamp'))}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Labels</h4>
+                    ${Object.keys(labels).length > 0 ? Object.entries(labels).map(([k, v]) => detailRow(k, v)).join('') : '<p style="color: #718096;">No labels</p>'}
+                </div>
+                ${ownerRefs.length > 0 ? `
+                <div class="k8s-detail-section">
+                    <h4>Owner References</h4>
+                    ${ownerRefs.map(ref => `
+                        ${detailRow('Kind', ref.kind)}
+                        ${detailRow('Name', ref.name)}
+                        ${detailRow('Controller', ref.controller ? 'Yes' : 'No')}
+                    `).join('<hr style="border-color: #e2e8f0; margin: 8px 0;">')}
+                </div>
+                ` : ''}
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="spec">
+                <div class="k8s-detail-section">
+                    <h4>Pod Spec</h4>
+                    ${detailRow('Node Name', safeGet(podDetails, 'spec.nodeName'))}
+                    ${detailRow('Service Account', safeGet(podDetails, 'spec.serviceAccountName'))}
+                    ${detailRow('Restart Policy', safeGet(podDetails, 'spec.restartPolicy'))}
+                    ${detailRow('DNS Policy', safeGet(podDetails, 'spec.dnsPolicy'))}
+                    ${detailRow('Scheduler Name', safeGet(podDetails, 'spec.schedulerName'))}
+                    ${detailRow('Priority', safeGet(podDetails, 'spec.priority'))}
+                    ${detailRow('Termination Grace Period', safeGet(podDetails, 'spec.terminationGracePeriodSeconds') + 's')}
+                    ${detailRow('Host Network', safeGet(podDetails, 'spec.hostNetwork', false) ? 'Yes' : 'No')}
+                </div>
+                ${tolerations.length > 0 ? `
+                <div class="k8s-detail-section">
+                    <h4>Tolerations</h4>
+                    ${tolerations.map(tol => `
+                        ${detailRow('Key', tol.key || '<all>')}
+                        ${detailRow('Operator', tol.operator)}
+                        ${detailRow('Effect', tol.effect || '<all>')}
+                    `).join('<hr style="border-color: #e2e8f0; margin: 8px 0;">')}
+                </div>
+                ` : ''}
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="conditions">
+                <div class="k8s-detail-section">
+                    <h4>Pod Conditions</h4>
+                    ${conditions.length > 0 ? conditions.map(cond => `
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                            ${detailRow('Type', cond.type)}
+                            <div class="k8s-detail-row">
+                                <span class="k8s-detail-label">Status</span>
+                                <span class="k8s-detail-value"><span class="k8s-status-badge ${cond.status === 'True' ? 'operational' : 'warning'}">${cond.status}</span></span>
+                            </div>
+                            ${detailRow('Last Transition', cond.lastTransitionTime)}
+                        </div>
+                    `).join('') : '<p style="color: #718096;">No conditions</p>'}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="status">
+                <div class="k8s-detail-section">
+                    <h4>Runtime Status</h4>
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label">Phase</span>
+                        <span class="k8s-detail-value"><span class="k8s-status-badge ${statusClass}">${escapeHtml(phase)}</span></span>
+                    </div>
+                    ${detailRow('QoS Class', safeGet(podDetails, 'status.qosClass'))}
+                    ${detailRow('Start Time', safeGet(podDetails, 'status.startTime'))}
+                    ${detailRow('Pod IP', safeGet(podDetails, 'status.podIP'))}
+                    ${detailRow('Host IP', safeGet(podDetails, 'status.hostIP'))}
+                </div>
+                ${podIPs.length > 0 ? `
+                <div class="k8s-detail-section">
+                    <h4>Pod IPs</h4>
+                    ${podIPs.map(ipObj => detailRow('IP', ipObj.ip)).join('')}
+                </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    // Generate Node modal content with tabs (like desktop)
+    function generateNodeModalContent(nodeDetails, node, cluster) {
+        const labels = safeGet(nodeDetails, 'metadata.labels', {});
+        const annotations = safeGet(nodeDetails, 'metadata.annotations', {});
+        const addresses = safeGet(nodeDetails, 'status.addresses', []);
+        const capacity = safeGet(nodeDetails, 'status.capacity', {});
+        const allocatable = safeGet(nodeDetails, 'status.allocatable', {});
+        const conditions = safeGet(nodeDetails, 'status.conditions', []);
+        const nodeInfo = safeGet(nodeDetails, 'status.nodeInfo', {});
+        const images = safeGet(nodeDetails, 'status.images', []);
+
+        return `
+            <div class="k8s-modal-tabs">
+                <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="labels">Labels</div>
+                <div class="k8s-modal-tab" data-tab="addresses">Addresses</div>
+                <div class="k8s-modal-tab" data-tab="resources">Resources</div>
+                <div class="k8s-modal-tab" data-tab="conditions">Conditions</div>
+                <div class="k8s-modal-tab" data-tab="system">System</div>
+            </div>
+
+            <div class="k8s-modal-tab-content active" data-tab-content="overview">
+                <div class="k8s-detail-section">
+                    <h4>Metadata</h4>
+                    ${detailRow('Name', safeGet(nodeDetails, 'metadata.name'))}
+                    ${detailRow('UID', safeGet(nodeDetails, 'metadata.uid'))}
+                    ${detailRow('Creation Timestamp', safeGet(nodeDetails, 'metadata.creationTimestamp'))}
+                    ${detailRow('Resource Version', safeGet(nodeDetails, 'metadata.resourceVersion'))}
+                    ${detailRow('Age', node.age)}
+                    ${detailRow('Cluster', cluster)}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Spec</h4>
+                    ${detailRow('Pod CIDR', safeGet(nodeDetails, 'spec.podCIDR'))}
+                    ${detailRow('Pod CIDRs', (safeGet(nodeDetails, 'spec.podCIDRs', []) || []).join(', '))}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="labels">
+                <div class="k8s-detail-section">
+                    <h4>Labels</h4>
+                    ${Object.keys(labels).length > 0 ? Object.entries(labels).map(([k, v]) => detailRow(k, v || '<none>')).join('') : '<p style="color: #718096;">No labels</p>'}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Annotations</h4>
+                    ${Object.keys(annotations).length > 0 ? Object.entries(annotations).slice(0, 10).map(([k, v]) => detailRow(k, String(v).substring(0, 100))).join('') : '<p style="color: #718096;">No annotations</p>'}
+                    ${Object.keys(annotations).length > 10 ? `<p style="color: #718096; font-style: italic;">... and ${Object.keys(annotations).length - 10} more</p>` : ''}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="addresses">
+                <div class="k8s-detail-section">
+                    <h4>Network Addresses</h4>
+                    ${addresses.length > 0 ? addresses.map(addr => detailRow(addr.type, addr.address)).join('') : '<p style="color: #718096;">No addresses</p>'}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="resources">
+                <div class="k8s-detail-section">
+                    <h4>Capacity</h4>
+                    ${Object.keys(capacity).length > 0 ? Object.entries(capacity).map(([k, v]) => detailRow(k, v)).join('') : '<p style="color: #718096;">No capacity info</p>'}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Allocatable</h4>
+                    ${Object.keys(allocatable).length > 0 ? Object.entries(allocatable).map(([k, v]) => detailRow(k, v)).join('') : '<p style="color: #718096;">No allocatable info</p>'}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="conditions">
+                <div class="k8s-detail-section">
+                    <h4>Node Conditions</h4>
+                    ${conditions.length > 0 ? conditions.map(cond => `
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                            ${detailRow('Type', cond.type)}
+                            <div class="k8s-detail-row">
+                                <span class="k8s-detail-label">Status</span>
+                                <span class="k8s-detail-value"><span class="k8s-status-badge ${getNodeConditionStatusClass(cond.type, cond.status)}">${cond.status}</span></span>
+                            </div>
+                            ${detailRow('Reason', cond.reason)}
+                            ${detailRow('Message', cond.message)}
+                        </div>
+                    `).join('') : '<p style="color: #718096;">No conditions</p>'}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="system">
+                <div class="k8s-detail-section">
+                    <h4>Node Info</h4>
+                    ${detailRow('OS Image', nodeInfo.osImage)}
+                    ${detailRow('Kernel Version', nodeInfo.kernelVersion)}
+                    ${detailRow('Container Runtime', nodeInfo.containerRuntimeVersion)}
+                    ${detailRow('Kubelet Version', nodeInfo.kubeletVersion)}
+                    ${detailRow('Kube-Proxy Version', nodeInfo.kubeProxyVersion)}
+                    ${detailRow('Architecture', nodeInfo.architecture)}
+                    ${detailRow('Operating System', nodeInfo.operatingSystem)}
+                </div>
+                ${images.length > 0 ? `
+                <div class="k8s-detail-section">
+                    <h4>Container Images (${images.length} total)</h4>
+                    ${images.slice(0, 5).map(img => detailRow('Image', (img.names && img.names[0]) || 'unknown')).join('')}
+                    ${images.length > 5 ? `<p style="color: #718096; font-style: italic;">... and ${images.length - 5} more images</p>` : ''}
+                </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    // Get node condition status class
+    function getNodeConditionStatusClass(type, status) {
+        // For Ready, True is good
+        if (type === 'Ready') {
+            return status === 'True' ? 'operational' : 'critical';
+        }
+        // For pressure conditions, False is good
+        return status === 'False' ? 'operational' : 'critical';
+    }
+
+    // Generate Deployment modal content with tabs (like desktop)
+    function generateDeploymentModalContent(deploymentDetails, deployment, cluster) {
+        const labels = safeGet(deploymentDetails, 'metadata.labels', {});
+        const annotations = safeGet(deploymentDetails, 'metadata.annotations', {});
+        const conditions = safeGet(deploymentDetails, 'status.conditions', []);
+        const matchLabels = safeGet(deploymentDetails, 'spec.selector.matchLabels', {});
+        const containers = safeGet(deploymentDetails, 'spec.template.spec.containers', []);
+        const replicas = safeGet(deploymentDetails, 'spec.replicas', 1);
+        const readyReplicas = safeGet(deploymentDetails, 'status.readyReplicas', 0);
+
+        return `
+            <div class="k8s-modal-tabs">
+                <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="metadata">Metadata</div>
+                <div class="k8s-modal-tab" data-tab="spec">Spec</div>
+                <div class="k8s-modal-tab" data-tab="template">Template</div>
+                <div class="k8s-modal-tab" data-tab="conditions">Conditions</div>
+                <div class="k8s-modal-tab" data-tab="status">Status</div>
+            </div>
+
+            <div class="k8s-modal-tab-content active" data-tab-content="overview">
+                <div class="k8s-detail-section">
+                    <h4>Deployment Information</h4>
+                    ${detailRow('Name', safeGet(deploymentDetails, 'metadata.name'))}
+                    ${detailRow('Namespace', safeGet(deploymentDetails, 'metadata.namespace'))}
+                    ${detailRow('UID', safeGet(deploymentDetails, 'metadata.uid'))}
+                    ${detailRow('Cluster', cluster)}
+                    ${detailRow('Generation', safeGet(deploymentDetails, 'metadata.generation'))}
+                    ${detailRow('Creation Time', safeGet(deploymentDetails, 'metadata.creationTimestamp'))}
+                    ${detailRow('Replicas', replicas)}
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label">Ready Replicas</span>
+                        <span class="k8s-detail-value"><span class="k8s-status-badge ${readyReplicas >= replicas ? 'operational' : 'warning'}">${readyReplicas}/${replicas}</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="metadata">
+                <div class="k8s-detail-section">
+                    <h4>Metadata</h4>
+                    ${detailRow('Name', safeGet(deploymentDetails, 'metadata.name'))}
+                    ${detailRow('Namespace', safeGet(deploymentDetails, 'metadata.namespace'))}
+                    ${detailRow('UID', safeGet(deploymentDetails, 'metadata.uid'))}
+                    ${detailRow('Resource Version', safeGet(deploymentDetails, 'metadata.resourceVersion'))}
+                    ${detailRow('Generation', safeGet(deploymentDetails, 'metadata.generation'))}
+                    ${detailRow('Creation Timestamp', safeGet(deploymentDetails, 'metadata.creationTimestamp'))}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Labels</h4>
+                    ${Object.keys(labels).length > 0 ? Object.entries(labels).map(([k, v]) => detailRow(k, v)).join('') : '<p style="color: #718096;">No labels</p>'}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Annotations</h4>
+                    ${Object.keys(annotations).length > 0 ? Object.entries(annotations).slice(0, 5).map(([k, v]) => detailRow(k, String(v).substring(0, 100))).join('') : '<p style="color: #718096;">No annotations</p>'}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="spec">
+                <div class="k8s-detail-section">
+                    <h4>Deployment Spec</h4>
+                    ${detailRow('Replicas', safeGet(deploymentDetails, 'spec.replicas'))}
+                    ${detailRow('Revision History Limit', safeGet(deploymentDetails, 'spec.revisionHistoryLimit'))}
+                    ${detailRow('Progress Deadline', safeGet(deploymentDetails, 'spec.progressDeadlineSeconds') + 's')}
+                    ${detailRow('Strategy Type', safeGet(deploymentDetails, 'spec.strategy.type'))}
+                    ${detailRow('Max Unavailable', safeGet(deploymentDetails, 'spec.strategy.rollingUpdate.maxUnavailable'))}
+                    ${detailRow('Max Surge', safeGet(deploymentDetails, 'spec.strategy.rollingUpdate.maxSurge'))}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Selector</h4>
+                    ${Object.keys(matchLabels).length > 0 ? Object.entries(matchLabels).map(([k, v]) => detailRow(k, v)).join('') : '<p style="color: #718096;">No selectors</p>'}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="template">
+                <div class="k8s-detail-section">
+                    <h4>Pod Template</h4>
+                    ${detailRow('DNS Policy', safeGet(deploymentDetails, 'spec.template.spec.dnsPolicy'))}
+                    ${detailRow('Restart Policy', safeGet(deploymentDetails, 'spec.template.spec.restartPolicy'))}
+                    ${detailRow('Scheduler Name', safeGet(deploymentDetails, 'spec.template.spec.schedulerName'))}
+                    ${detailRow('Termination Grace Period', safeGet(deploymentDetails, 'spec.template.spec.terminationGracePeriodSeconds') + 's')}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Containers</h4>
+                    ${containers.length > 0 ? containers.map(c => `
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                            <h5 style="color: #326ce5; margin-bottom: 8px;">${escapeHtml(c.name)}</h5>
+                            ${detailRow('Image', c.image)}
+                            ${detailRow('Image Pull Policy', c.imagePullPolicy)}
+                        </div>
+                    `).join('') : '<p style="color: #718096;">No containers</p>'}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="conditions">
+                <div class="k8s-detail-section">
+                    <h4>Deployment Conditions</h4>
+                    ${conditions.length > 0 ? conditions.map(cond => `
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                            ${detailRow('Type', cond.type)}
+                            <div class="k8s-detail-row">
+                                <span class="k8s-detail-label">Status</span>
+                                <span class="k8s-detail-value"><span class="k8s-status-badge ${cond.status === 'True' ? 'operational' : 'warning'}">${cond.status}</span></span>
+                            </div>
+                            ${detailRow('Reason', cond.reason)}
+                            ${detailRow('Message', cond.message)}
+                            ${detailRow('Last Update', cond.lastUpdateTime)}
+                        </div>
+                    `).join('') : '<p style="color: #718096;">No conditions</p>'}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="status">
+                <div class="k8s-detail-section">
+                    <h4>Replica Status</h4>
+                    ${detailRow('Replicas', safeGet(deploymentDetails, 'status.replicas'))}
+                    ${detailRow('Updated Replicas', safeGet(deploymentDetails, 'status.updatedReplicas'))}
+                    ${detailRow('Ready Replicas', safeGet(deploymentDetails, 'status.readyReplicas'))}
+                    ${detailRow('Available Replicas', safeGet(deploymentDetails, 'status.availableReplicas'))}
+                    ${detailRow('Observed Generation', safeGet(deploymentDetails, 'status.observedGeneration'))}
+                </div>
+            </div>
+        `;
+    }
+
+    // ===== GENERATED DATA DETAIL FUNCTIONS WITH TABS (for resources that don't use REST) =====
+
+    // StatefulSet detail with tabs (like desktop - no REST call)
+    function generateStatefulSetDetailWithTabs(item, clusterName) {
+        const readyParts = typeof item.ready === 'object'
+            ? [item.ready.count || 0, item.ready.outof || 1]
+            : String(item.ready || '0/1').split('/').map(Number);
+        const readyReplicas = readyParts[0] || 0;
+        const totalReplicas = readyParts[1] || 1;
+
+        return `
+            <div class="k8s-modal-tabs">
+                <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="spec">Spec</div>
+                <div class="k8s-modal-tab" data-tab="status">Status</div>
+            </div>
+
+            <div class="k8s-modal-tab-content active" data-tab-content="overview">
+                <div class="k8s-detail-section">
+                    <h4>StatefulSet Information</h4>
+                    ${detailRow('Name', item.name)}
+                    ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('Cluster', clusterName)}
+                    ${detailRow('Age', item.age)}
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label">Ready</span>
+                        <span class="k8s-detail-value"><span class="k8s-status-badge ${readyReplicas >= totalReplicas ? 'operational' : 'warning'}">${readyReplicas}/${totalReplicas}</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="spec">
+                <div class="k8s-detail-section">
+                    <h4>Spec</h4>
+                    ${detailRow('Replicas', totalReplicas)}
+                    ${detailRow('Service Name', item.name)}
+                    ${detailRow('Pod Management Policy', 'OrderedReady')}
+                    ${detailRow('Update Strategy', 'RollingUpdate')}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Container Info</h4>
+                    ${detailRow('Containers', item.containers)}
+                    ${detailRow('Images', item.images)}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="status">
+                <div class="k8s-detail-section">
+                    <h4>Status</h4>
+                    ${detailRow('Replicas', totalReplicas)}
+                    ${detailRow('Ready Replicas', readyReplicas)}
+                    ${detailRow('Current Replicas', totalReplicas)}
+                    ${detailRow('Updated Replicas', totalReplicas)}
+                </div>
+            </div>
+        `;
+    }
+
+    // DaemonSet detail with tabs (like desktop - no REST call)
+    function generateDaemonSetDetailWithTabs(item, clusterName) {
+        return `
+            <div class="k8s-modal-tabs">
+                <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="spec">Spec</div>
+                <div class="k8s-modal-tab" data-tab="status">Status</div>
+            </div>
+
+            <div class="k8s-modal-tab-content active" data-tab-content="overview">
+                <div class="k8s-detail-section">
+                    <h4>DaemonSet Information</h4>
+                    ${detailRow('Name', item.name)}
+                    ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('Cluster', clusterName)}
+                    ${detailRow('Age', item.age)}
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label">Scheduled</span>
+                        <span class="k8s-detail-value"><span class="k8s-status-badge ${item.current >= item.desired ? 'operational' : 'warning'}">${item.current}/${item.desired}</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="spec">
+                <div class="k8s-detail-section">
+                    <h4>Spec</h4>
+                    ${detailRow('Update Strategy', 'RollingUpdate')}
+                    ${detailRow('Max Unavailable', '1')}
+                    ${detailRow('Revision History Limit', '10')}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Container Info</h4>
+                    ${detailRow('Containers', item.containers)}
+                    ${detailRow('Images', item.images)}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Scheduling</h4>
+                    ${detailRow('Node Selector', item.nodeSelector || '-')}
+                    ${detailRow('Selector', item.selector || '-')}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="status">
+                <div class="k8s-detail-section">
+                    <h4>Status</h4>
+                    ${detailRow('Desired', item.desired)}
+                    ${detailRow('Current', item.current)}
+                    ${detailRow('Ready', item.ready)}
+                    ${detailRow('Up-to-Date', item.upToDate)}
+                    ${detailRow('Available', item.available)}
+                    ${detailRow('Misscheduled', '0')}
+                </div>
+            </div>
+        `;
+    }
+
+    // Service detail with tabs (like desktop - no REST call)
+    function generateServiceDetailWithTabs(item, clusterName) {
+        return `
+            <div class="k8s-modal-tabs">
+                <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="spec">Spec</div>
+                <div class="k8s-modal-tab" data-tab="ports">Ports</div>
+            </div>
+
+            <div class="k8s-modal-tab-content active" data-tab-content="overview">
+                <div class="k8s-detail-section">
+                    <h4>Service Information</h4>
+                    ${detailRow('Name', item.name)}
+                    ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('Cluster', clusterName)}
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label">Type</span>
+                        <span class="k8s-detail-value"><span class="k8s-status-badge ${item.type === 'LoadBalancer' ? 'operational' : 'warning'}">${escapeHtml(item.type)}</span></span>
+                    </div>
+                    ${detailRow('Age', item.age)}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="spec">
+                <div class="k8s-detail-section">
+                    <h4>Spec</h4>
+                    ${detailRow('Type', item.type)}
+                    ${detailRow('Cluster IP', item.clusterIp)}
+                    ${detailRow('External IP', item.externalIp)}
+                    ${detailRow('Session Affinity', 'None')}
+                    ${detailRow('Internal Traffic Policy', 'Cluster')}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Selector</h4>
+                    ${detailRow('Selector', item.selector || '-')}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="ports">
+                <div class="k8s-detail-section">
+                    <h4>Service Ports</h4>
+                    ${detailRow('Ports', item.ports)}
+                </div>
+            </div>
+        `;
+    }
+
+    // Namespace detail with tabs (like desktop - no REST call)
+    function generateNamespaceDetailWithTabs(item, clusterName) {
+        const statusClass = item.status === 'Active' ? 'operational' : 'warning';
+        return `
+            <div class="k8s-modal-tabs">
+                <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="spec">Spec</div>
+                <div class="k8s-modal-tab" data-tab="status">Status</div>
+            </div>
+
+            <div class="k8s-modal-tab-content active" data-tab-content="overview">
+                <div class="k8s-detail-section">
+                    <h4>Namespace Information</h4>
+                    ${detailRow('Name', item.name)}
+                    ${detailRow('Cluster', clusterName)}
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label">Phase</span>
+                        <span class="k8s-detail-value"><span class="k8s-status-badge ${statusClass}">${escapeHtml(item.status)}</span></span>
+                    </div>
+                    ${detailRow('Age', item.age)}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="spec">
+                <div class="k8s-detail-section">
+                    <h4>Spec</h4>
+                    ${detailRow('Finalizers', 'kubernetes')}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="status">
+                <div class="k8s-detail-section">
+                    <h4>Status</h4>
+                    <div class="k8s-detail-row">
+                        <span class="k8s-detail-label">Phase</span>
+                        <span class="k8s-detail-value"><span class="k8s-status-badge ${statusClass}">${escapeHtml(item.status)}</span></span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Network Policy detail with tabs (like desktop - no REST call)
+    function generateNetworkPolicyDetailWithTabs(item, clusterName) {
+        return `
+            <div class="k8s-modal-tabs">
+                <div class="k8s-modal-tab active" data-tab="overview">Overview</div>
+                <div class="k8s-modal-tab" data-tab="spec">Spec</div>
+                <div class="k8s-modal-tab" data-tab="rules">Rules</div>
+            </div>
+
+            <div class="k8s-modal-tab-content active" data-tab-content="overview">
+                <div class="k8s-detail-section">
+                    <h4>Network Policy Information</h4>
+                    ${detailRow('Name', item.name)}
+                    ${detailRow('Namespace', item.namespace)}
+                    ${detailRow('Cluster', clusterName)}
+                    ${detailRow('Age', item.age)}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="spec">
+                <div class="k8s-detail-section">
+                    <h4>Spec</h4>
+                    ${detailRow('Policy Types', 'Ingress, Egress')}
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Pod Selector</h4>
+                    ${detailRow('Selector', item.podSelector || '-')}
+                </div>
+            </div>
+
+            <div class="k8s-modal-tab-content" data-tab-content="rules">
+                <div class="k8s-detail-section">
+                    <h4>Ingress Rules</h4>
+                    <p style="color: #718096;">View full policy details in the desktop application.</p>
+                </div>
+                <div class="k8s-detail-section">
+                    <h4>Egress Rules</h4>
+                    <p style="color: #718096;">View full policy details in the desktop application.</p>
+                </div>
+            </div>
+        `;
+    }
+
+    // Fallback detail (generic)
+    function generateFallbackDetail(item, clusterName) {
+        let rows = detailRow('Cluster', clusterName);
+        for (const [key, value] of Object.entries(item)) {
+            if (value !== null && value !== undefined && typeof value !== 'object') {
+                rows += detailRow(key, value);
+            }
+        }
+        return `<div class="k8s-detail-section"><h4>Details</h4>${rows}</div>`;
+    }
+
+    // Format ready field (could be object or string)
+    function formatReady(value) {
+        if (!value) return '0/0';
+        if (typeof value === 'string') return value;
+        if (typeof value === 'object') {
+            const count = value.count || 0;
+            const outof = value.outof || 0;
+            return `${count}/${outof}`;
+        }
+        return String(value);
+    }
+
+    // Format restarts field
+    function formatRestarts(value) {
+        if (!value) return '0';
+        if (typeof value === 'string') return value;
+        if (typeof value === 'object') {
+            const count = value.count || 0;
+            const ago = value.ago || '';
+            return ago ? `${count} (${ago})` : String(count);
+        }
+        return String(value);
+    }
+
+    // Initialize tables for a cluster
+    function initializeClusterTables(clusterName, clusterData) {
+        k8sClustersData[clusterName] = clusterData;
+
+        const resources = ['nodes', 'pods', 'deployments', 'statefulsets', 'daemonsets', 'services', 'namespaces', 'networkpolicies'];
+        resources.forEach(resource => {
+            const data = transformObjectToArray(clusterData[resource]);
+            initResourceTable(clusterName, resource, data);
+        });
+    }
+
+    // Setup cluster tab switching
+    function setupClusterTabSwitching() {
+        const tabsContainer = document.getElementById('k8s-cluster-tabs');
+        if (!tabsContainer) return;
+
+        tabsContainer.addEventListener('click', (e) => {
+            const tab = e.target.closest('.k8s-cluster-tab');
+            if (!tab) return;
+
+            const clusterName = tab.getAttribute('data-cluster');
+
+            // Update tab active states
+            tabsContainer.querySelectorAll('.k8s-cluster-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Update content active states
+            document.querySelectorAll('.k8s-cluster-content').forEach(content => {
+                content.classList.remove('active');
+                if (content.getAttribute('data-cluster-content') === clusterName) {
+                    content.classList.add('active');
+                }
+            });
+
+            // Initialize tables if not already done
+            const nodesTable = document.getElementById(`nodes-${clusterName}-table`);
+            if (nodesTable && !nodesTable.querySelector('.mobile-table-container')) {
+                initializeClusterTables(clusterName, k8sClustersData[clusterName] || {});
+            }
+        });
+    }
+
+    // Setup resource tab switching
+    function setupResourceTabSwitching() {
+        document.addEventListener('click', (e) => {
+            const tab = e.target.closest('.k8s-resource-tab');
+            if (!tab) return;
+
+            const resource = tab.getAttribute('data-resource');
+            const clusterName = tab.getAttribute('data-cluster');
+
+            // Update tab active states within this cluster
+            const clusterContent = document.querySelector(`.k8s-cluster-content[data-cluster-content="${clusterName}"]`);
+            if (!clusterContent) return;
+
+            clusterContent.querySelectorAll('.k8s-resource-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Update resource content active states
+            clusterContent.querySelectorAll('.k8s-resource-content').forEach(content => {
+                content.classList.remove('active');
+                if (content.getAttribute('data-resource-content') === `${resource}-${clusterName}`) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Main initialization function
+    async function initMobileKubernetes() {
+        const loadingEl = document.getElementById('k8s-loading');
+        const emptyEl = document.getElementById('k8s-empty');
+        const mainContentEl = document.getElementById('k8s-main-content');
+        const tabsContainer = document.getElementById('k8s-cluster-tabs');
+        const clustersContainer = document.getElementById('k8s-clusters-container');
+
+        // Show loading
+        if (loadingEl) loadingEl.style.display = 'block';
+        if (emptyEl) emptyEl.style.display = 'none';
+        if (mainContentEl) mainContentEl.style.display = 'none';
+
+        // Fetch clusters
+        const clusters = await fetchK8sClusters();
+
+        // Hide loading
+        if (loadingEl) loadingEl.style.display = 'none';
+
+        // Check if we have clusters
+        if (!clusters || clusters.length === 0) {
+            if (emptyEl) emptyEl.style.display = 'block';
+            return;
+        }
+
+        // Show main content
+        if (mainContentEl) mainContentEl.style.display = 'block';
+
+        // Clear containers
+        if (tabsContainer) tabsContainer.innerHTML = '';
+        if (clustersContainer) clustersContainer.innerHTML = '';
+
+        // Create tabs and content for each cluster
+        clusters.forEach((cluster, index) => {
+            const clusterName = cluster.name || `cluster-${index}`;
+            const isActive = index === 0;
+
+            // Store cluster data
+            k8sClustersData[clusterName] = cluster;
+
+            // Create cluster tab
+            const tab = createClusterTab(clusterName, isActive);
+            if (tabsContainer) tabsContainer.appendChild(tab);
+
+            // Create cluster content
+            const content = createClusterContent(clusterName, cluster, isActive);
+            if (clustersContainer) clustersContainer.appendChild(content);
+
+            // Initialize tables for first cluster only (lazy load others)
+            if (isActive) {
+                initializeClusterTables(clusterName, cluster);
+            }
+        });
+
+        // Setup tab switching
+        setupClusterTabSwitching();
+        setupResourceTabSwitching();
+    }
+
+    // Export init function
+    window.initMobileKubernetes = initMobileKubernetes;
+
+})();
+</script>
