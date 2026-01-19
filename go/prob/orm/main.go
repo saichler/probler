@@ -37,18 +37,7 @@ func main() {
 
 	//Activate targets
 	targets.Activate(common.DB_CREDS, common.DB_NAME, nic)
-	/*
-		ts, _ := targets.Targets(nic)
-		deviceList := &l8tpollaris.L8PTargetList{}
-		deviceList.List = make([]*l8tpollaris.L8PTarget, 0)
-		for i := 1; i <= 19; i++ {
-			device := creates.CreateDevice("10.20.30."+strconv.Itoa(i), common.NetworkDevice_Links_ID, "sim")
-			deviceList.List = append(deviceList.List, device)
-		}
-		ts.Post(object.New(nil, deviceList), nic)
-		cluster := creates.CreateCluster("lab")
-		ts.Post(object.New(nil, cluster), nic)
-	*/
+
 	common.WaitForSignal(res)
 }
 

@@ -9,7 +9,7 @@ kubectl apply -f box.yaml
 sleep 2
 kubectl apply -f k8s.yaml
 sleep 2
-kubectl apply -f orm.yaml
+#kubectl apply -f orm.yaml
 sleep 2
 kubectl apply -f webui2.yaml
 sleep 2
