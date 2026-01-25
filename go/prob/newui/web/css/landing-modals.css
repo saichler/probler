@@ -325,3 +325,64 @@
 .contact-icon {
     font-size: 1.2rem;
 }
+
+/* Markdown Content Styles */
+.markdown-content {
+    background: white;
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    color: #333;
+    line-height: 1.8;
+}
+
+.markdown-content h1 {
+    font-size: 1.8rem;
+    color: #0ea5e9;
+    margin: 2rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(14, 165, 233, 0.2);
+}
+
+.markdown-content h2 {
+    font-size: 1.5rem;
+    color: #0ea5e9;
+    margin: 2rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(14, 165, 233, 0.2);
+}
+
+.markdown-content p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #555;
+}
+
+.markdown-content strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.markdown-content em {
+    font-style: italic;
+}
+
+.markdown-content a {
+    color: #0ea5e9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.markdown-content a:hover {
+    color: #0284c7;
+    text-decoration: underline;
+}
+
+.markdown-content hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.3), transparent);
+    margin: 2rem 0;
+}

@@ -8,6 +8,64 @@ document.addEventListener('DOMContentLoaded', function() {
     initModals();
 });
 
+// Simple markdown to HTML parser
+function parseMarkdown(markdown) {
+    let html = markdown
+        // Remove the first line with HTML div tag (title is already in header)
+        .replace(/^#\s*<div[^>]*>.*<\/div>\s*\n?/, '')
+        // Convert ## headers
+        .replace(/^##\s+(.+)$/gm, '<h2>$1</h2>')
+        // Convert # headers
+        .replace(/^#\s+(.+)$/gm, '<h1>$1</h1>')
+        // Convert horizontal rules
+        .replace(/^---+$/gm, '<hr>')
+        // Convert bold italic (***text***)
+        .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+        // Convert bold (**text**)
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        // Convert italic (*text*)
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        // Convert links [text](url)
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+        // Convert paragraphs (double newlines)
+        .split(/\n\n+/)
+        .map(para => {
+            para = para.trim();
+            if (!para) return '';
+            // Don't wrap if it's already a block element
+            if (para.startsWith('<h') || para.startsWith('<hr')) {
+                return para;
+            }
+            return '<p>' + para.replace(/\n/g, '<br>') + '</p>';
+        })
+        .filter(p => p)
+        .join('\n');
+
+    return html;
+}
+
+// Fetch and render AboutTheDeveloper.md
+async function loadDeveloperMarkdown() {
+    try {
+        const response = await fetch('../AboutTheDeveloper.md');
+        if (!response.ok) {
+            throw new Error('Could not load AboutTheDeveloper.md');
+        }
+        const markdown = await response.text();
+        const html = parseMarkdown(markdown);
+        const container = document.getElementById('developer-markdown-content');
+        if (container) {
+            container.innerHTML = html;
+        }
+    } catch (error) {
+        console.error('Error loading developer markdown:', error);
+        const container = document.getElementById('developer-markdown-content');
+        if (container) {
+            container.innerHTML = '<p>Content could not be loaded.</p>';
+        }
+    }
+}
+
 // Hamburger Menu Toggle
 function initHamburgerMenu() {
     const hamburger = document.querySelector('.hamburger');
@@ -205,6 +263,7 @@ async function openDeveloperModal() {
             modal.style.display = 'block';
             modal.classList.add('open');
             document.body.style.overflow = 'hidden';
+            loadDeveloperMarkdown();
         }
     }
 }

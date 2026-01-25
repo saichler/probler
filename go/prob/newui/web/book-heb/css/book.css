@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Radical Simplicity for Humans - Book Website Styles
+   Radical Simplicity for Humans - Book Website Styles (Hebrew RTL Version)
    ========================================================================== */
 
 /* CSS Reset & Base */
@@ -49,7 +49,7 @@ body {
 }
 
 /* ==========================================================================
-   Layout
+   Layout (RTL)
    ========================================================================== */
 
 .site-container {
@@ -60,18 +60,18 @@ body {
 .sidebar {
     width: var(--sidebar-width);
     background: linear-gradient(180deg, #f8f5ef 0%, #f3efe7 100%);
-    border-right: 1px solid var(--color-divider);
+    border-left: 1px solid var(--color-divider);
     padding: 2rem 1.5rem;
     position: fixed;
     top: 0;
-    left: 0;
+    right: 0;
     height: 100vh;
     overflow-y: auto;
 }
 
 .main-content {
     flex: 1;
-    margin-left: var(--sidebar-width);
+    margin-right: var(--sidebar-width);
     padding: 3rem 2rem;
     display: flex;
     justify-content: center;
@@ -176,7 +176,7 @@ body {
 }
 
 .chapter-list .coming-soon::after {
-    content: " (Coming Soon)";
+    content: " (בקרוב)";
     font-size: 0.75rem;
     font-style: italic;
 }
@@ -251,12 +251,13 @@ em {
 }
 
 /* ==========================================================================
-   Lists
+   Lists (RTL)
    ========================================================================== */
 
 ul, ol {
     margin-bottom: 1.5rem;
-    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-left: 0;
 }
 
 li {
@@ -268,12 +269,13 @@ li::marker {
 }
 
 /* ==========================================================================
-   Blockquotes
+   Blockquotes (RTL)
    ========================================================================== */
 
 blockquote {
     background-color: var(--color-blockquote-bg);
-    border-left: 4px solid var(--color-blockquote-border);
+    border-right: 4px solid var(--color-blockquote-border);
+    border-left: none;
     margin: 2rem 0;
     padding: 1.5rem 2rem;
     font-style: italic;
@@ -308,7 +310,7 @@ hr {
 }
 
 /* ==========================================================================
-   Chapter Navigation
+   Chapter Navigation (RTL)
    ========================================================================== */
 
 .chapter-nav {
@@ -337,12 +339,21 @@ hr {
     background-color: rgba(26, 68, 128, 0.1);
 }
 
+/* RTL: Swap arrow directions */
+.chapter-nav .prev::after {
+    content: "\2192";
+}
+
 .chapter-nav .prev::before {
+    content: none;
+}
+
+.chapter-nav .next::before {
     content: "\2190";
 }
 
 .chapter-nav .next::after {
-    content: "\2192";
+    content: none;
 }
 
 .chapter-nav .placeholder {
@@ -400,12 +411,13 @@ hr {
 .toc-list li {
     margin-bottom: 0.75rem;
     padding: 0.75rem 1rem;
-    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-left: none;
     transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .toc-list li:hover {
-    border-left-color: var(--color-accent);
+    border-right-color: var(--color-accent);
     background-color: rgba(139, 64, 73, 0.05);
 }
 
@@ -424,7 +436,8 @@ hr {
 .toc-list .chapter-number {
     color: var(--color-muted);
     font-size: 0.9rem;
-    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+    margin-right: 0;
 }
 
 .toc-list .coming-soon-item {
@@ -438,7 +451,7 @@ hr {
 }
 
 .toc-list .coming-soon-item:hover {
-    border-left-color: transparent;
+    border-right-color: transparent;
     background-color: transparent;
 }
 
@@ -446,7 +459,8 @@ hr {
     font-size: 0.75rem;
     font-style: italic;
     color: var(--color-disabled);
-    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    margin-left: 0;
 }
 
 /* ==========================================================================
@@ -481,14 +495,15 @@ hr {
 }
 
 /* ==========================================================================
-   Mobile Navigation Toggle
+   Mobile Navigation Toggle (RTL)
    ========================================================================== */
 
 .mobile-nav-toggle {
     display: none;
     position: fixed;
     top: 1rem;
-    left: 1rem;
+    right: 1rem;
+    left: auto;
     z-index: 1001;
     background: var(--color-background);
     border: 1px solid var(--color-divider);
@@ -567,7 +582,7 @@ body.menu-open {
 }
 
 /* ==========================================================================
-   Responsive Design
+   Responsive Design (RTL)
    ========================================================================== */
 
 @media (max-width: 1024px) {
@@ -594,12 +609,14 @@ body.menu-open {
     }
 
     .sidebar {
-        transform: translateX(-100%);
+        transform: translateX(100%);
         transition: transform 0.3s ease;
         z-index: 999;
         width: 85%;
         max-width: 320px;
-        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+        right: 0;
+        left: auto;
     }
 
     .sidebar.open {
@@ -607,7 +624,7 @@ body.menu-open {
     }
 
     .main-content {
-        margin-left: 0;
+        margin-right: 0;
         padding: 5rem 1.5rem 2rem;
     }
 
@@ -716,7 +733,8 @@ body.menu-open {
     }
 
     ul, ol {
-        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+        padding-left: 0;
     }
 }
 
@@ -732,7 +750,7 @@ body.menu-open {
     }
 
     .main-content {
-        margin-left: 0;
+        margin-right: 0;
         padding: 0;
     }
 
@@ -753,7 +771,8 @@ body.menu-open {
     }
 
     blockquote {
-        border-left: 2px solid #333;
+        border-right: 2px solid #333;
+        border-left: none;
         background: none;
     }
 }
