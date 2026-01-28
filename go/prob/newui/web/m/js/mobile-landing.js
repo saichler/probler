@@ -277,6 +277,25 @@ function closeDeveloperModal() {
     }
 }
 
+// Demo banner dismiss
+function dismissDemoBanner() {
+    const banner = document.getElementById('demoBanner');
+    if (banner) {
+        banner.classList.add('hidden');
+        sessionStorage.setItem('demoBannerDismissed', 'true');
+    }
+}
+
+// Restore banner state on load
+(function() {
+    if (sessionStorage.getItem('demoBannerDismissed') === 'true') {
+        document.addEventListener('DOMContentLoaded', function() {
+            const banner = document.getElementById('demoBanner');
+            if (banner) banner.classList.add('hidden');
+        });
+    }
+})();
+
 // Demo link functions - open documentation pages
 function openCollectorDemo() {
     window.open('../docs/l8collector.html', '_blank');

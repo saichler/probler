@@ -67,6 +67,14 @@
             </div>
 
             <div class="container parallax-content">
+                <div id="demoBanner" class="demo-banner">
+                    <div class="demo-banner-content">
+                        <span class="demo-banner-pulse"></span>
+                        <span class="demo-banner-text">Live Demo Available</span>
+                        <a href="#" onclick="showDemoCredentials(); return false;" class="demo-banner-link">Try it now &rarr;</a>
+                    </div>
+                    <button class="demo-banner-close" onclick="dismissDemoBanner()" title="Dismiss">&times;</button>
+                </div>
                 <h1 style="margin-top: 10px;">Data Center Infrastructure Management Platform</h1>
                 <p>A comprehensive DCIM solution built on microservices architecture, managing network, power, environmental, and capacity infrastructure with the core philosophy: <strong>Poll → Parse → Model → Cache → Persist</strong></p>
 

@@ -157,6 +157,23 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+// Demo banner dismiss
+function dismissDemoBanner() {
+    const banner = document.getElementById('demoBanner');
+    if (banner) {
+        banner.classList.add('hidden');
+        sessionStorage.setItem('demoBannerDismissed', 'true');
+    }
+}
+
+// Restore banner state on load
+(function() {
+    if (sessionStorage.getItem('demoBannerDismissed') === 'true') {
+        const banner = document.getElementById('demoBanner');
+        if (banner) banner.classList.add('hidden');
+    }
+})();
+
 // Demo link functions
 function openCollectorDemo() {
     window.open('docs/l8collector.html', '_blank');

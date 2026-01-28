@@ -380,6 +380,11 @@ hr {
     font-size: 1rem;
 }
 
+.landing-header .about-link {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
 .toc-section {
     margin-top: 2rem;
 }

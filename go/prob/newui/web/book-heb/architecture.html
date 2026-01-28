@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#fdfbf7">
+    <meta name="description" content="ארכיטקטורה היא מנגנון היישור | פשטות רדיקלית לבני אדם מאת שרון אייכלר">
+    <meta name="author" content="שרון אייכלר">
+    <title>ארכיטקטורה היא מנגנון היישור | פשטות רדיקלית לבני אדם</title>
+    <link rel="stylesheet" href="css/book.css">
+</head>
+<body>
+    <button class="mobile-nav-toggle" aria-label="פתח/סגור תפריט">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="sidebar-overlay"></div>
+
+    <div class="site-container">
+        <nav class="sidebar" role="navigation" aria-label="תוכן עניינים">
+            <header class="site-header">
+                <h1 class="book-title">פשטות רדיקלית<br>לבני אדם</h1>
+                <p class="book-subtitle">שכבה 8</p>
+                <div class="author-info">
+                    <p>שרון אייכלר</p>
+                    <p><a href="mailto:saichler@gmail.com">saichler@gmail.com</a></p>
+                </div>
+                <div class="sponsor-button">
+                    <iframe src="https://github.com/sponsors/saichler/button" title="Sponsor saichler" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
+                </div>
+            </header>
+
+            <h2 class="nav-title">תוכן עניינים</h2>
+            <ul class="chapter-list">
+                <li><a href="book.html">בית</a></li>
+                <li><a href="about.html">אודות המחבר</a></li>
+                <li><a href="introduction.html">מבוא</a></li>
+                <li><a href="thoughts.html">מחשבות</a></li>
+                <li><a href="ground-rules.html">כללי יסוד</a></li>
+                <li><a href="architecture.html" class="active">ארכיטקטורה כמנגנון יישור</a></li>
+                <li><a href="failure-modes.html">מצבי כשל</a></li>
+                <li><a href="economics.html">כלכלה</a></li>
+                <li><a href="security.html">אבטחה</a></li>
+                <li><a href="networking.html">רשתות</a></li>
+                <li><a href="serialization.html">סריאליזציה</a></li>
+                <li><span class="coming-soon">זמן ריצה אגנוסטי למודל</span></li>
+                <li><span class="coming-soon">שירות כחוזה</span></li>
+                <li><span class="coming-soon">API ושפת שאילתות</span></li>
+                <li><span class="coming-soon">מיפוי יחסי אובייקטים</span></li>
+                <li><span class="coming-soon">שרת אינטרנט</span></li>
+                <li><span class="coming-soon">איכות</span></li>
+                <li><span class="coming-soon">מיגרציה</span></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <article>
+                    <h1>ארכיטקטורה היא מנגנון היישור</h1>
+
+                    <p>ארכיטקטורה טובה אינה רק החלטה טכנית.<br>
+                    היא <strong>החלטת תמריצים</strong>.</p>
+
+                    <p>ארכיטקטורה קובעת איזו התנהגות מתוגמלת, איזו התנהגות נענשת, ואיזו התנהגות בלתי אפשרית, הרבה לפני שכל תהליך, מדיניות או התערבות ניהולית קיימים.</p>
+
+                    <p>כאשר ארכיטקטורה היא משתמעת, תמריצים מתפצלים.<br>
+                    כאשר ארכיטקטורה היא מפורשת, תמריצים מתיישרים.</p>
+
+                    <hr>
+
+                    <h2>ארכיטקטורה מיישרת תמריצים</h2>
+
+                    <p>ארגונים מנסים לעתים קרובות ליישר תמריצים <strong>אחרי</strong> שמערכות נבנו:</p>
+
+                    <ul>
+                        <li>הערכות ביצועים</li>
+                        <li>הוראות תהליך</li>
+                        <li>מסמכי שיטות עבודה מומלצות</li>
+                        <li>סיסמאות תרבותיות</li>
+                    </ul>
+
+                    <p>מנגנונים אלה מנסים לתקן התנהגות במורד הזרם.</p>
+
+                    <p>ארכיטקטורה עובדת במעלה הזרם.</p>
+
+                    <p>ארכיטקטורה מחליטה:</p>
+
+                    <ul>
+                        <li>האם מהנדסים מתוגמלים על מהירות <strong>או</strong> על בטיחות</li>
+                        <li>האם צוותים מייעלים להצלחה מקומית <strong>או</strong> לבריאות המערכת</li>
+                        <li>האם תיקון שורשי בעיות זול יותר מהוספת מעקפים</li>
+                        <li>האם בעלות ברורה או מנוהלת פוליטית</li>
+                        <li>האם אמירת "לא" נתמכת על ידי מבנה או נענשת חברתית</li>
+                    </ul>
+
+                    <p>כאשר ארכיטקטורה נשארת משתמעת, תמריצים נסחפים לכיוון המקומי וקצר הטווח:</p>
+
+                    <ul>
+                        <li>משלוח עכשיו מתוגמל; ניקוי מאוחר יותר הוא בלתי נראה</li>
+                        <li>גבורה מנצחת אמינות</li>
+                        <li>מורכבות נסבלת כי אף אחד לא מחזיק בבעלות עליה</li>
+                        <li>סיכון מצטבר בשקט עד שהוא מתפוצץ</li>
+                    </ul>
+
+                    <p>זו אינה בעיית אנשים.<br>
+                    זו בעיה ארכיטקטונית.</p>
+
+                    <hr>
+
+                    <h2>ארכיטקטורה מפורשת יוצרת יישור טבעי</h2>
+
+                    <p>כאשר כוונה היא מפורשת ונאכפת על ידי הפלטפורמה:</p>
+
+                    <ul>
+                        <li>מהנדסים מתוגמלים על פשטות, כי מורכבות לא יכולה להסתתר</li>
+                        <li>צוותים מתוגמלים על נכונות, כי מצבי כשל הם דטרמיניסטיים</li>
+                        <li>אבטחה מתוגמלת, כי עקיפתה היא בלתי אפשרית מבנית</li>
+                        <li>שימוש חוזר מתוגמל, כי סטייה בעלת עלות נראית</li>
+                        <li>אמירת "לא" לשינויים לא בטוחים מתוגמלת, כי המערכת אוכפת זאת</li>
+                    </ul>
+
+                    <p>תמריצים מפסיקים להסתמך על משמעת.<br>
+                    הם הופכים לתכונות של המערכת.</p>
+
+                    <p>לכן ארכיטקטורה טובה מרחיבה ארגונים, לא רק תוכנה.</p>
+
+                    <hr>
+
+                    <h2>אם תזכור דבר אחד מפרק זה</h2>
+
+                    <p>אם תזכור דבר אחד מפרק זה, זכור את זה:</p>
+
+                    <p><strong>ארכיטקטורה היא האופן שבו תמריצים מקודדים לתוך המערכת.</strong></p>
+
+                    <p>כאשר ארכיטקטורה היא משתמעת, המערכת מתגמלת מהירות על פני בטיחות, גבורה על פני נכונות, ומשלוח לטווח קצר על פני בריאות לטווח ארוך, ללא קשר למה שההנהגה מתכוונת.</p>
+
+                    <p>כאשר ארכיטקטורה היא מפורשת, המערכת עצמה מתגמלת את ההתנהגות הנכונה. מהנדסים לא צריכים להיות גיבורים. צוותים לא צריכים להיות ממושמעים. תוצאות טובות צומחות באופן טבעי כי המערכת הופכת בחירות גרועות ליקרות ובחירות טובות לקלות.</p>
+
+                    <p>תרבות עוקבת אחרי תמריצים.<br>
+                    תמריצים עוקבים אחרי ארכיטקטורה.</p>
+
+                    <hr>
+
+                    <h2>שמו את האויב (ניסוח מחדש)</h2>
+
+                    <p>לפני שנמשיך, ננסח מחדש את האויב בבירור:</p>
+
+                    <p><strong>האויב הוא תכנון משתמע</strong> &ndash; ארכיטקטורה-מ-הסקה שמיישרת תמריצים בצורה שגויה על ידי הסתרת כוונה, בעלות והבטחות בתוך פרטי מימוש.</p>
+
+                    <p>תכנון משתמע מתגמל את ההתנהגות הלא נכונה כברירת מחדל.</p>
+
+                    <p>ארכיטקטורה מפורשת הופכת את זה.</p>
+
+                    <hr>
+
+                    <h2>מעבר לפרקים הבאים</h2>
+
+                    <p>כל מה שבא אחרי הוא תגובה מבנית לחוסר יישור תמריצים שנגרם על ידי תכנון משתמע.</p>
+
+                    <p>הפרקים הבאים מציגים מנגנונים שהופכים יישור לבלתי נמנע: אבטחה, זהות, אמון וסמנטיקת ביצוע, לא כתכונות, אלא כתשתית מעצבת תמריצים.</p>
+
+                    <p>כאשר תמריצים מתיישרים עם מטרות המערכת, הביצוע הופך לשגרתי. שגרתי הופך לצפוי. צפוי הופך לפשוט באופן רדיקלי. ופשטות רדיקלית היא הדרך שבה ארגונים משיגים מהירות, איכות וקיימות בו זמנית.</p>
+
+                    <nav class="chapter-nav">
+                        <a href="ground-rules.html" class="prev">כללי יסוד</a>
+                        <a href="failure-modes.html" class="next">מצבי כשל של ארכיטקטורה משתמעת</a>
+                    </nav>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/book.js"></script>
+</body>
+</html>

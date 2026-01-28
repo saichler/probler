@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#fdfbf7">
+    <meta name="description" content="Ground Rules - Architectural Constraints | Radical Simplicity for Humans by Sharon Aicler">
+    <meta name="author" content="Sharon Aicler">
+    <title>Ground Rules | Radical Simplicity for Humans</title>
+    <link rel="stylesheet" href="css/book.css">
+</head>
+<body>
+    <button class="mobile-nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="sidebar-overlay"></div>
+
+    <div class="site-container">
+        <nav class="sidebar" role="navigation" aria-label="Table of Contents">
+            <header class="site-header">
+                <h1 class="book-title">Radical Simplicity<br>for Humans</h1>
+                <p class="book-subtitle">Layer 8</p>
+                <div class="author-info">
+                    <p>Sharon Aicler</p>
+                    <p><a href="mailto:saichler@gmail.com">saichler@gmail.com</a></p>
+                </div>
+                <div class="sponsor-button">
+                    <iframe src="https://github.com/sponsors/saichler/button" title="Sponsor saichler" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
+                </div>
+            </header>
+
+            <h2 class="nav-title">Contents</h2>
+            <ul class="chapter-list">
+                <li><a href="book.html">Home</a></li>
+                <li><a href="about.html">About the Author</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+                <li><a href="thoughts.html">Thoughts</a></li>
+                <li><a href="ground-rules.html" class="active">Ground Rules</a></li>
+                <li><a href="architecture.html">Architecture Is the Alignment Mechanism</a></li>
+                <li><a href="failure-modes.html">Failure Modes</a></li>
+                <li><a href="economics.html">Economics</a></li>
+                <li><a href="security.html">Security</a></li>
+                <li><a href="networking.html">Networking</a></li>
+                <li><a href="serialization.html">Serialization</a></li>
+                <li><span class="coming-soon">Model-Agnostic Runtime</span></li>
+                <li><span class="coming-soon">Service as a Contract</span></li>
+                <li><span class="coming-soon">API &amp; Query Language</span></li>
+                <li><span class="coming-soon">Object Relation Mapping</span></li>
+                <li><span class="coming-soon">Web Server</span></li>
+                <li><span class="coming-soon">Quality</span></li>
+                <li><span class="coming-soon">Migration</span></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <article>
+                    <h1>Ground Rules</h1>
+
+                    <p>These rules are not best practices or guidelines.<br>
+                    They are constraints learned the hard way and enforced to prevent entire classes of failure.</p>
+
+                    <hr>
+
+                    <h2>Why These Rules Are Enforced</h2>
+
+                    <p>These rules are not recommendations.</p>
+
+                    <p>They are enforced because each one represents a boundary where <strong>complexity either collapses, or floods the system.</strong></p>
+
+                    <p>They were not chosen arbitrarily.<br>
+                    They were synthesized by analyzing failure modes across organizations, architectures, and decades of distributed systems work. Every rule exists because violating it reliably introduces <strong>drag, coordination cost, and irreversible complexity.</strong></p>
+
+                    <p>Most importantly, these rules are <strong>not independent</strong>.</p>
+
+                    <p>Breaking a single rule does not cause a local problem.<br>
+                    It reintroduces complexity globally, forcing compensating mechanisms, exceptions, and human process everywhere else in the system.</p>
+
+                    <p>That is why they are enforced, not suggested.</p>
+
+                    <p>Negotiable rules become optional under pressure.<br>
+                    Optional rules become technical debt.<br>
+                    Debt becomes structural failure.</p>
+
+                    <p>Layer 8 treats these rules as constraints because constraints are what keep systems simple over time.</p>
+
+                    <hr>
+
+                    <h2>Rule #1 - The Smart People / AI Can Do It</h2>
+
+                    <p>What feels far-fetched to one engineer is often trivial to another, or to an AI.</p>
+
+                    <p>When designing, "Is this possible?" is not a valid question.<br>
+                    Design must be driven by intent, not by the current limits of knowledge, tools, or experience.</p>
+
+                    <p>Assume intelligence exists. Design accordingly.</p>
+
+                    <h3>Failure prevented</h3>
+                    <p>Prevents design from being constrained by current knowledge, causing intent to leak into implementation and permanently cap system evolution.</p>
+
+                    <h3>Enforced in</h3>
+                    <ul>
+                        <li><em>Model-Agnostic Runtime</em> - where services operate on models they have never seen before</li>
+                        <li><em>Service as a Contract</em> - where SLAs are declared independently of implementation skill or tooling</li>
+                    </ul>
+
+                    <hr>
+
+                    <h2>Rule #2 - Oversimplification Is Mandatory</h2>
+
+                    <p>Oversimplification is not carelessness.<br>
+                    It is the deliberate act of extracting abstractions and building agnostic architecture.</p>
+
+                    <p>The simpler the design, the easier it is to understand.<br>
+                    The easier it is to understand, the easier it is to maintain.<br>
+                    The easier it is to maintain, the easier it is to change, or replace, the implementation.</p>
+
+                    <p>Complexity locks systems in place and taxes both budgets and humans.<br>
+                    Simplicity keeps systems agile, affordable, and humane.</p>
+
+                    <p>Layer 8 treats simplicity as a non-negotiable constraint:<br>
+                    if a design cannot be oversimplified, it is not yet understood.</p>
+
+                    <h3>Failure prevented</h3>
+                    <p>Prevents accidental complexity that increases coordination cost, slows change, and locks the system into fragile abstractions.</p>
+
+                    <h3>Enforced in</h3>
+                    <ul>
+                        <li><em>Failure Modes of Implicit Architecture</em> - by demonstrating the cost of uncollapsed complexity</li>
+                        <li><em>The Economics of Implicit Architecture</em> - where complexity is treated as a compounding tax</li>
+                        <li><em>Base Service</em> - where repeated service logic is collapsed into a single implementation</li>
+                    </ul>
+
+                    <hr>
+
+                    <h2>Rule #3 - Serverless by Design</h2>
+
+                    <p>This rule is about <strong>abstraction</strong>, not deployment topology.</p>
+
+                    <p>Serverless does <strong>not</strong> mean:</p>
+                    <ul>
+                        <li>No processes</li>
+                        <li>No runtimes</li>
+                        <li>No nodes</li>
+                        <li>No deployment decisions</li>
+                    </ul>
+
+                    <p>Those concerns still exist, but they exist <strong>below the architectural boundary</strong>.</p>
+
+                    <p>What this rule forbids is allowing <strong>deployment topology to leak into the architectural model</strong>.</p>
+
+                    <h3>The Failure of Client-Server Thinking</h3>
+
+                    <p>The word <em>server</em> implies a client-server relationship. Client-server implies a single provider serving multiple consumers.</p>
+
+                    <p>That assumption quietly enforces linear performance degradation as consumers increase - which directly contradicts horizontal scale.</p>
+
+                    <p>Worse, client-server thinking makes the <strong>consumer aware of the provider's existence</strong>.</p>
+
+                    <p>The moment a client knows there is:</p>
+                    <ul>
+                        <li>a server instance</li>
+                        <li>an addressable endpoint</li>
+                        <li>a fixed provider identity</li>
+                    </ul>
+
+                    <p><strong>the architecture is already compromised.</strong></p>
+
+                    <p>From that moment on, engineers are forced to solve:</p>
+                    <ul>
+                        <li>routing</li>
+                        <li>affinity</li>
+                        <li>retries</li>
+                        <li>failover</li>
+                        <li>topology awareness</li>
+                        <li>lifecycle coordination</li>
+                    </ul>
+
+                    <p>None of these are business problems. They are artifacts of leaked deployment detail.</p>
+
+                    <h3>Abstraction Is the Boundary</h3>
+
+                    <p>Layer 8 does <strong>not</strong> deny that systems run somewhere.</p>
+
+                    <p>Processes exist.<br>
+                    Schedulers exist.<br>
+                    Networks exist.</p>
+
+                    <p>What Layer 8 enforces is that <strong>none of this is visible to the consumer</strong>.</p>
+
+                    <p>The consumer expresses <em>intent</em>.<br>
+                    The platform resolves <em>delivery</em>.</p>
+
+                    <p>Whether that delivery is backed by:</p>
+                    <ul>
+                        <li>one process or many</li>
+                        <li>one node or thousands</li>
+                        <li>one region or several</li>
+                        <li>Kubernetes, VMs, bare metal, or something else entirely</li>
+                    </ul>
+
+                    <p>is an internal decision.</p>
+
+                    <p>Topology is an <strong>implementation concern</strong>, not an architectural one.</p>
+
+                    <h3>The Correct Mental Model</h3>
+
+                    <p>What we want instead of client-server is:</p>
+                    <ul>
+                        <li>Unicast</li>
+                        <li>Multicast</li>
+                        <li>Anycast</li>
+                        <li>Nearcast</li>
+                    </ul>
+
+                    <p>In this model:</p>
+                    <ul>
+                        <li>the provider is abstract</li>
+                        <li>the consumer is agnostic</li>
+                        <li>scaling is implicit</li>
+                        <li>failover is structural</li>
+                        <li>topology is invisible</li>
+                    </ul>
+
+                    <p>No servers. No instances. No identities exposed.</p>
+
+                    <p>Only:</p>
+                    <ul>
+                        <li>declared capability</li>
+                        <li>enforced interface</li>
+                        <li>platform-managed delivery</li>
+                    </ul>
+
+                    <h3>Failure prevented</h3>
+                    <p>Prevents deployment topology and instance identity from leaking into the architectural model, which would otherwise force routing, resilience, and lifecycle complexity into application code.</p>
+
+                    <h3>Enforced in</h3>
+                    <ul>
+                        <li><em>Networking</em> - where instance identity, topology, and routing are removed from the service model</li>
+                        <li><em>Security &amp; AAA</em> - where trust is bound to identity and intent, not location</li>
+                        <li><em>Service as a Contract</em> - where services exist independently of process or deployment</li>
+                    </ul>
+
+                    <hr>
+
+                    <h2>Rule #4 - Never Let Implementation Influence Design</h2>
+
+                    <p>This rule intentionally echoes <strong>Rule #1</strong>.</p>
+
+                    <p>Letting implementation shape design is a costly mistake.</p>
+
+                    <p>An implementation mistake costs thousands.<br>
+                    It gets fixed, rewritten, or thrown away.</p>
+
+                    <p>A design mistake costs years.<br>
+                    It compounds through rewrites, migrations, delays, and lost opportunities.</p>
+
+                    <p>Design errors persist.<br>
+                    Implementation errors expire.</p>
+
+                    <p>That is why design must be protected from implementation concerns at all costs.</p>
+
+                    <p>Break this rule once, and the system will carry the debt forever.</p>
+
+                    <h3>Failure prevented</h3>
+                    <p>Prevents irreversible architectural debt where short-term implementation constraints hard-code long-term system limits.</p>
+
+                    <h3>Enforced in</h3>
+                    <ul>
+                        <li><em>Ground Rules &rarr; Base Service</em> - where behavior is derived from declared SLA, not code paths</li>
+                        <li><em>Migration</em> - where existing implementations are replaced without altering architectural intent</li>
+                    </ul>
+
+                    <hr>
+
+                    <h2>Rule #5 - "As a Service" Must Mean Interface, Not Instance</h2>
+
+                    <p>Providing an instance is not a service.<br>
+                    It is a form of coupling.</p>
+
+                    <p>When a system is given an instance instead of an interface, the consumer becomes tied to the implementation: the technology, the methods, the language, the behavior, and the lifecycle of that instance.</p>
+
+                    <p>"Database as a Service" is the classic failure.</p>
+
+                    <p>Handing a consumer a database connection couples them to:</p>
+                    <ul>
+                        <li>a specific database type</li>
+                        <li>a specific query language</li>
+                        <li>a specific schema model</li>
+                        <li>a specific running instance</li>
+                    </ul>
+
+                    <p>This is not abstraction.<br>
+                    It is dependency injection at scale; and it leaks everywhere.</p>
+
+                    <p>A true service exposes capability, not infrastructure.</p>
+
+                    <p>The correct model is simple:</p>
+                    <ul>
+                        <li>The consumer submits a model instance</li>
+                        <li>The service persists it</li>
+                        <li>The consumer retrieves it through a stable interface and SLA</li>
+                    </ul>
+
+                    <p>The consumer must never know, or care, whether the data lives in SQL, NoSQL, memory, files, or something that does not yet exist.</p>
+
+                    <p>If a service requires the consumer to understand how it works internally, it is not a service.<br>
+                    It is an implementation being rented.</p>
+
+                    <p>Layer 8 treats interfaces as the product<br>
+                    and instances as an internal detail.</p>
+
+                    <h3>Failure prevented</h3>
+                    <p>Prevents consumers from becoming coupled to internal technology, lifecycle, and operational behavior through exposed instances instead of stable interfaces.</p>
+
+                    <h3>Enforced in</h3>
+                    <ul>
+                        <li><em>Service as a Contract</em> - where services expose capability through Prime Objects, not runtimes</li>
+                        <li><em>Serialization</em> - where consumers exchange intent, not internal representations</li>
+                        <li><em>Networking</em> - where consumers never address instances directly</li>
+                    </ul>
+
+                    <hr>
+
+                    <h2>Rule #6 - Platform Agnostic</h2>
+
+                    <p>If a system can run on an outdated mobile device, it is light.<br>
+                    If it is light, it can scale.</p>
+
+                    <p>True scalability works in both directions.<br>
+                    A system that can scale down as easily as it scales up is inherently efficient.</p>
+
+                    <p>Platform agnosticism is the proof.</p>
+
+                    <p>If your design depends on a specific cloud, hardware class, or runtime, it is already too heavy.</p>
+
+                    <p>Scale-down capability is not an optimization.<br>
+                    It is the reason systems remain cheap, portable, and resilient.</p>
+
+                    <p>Layer 8 designs for the lowest common denominator -<br>
+                    and lets scale emerge naturally.</p>
+
+                    <h3>Failure prevented</h3>
+                    <p>Prevents cloud, hardware, or runtime assumptions from leaking into design and permanently coupling the system to a specific provider or platform.</p>
+
+                    <h3>Enforced in</h3>
+                    <ul>
+                        <li><em>Networking</em> - where communication is abstracted above physical topology</li>
+                        <li><em>Runtime</em> - where execution does not assume language, cloud, or hardware</li>
+                        <li><em>Migration</em> - where systems are moved without architectural refactoring</li>
+                    </ul>
+
+                    <nav class="chapter-nav">
+                        <a href="thoughts.html" class="prev">Thoughts</a>
+                        <a href="architecture.html" class="next">Architecture Is the Alignment Mechanism</a>
+                    </nav>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/book.js"></script>
+</body>
+</html>
