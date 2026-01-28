@@ -63,7 +63,7 @@
     text-transform: uppercase;
     letter-spacing: 3px;
     text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Figtree', sans-serif;
     animation: hero-title-entrance 1s ease-out;
 }
 

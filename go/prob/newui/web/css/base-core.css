@@ -1,6 +1,23 @@
 /* Tier 1 Carrier Network Operation Center (NOC) Theme */
 /* Inspired by AT&T, Verizon, Level3/Lumen, and professional NOC monitoring systems */
 
+/* Figtree Font - Variable Font */
+@font-face {
+    font-family: 'Figtree';
+    src: url('../font/Figtree-VariableFont_wght.ttf') format('truetype');
+    font-weight: 300 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Figtree';
+    src: url('../font/Figtree-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 300 900;
+    font-style: italic;
+    font-display: swap;
+}
+
 :root {
     /* Primary Colors - True NOC Dark Theme */
     --noc-black: #000000;
@@ -158,17 +175,18 @@ body {
     margin-bottom: 0;
     letter-spacing: 2px;
     text-transform: uppercase;
-    font-family: 'Arial Black', 'Arial Bold', sans-serif;
+    font-family: 'Figtree', sans-serif;
     text-shadow: none;
 }
 
 .header-subtitle {
     font-size: 9px;
     color: #718096;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     margin-top: 2px;
+    font-family: 'Figtree', sans-serif;
 }
 
 .header-right {
@@ -185,7 +203,8 @@ body {
     color: #718096;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-weight: 700;
+    font-weight: 600;
+    font-family: 'Figtree', sans-serif;
 }
 
 .layer8-header-logo {
@@ -195,9 +214,10 @@ body {
 }
 
 .layer8-header-text {
-    font-weight: 700;
+    font-weight: 600;
     color: #4a5568;
     letter-spacing: 1px;
+    font-family: 'Figtree', sans-serif;
 }
 
 .user-menu {
@@ -208,10 +228,11 @@ body {
 
 .username {
     color: #2d3748;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-family: 'Figtree', sans-serif;
 }
 
 .logout-btn {
@@ -226,7 +247,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 1.5px;
     transition: all 0.3s ease;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Figtree', sans-serif;
     box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
 }
 
@@ -268,6 +289,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     position: relative;
+    font-family: 'Figtree', sans-serif;
 }
 
 .nav-link:hover {
@@ -330,7 +352,7 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Figtree', sans-serif;
 }
 
 .section-title::before {
@@ -467,7 +489,8 @@ body.iframe-modal-active .table-container {
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-weight: 700;
+    font-weight: 600;
+    font-family: 'Figtree', sans-serif;
 }
 
 .noc-metric-value {
