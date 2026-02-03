@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#fdfbf7">
+    <meta name="description" content="Object Relation Mapping | Radical Simplicity for Humans by Sharon Aicler">
+    <meta name="author" content="Sharon Aicler">
+    <title>Object Relation Mapping | Radical Simplicity for Humans</title>
+    <link rel="stylesheet" href="css/book.css">
+</head>
+<body>
+    <button class="mobile-nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="sidebar-overlay"></div>
+
+    <div class="site-container">
+        <nav class="sidebar" role="navigation" aria-label="Table of Contents">
+            <header class="site-header">
+                <h1 class="book-title">Radical Simplicity<br>for Humans</h1>
+                <p class="book-subtitle">Layer 8</p>
+                <div class="author-info">
+                    <p>Sharon Aicler</p>
+                    <p><a href="mailto:saichler@gmail.com">saichler@gmail.com</a></p>
+                </div>
+                <div class="sponsor-button">
+                    <iframe src="https://github.com/sponsors/saichler/button" title="Sponsor saichler" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
+                </div>
+            </header>
+
+            <h2 class="nav-title">Contents</h2>
+            <ul class="chapter-list">
+                <li><a href="book.html">Home</a></li>
+                <li><a href="about.html">About the Author</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+                <li><a href="thoughts.html">Thoughts</a></li>
+                <li><a href="ground-rules.html">Ground Rules</a></li>
+                <li><a href="architecture.html">Architecture Is the Alignment Mechanism</a></li>
+                <li><a href="failure-modes.html">Failure Modes</a></li>
+                <li><a href="economics.html">Economics</a></li>
+                <li><a href="security.html">Security</a></li>
+                <li><a href="networking.html">Networking</a></li>
+                <li><a href="serialization.html">Serialization</a></li>
+                <li><a href="model-agnostic-runtime.html">Model-Agnostic Runtime</a></li>
+                <li><a href="service-as-contract.html">Service as a Contract</a></li>
+                <li><a href="api-query-language.html">API &amp; Query Language</a></li>
+                <li><a href="object-relation-mapping.html" class="active">Object Relation Mapping</a></li>
+                <li><a href="web-server.html">Web Server</a></li>
+                <li><a href="quality.html">Quality</a></li>
+                <li><a href="practice.html">Practice</a></li>
+                <li><span class="coming-soon">Radical Simplicity for AI</span></li>
+                <li><span class="coming-soon">Migration</span></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <article>
+                    <h1>Object Relation Mapping</h1>
+
+                    <p>Persisting object models into relational databases has always been hard. Object Relational Mapping (ORM) was introduced as a solution.</p>
+
+                    <p>The idea sounds simple: annotate your model with relational hints, and let an ORM translate objects to tables and records, and back again.</p>
+
+                    <p>On paper, this looks like progress.<br>
+                    In practice, it creates new problems.</p>
+
+                    <hr>
+
+                    <h2>Explicit ORM Failure Modes This Replaces</h2>
+
+                    <p>Traditional ORMs tend to fail in predictable ways:</p>
+
+                    <ul>
+                        <li>N+1 query explosions caused by implicit lazy loading</li>
+                        <li>Unbounded object graph hydration</li>
+                        <li>Unpredictable performance due to implicit joins</li>
+                        <li>Schema leakage into domain models via annotations</li>
+                        <li>Vendor and dialect coupling</li>
+                        <li>Fragile migrations and schema drift</li>
+                        <li>Cascade and orphan side effects</li>
+                        <li>Transaction boundary ambiguity</li>
+                        <li>Impedance-mismatch driven model distortion</li>
+                    </ul>
+
+                    <p>Layer 8 eliminates these failure modes by removing implicit, instance-driven persistence and replacing it with introspection and explicit interfaces.</p>
+
+                    <p>First, the persistence layer becomes tightly coupled to relational databases, often to a specific vendor or dialect.</p>
+
+                    <p>Second, the complexity does not disappear. It moves.</p>
+
+                    <p>Instead of maintaining database schemas, teams now maintain annotation-heavy models. As models grow larger and more deeply nested, this annotation burden becomes significant.</p>
+
+                    <p>The model stops representing the domain. It starts representing the database.</p>
+
+                    <p>Layer 8 takes a different approach.</p>
+
+                    <p>To achieve this, Layer 8 decomposes the traditional ORM concept into three distinct layers, connected only through explicit interfaces and owned boundaries:</p>
+
+                    <p><strong>Service</strong><br>
+                    Exposes persistence as a storage-agnostic contract (using the standard Layer 8 service interface), while keeping consuming services unaware of storage mechanics.</p>
+
+                    <p><strong>Convert</strong><br>
+                    Owned by the persistence adapter, Convert projects model instances to and from relational data using introspection, without embedding database concerns into the model.</p>
+
+                    <p><strong>Persist</strong><br>
+                    Also owned by the persistence adapter, Persist handles durable storage and retrieval of relational data, isolated from both domain semantics and model authorship.</p>
+
+                    <p>By separating Service, Convert, and Persist, Layer 8 eliminates tight coupling, prevents schema leakage into the model, and allows each layer to evolve independently.</p>
+
+                    <p>Persistence becomes composable, replaceable, and intentional.</p>
+
+                    <h2>Ownership Boundaries: Services vs Persistence</h2>
+
+                    <p>Layer 8 enforces a strict separation between domain ownership and storage ownership.</p>
+
+                    <p>A consuming service has no persistence or storage awareness. It does not know tables, schemas, indexes, queries, serialization formats, or database dialects.</p>
+
+                    <p>A service owns:</p>
+
+                    <ul>
+                        <li>the domain lifecycle of a Prime Object</li>
+                        <li>validation and invariants</li>
+                        <li>concurrency ownership</li>
+                        <li>domain behavior</li>
+                    </ul>
+
+                    <p>The persistence adapter owns all storage representation and durability, including:</p>
+
+                    <ul>
+                        <li>Convert: projecting an introspected model into relational form and reconstructing it on read</li>
+                        <li>Persist: executing durable read and write operations against the selected backend</li>
+                    </ul>
+
+                    <p>This separation keeps services portable while allowing persistence plugins to evolve, optimize, or swap backends without leaking schema concerns into domain logic.</p>
+
+                    <hr>
+
+                    <h2>Layer 8 Relational Model</h2>
+
+                    <p>The implementation of Chapters 9 and 11 reveals an important outcome: Layer 8 already has enough information to translate any model instance into relational data without requiring additional annotations or hints.</p>
+
+                    <p>No ORM-specific metadata is needed.</p>
+
+                    <p>The rule of thumb is simple:</p>
+
+                    <ul>
+                        <li>Every struct or class in the model maps to a Logical Table.</li>
+                        <li>Every model instance maps to one or more Logical Rows.</li>
+                        <li>Each Logical Row is uniquely identified by a PropertyId.</li>
+                    </ul>
+
+                    <p>This mapping is derived entirely from the introspected model structure. To formalize this, Layer 8 introduces the L8RelationData model.</p>
+
+                    <p>L8RelationData represents relational state as a logical abstraction, independent of any physical database implementation.</p>
+
+                    <p><em>It consists of</em>:</p>
+
+                    <ul>
+                        <li>A map from struct name to Logical Table.</li>
+                        <li>Each Logical Table contains a map from PropertyId to Logical Row.</li>
+                        <li>Each Logical Row contains a map from field name to field value.</li>
+                    </ul>
+
+                    <p><em>In other words</em>:</p>
+
+                    <ul>
+                        <li>Tables are logical, not physical.</li>
+                        <li>Rows are identified by model paths, not primary keys.</li>
+                        <li>Fields retain their original semantic meaning.</li>
+                    </ul>
+
+                    <p>This relational representation is derived, not designed. It emerges naturally from the model and its structure.</p>
+
+                    <p>By treating relational data as a projection of the model, Layer 8 avoids schema annotations, mapping rules, and database-specific assumptions.</p>
+
+                    <p>The model remains pure. The relational view is generated. Persistence adapts to the model.</p>
+
+                    <hr>
+
+                    <h2>Service</h2>
+
+                    <p>The Layer 8 ORM Service encapsulates the interaction between the Convert and Persist components and presents them with the same look and feel as the Distributed Cache component.</p>
+
+                    <p>From the perspective of a consuming service, persistence is invisible. The service remains completely agnostic to:</p>
+
+                    <ul>
+                        <li>how data is converted,</li>
+                        <li>how it is stored,</li>
+                        <li>and how queries are executed.</li>
+                    </ul>
+
+                    <p>Interaction with the ORM Service uses the standard Layer 8 service interface: POST, PUT, PATCH, DELETE, and GET, as described in Chapter 11.</p>
+
+                    <h3>Write Path</h3>
+
+                    <p>For write operations, the Service layer:</p>
+
+                    <ul>
+                        <li>converts model instances into relational data using the Convert interface,</li>
+                        <li>passes the resulting relational data to the Persist layer for storage.</li>
+                    </ul>
+
+                    <h3>Read Path</h3>
+
+                    <p>For query operations, the Service layer:</p>
+
+                    <ul>
+                        <li>forwards the L8Query directly to the Persist layer,</li>
+                        <li>receives relational data as a result,</li>
+                        <li>passes that data through the Convert interface,</li>
+                        <li>and returns model instances to the caller.</li>
+                    </ul>
+
+                    <p>At no point does the consuming service interact with relational structures, schemas, or database-specific details.</p>
+
+                    <p>The Service layer acts as a facade. It enforces the service contract, coordinates conversion and persistence, and preserves the illusion of working with an in-memory, model-native system.</p>
+
+                    <p><strong>Persistence becomes a service, not a concern.</strong></p>
+
+                    <hr>
+
+                    <h2>Convert</h2>
+
+                    <p>The Convert layer performs a mechanical, deterministic operation. There is no hidden complexity and no domain logic.</p>
+
+                    <p><em>It takes</em>:</p>
+
+                    <ul>
+                        <li>model instances and converts them into relational data, or</li>
+                        <li>relational data and converts it back into model instances.</li>
+                    </ul>
+
+                    <p>All conversions are driven entirely by the Introspector blueprint and the Property mechanism described in Chapter 9. No model-specific rules are embedded. No database-specific assumptions are made.</p>
+
+                    <p>Conversion is structural, not semantic. It preserves shape and values, not business meaning.</p>
+
+                    <p>By keeping conversion purely mechanical, Layer 8 ensures that persistence logic remains predictable, testable, and replaceable.</p>
+
+                    <p>The Convert layer does one thing: <strong>translate representations. Nothing more.</strong></p>
+
+                    <hr>
+
+                    <h2>Persist</h2>
+
+                    <p>Persisting relational data is intentionally straightforward.</p>
+
+                    <p>Relational data can be stored in:</p>
+
+                    <ul>
+                        <li>relational database tables,</li>
+                        <li>files,</li>
+                        <li>NoSql,</li>
+                        <li>or any other durable storage mechanism.</li>
+                    </ul>
+
+                    <p>Layer 8 avoids complex annotations and mapping rules. Instead, it relies on two universal columns added to every relational record:</p>
+
+                    <ul>
+                        <li>ParentPropertyId</li>
+                        <li>PropertyId</li>
+                    </ul>
+
+                    <p>With these two identifiers, the full object graph can be reconstructed deterministically. No additional schema hints or model annotations are required. The Persist interface enforces <strong>L8Query</strong> as the input for read operations. This abstracts away all implementation details.</p>
+
+                    <p>Each persistence plugin is responsible for:</p>
+
+                    <ul>
+                        <li>translating L8Query into an optimized query for its underlying storage system,</li>
+                        <li>executing that query efficiently,</li>
+                        <li>and returning relational data in a standard format.</li>
+                    </ul>
+
+                    <p>The Persist layer knows nothing about:</p>
+
+                    <ul>
+                        <li>model semantics,</li>
+                        <li>service behavior,</li>
+                        <li>or business logic.</li>
+                    </ul>
+
+                    <p><strong>It focuses solely on durable storage and retrieval.</strong></p>
+
+                    <p>By isolating persistence behind a strict interface, Layer 8 allows storage engines to be swapped, optimized, or replaced without impacting services, models, or APIs.</p>
+
+                    <p><strong>Persistence becomes pluggable. The contract remains stable. The system evolves safely.</strong></p>
+
+                    <hr>
+
+                    <h2>Schema Evolution Without Service Coordination</h2>
+
+                    <p>Layer 8 supports schema evolution without requiring service-to-service coordination, synchronized deployments, or schema awareness inside services.</p>
+
+                    <p>Model evolution commonly falls into two categories:</p>
+
+                    <p>Trivial changes</p>
+
+                    <ul>
+                        <li>adding or removing attributes</li>
+                    </ul>
+
+                    <p>Structural changes</p>
+
+                    <ul>
+                        <li>renaming or reshaping fields or sub-models</li>
+                        <li>splitting or merging structures</li>
+                    </ul>
+
+                    <hr>
+
+                    <h3>Trivial evolution</h3>
+
+                    <p>For additive or subtractive attribute changes, the persistence adapter can detect model shape drift through introspection at initialization and apply safe, automatic adjustments to its storage representation.</p>
+
+                    <p>Existing services continue operating unchanged, and the system avoids silent overwrites of newly added fields.</p>
+
+                    <h3>Structural evolution</h3>
+
+                    <p>Some changes cannot be inferred safely and require explicit intent to avoid data loss or semantic corruption.</p>
+
+                    <p>When structural drift is detected:</p>
+
+                    <ul>
+                        <li>the persistence adapter determines that the change is non-trivial</li>
+                        <li>the domain service supplies migration intent through a persistence-provided interface</li>
+                        <li>the persistence adapter applies that intent consistently and durably</li>
+                    </ul>
+
+                    <p>If no intent is supplied, the system may continue operating conservatively, prioritizing data safety over aggressive transformation.</p>
+
+                    <hr>
+
+                    <h2>A Word On Plugin Implementation</h2>
+
+                    <p>Creating tables, indexes, and persisting relational data is generally straightforward.</p>
+
+                    <p>Translating an L8Query into an optimized, storage-specific query is not.</p>
+
+                    <p>For example, converting L8Query into efficient PostgreSQL SQL requires query planning, index awareness, and execution strategy decisions. These concerns are inherently storage-specific.</p>
+
+                    <p>Layer 8 provides components, assisted by AI, to handle this translation. However, a small portion of this logic is necessarily database-specific.</p>
+
+                    <p>For that reason, these components are intentionally not part of the core ORM abstraction.</p>
+
+                    <p><strong>Instead, they are provided as reference implementations.</strong></p>
+
+                    <p>They can be forked, adapted, and extended to create persistence plugins for other storage engines with minimal effort.</p>
+
+                    <p>The boundary is deliberate:</p>
+
+                    <ul>
+                        <li>Layer 8 defines the contract.</li>
+                        <li>Plugins handle optimization.</li>
+                    </ul>
+
+                    <p><strong>Storage-specific intelligence remains isolated.</strong></p>
+
+                    <p>This keeps the ORM portable, while still allowing high-performance, storage-aware implementations.</p>
+
+                    <hr>
+
+                    <h2>Reinforcing Rule #5: Interface, Not Instance</h2>
+
+                    <p>This chapter relies on Rule #5: Interface, not Instance.</p>
+
+                    <p>Services in Layer 8 never interact with persistence through live objects, sessions, repositories, or database-backed entities. Instead, services express intent through interfaces, and persistence plugins execute that intent against concrete storage instances.</p>
+
+                    <p>This separation is what makes the ORM replacement predictable: it prevents hidden side effects, keeps storage lifetimes out of domain logic, and allows persistence representation and implementation to evolve independently.</p>
+
+                    <nav class="chapter-nav">
+                        <a href="api-query-language.html" class="prev">API &amp; Query Language</a>
+                        <a href="web-server.html" class="next">Web Server</a>
+                    </nav>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/book.js"></script>
+</body>
+</html>

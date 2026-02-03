@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#fdfbf7">
+    <meta name="description" content="API ושפת שאילתות | פשטות רדיקלית לבני אדם מאת שרון אייכלר">
+    <meta name="author" content="שרון אייכלר">
+    <title>API ושפת שאילתות | פשטות רדיקלית לבני אדם</title>
+    <link rel="stylesheet" href="css/book.css">
+</head>
+<body>
+    <button class="mobile-nav-toggle" aria-label="פתח/סגור תפריט">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="sidebar-overlay"></div>
+
+    <div class="site-container">
+        <nav class="sidebar" role="navigation" aria-label="תוכן עניינים">
+            <header class="site-header">
+                <h1 class="book-title">פשטות רדיקלית<br>לבני אדם</h1>
+                <p class="book-subtitle">שכבה 8</p>
+                <div class="author-info">
+                    <p>שרון אייכלר</p>
+                    <p><a href="mailto:saichler@gmail.com">saichler@gmail.com</a></p>
+                </div>
+                <div class="sponsor-button">
+                    <iframe src="https://github.com/sponsors/saichler/button" title="Sponsor saichler" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
+                </div>
+            </header>
+
+            <h2 class="nav-title">תוכן עניינים</h2>
+            <ul class="chapter-list">
+                <li><a href="book.html">בית</a></li>
+                <li><a href="about.html">אודות המחבר</a></li>
+                <li><a href="introduction.html">מבוא</a></li>
+                <li><a href="thoughts.html">מחשבות</a></li>
+                <li><a href="ground-rules.html">כללי יסוד</a></li>
+                <li><a href="architecture.html">ארכיטקטורה כמנגנון יישור</a></li>
+                <li><a href="failure-modes.html">מצבי כשל</a></li>
+                <li><a href="economics.html">כלכלה</a></li>
+                <li><a href="security.html">אבטחה</a></li>
+                <li><a href="networking.html">רשתות</a></li>
+                <li><a href="serialization.html">סריאליזציה</a></li>
+                <li><a href="model-agnostic-runtime.html">זמן ריצה אגנוסטי למודל</a></li>
+                <li><a href="service-as-contract.html">שירות כחוזה</a></li>
+                <li><a href="api-query-language.html" class="active">API ושפת שאילתות</a></li>
+                <li><a href="object-relation-mapping.html">מיפוי יחסי אובייקטים</a></li>
+                <li><a href="web-server.html">שרת אינטרנט</a></li>
+                <li><a href="quality.html">איכות</a></li>
+                <li><a href="practice.html">תרגול</a></li>
+                <li><span class="coming-soon">פשטות רדיקלית ל-AI</span></li>
+                <li><span class="coming-soon">מיגרציה</span></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <article>
+                    <h1>API ושפת שאילתות</h1>
+
+                    <blockquote>
+                        <p>API הוא שפה.<br>
+                        פרוטוקולים הם רק האלפבית.</p>
+                    </blockquote>
+
+                    <p>מכיוון ש-API <strong><em>הם שפות</em></strong>, חוסר עקביות אינו קוסמטי; הוא מגדיל ישירות את העומס הקוגניטיבי, הפרגמנטציה והמורכבות ארוכת הטווח של המערכת.</p>
+
+                    <p>עם זאת, ברוב המערכות, כל שירות ממציא את השפה שלו, למרות שכולם משתמשים באותו אלפבית.</p>
+
+                    <ul>
+                        <li>פעלים שונים.</li>
+                        <li>חוקים שונים.</li>
+                        <li>משמעויות שונות לאותם מושגים.</li>
+                    </ul>
+
+                    <p>פרגמנטציה זו אינה מקרית. היא תוצאה של התייחסות ל-API כפרטי מימוש ולא כחוזי תקשורת משותפים.</p>
+
+                    <p>ניסיונות לנרמל API בדרך כלל מתמקדים בתחביר. הם מתקנים את האלפבית, תוך שהם מאפשרים לכל שירות <strong>להמשיך להמציא</strong> את השפה שלו.</p>
+
+                    <blockquote>
+                        <p><strong><em>זהו השורש של רוב המורכבות בפיתוח שירותים.</em></strong></p>
+                    </blockquote>
+
+                    <p>שכבה 8 נוקטת גישה שונה.</p>
+
+                    <p>במקום לתקנן איך שירותים מדברים, היא מתקננת מה ניתן לבטא.</p>
+
+                    <p>פרק זה מתאר API <strong>בין-שירותיים</strong> בתוך פלטפורמת שכבה 8; איך API אלה נחשפים דרך ממשק אינטרנט מכוסה בנפרד בפרק <strong>שרת אינטרנט</strong>.</p>
+
+                    <hr>
+
+                    <h2>מודל כ-API</h2>
+
+                    <p>כפי שנקבע בפרק 7, שירות שכבה 8 מאורגן סביב <strong>אובייקט ראשי</strong>. השירות חושף חזית העוקבת אחר סמנטיקת REST-style, מה שהופך טבעי להשתמש במופע אובייקט ראשי כקלט עבור:</p>
+
+                    <p>POST, PUT, PATCH, DELETE ו-GET.</p>
+
+                    <p>עבור פעולות GET, מופע אובייקט ראשי יחיד פועל כמסנן. השירות מחזיר את כל הפריטים התואמים לתכונות שסופקו במופע הקלט.</p>
+
+                    <p>זה עובד היטב לאינטראקציות בודדות. עם זאת, מערכות אמיתיות לא פועלות פריט אחד בכל פעם.</p>
+
+                    <p><strong>הן פועלות בקנה מידה.</strong> קנה מידה דורש פעולות בכמויות גדולות.</p>
+
+                    <p>בשכבה 8, הקלט והפלט של קריאות API לשירות הם <strong>Elements</strong> (שהוצגו בפרק 8).</p>
+
+                    <p>Elements מצמצמים את שטח ה-API על ידי החלפת סוגי בקשות ותגובות רבים ומתמחים במיכל אחיד יחיד. במקום להגדיר פעולות שירות נפרדות, סכמות payload וחוזי פגינציה, שירותים חושפים סט קטן וקבוע של אינטראקציות שכולן מקבלות ומחזירות <strong>Elements</strong>.</p>
+
+                    <p>מכיוון ש-Elements יכולים לייצג פריטים בודדים, אוספים, פרויקציות חלקיות ומטא-נתונים באותו מבנה, יכולות חדשות מתווספות על ידי ביטוי כוונה במודל ובשפת השאילתות ולא על ידי הרחבת ה-API של השירות עצמו.</p>
+
+                    <h3>דוגמה: API שירות שנעלם לחלוטין</h3>
+
+                    <p>במערכת מיקרו-שירותים קונבנציונלית, שירות צורך בדרך כלל דורש פעולות ייעודיות כמו ListEmployees, SearchEmployees או GetEmployeePage.</p>
+
+                    <p>בשכבה 8, פעולות אלה לא קיימות. הקורא מוציא:</p>
+
+                    <blockquote>
+                        <p>Request(ServiceName, ServiceArea, Get, payload, timeout) -&gt; IElements</p>
+                    </blockquote>
+
+                    <p>אם payload הוא מחרוזת L8Query תקפה, Elements מופעל כשאילתה זו. אחרת, Elements מופעל מנתוני המודל שסופקו, מיישר עצמו לאלמנט יחיד או מספר אלמנטים.</p>
+
+                    <p>התגובה היא תמיד IElements, עם מטא-נתונים המתארים את טווח התוצאה (לדוגמה, איזה עמוד הוחזר וכמה אלמנטים קיימים בסך הכל).</p>
+
+                    <p>היכולת חיה במודל ובשפת השאילתות, לא ב-API ספציפיים לשירות חדשים.</p>
+
+                    <hr>
+
+                    <h2>רשימות אובייקטים ראשיים</h2>
+
+                    <p>שכבה 8 מתמודדת עם מערכי תוצאות גדולים על ידי אכיפת הגדרה פשוטה ועקבית לרשימות <strong>אובייקטים ראשיים</strong>.</p>
+
+                    <p>עבור אובייקט ראשי נתון:</p>
+
+<pre><code>message Employee {
+}</code></pre>
+
+                    <p>סוג הרשימה המתאים חייב להיות מוגדר כ:</p>
+
+<pre><code>message EmployeeList {
+  repeated Employee list = 1;
+  l8api.L8MetaData metadata = 2;
+}</code></pre>
+
+                    <p>שדה list מכיל את עמוד התוצאות המבוקש. גודל העמוד ובחירת העמוד מוגדרים על ידי L8Query.</p>
+
+                    <p>שדה <strong>metadata</strong> מאוכלס אוטומטית על ידי תשתית שכבה 8. ניתן להרחיב אותו דרך פונקציות צופה כדי לחשב ולחשוף מידע נוסף הנדרש על ידי ממשקי משתמש, כגון ספירות כוללות או ערכים מצטברים.</p>
+
+                    <p>על ידי התייחסות למודל עצמו כ-API, שכבה 8 מסירה את הצורך בפעולות שירות מותאמות אישית, לוגיקת פגינציה מיוחדת ופורמטי תגובה ספציפיים לשירות.</p>
+
+                    <p><strong>המודל מגדיר את החוזה. הפלטפורמה מטפלת במכניקה.</strong></p>
+
+                    <hr>
+
+                    <h2>שפת השאילתות של שכבה 8</h2>
+
+                    <p>קיימות שפות שאילתות למודלים מבוססי גרף ועץ. למרות שהן עוצמתיות, הן לעתים קרובות הרבה יותר מורכבות ממה שנדרש לשכבה 8.</p>
+
+                    <p>במהלך תכנון ה-Introspector (פרק 9), צצה הבנה חשובה: מכיוון ששכבה 8 כבר <strong>מבינה</strong> את מבנה המודל בזמן ריצה, <strong>שאילתות אינן דורשות שפה חדשה או מורכבת.</strong></p>
+
+                    <p>זהו אותו בסיס כמו זמן הריצה האגנוסטי למודל. שירותים אינם צריכים ידע בזמן קומפילציה של סוגים קונקרטיים כדי לפרש כוונה. הפלטפורמה פותרת את סוג המודל השורשי, עוברת על מבנה מקונן ומפרשת נתיבי PropertyId באמצעות אינטרוספקציה בזמן ריצה, כך שסמנטיקת השאילתות נשארת יציבה גם כאשר מודלים מתפתחים.</p>
+
+                    <p>במקום זאת, שכבה 8 משתמשת בתחביר פשוט ומוכר, בהשראת SQL, שהותאם לפעול ישירות על מודלים מקוננים.</p>
+
+                    <p>זה הוביל ליצירת <strong>שפת השאילתות של שכבה 8.</strong></p>
+
+                    <h3>מבנה שאילתה</h3>
+
+                    <p>שאילתה תמיד מתחילה במילת המפתח <code>select</code>, ואחריה:</p>
+
+                    <ul>
+                        <li>רשימת תכונות, או</li>
+                        <li><code>*</code> לבחירת מופע המודל המלא.</li>
+                    </ul>
+
+                    <p>תכונות מצוינות באמצעות סימון <strong>PropertyId</strong>, שהוצג בפרק 9.</p>
+
+                    <p>סעיף <code>from</code> מציין את סוג המודל השורשי. בניגוד ל-SQL מסורתי, אין שם טבלה. יש בדיוק <strong>שורש אחד</strong>, המייצג את המודל עצמו.</p>
+
+                    <p>סעיף <code>where</code> מגדיר קריטריוני סינון בצורה:</p>
+
+                    <p><code>PropertyID {אופרטור} ערך</code></p>
+
+                    <p>פגינציה מטופלת באמצעות:</p>
+
+                    <ul>
+                        <li><code>limit</code> להגדרת גודל עמוד</li>
+                        <li><code>page</code> לבחירת מספר העמוד</li>
+                    </ul>
+
+                    <h3>מודל לדוגמה</h3>
+
+<pre><code>message Employee {
+  string id = 1;
+  string name = 2;
+  repeated Addr addresses = 3;
+}
+
+message Addr {
+  string line1 = 1;
+  string line2 = 2;
+  int32 zip = 3;
+}</code></pre>
+
+                    <h3>שאילתות לדוגמה</h3>
+
+                    <blockquote>
+                        <p>select * from Employee</p>
+                    </blockquote>
+
+                    <p>&larr; אחזר את כל מופעי המודל Employee המלאים.</p>
+
+                    <blockquote>
+                        <p>select id,name from Employee</p>
+                    </blockquote>
+
+                    <p>&larr; אחזר את כל מופעי Employee עם רק id ו-name מאוכלסים.</p>
+
+                    <blockquote>
+                        <p>select * from Employee where id='layer8'</p>
+                    </blockquote>
+
+                    <p>&larr; אחזר את מודל Employee המלא עם id שווה ל-'layer8'.</p>
+
+                    <blockquote>
+                        <p>select id,name from Employee where addresses.zip=95124</p>
+                    </blockquote>
+
+                    <p>&larr; אחזר את כל העובדים עם לפחות כתובת אחת עם zip 95124.</p>
+
+                    <blockquote>
+                        <p>select id,name from Employee where addresses&lt;5{1}&gt;.zip=95124</p>
+                    </blockquote>
+
+                    <p>&larr; אחזר את כל העובדים שהכתובת השנייה שלהם היא zip 95124.</p>
+
+                    <blockquote>
+                        <p>select * from Employee limit 50 page 3</p>
+                    </blockquote>
+
+                    <p>&larr; אחזר עמוד 3 עם גודל עמוד של 50 (פריטים 150-199, מבוססי אפס).</p>
+
+                    <p>שפת השאילתות של שכבה 8 נתמכת על ידי שניהם:</p>
+
+                    <ul>
+                        <li>המטמון המבוזר של שכבה 8, ו-</li>
+                        <li>ה-ORM של שכבה 8 (מכוסה בפרק 12).</li>
+                    </ul>
+
+                    <p>הפניה מלאה לשפה ומפרט זמינים ב:<br>
+                    <a href="https://github.com/saichler/l8ql">https://github.com/saichler/l8ql</a></p>
+
+                    <p>על ידי יישור סמנטיקת שאילתות ישירות עם המודל, שכבה 8 מבטלת את הצורך ב:</p>
+
+                    <ul>
+                        <li>אבסטרקציות טבלה,</li>
+                        <li>שכבות התאמת עכבה אובייקט-יחסית,</li>
+                        <li>ופעולות שאילתה ספציפיות לשירות.</li>
+                    </ul>
+
+                    <p>המודל מגדיר מה ניתן לשאול.<br>
+                    שפת השאילתות מבטאת כוונה.<br>
+                    הפלטפורמה מבצעת אותה.</p>
+
+                    <p>הערה: איך שכבה 8 חושפת API דרך ממשק אינטרנט מכוסה בפרק <strong>שרת אינטרנט.</strong></p>
+
+                    <nav class="chapter-nav">
+                        <a href="service-as-contract.html" class="prev">שירות כחוזה</a>
+                        <a href="object-relation-mapping.html" class="next">מיפוי יחסי אובייקטים</a>
+                    </nav>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/book.js"></script>
+</body>
+</html>

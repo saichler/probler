@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#fdfbf7">
+    <meta name="description" content="Practice: Making Architecture Explicit | Radical Simplicity for Humans by Sharon Aicler">
+    <meta name="author" content="Sharon Aicler">
+    <title>Practice: Making Architecture Explicit | Radical Simplicity for Humans</title>
+    <link rel="stylesheet" href="css/book.css">
+</head>
+<body>
+    <button class="mobile-nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="sidebar-overlay"></div>
+
+    <div class="site-container">
+        <nav class="sidebar" role="navigation" aria-label="Table of Contents">
+            <header class="site-header">
+                <h1 class="book-title">Radical Simplicity<br>for Humans</h1>
+                <p class="book-subtitle">Layer 8</p>
+                <div class="author-info">
+                    <p>Sharon Aicler</p>
+                    <p><a href="mailto:saichler@gmail.com">saichler@gmail.com</a></p>
+                </div>
+                <div class="sponsor-button">
+                    <iframe src="https://github.com/sponsors/saichler/button" title="Sponsor saichler" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
+                </div>
+            </header>
+
+            <h2 class="nav-title">Contents</h2>
+            <ul class="chapter-list">
+                <li><a href="book.html">Home</a></li>
+                <li><a href="about.html">About the Author</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+                <li><a href="thoughts.html">Thoughts</a></li>
+                <li><a href="ground-rules.html">Ground Rules</a></li>
+                <li><a href="architecture.html">Architecture Is the Alignment Mechanism</a></li>
+                <li><a href="failure-modes.html">Failure Modes</a></li>
+                <li><a href="economics.html">Economics</a></li>
+                <li><a href="security.html">Security</a></li>
+                <li><a href="networking.html">Networking</a></li>
+                <li><a href="serialization.html">Serialization</a></li>
+                <li><a href="model-agnostic-runtime.html">Model-Agnostic Runtime</a></li>
+                <li><a href="service-as-contract.html">Service as a Contract</a></li>
+                <li><a href="api-query-language.html">API &amp; Query Language</a></li>
+                <li><a href="object-relation-mapping.html">Object Relation Mapping</a></li>
+                <li><a href="web-server.html">Web Server</a></li>
+                <li><a href="quality.html">Quality</a></li>
+                <li><a href="practice.html" class="active">Practice</a></li>
+                <li><span class="coming-soon">Radical Simplicity for AI</span></li>
+                <li><span class="coming-soon">Migration</span></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <article>
+                    <h1>Practice: Making Architecture Explicit</h1>
+
+                    <p>At this point, you have a set of Protocol Buffer messages and have already identified the <strong>Prime Objects</strong> in your model.</p>
+
+                    <p>Using the example from the previous chapter, the following snippet shows a simplified view of the generated protobuf definitions:</p>
+
+<pre><code>message EmployeeList {
+  repeated Employee list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+
+// Prime Object
+message Employee {
+  string id = 1;
+  string name = 2;
+  repeated Addr addresses = 3;
+}
+
+message AddressList {
+  repeated Employee list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+
+// Prime Object
+message Addr {
+  string line1 = 1;
+  string line2 = 2;
+  int32 zip = 3;
+}</code></pre>
+
+                    <p>At this stage, the important observation is not the syntax of the messages, but the <strong>explicit identification of Prime Objects</strong>. Prime Objects define lifecycle ownership, concurrency boundaries, and service responsibility in Layer 8.</p>
+
+                    <blockquote><strong>Note:</strong> Layer 8 includes a script that simplifies the generation of Protocol Buffer bindings for AI-assisted workflows. This script will be covered in the next chapter.</blockquote>
+
+                    <hr>
+
+                    <h2>Defining and Activating an SLA</h2>
+
+                    <p>In this example, we use a <strong>distributed cache service</strong>. Using a persistable service follows the same pattern, with the only difference being the injection of a persistence-layer implementation.</p>
+
+                    <p>Below is the activation method for the <code>Employee</code> service. This is where architecture becomes explicit.</p>
+
+<pre><code>package employees
+
+import (
+    "github.com/saichler/l8erp/go/types/hcm"
+    "github.com/saichler/l8services/go/services/base"
+    "github.com/saichler/l8types/go/ifs"
+    "github.com/saichler/l8types/go/types/l8api"
+    "github.com/saichler/l8types/go/types/l8web"
+    "github.com/saichler/l8utils/go/utils/web"
+)
+
+func ActivateEmployees(vnic ifs.IVNic) {
+    // Logical service name used by other services to reference this service
+    serviceName := "Employee"
+
+    // Service area enables vertical scaling (e.g., multiple isolated caches in the same process)
+    serviceArea := byte(0)
+
+    sla := ifs.NewServiceLevelAgreement(
+        &base.BaseService{},      // Layer 8 base service implementation
+        serviceName, serviceArea, // Logical service identity
+        true,                     // Stateful service (in-memory cache)
+        nil,                      // Optional callback for validation or pre-processing
+    )
+
+    // Define the Prime Object and its collection
+    sla.SetServiceItem(&hcm.Employee{})
+    sla.SetServiceItemList(&hcm.EmployeeList{})
+
+    // Define the primary key that uniquely identifies the Prime Object
+    sla.SetPrimaryKeys("EmployeeId")
+
+    // Select the concurrency model
+    sla.SetTransactional(true) // Transactional vs best-effort concurrency
+
+    // Disable replication; all instances maintain identical state
+    sla.SetReplication(false)
+
+    // Define the Web API surface for this service
+    ws := web.New(serviceName, serviceArea, 0)
+
+    // CRUD-style endpoints mapped to Prime Object semantics
+    ws.AddEndpoint(&hcm.Employee{}, ifs.POST, &l8web.L8Empty{})
+    ws.AddEndpoint(&hcm.EmployeeList{}, ifs.POST, &l8web.L8Empty{})
+    ws.AddEndpoint(&hcm.Employee{}, ifs.PUT, &l8web.L8Empty{})
+    ws.AddEndpoint(&hcm.Employee{}, ifs.PATCH, &l8web.L8Empty{})
+    ws.AddEndpoint(&l8api.L8Query{}, ifs.DELETE, &l8web.L8Empty{})
+    ws.AddEndpoint(&l8api.L8Query{}, ifs.GET, &hcm.EmployeeList{})
+
+    sla.SetWebService(ws)
+
+    // Activate the service within the virtual network context
+    vnic.Resources().Services().Activate(sla, vnic)
+}</code></pre>
+
+                    <p>What matters here is not the API mechanics, but the <strong>architectural declaration</strong>:</p>
+
+                    <ul>
+                        <li>The Prime Object is explicit</li>
+                        <li>The concurrency model is explicit</li>
+                        <li>The service lifecycle is explicit</li>
+                        <li>The API surface is derived from the model, not hand-coded logic</li>
+                    </ul>
+
+                    <p>At this point, the system no longer relies on implicit conventions. The architecture is declared, enforced, and observable.</p>
+
+                    <hr>
+
+                    <h2>Creating the Resources</h2>
+
+                    <p><code>Resources</code> encapsulate the ecosystem services required by a Layer 8&ndash;based system. They form the runtime foundation on which networking, security, service management, and observability are built.</p>
+
+                    <p>In most projects, resource creation is centralized in a single static or bootstrap method, similar to the example below. This method is typically invoked once during process initialization.</p>
+
+<pre><code>// CreateResources initializes and wires all core ecosystem services
+// required by this project.
+func CreateResources(alias string) ifs.IResources {
+    // Create and configure the logger
+    log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
+    log.SetLogLevel(ifs.Info_Level)
+
+    // Instantiate the Resources container
+    res := resources.NewResources(log)
+
+    // Register the service registry
+    res.Set(registry.NewRegistry())
+
+    // Load and initialize the security provider
+    sec, err := ifs.LoadSecurityProvider(res)
+    if err != nil {
+        // Delay to allow logs to flush before crashing
+        time.Sleep(time.Second * 10)
+        panic(err.Error())
+    }
+    res.Set(sec)
+
+    // Configure networking using default values
+    conf := &l8sysconfig.L8SysConfig{
+        MaxDataSize:               resources.DEFAULT_MAX_DATA_SIZE,
+        RxQueueSize:               resources.DEFAULT_QUEUE_SIZE,
+        TxQueueSize:               resources.DEFAULT_QUEUE_SIZE,
+        LocalAlias:                alias,        // Pod or process identifier for observability
+        VnetPort:                  uint32(20201), // Virtual network port
+        KeepAliveIntervalSeconds:  30,            // Heartbeat interval to the vNet
+    }
+    res.Set(conf)
+
+    // Enable runtime introspection
+    res.Set(introspecting.NewIntrospect(res.Registry()))
+
+    // Initialize the service manager
+    res.Set(manager.NewServices(res))
+
+    return res
+}</code></pre>
+
+                    <hr>
+
+                    <h2>Containing Process</h2>
+
+                    <p>A <strong>containing process</strong> is responsible for instantiating a virtual network interface (vNic) and activating services within that runtime context.</p>
+
+                    <p>From the application&rsquo;s perspective, this process follows a small and deterministic sequence: initialize resources, establish networking, activate services, and wait.</p>
+
+<pre><code>func main() {
+    // Create and initialize all ecosystem resources
+    res := CreateResources("pod name / process name / container name")
+
+    // Select the networking mode.
+    // When running under Kubernetes, this enables native integration.
+    // If Kubernetes is not present, the framework automatically
+    // falls back to container-level and then process-level networking.
+    ifs.SetNetworkMode(ifs.NETWORK_K8s)
+
+    // Instantiate the virtual network interface (vNic)
+    nic := vnic.NewVirtualNetworkInterface(res, nil)
+
+    // Start the vNic and its underlying networking stack
+    nic.Start()
+
+    // Block until the vNic is connected and ready
+    nic.WaitForConnection()
+
+    // Activate services within this network context
+    employees.ActivateEmployees(nic)
+
+    // Block until a termination signal is received
+    // (e.g., SIGTERM, SIGINT). Cleanup is handled by the framework.
+    common.WaitForSignal(res)
+}</code></pre>
+
+                    <hr>
+
+                    <h2>Starting a Web Server</h2>
+
+                    <p>Starting a web server to expose the Web API, including authentication endpoints, is intentionally as simple as activating any other service.</p>
+
+                    <p>It follows the <strong>exact same architectural pattern</strong>: a Service Level Agreement is defined, activated, and bound to the virtual network context, with a small number of web-specific configuration steps.</p>
+
+                    <p>The following example can be used <strong>instead of</strong> calling <code>employees.ActivateEmployees(nic)</code> when the process is responsible for serving HTTP endpoints.</p>
+
+<pre><code>func startWebServer(nic ifs.IVNic, httpPort int, cert string) {
+    // Configure the REST server
+    serverConfig := &server.RestServerConfig{
+        Host:           ipsegment.MachineIP, // Detect the machine IP and bind to it
+        Port:           httpPort,            // HTTP/HTTPS listening port
+        Authentication: true,                // Enable secure communication
+        CertName:       cert,                // TLS certificate identifier
+        Prefix:         "/myApp/",            // Application URL prefix
+    }
+
+    // Create the REST server instance
+    svr, err := server.NewRestServer(serverConfig)
+    if err != nil {
+        panic(err)
+    }
+
+    // Register built-in health service endpoints
+    hs, ok := nic.Resources().Services().ServiceHandler(health.ServiceName, 0)
+    if ok {
+        ws := hs.WebService()
+        svr.RegisterWebService(ws, nic)
+    }
+
+    // Activate the web service as a first-class Layer 8 service
+    sla := ifs.NewServiceLevelAgreement(
+        &server.WebService{},
+        ifs.WebService,
+        0,
+        false,
+        nil,
+    )
+    sla.SetArgs(svr)
+
+    nic.Resources().Services().Activate(sla, nic)
+
+    nic.Resources().Logger().Info("Web server started")
+
+    // Start accepting HTTP requests
+    svr.Start()
+}</code></pre>
+
+                    <blockquote>That&rsquo;s it. If it feels simple, it&rsquo;s because the complexity was moved where it belongs, <strong>into the architecture.</strong></blockquote>
+
+                    <nav class="chapter-nav">
+                        <a href="quality.html" class="prev">Quality</a>
+                        <span class="placeholder next">Next Chapter</span>
+                    </nav>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/book.js"></script>
+</body>
+</html>

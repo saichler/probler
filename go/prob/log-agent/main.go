@@ -22,8 +22,8 @@ import (
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8logfusion/go/agent/logs"
 	"github.com/saichler/l8logfusion/go/types/l8logf"
-	"github.com/saichler/l8utils/go/utils"
 	"github.com/saichler/l8utils/go/utils/ipsegment"
+	"github.com/saichler/l8utils/go/utils/shared"
 	"github.com/saichler/probler/go/prob/common"
 )
 
@@ -46,7 +46,7 @@ func main() {
 		logfile = "*"
 	}
 
-	r := utils.NewResources("logs", common.LOGS_VNET, 30)
+	r := shared.ResourcesOf("logs", common.LOGS_VNET, 30, false)
 	r.SysConfig().RemoteVnet = ip
 
 	nic := vnic.NewVirtualNetworkInterface(r, nil)

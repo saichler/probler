@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#fdfbf7">
+    <meta name="description" content="שרת אינטרנט | פשטות רדיקלית לבני אדם מאת שרון אייכלר">
+    <meta name="author" content="שרון אייכלר">
+    <title>שרת אינטרנט | פשטות רדיקלית לבני אדם</title>
+    <link rel="stylesheet" href="css/book.css">
+</head>
+<body>
+    <button class="mobile-nav-toggle" aria-label="פתח/סגור תפריט">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="sidebar-overlay"></div>
+
+    <div class="site-container">
+        <nav class="sidebar" role="navigation" aria-label="תוכן עניינים">
+            <header class="site-header">
+                <h1 class="book-title">פשטות רדיקלית<br>לבני אדם</h1>
+                <p class="book-subtitle">שכבה 8</p>
+                <div class="author-info">
+                    <p>שרון אייכלר</p>
+                    <p><a href="mailto:saichler@gmail.com">saichler@gmail.com</a></p>
+                </div>
+                <div class="sponsor-button">
+                    <iframe src="https://github.com/sponsors/saichler/button" title="Sponsor saichler" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
+                </div>
+            </header>
+
+            <h2 class="nav-title">תוכן עניינים</h2>
+            <ul class="chapter-list">
+                <li><a href="book.html">בית</a></li>
+                <li><a href="about.html">אודות המחבר</a></li>
+                <li><a href="introduction.html">מבוא</a></li>
+                <li><a href="thoughts.html">מחשבות</a></li>
+                <li><a href="ground-rules.html">כללי יסוד</a></li>
+                <li><a href="architecture.html">ארכיטקטורה כמנגנון יישור</a></li>
+                <li><a href="failure-modes.html">מצבי כשל</a></li>
+                <li><a href="economics.html">כלכלה</a></li>
+                <li><a href="security.html">אבטחה</a></li>
+                <li><a href="networking.html">רשתות</a></li>
+                <li><a href="serialization.html">סריאליזציה</a></li>
+                <li><a href="model-agnostic-runtime.html">זמן ריצה אגנוסטי למודל</a></li>
+                <li><a href="service-as-contract.html">שירות כחוזה</a></li>
+                <li><a href="api-query-language.html">API ושפת שאילתות</a></li>
+                <li><a href="object-relation-mapping.html">מיפוי יחסי אובייקטים</a></li>
+                <li><a href="web-server.html" class="active">שרת אינטרנט</a></li>
+                <li><a href="quality.html">איכות</a></li>
+                <li><a href="practice.html">תרגול</a></li>
+                <li><span class="coming-soon">פשטות רדיקלית ל-AI</span></li>
+                <li><span class="coming-soon">מיגרציה</span></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <article>
+                    <h1>שרת אינטרנט</h1>
+
+                    <p>אין מחסור בשרתי אינטרנט בתעשייה. אז למה לבנות עוד אחד?</p>
+
+                    <p><strong>כי שכבה 8 דורשת קוהרנטיות מוחלטת ואפס תלות חיצונית.</strong></p>
+
+                    <p>שרתי אינטרנט מסורתיים מתוכננים סביב endpoints סטטיים, נתיבים מוגדרים מראש וצימוד הדוק בין תחבורה, אבטחה ולוגיקת אפליקציה. הם מניחים ש-API ידועים מראש ומחוברים ידנית.</p>
+
+                    <p>שכבה 8 עושה הנחה שונה.</p>
+
+                    <p>בשכבה 8, שירותים מוגדרים על ידי כוונה, לא על ידי endpoints. API מתגלים, נאכפים ונחשפים באופן דינמי בזמן ריצה.</p>
+
+                    <p>לכן שרת האינטרנט של שכבה 8 אינו מנוע HTTP גנרי. הוא רכיב ארכיטקטוני מדרגה ראשונה.</p>
+
+                    <p>הוא משתלב ישירות עם ספק האבטחה ומערכת ה-AAA, מאפשר לשירותים לחשוף את ה-API שלהם באופן דינמי, ללא נתיבים מקודדים מראש, ללא חיבור ידני וללא דליפת דאגות תחבורה לתכנון השירות.</p>
+
+                    <p>Endpoints לא מוגדרים. <strong>הם צומחים.</strong></p>
+
+                    <p>שרת האינטרנט הופך למשטח ביצוע לחוזי שירות, לא למקום שבו לוגיקת אפליקציה מוטמעת.</p>
+
+                    <p>זה משמר קוהרנטיות על פני הפלטפורמה, שומר על שירותים מנותקים ממכניקת תחבורה ומבטיח שאבטחה, זהות והרשאה נאכפים באופן עקבי - בתכנון, לא בקונבנציה.</p>
+
+                    <hr>
+
+                    <h2>מה שרת האינטרנט כבר לא מחזיק</h2>
+
+                    <p>בשכבה 8, שרת האינטרנט מוגבל בכוונה.</p>
+
+                    <p>הוא לא מחזיק באחריויות שבאופן מסורתי מצטברות בתוך מסגרות אינטרנט ושערי HTTP.</p>
+
+                    <p>באופן ספציפי, שרת האינטרנט כבר לא מחזיק:</p>
+
+                    <ul>
+                        <li>לוגיקת ניתוב</li>
+                        <li>התנהגות אפליקציה</li>
+                        <li>החלטות תכנון API</li>
+                        <li>סמנטיקת מודל</li>
+                        <li>מדיניות אבטחה</li>
+                        <li>מצב session ובעלות מקביליות</li>
+                        <li>סדר הפעלה ותיאום תלויות</li>
+                    </ul>
+
+                    <p>על ידי הסרת אחריויות אלה, שרת האינטרנט מצטמצם למה שהוא חייב להיות:<br>
+                    <strong>משטח ביצוע לחוזים מוצהרים.</strong></p>
+
+                    <hr>
+
+                    <h2>חוסר מצב וסקיילינג</h2>
+
+                    <p>מכיוון ששרת האינטרנט לא מחזיק מצב אפליקציה, הקשר session וערבויות שירות, <strong>הוא חסר מצב בתכנון.</strong></p>
+
+                    <p>כל ההתנהגות בעלת מצב, זהות, רציפות session, אכיפת מקביליות וערבויות מחזור חיים; בבעלות <strong>ספק האבטחה</strong> וזמן ריצת השירות, כמוצהר ב-<strong>SLA השירות</strong>.</p>
+
+                    <p>כתוצאה מכך, סקיילינג של שרת האינטרנט הוא מכני גרידא. ניתן להוסיף או להסיר מופעים בכל עת ללא תיאום, איזון מחדש או לוגיקת התחממות.</p>
+
+                    <p>זמינות גבוהה מושגת דרך רפליקציה, לא קונפיגורציה. כל מופע שרת אינטרנט הוא הניתן להחלפה, כי שום דבר בתוכו לא צריך להיזכר.</p>
+
+                    <hr>
+
+                    <h2>Web API ב-SLA</h2>
+
+                    <p>בפרק 10, SLA השירות הוצג כחוזה המגדיר התנהגות, מקביליות וערבויות.</p>
+
+                    <p>היבט אחד נדחה בכוונה: איך שירות חושף את היכולות שלו לעולם החיצון דרך Web API.</p>
+
+                    <p>בשכבה 8, ה-API הפנימי של שירות וה-Web API החיצוני שלו אינם אותו דבר.</p>
+
+                    <p>אין מיפוי אחד לאחד ביניהם.</p>
+
+                    <p>מסיבה זו, כל SLA שירות כולל קטע ייעודי המצהיר על ה-Web API שהשירות חושף.</p>
+
+                    <p>כל ערך Web API מגדיר:</p>
+
+                    <ul>
+                        <li>את מודל הקלט</li>
+                        <li>את שיטת ה-HTTP</li>
+                        <li>את מודל התגובה</li>
+                    </ul>
+
+                    <p>ערך מייצג חוזה נראה חיצונית, לא פרט מימוש.</p>
+
+                    <hr>
+
+                    <h2>דאגות UI לעומת ערבויות שירות</h2>
+
+                    <p>Web API הוא מנגנון מסירה, לא מקור הערבויות.</p>
+
+                    <p>דאגות UI ותחבורה כוללות פורמט בקשות, timeouts, ניסיונות חוזרים, פגינציה, מטמון וקונבנציות סטטוס HTTP.</p>
+
+                    <p>ערבויות שירות מוגדרות אך ורק על ידי SLA השירות:</p>
+
+                    <ul>
+                        <li>כללי מקביליות, נכונות מחזור חיים,</li>
+                        <li>גבולות הרשאה,</li>
+                        <li>והתנהגות נצפית תחת עומס וכשל.</li>
+                    </ul>
+
+                    <p>שרת האינטרנט לא מגדיר ערבויות. הוא מתרגם בין HTTP לזמן ריצת השירות. כל ערבות שלקוח מסתמך עליה חייבת לנבוע מ-SLA השירות ומהשירות עצמו.</p>
+
+                    <hr>
+
+                    <h2>מנהל שירות API פנימי</h2>
+
+                    <p>שרת האינטרנט של שכבה 8 כולל מנהל שירות API פנימי האחראי לגישור בין חוזי שירות לחשיפת אינטרנט.</p>
+
+                    <p>תפקידו פשוט ומכוון: לאסוף את הצהרות ה-Web API המוגדרות בכל SLA שירות ולחבר אותן לשרת האינטרנט בזמן ריצה.</p>
+
+                    <p>שירותים לא רושמים endpoints ידנית. הם מפרסמים את הצהרות ה-Web API שלהם בעת הפעלה.</p>
+
+                    <p>באופן דומה, שרת האינטרנט לא מניח ששירותים כבר קיימים. <strong>גילוי הוא סימטרי ודטרמיניסטי.</strong></p>
+
+                    <p><strong>Web API לא מוגדרים. הם מתגלים.</strong></p>
+
+                    <hr>
+
+                    <h2>מבקשה לשירות</h2>
+
+                    <p>ביצוע בקשה בשכבה 8 הוא מכוונת לא אירועי.</p>
+
+                    <ul>
+                        <li>שרת האינטרנט מאמת זהות דרך ספק האבטחה,</li>
+                        <li>מבצע deserialization של JSON ל-protobuf הקלט המוצהר,</li>
+                        <li>מתרגם את שיטת ה-HTTP לפעולת שכבה 8,</li>
+                        <li>ומעביר את הבקשה לשירות היעד.</li>
+                    </ul>
+
+                    <p>השירות מבצע תחת כללי ה-SLA המוגדרים שלו.</p>
+
+                    <ul>
+                        <li>התגובה מוחזרת כ-Elements,</li>
+                        <li>עוברת serialization ל-JSON,</li>
+                        <li>ומועברת לקורא.</li>
+                    </ul>
+
+                    <p>שום דבר בזרימה זו אינו ספציפי לאפליקציה.</p>
+
+                    <p><strong>ביצוע עוקב אחר חוזים. תחבורה נשארת פרט מימוש.</strong></p>
+
+                    <nav class="chapter-nav">
+                        <a href="object-relation-mapping.html" class="prev">מיפוי יחסי אובייקטים</a>
+                        <a href="quality.html" class="next">איכות</a>
+                    </nav>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/book.js"></script>
+</body>
+</html>

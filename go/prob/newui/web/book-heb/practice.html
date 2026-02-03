@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#fdfbf7">
+    <meta name="description" content="תרגול: הפיכת ארכיטקטורה למפורשת | פשטות רדיקלית לבני אדם מאת שרון אייכלר">
+    <meta name="author" content="שרון אייכלר">
+    <title>תרגול: הפיכת ארכיטקטורה למפורשת | פשטות רדיקלית לבני אדם</title>
+    <link rel="stylesheet" href="css/book.css">
+</head>
+<body>
+    <button class="mobile-nav-toggle" aria-label="פתח/סגור תפריט">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="sidebar-overlay"></div>
+
+    <div class="site-container">
+        <nav class="sidebar" role="navigation" aria-label="תוכן עניינים">
+            <header class="site-header">
+                <h1 class="book-title">פשטות רדיקלית<br>לבני אדם</h1>
+                <p class="book-subtitle">שכבה 8</p>
+                <div class="author-info">
+                    <p>שרון אייכלר</p>
+                    <p><a href="mailto:saichler@gmail.com">saichler@gmail.com</a></p>
+                </div>
+                <div class="sponsor-button">
+                    <iframe src="https://github.com/sponsors/saichler/button" title="Sponsor saichler" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
+                </div>
+            </header>
+
+            <h2 class="nav-title">תוכן עניינים</h2>
+            <ul class="chapter-list">
+                <li><a href="book.html">בית</a></li>
+                <li><a href="about.html">אודות המחבר</a></li>
+                <li><a href="introduction.html">מבוא</a></li>
+                <li><a href="thoughts.html">מחשבות</a></li>
+                <li><a href="ground-rules.html">כללי יסוד</a></li>
+                <li><a href="architecture.html">ארכיטקטורה כמנגנון יישור</a></li>
+                <li><a href="failure-modes.html">מצבי כשל</a></li>
+                <li><a href="economics.html">כלכלה</a></li>
+                <li><a href="security.html">אבטחה</a></li>
+                <li><a href="networking.html">רשתות</a></li>
+                <li><a href="serialization.html">סריאליזציה</a></li>
+                <li><a href="model-agnostic-runtime.html">זמן ריצה אגנוסטי למודל</a></li>
+                <li><a href="service-as-contract.html">שירות כחוזה</a></li>
+                <li><a href="api-query-language.html">API ושפת שאילתות</a></li>
+                <li><a href="object-relation-mapping.html">מיפוי יחסי אובייקטים</a></li>
+                <li><a href="web-server.html">שרת אינטרנט</a></li>
+                <li><a href="quality.html">איכות</a></li>
+                <li><a href="practice.html" class="active">תרגול</a></li>
+                <li><span class="coming-soon">פשטות רדיקלית ל-AI</span></li>
+                <li><span class="coming-soon">מיגרציה</span></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <article>
+                    <h1>תרגול: הפיכת ארכיטקטורה למפורשת</h1>
+
+                    <p>בשלב זה, יש לך סט של הודעות Protocol Buffer וכבר זיהית את <strong>האובייקטים הראשיים</strong> במודל שלך.</p>
+
+                    <p>באמצעות הדוגמה מהפרק הקודם, הקטע הבא מציג תצוגה מפושטת של הגדרות ה-protobuf שנוצרו:</p>
+
+<pre><code>message EmployeeList {
+  repeated Employee list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+
+// אובייקט ראשי
+message Employee {
+  string id = 1;
+  string name = 2;
+  repeated Addr addresses = 3;
+}
+
+message AddressList {
+  repeated Employee list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+
+// אובייקט ראשי
+message Addr {
+  string line1 = 1;
+  string line2 = 2;
+  int32 zip = 3;
+}</code></pre>
+
+                    <p>בשלב זה, התצפית החשובה היא לא תחביר ההודעות, אלא <strong>הזיהוי המפורש של אובייקטים ראשיים</strong>. אובייקטים ראשיים מגדירים בעלות מחזור חיים, גבולות מקביליות ואחריות שירות בשכבה 8.</p>
+
+                    <blockquote><strong>הערה:</strong> שכבה 8 כוללת סקריפט שמפשט את יצירת ה-bindings של Protocol Buffer לזרימות עבודה בסיוע AI. סקריפט זה יכוסה בפרק הבא.</blockquote>
+
+                    <hr>
+
+                    <h2>הגדרה והפעלת SLA</h2>
+
+                    <p>בדוגמה זו, אנו משתמשים ב<strong>שירות מטמון מבוזר</strong>. שימוש בשירות פרזיסטבילי עוקב אחר אותו דפוס, עם ההבדל היחיד שהוא הזרקת מימוש שכבת פרזיסטנס.</p>
+
+                    <p>להלן שיטת ההפעלה לשירות <code>Employee</code>. כאן הארכיטקטורה הופכת למפורשת.</p>
+
+<pre><code>package employees
+
+import (
+    "github.com/saichler/l8erp/go/types/hcm"
+    "github.com/saichler/l8services/go/services/base"
+    "github.com/saichler/l8types/go/ifs"
+    "github.com/saichler/l8types/go/types/l8api"
+    "github.com/saichler/l8types/go/types/l8web"
+    "github.com/saichler/l8utils/go/utils/web"
+)
+
+func ActivateEmployees(vnic ifs.IVNic) {
+    // שם שירות לוגי המשמש שירותים אחרים להפניה לשירות זה
+    serviceName := "Employee"
+
+    // אזור שירות מאפשר סקיילינג אנכי (למשל, מטמונים מבודדים מרובים באותו תהליך)
+    serviceArea := byte(0)
+
+    sla := ifs.NewServiceLevelAgreement(
+        &base.BaseService{},      // מימוש שירות בסיס של שכבה 8
+        serviceName, serviceArea, // זהות שירות לוגית
+        true,                     // שירות בעל מצב (מטמון בזיכרון)
+        nil,                      // callback אופציונלי לתיקוף או עיבוד מקדים
+    )
+
+    // הגדר את האובייקט הראשי ואת האוסף שלו
+    sla.SetServiceItem(&hcm.Employee{})
+    sla.SetServiceItemList(&hcm.EmployeeList{})
+
+    // הגדר את המפתח הראשי שמזהה באופן ייחודי את האובייקט הראשי
+    sla.SetPrimaryKeys("EmployeeId")
+
+    // בחר את מודל המקביליות
+    sla.SetTransactional(true) // טרנזקציוני לעומת מקביליות best-effort
+
+    // השבת רפליקציה; כל המופעים מתחזקים מצב זהה
+    sla.SetReplication(false)
+
+    // הגדר את משטח ה-Web API לשירות זה
+    ws := web.New(serviceName, serviceArea, 0)
+
+    // endpoints בסגנון CRUD ממופים לסמנטיקת אובייקט ראשי
+    ws.AddEndpoint(&hcm.Employee{}, ifs.POST, &l8web.L8Empty{})
+    ws.AddEndpoint(&hcm.EmployeeList{}, ifs.POST, &l8web.L8Empty{})
+    ws.AddEndpoint(&hcm.Employee{}, ifs.PUT, &l8web.L8Empty{})
+    ws.AddEndpoint(&hcm.Employee{}, ifs.PATCH, &l8web.L8Empty{})
+    ws.AddEndpoint(&l8api.L8Query{}, ifs.DELETE, &l8web.L8Empty{})
+    ws.AddEndpoint(&l8api.L8Query{}, ifs.GET, &hcm.EmployeeList{})
+
+    sla.SetWebService(ws)
+
+    // הפעל את השירות בהקשר הרשת הווירטואלית
+    vnic.Resources().Services().Activate(sla, vnic)
+}</code></pre>
+
+                    <p>מה שחשוב כאן הוא לא מכניקת ה-API, אלא <strong>ההצהרה הארכיטקטונית</strong>:</p>
+
+                    <ul>
+                        <li>האובייקט הראשי מפורש</li>
+                        <li>מודל המקביליות מפורש</li>
+                        <li>מחזור חיי השירות מפורש</li>
+                        <li>משטח ה-API נגזר מהמודל, לא מלוגיקה מקודדת ידנית</li>
+                    </ul>
+
+                    <p>בשלב זה, המערכת כבר לא מסתמכת על קונבנציות משתמעות. הארכיטקטורה מוצהרת, נאכפת וניתנת לצפייה.</p>
+
+                    <hr>
+
+                    <h2>יצירת משאבים</h2>
+
+                    <p><code>Resources</code> מכמסים את שירותי האקוסיסטם הנדרשים על ידי מערכת מבוססת שכבה 8. הם מהווים את הבסיס לזמן ריצה שעליו בונים רשתות, אבטחה, ניהול שירותים וצפיות.</p>
+
+                    <p>ברוב הפרויקטים, יצירת משאבים מרוכזת בשיטה סטטית או bootstrap יחידה, דומה לדוגמה למטה. שיטה זו בדרך כלל מופעלת פעם אחת במהלך אתחול התהליך.</p>
+
+<pre><code>// CreateResources מאתחל ומחבר את כל שירותי האקוסיסטם המרכזיים
+// הנדרשים על ידי פרויקט זה.
+func CreateResources(alias string) ifs.IResources {
+    // צור והגדר את ה-logger
+    log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
+    log.SetLogLevel(ifs.Info_Level)
+
+    // צור את מיכל ה-Resources
+    res := resources.NewResources(log)
+
+    // רשום את רישום השירותים
+    res.Set(registry.NewRegistry())
+
+    // טען ואתחל את ספק האבטחה
+    sec, err := ifs.LoadSecurityProvider(res)
+    if err != nil {
+        // עיכוב כדי לאפשר ללוגים להתרוקן לפני קריסה
+        time.Sleep(time.Second * 10)
+        panic(err.Error())
+    }
+    res.Set(sec)
+
+    // הגדר רשתות באמצעות ערכי ברירת מחדל
+    conf := &l8sysconfig.L8SysConfig{
+        MaxDataSize:               resources.DEFAULT_MAX_DATA_SIZE,
+        RxQueueSize:               resources.DEFAULT_QUEUE_SIZE,
+        TxQueueSize:               resources.DEFAULT_QUEUE_SIZE,
+        LocalAlias:                alias,        // מזהה pod או תהליך לצפיות
+        VnetPort:                  uint32(20201), // פורט רשת וירטואלית
+        KeepAliveIntervalSeconds:  30,            // מרווח heartbeat ל-vNet
+    }
+    res.Set(conf)
+
+    // אפשר אינטרוספקציה בזמן ריצה
+    res.Set(introspecting.NewIntrospect(res.Registry()))
+
+    // אתחל את מנהל השירותים
+    res.Set(manager.NewServices(res))
+
+    return res
+}</code></pre>
+
+                    <hr>
+
+                    <h2>תהליך מכיל</h2>
+
+                    <p><strong>תהליך מכיל</strong> אחראי ליצירת ממשק רשת וירטואלי (vNic) והפעלת שירותים בהקשר זמן ריצה זה.</p>
+
+                    <p>מנקודת מבט האפליקציה, תהליך זה עוקב אחר רצף קטן ודטרמיניסטי: אתחל משאבים, הקם רשתות, הפעל שירותים והמתן.</p>
+
+<pre><code>func main() {
+    // צור ואתחל את כל משאבי האקוסיסטם
+    res := CreateResources("pod name / process name / container name")
+
+    // בחר את מצב הרשת.
+    // כשרץ תחת Kubernetes, זה מאפשר אינטגרציה native.
+    // אם Kubernetes לא קיים, המסגרת אוטומטית
+    // נופלת לרשתות ברמת container ואז ברמת תהליך.
+    ifs.SetNetworkMode(ifs.NETWORK_K8s)
+
+    // צור את ממשק הרשת הווירטואלי (vNic)
+    nic := vnic.NewVirtualNetworkInterface(res, nil)
+
+    // הפעל את ה-vNic ואת מחסנית הרשת שלו
+    nic.Start()
+
+    // חסום עד שה-vNic מחובר ומוכן
+    nic.WaitForConnection()
+
+    // הפעל שירותים בהקשר רשת זה
+    employees.ActivateEmployees(nic)
+
+    // חסום עד לקבלת אות סיום
+    // (למשל, SIGTERM, SIGINT). ניקוי מטופל על ידי המסגרת.
+    common.WaitForSignal(res)
+}</code></pre>
+
+                    <hr>
+
+                    <h2>הפעלת שרת אינטרנט</h2>
+
+                    <p>הפעלת שרת אינטרנט לחשיפת ה-Web API, כולל endpoints אימות, היא מכוונת פשוטה כמו הפעלת כל שירות אחר.</p>
+
+                    <p>היא עוקבת אחר <strong>בדיוק אותו דפוס ארכיטקטוני</strong>: SLA מוגדר, מופעל ומקושר להקשר הרשת הווירטואלית, עם מספר קטן של שלבי קונפיגורציה ספציפיים לאינטרנט.</p>
+
+                    <p>הדוגמה הבאה יכולה לשמש <strong>במקום</strong> קריאה ל-<code>employees.ActivateEmployees(nic)</code> כשהתהליך אחראי לשרת endpoints HTTP.</p>
+
+<pre><code>func startWebServer(nic ifs.IVNic, httpPort int, cert string) {
+    // הגדר את שרת ה-REST
+    serverConfig := &server.RestServerConfig{
+        Host:           ipsegment.MachineIP, // זהה את IP המכונה והתחבר אליו
+        Port:           httpPort,            // פורט האזנה HTTP/HTTPS
+        Authentication: true,                // אפשר תקשורת מאובטחת
+        CertName:       cert,                // מזהה תעודת TLS
+        Prefix:         "/myApp/",            // קידומת URL של האפליקציה
+    }
+
+    // צור את מופע שרת ה-REST
+    svr, err := server.NewRestServer(serverConfig)
+    if err != nil {
+        panic(err)
+    }
+
+    // רשום endpoints של שירות health מובנים
+    hs, ok := nic.Resources().Services().ServiceHandler(health.ServiceName, 0)
+    if ok {
+        ws := hs.WebService()
+        svr.RegisterWebService(ws, nic)
+    }
+
+    // הפעל את שירות האינטרנט כשירות שכבה 8 מדרגה ראשונה
+    sla := ifs.NewServiceLevelAgreement(
+        &server.WebService{},
+        ifs.WebService,
+        0,
+        false,
+        nil,
+    )
+    sla.SetArgs(svr)
+
+    nic.Resources().Services().Activate(sla, nic)
+
+    nic.Resources().Logger().Info("Web server started")
+
+    // התחל לקבל בקשות HTTP
+    svr.Start()
+}</code></pre>
+
+                    <blockquote>זה הכל. אם זה מרגיש פשוט, זה כי המורכבות הועברה למקום שלה, <strong>לארכיטקטורה.</strong></blockquote>
+
+                    <nav class="chapter-nav">
+                        <a href="quality.html" class="prev">איכות</a>
+                        <span class="placeholder next">הפרק הבא</span>
+                    </nav>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/book.js"></script>
+</body>
+</html>

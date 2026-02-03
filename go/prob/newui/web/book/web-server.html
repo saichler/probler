@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#fdfbf7">
+    <meta name="description" content="Web Server | Radical Simplicity for Humans by Sharon Aicler">
+    <meta name="author" content="Sharon Aicler">
+    <title>Web Server | Radical Simplicity for Humans</title>
+    <link rel="stylesheet" href="css/book.css">
+</head>
+<body>
+    <button class="mobile-nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="sidebar-overlay"></div>
+
+    <div class="site-container">
+        <nav class="sidebar" role="navigation" aria-label="Table of Contents">
+            <header class="site-header">
+                <h1 class="book-title">Radical Simplicity<br>for Humans</h1>
+                <p class="book-subtitle">Layer 8</p>
+                <div class="author-info">
+                    <p>Sharon Aicler</p>
+                    <p><a href="mailto:saichler@gmail.com">saichler@gmail.com</a></p>
+                </div>
+                <div class="sponsor-button">
+                    <iframe src="https://github.com/sponsors/saichler/button" title="Sponsor saichler" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
+                </div>
+            </header>
+
+            <h2 class="nav-title">Contents</h2>
+            <ul class="chapter-list">
+                <li><a href="book.html">Home</a></li>
+                <li><a href="about.html">About the Author</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+                <li><a href="thoughts.html">Thoughts</a></li>
+                <li><a href="ground-rules.html">Ground Rules</a></li>
+                <li><a href="architecture.html">Architecture Is the Alignment Mechanism</a></li>
+                <li><a href="failure-modes.html">Failure Modes</a></li>
+                <li><a href="economics.html">Economics</a></li>
+                <li><a href="security.html">Security</a></li>
+                <li><a href="networking.html">Networking</a></li>
+                <li><a href="serialization.html">Serialization</a></li>
+                <li><a href="model-agnostic-runtime.html">Model-Agnostic Runtime</a></li>
+                <li><a href="service-as-contract.html">Service as a Contract</a></li>
+                <li><a href="api-query-language.html">API &amp; Query Language</a></li>
+                <li><a href="object-relation-mapping.html">Object Relation Mapping</a></li>
+                <li><a href="web-server.html" class="active">Web Server</a></li>
+                <li><a href="quality.html">Quality</a></li>
+                <li><a href="practice.html">Practice</a></li>
+                <li><span class="coming-soon">Radical Simplicity for AI</span></li>
+                <li><span class="coming-soon">Migration</span></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <article>
+                    <h1>Web Server</h1>
+
+                    <p>There is no shortage of web servers in the industry. So why build another one?</p>
+
+                    <p><strong>Because Layer 8 requires absolute coherence and zero external dependency.</strong></p>
+
+                    <p>Traditional web servers are designed around static endpoints, predefined routes, and tight coupling between transport, security, and application logic. They assume APIs are known in advance and wired manually.</p>
+
+                    <p>Layer 8 makes a different assumption.</p>
+
+                    <p>In Layer 8, services are defined by intent, not by endpoints. APIs are discovered, enforced, and exposed dynamically at runtime.</p>
+
+                    <p>The Layer 8 Web Server is therefore not a generic HTTP engine. It is a first-class architectural component.</p>
+
+                    <p>It integrates directly with the Security Provider and the AAA system, allowing services to expose their APIs dynamically, without pre-hardcoded routes, without manual wiring, and without leaking transport concerns into service design.</p>
+
+                    <p>Endpoints are not configured. <strong>They emerge.</strong></p>
+
+                    <p>The web server becomes an execution surface for service contracts, not a place where application logic is embedded.</p>
+
+                    <p>This preserves coherence across the platform, keeps services decoupled from transport mechanics, and ensures that security, identity, and authorization are enforced consistently&mdash;by design, not by convention.</p>
+
+                    <hr>
+
+                    <h2>What the Web Server No Longer Owns</h2>
+
+                    <p>In Layer 8, the Web Server is intentionally constrained.</p>
+
+                    <p>It does not own responsibilities that traditionally accumulate inside web frameworks and HTTP gateways.</p>
+
+                    <p>Specifically, the Web Server no longer owns:</p>
+
+                    <ul>
+                        <li>Routing logic</li>
+                        <li>Application behavior</li>
+                        <li>API design decisions</li>
+                        <li>Model semantics</li>
+                        <li>Security policy</li>
+                        <li>Session state and concurrency ownership</li>
+                        <li>Startup ordering and dependency coordination</li>
+                    </ul>
+
+                    <p>By removing these responsibilities, the Web Server is reduced to what it must be:<br>
+                    <strong>an execution surface for declared contracts.</strong></p>
+
+                    <hr>
+
+                    <h2>Statelessness and Scaling</h2>
+
+                    <p>Because the Web Server owns no application state, no session context, and no service guarantees, <strong>it is stateless by design.</strong></p>
+
+                    <p>All stateful behavior, identity, session continuity, concurrency enforcement, and lifecycle guarantees; is owned by the <strong>Security Provider</strong> and the service runtime, as declared in the <strong>Service SLA</strong>.</p>
+
+                    <p>As a result, scaling the Web Server is purely mechanical. Instances can be added or removed at any time without coordination, rebalancing, or warm-up logic.</p>
+
+                    <p>High availability is achieved through replication, not configuration. Every Web Server instance is interchangeable, because nothing inside it needs to be remembered.</p>
+
+                    <hr>
+
+                    <h2>Web API in the SLA</h2>
+
+                    <p>In Chapter 10, the Service SLA was introduced as the contract that defines behavior, concurrency, and guarantees.</p>
+
+                    <p>One aspect was intentionally deferred: how a service exposes its capabilities to the outside world through a Web API.</p>
+
+                    <p>In Layer 8, a service's internal API and its external Web API are not the same thing.</p>
+
+                    <p>There is no one-to-one mapping between them.</p>
+
+                    <p>For that reason, each Service SLA includes a dedicated section that declares the Web APIs the service exposes.</p>
+
+                    <p>Each Web API entry defines:</p>
+
+                    <ul>
+                        <li>the input model</li>
+                        <li>the HTTP method</li>
+                        <li>the response model</li>
+                    </ul>
+
+                    <p>An entry represents an externally visible contract, not an implementation detail.</p>
+
+                    <hr>
+
+                    <h2>UI Concerns vs Service Guarantees</h2>
+
+                    <p>A Web API is a delivery mechanism, not the source of guarantees.</p>
+
+                    <p>UI and transport concerns include request formatting, timeouts, retries, pagination, caching, and HTTP status conventions.</p>
+
+                    <p>Service guarantees are defined exclusively by the Service SLA:</p>
+
+                    <ul>
+                        <li>concurrency rules, lifecycle correctness,</li>
+                        <li>authorization boundaries,</li>
+                        <li>and observable behavior under load and failure.</li>
+                    </ul>
+
+                    <p>The Web Server does not define guarantees. It translates between HTTP and the service runtime. Any guarantee a client relies on must originate from the Service SLA and the service itself.</p>
+
+                    <hr>
+
+                    <h2>Internal API Service Manager</h2>
+
+                    <p>The Layer 8 Web Server includes an Internal API Service Manager responsible for bridging service contracts and web exposure.</p>
+
+                    <p>Its role is simple and deliberate: to collect the Web API declarations defined in each Service SLA and wire them into the web server at runtime.</p>
+
+                    <p>Services do not register endpoints manually. They publish their Web API declarations when activated.</p>
+
+                    <p>Likewise, the web server does not assume services already exist. <strong>Discovery is symmetric and deterministic.</strong></p>
+
+                    <p><strong>Web APIs are not configured. They are discovered.</strong></p>
+
+                    <hr>
+
+                    <h2>From Request to Service</h2>
+
+                    <p>Request execution in Layer 8 is deliberately uneventful.</p>
+
+                    <ul>
+                        <li>The Web Server validates identity through the Security Provider,</li>
+                        <li>deserializes JSON into the declared input protobuf,</li>
+                        <li>translates the HTTP method into a Layer 8 action,</li>
+                        <li>and forwards the request to the target service.</li>
+                    </ul>
+
+                    <p>The service executes under its SLA-defined rules.</p>
+
+                    <ul>
+                        <li>The response is returned as Elements,</li>
+                        <li>serialized into JSON,</li>
+                        <li>and delivered to the caller.</li>
+                    </ul>
+
+                    <p>Nothing in this flow is application-specific.</p>
+
+                    <p><strong>Execution follows contracts. Transport remains an implementation detail.</strong></p>
+
+                    <nav class="chapter-nav">
+                        <a href="object-relation-mapping.html" class="prev">Object Relation Mapping</a>
+                        <a href="quality.html" class="next">Quality</a>
+                    </nav>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/book.js"></script>
+</body>
+</html>

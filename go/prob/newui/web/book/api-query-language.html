@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#fdfbf7">
+    <meta name="description" content="API &amp; Query Language | Radical Simplicity for Humans by Sharon Aicler">
+    <meta name="author" content="Sharon Aicler">
+    <title>API &amp; Query Language | Radical Simplicity for Humans</title>
+    <link rel="stylesheet" href="css/book.css">
+</head>
+<body>
+    <button class="mobile-nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div class="sidebar-overlay"></div>
+
+    <div class="site-container">
+        <nav class="sidebar" role="navigation" aria-label="Table of Contents">
+            <header class="site-header">
+                <h1 class="book-title">Radical Simplicity<br>for Humans</h1>
+                <p class="book-subtitle">Layer 8</p>
+                <div class="author-info">
+                    <p>Sharon Aicler</p>
+                    <p><a href="mailto:saichler@gmail.com">saichler@gmail.com</a></p>
+                </div>
+                <div class="sponsor-button">
+                    <iframe src="https://github.com/sponsors/saichler/button" title="Sponsor saichler" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
+                </div>
+            </header>
+
+            <h2 class="nav-title">Contents</h2>
+            <ul class="chapter-list">
+                <li><a href="book.html">Home</a></li>
+                <li><a href="about.html">About the Author</a></li>
+                <li><a href="introduction.html">Introduction</a></li>
+                <li><a href="thoughts.html">Thoughts</a></li>
+                <li><a href="ground-rules.html">Ground Rules</a></li>
+                <li><a href="architecture.html">Architecture Is the Alignment Mechanism</a></li>
+                <li><a href="failure-modes.html">Failure Modes</a></li>
+                <li><a href="economics.html">Economics</a></li>
+                <li><a href="security.html">Security</a></li>
+                <li><a href="networking.html">Networking</a></li>
+                <li><a href="serialization.html">Serialization</a></li>
+                <li><a href="model-agnostic-runtime.html">Model-Agnostic Runtime</a></li>
+                <li><a href="service-as-contract.html">Service as a Contract</a></li>
+                <li><a href="api-query-language.html" class="active">API &amp; Query Language</a></li>
+                <li><a href="object-relation-mapping.html">Object Relation Mapping</a></li>
+                <li><a href="web-server.html">Web Server</a></li>
+                <li><a href="quality.html">Quality</a></li>
+                <li><a href="practice.html">Practice</a></li>
+                <li><span class="coming-soon">Radical Simplicity for AI</span></li>
+                <li><span class="coming-soon">Migration</span></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <article>
+                    <h1>API &amp; Query Language</h1>
+
+                    <blockquote>
+                        <p>An API is a language.<br>
+                        Protocols are merely the alphabet.</p>
+                    </blockquote>
+
+                    <p>Because APIs <strong><em>are languages</em></strong>, inconsistency is not cosmetic; it directly increases cognitive load, fragmentation, and long-term system complexity.</p>
+
+                    <p>Yet in most systems, every service invents its own language, even though they all use the same alphabet.</p>
+
+                    <ul>
+                        <li>Different verbs.</li>
+                        <li>Different rules.</li>
+                        <li>Different meanings for the same concepts.</li>
+                    </ul>
+
+                    <p>This fragmentation is not accidental. It is the result of treating APIs as implementation details instead of shared communication contracts.</p>
+
+                    <p>Attempts to normalize APIs usually focus on syntax. They standardize the alphabet, while allowing every service to <strong>keep inventing</strong> its own language.</p>
+
+                    <blockquote>
+                        <p><strong><em>This is the root of much of the complexity in service development.</em></strong></p>
+                    </blockquote>
+
+                    <p>Layer 8 takes a different approach.</p>
+
+                    <p>Instead of standardizing how services speak, it standardizes what can be expressed.</p>
+
+                    <p>This chapter describes <strong>service-to-service</strong> APIs within the Layer 8 platform; how these APIs are exposed over a web interface is covered separately in the <strong>Web Server chapter</strong>.</p>
+
+                    <hr>
+
+                    <h2>Model as API</h2>
+
+                    <p>As established in Chapter 7, a Layer 8 service is organized around a <strong>Prime Object</strong>. The service exposes a facade that follows REST-style semantics, making it natural to use a Prime Object instance as the input for:</p>
+
+                    <p>POST, PUT, PATCH, DELETE, and GET.</p>
+
+                    <p>For GET operations, a single Prime Object instance acts as a filter. The service returns all items that match the attributes provided in the input instance.</p>
+
+                    <p>This works well for individual interactions. However, real systems do not operate one item at a time.</p>
+
+                    <p><strong>They operate at scale.</strong> Scale requires bulk operations.</p>
+
+                    <p>In Layer 8, the input and output of service API calls are <strong>Elements</strong> (introduced in Chapter 8).</p>
+
+                    <p>Elements reduce API surface area by replacing many specialized request and response types with a single, uniform container. Instead of defining separate service operations, payload schemas, and pagination contracts, services expose a small, fixed set of interactions that all accept and return <strong>Elements</strong>.</p>
+
+                    <p>Because Elements can represent single items, collections, partial projections, and metadata within the same structure, new capabilities are added by expressing intent in the model and query language rather than by expanding the service API itself.</p>
+
+                    <h3>Example: a service API that disappears entirely</h3>
+
+                    <p>In a conventional microservice system, a consuming service typically requires dedicated operations such as ListEmployees, SearchEmployees, or GetEmployeePage.</p>
+
+                    <p>In Layer 8, those operations do not exist. The caller issues:</p>
+
+                    <blockquote>
+                        <p>Request(ServiceName, ServiceArea, Get, payload, timeout) -&gt; IElements</p>
+                    </blockquote>
+
+                    <p>If payload is a valid L8Query string, Elements is instantiated as that query. Otherwise, Elements is instantiated from the provided model data, aligning itself to a single element or multiple elements.</p>
+
+                    <p>The response is always IElements, with metadata describing the scope of the result (for example, which page was returned and how many elements exist in total).</p>
+
+                    <p>The capability lives in the model and query language, not in new service-specific APIs.</p>
+
+                    <hr>
+
+                    <h2>Prime Object Lists</h2>
+
+                    <p>Layer 8 addresses large result sets by enforcing a simple, consistent definition for <strong>Prime Object</strong> Lists.</p>
+
+                    <p>For a given Prime Object:</p>
+
+<pre><code>message Employee {
+}</code></pre>
+
+                    <p>the corresponding list type must be defined as:</p>
+
+<pre><code>message EmployeeList {
+  repeated Employee list = 1;
+  l8api.L8MetaData metadata = 2;
+}</code></pre>
+
+                    <p>The list field contains the requested page of results. The page size and page selection are defined by the L8Query.</p>
+
+                    <p>The <strong>metadata</strong> field is populated automatically by the Layer 8 infrastructure. It can be extended through observer functions to compute and expose additional information required by user interfaces, such as total counts or aggregate values.</p>
+
+                    <p>By treating the model itself as the API, Layer 8 removes the need for custom service operations, ad-hoc paging logic, and service-specific response formats.</p>
+
+                    <p><strong>The model defines the contract. The platform handles the mechanics.</strong></p>
+
+                    <hr>
+
+                    <h2>Layer 8 Query Language</h2>
+
+                    <p>There are existing query languages for graph and tree-based models. While powerful, they are often far more complex than what Layer 8 requires.</p>
+
+                    <p>During the design of the Introspector (Chapter 9), an important realization emerged: because Layer 8 already <strong>understands</strong> the model structure at runtime, <strong>querying does not require a new or complex language.</strong></p>
+
+                    <p>This is the same foundation as the model-agnostic runtime. Services do not need compile-time knowledge of concrete types to interpret intent. The platform resolves the root model type, traverses nested structure, and interprets PropertyId paths using runtime introspection, so query semantics remain stable even as models evolve.</p>
+
+                    <p>Instead, Layer 8 uses a simple, familiar, SQL-inspired syntax adapted to operate directly on nested models.</p>
+
+                    <p>This led to the creation of the <strong>Layer 8 Query Language.</strong></p>
+
+                    <h3>Query Structure</h3>
+
+                    <p>A query always starts with the keyword <code>select</code>, followed by either:</p>
+
+                    <ul>
+                        <li>a list of attributes, or</li>
+                        <li><code>*</code> to select the full model instance.</li>
+                    </ul>
+
+                    <p>Attributes are referenced using <strong>PropertyId</strong> notation, introduced in Chapter 9.</p>
+
+                    <p>The <code>from</code> clause specifies the root model type. Unlike traditional SQL, there is no table name. There is exactly <strong>one root</strong>, which represents the model itself.</p>
+
+                    <p>The <code>where</code> clause defines filtering criteria using the form:</p>
+
+                    <p><code>PropertyID {operator} value</code></p>
+
+                    <p>Paging is handled using:</p>
+
+                    <ul>
+                        <li><code>limit</code> to define page size</li>
+                        <li><code>page</code> to select the page number</li>
+                    </ul>
+
+                    <h3>Example Model</h3>
+
+<pre><code>message Employee {
+  string id = 1;
+  string name = 2;
+  repeated Addr addresses = 3;
+}
+
+message Addr {
+  string line1 = 1;
+  string line2 = 2;
+  int32 zip = 3;
+}</code></pre>
+
+                    <h3>Example Queries</h3>
+
+                    <blockquote>
+                        <p>select * from Employee</p>
+                    </blockquote>
+
+                    <p>&larr; retrieve all full Employee model instances.</p>
+
+                    <blockquote>
+                        <p>select id,name from Employee</p>
+                    </blockquote>
+
+                    <p>&larr; retrieve all Employee instances with only id and name populated.</p>
+
+                    <blockquote>
+                        <p>select * from Employee where id='layer8'</p>
+                    </blockquote>
+
+                    <p>&larr; retrieve the full Employee model with id equal to 'layer8'.</p>
+
+                    <blockquote>
+                        <p>select id,name from Employee where addresses.zip=95124</p>
+                    </blockquote>
+
+                    <p>&larr; retrieve all Employees with at least one address having zip 95124.</p>
+
+                    <blockquote>
+                        <p>select id,name from Employee where addresses&lt;5{1}&gt;.zip=95124</p>
+                    </blockquote>
+
+                    <p>&larr; retrieve all Employees whose second address has zip 95124.</p>
+
+                    <blockquote>
+                        <p>select * from Employee limit 50 page 3</p>
+                    </blockquote>
+
+                    <p>&larr; retrieve page 3 with a page size of 50 (items 150-199, zero-based).</p>
+
+                    <p>The Layer 8 Query Language is supported by both:</p>
+
+                    <ul>
+                        <li>the Layer 8 Distributed Cache, and</li>
+                        <li>the Layer 8 ORM (covered in Chapter 12).</li>
+                    </ul>
+
+                    <p>A complete language reference and specification is available at:<br>
+                    <a href="https://github.com/saichler/l8ql">https://github.com/saichler/l8ql</a></p>
+
+                    <p>By aligning query semantics directly with the model, Layer 8 eliminates the need for:</p>
+
+                    <ul>
+                        <li>table abstractions,</li>
+                        <li>object-relational impedance layers,</li>
+                        <li>and service-specific query operations.</li>
+                    </ul>
+
+                    <p>The model defines what can be queried.<br>
+                    The query language expresses intent.<br>
+                    The platform executes it.</p>
+
+                    <p>Note: How Layer 8 exposes APIs through a web interface is covered in the <strong>Web Server chapter.</strong></p>
+
+                    <nav class="chapter-nav">
+                        <a href="service-as-contract.html" class="prev">Service as a Contract</a>
+                        <a href="object-relation-mapping.html" class="next">Object Relation Mapping</a>
+                    </nav>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/book.js"></script>
+</body>
+</html>
