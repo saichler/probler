@@ -9,18 +9,40 @@
     <title>Probler - Datacenter Central Operation Management</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/base-core.css">
-    <link rel="stylesheet" href="view_table/table.css">
-    <link rel="stylesheet" href="css/components-modals.css">
+<link rel="stylesheet" href="css/components-modals.css">
     <link rel="stylesheet" href="css/components-misc.css">
     <link rel="stylesheet" href="css/sections-gpus.css">
     <link rel="stylesheet" href="css/sections-hosts.css">
     <link rel="stylesheet" href="css/sections-system.css">
     <link rel="stylesheet" href="css/sections-topologies.css">
     <link rel="stylesheet" href="css/responsive.css">
-    <link rel="stylesheet" href="popup/popup.css">
-    <link rel="stylesheet" href="popup/popup-forms.css">
-    <link rel="stylesheet" href="popup/popup-content.css">
     <link rel="stylesheet" href="confirm/confirm.css">
+
+    <!-- L8UI Theme & Layout -->
+    <link rel="stylesheet" href="l8ui/shared/layer8d-theme.css">
+    <link rel="stylesheet" href="l8ui/shared/layer8d-animations.css">
+    <link rel="stylesheet" href="l8ui/shared/layer8d-scrollbar.css">
+    <link rel="stylesheet" href="l8ui/shared/layer8-section-layout.css">
+    <link rel="stylesheet" href="l8ui/shared/layer8-section-responsive.css">
+
+    <!-- L8UI Components -->
+    <link rel="stylesheet" href="l8ui/edit_table/layer8d-table.css">
+    <link rel="stylesheet" href="l8ui/shared/layer8d-toggle-tree.css">
+    <link rel="stylesheet" href="l8ui/popup/layer8d-popup.css">
+    <link rel="stylesheet" href="l8ui/popup/layer8d-popup-forms.css">
+    <link rel="stylesheet" href="l8ui/popup/layer8d-popup-content.css">
+    <link rel="stylesheet" href="l8ui/datepicker/layer8d-datepicker.css">
+    <link rel="stylesheet" href="l8ui/reference_picker/layer8d-reference-picker.css">
+    <link rel="stylesheet" href="l8ui/input_formatters/layer8d-input-formatter.css">
+    <link rel="stylesheet" href="l8ui/notification/layer8d-notification.css">
+
+    <!-- Kubernetes -->
+    <link rel="stylesheet" href="kubernetes/kubernetes.css?v=2">
+
+    <!-- L8UI SYS Module -->
+    <link rel="stylesheet" href="l8ui/sys/l8sys.css">
+    <link rel="stylesheet" href="l8ui/sys/health/l8health.css">
+    <link rel="stylesheet" href="l8ui/sys/modules/l8sys-modules.css">
 </head>
 <body>
     <div class="app-container">
@@ -145,21 +167,118 @@
         </main>
     </div>
 
-    <!-- Probler Generic Popup Root -->
-    <div id="probler-popup-root"></div>
+    <!-- L8UI Core -->
+    <script src="l8ui/shared/layer8d-config.js"></script>
+    <script src="l8ui/shared/layer8d-utils.js"></script>
+    <script src="l8ui/shared/layer8d-renderers.js"></script>
+    <script src="l8ui/shared/layer8d-reference-registry.js"></script>
 
+    <!-- L8UI Factories -->
+    <script src="l8ui/shared/layer8-enum-factory.js"></script>
+    <script src="l8ui/shared/layer8-ref-factory.js"></script>
+    <script src="l8ui/shared/layer8-column-factory.js"></script>
+    <script src="l8ui/shared/layer8-form-factory.js"></script>
+    <script src="l8ui/shared/layer8-svg-factory.js"></script>
+    <script src="l8ui/shared/layer8d-module-config-factory.js"></script>
+    <script src="l8ui/shared/layer8-section-generator.js"></script>
+
+    <!-- L8UI Notification -->
+    <script src="l8ui/notification/layer8d-notification.js"></script>
+
+    <!-- L8UI Input Formatters -->
+    <script src="l8ui/input_formatters/layer8d-input-formatter-utils.js"></script>
+    <script src="l8ui/input_formatters/layer8d-input-formatter-masks.js"></script>
+    <script src="l8ui/input_formatters/layer8d-input-formatter-types-validators.js"></script>
+    <script src="l8ui/input_formatters/layer8d-input-formatter-types.js"></script>
+    <script src="l8ui/input_formatters/layer8d-input-formatter-core.js"></script>
+    <script src="l8ui/input_formatters/layer8d-input-formatter.js"></script>
+
+    <!-- L8UI Forms -->
+    <script src="l8ui/shared/layer8d-forms-fields.js"></script>
+    <script src="l8ui/shared/layer8d-forms-data.js"></script>
+    <script src="l8ui/shared/layer8d-forms-pickers.js"></script>
+    <script src="l8ui/shared/layer8d-forms-modal.js"></script>
+    <script src="l8ui/shared/layer8d-forms.js"></script>
+
+    <!-- L8UI Popup -->
+    <script src="l8ui/popup/layer8d-popup.js"></script>
+
+    <!-- L8UI Date Picker -->
+    <script src="l8ui/datepicker/layer8d-datepicker-utils.js"></script>
+    <script src="l8ui/datepicker/layer8d-datepicker-calendar.js"></script>
+    <script src="l8ui/datepicker/layer8d-datepicker-core.js"></script>
+    <script src="l8ui/datepicker/layer8d-datepicker.js"></script>
+
+    <!-- L8UI Reference Picker -->
+    <script src="l8ui/reference_picker/layer8d-reference-picker-utils.js"></script>
+    <script src="l8ui/reference_picker/layer8d-reference-picker-data.js"></script>
+    <script src="l8ui/reference_picker/layer8d-reference-picker-render.js"></script>
+    <script src="l8ui/reference_picker/layer8d-reference-picker-events.js"></script>
+    <script src="l8ui/reference_picker/layer8d-reference-picker-core.js"></script>
+    <script src="l8ui/reference_picker/layer8d-reference-picker.js"></script>
+
+    <!-- L8UI Table -->
+    <script src="l8ui/edit_table/layer8d-table-core.js"></script>
+    <script src="l8ui/edit_table/layer8d-table-data.js"></script>
+    <script src="l8ui/edit_table/layer8d-table-render.js"></script>
+    <script src="l8ui/edit_table/layer8d-table-events.js?v=2"></script>
+    <script src="l8ui/edit_table/layer8d-table-filter.js"></script>
+    <script src="l8ui/edit_table/layer8d-table.js"></script>
+
+    <!-- L8UI Module Abstractions -->
+    <script src="l8ui/shared/layer8d-service-registry.js"></script>
+    <script src="l8ui/shared/layer8d-module-crud.js"></script>
+    <script src="l8ui/shared/layer8d-module-navigation.js"></script>
+    <script src="l8ui/shared/layer8d-toggle-tree.js"></script>
+    <script src="l8ui/shared/layer8d-module-filter.js"></script>
+    <script src="l8ui/shared/layer8d-module-factory.js"></script>
+
+    <!-- L8UI SYS Module -->
+    <script src="l8ui/sys/l8sys-config.js"></script>
+    <script src="l8ui/sys/security/l8security-enums.js"></script>
+    <script src="l8ui/sys/security/l8security-columns.js"></script>
+    <script src="l8ui/sys/security/l8security-forms.js"></script>
+    <script src="l8ui/sys/security/l8security-users-crud.js"></script>
+    <script src="l8ui/sys/security/l8security-roles-crud.js"></script>
+    <script src="l8ui/sys/security/l8security-credentials-crud.js"></script>
+    <script src="l8ui/sys/security/l8security.js"></script>
+    <script src="l8ui/sys/health/l8health.js"></script>
+    <script src="l8ui/sys/modules/l8sys-modules.js"></script>
+    <script src="l8ui/sys/modules/l8sys-modules-map.js"></script>
+    <script src="l8ui/sys/modules/l8sys-dependency-graph.js"></script>
+    <script src="l8ui/sys/l8sys-init.js"></script>
+
+    <!-- Network Devices -->
+    <script src="js/network-devices-init.js?v=2"></script>
+    <script src="js/network-device-modal.js?v=2"></script>
+
+    <!-- Kubernetes -->
+    <script src="kubernetes/kubernetes-tables.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-core.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-helpers.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-node.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-node-generate.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-pods.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-pods-generate.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-deployments.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-deployments-generate.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-statefulsets.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-daemonsets.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-namespaces.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-namespaces-generate.js?v=2"></script>
+    <script src="kubernetes/kubernetes-modal-services.js?v=2"></script>
+    <script src="kubernetes/kubernetes-init.js?v=2"></script>
+
+    <!-- Probler Custom Components -->
     <script src="js/tree.js"></script>
-    <script src="view_table/table.js"></script>
-    <script src="js/sections.js"></script>
+<script src="js/sections.js"></script>
     <script src="js/gpus-mock-data.js"></script>
     <script src="js/gpus-init.js"></script>
     <script src="js/gpu-modal.js"></script>
     <script src="js/hosts.js"></script>
     <script src="js/hosts-modal-hypervisor.js"></script>
     <script src="js/hosts-modal-vm.js"></script>
-    <script src="js/system-health.js"></script>
     <script src="js/parallax.js"></script>
-    <script src="popup/popup.js"></script>
     <script src="confirm/confirm.js"></script>
     <script src="js/app.js"></script>
 </body>
