@@ -135,8 +135,11 @@ function generateContainerStatuses(readyCount, totalCount, podName, startTime) {
 function generatePodContainersTab(podDetails) {
     let html = '<div class="detail-section"><h3>Containers</h3>';
 
-    podDetails.spec.containers.forEach((container, idx) => {
-        const status = podDetails.status.containerStatuses[idx];
+    const containers = (podDetails.spec && podDetails.spec.containers) || [];
+    const statuses = (podDetails.status && podDetails.status.containerStatuses) || [];
+
+    containers.forEach((container, idx) => {
+        const status = statuses[idx];
         const isRunning = status && status.state && status.state.running;
 
         html += `

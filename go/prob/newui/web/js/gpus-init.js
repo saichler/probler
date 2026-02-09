@@ -1,4 +1,5 @@
 // Initialize GPU Section
+// Columns: ProblerGpus.columns (probler/gpus/gpus-columns.js)
 function initializeGPUs() {
     const container = document.getElementById('gpu-table');
 
@@ -13,35 +14,11 @@ function initializeGPUs() {
 
     try {
         // Create the GPU table
-        const gpuTable = new ProblerTable('gpu-table', {
-            columns: [
-                { key: 'name', label: 'GPU Name' },
-                { key: 'model', label: 'Model' },
-                { key: 'hostName', label: 'Host' },
-                { key: 'status', label: 'Status' },
-                {
-                    key: 'utilization',
-                    label: 'GPU %',
-                    formatter: (value) => `${value}%`
-                },
-                {
-                    key: 'memoryUsed',
-                    label: 'Memory',
-                    formatter: (value, row) => `${value}GB / ${row.memoryTotal}GB`
-                },
-                {
-                    key: 'temperature',
-                    label: 'Temp',
-                    formatter: (value) => `${value}°C`
-                },
-                {
-                    key: 'powerDraw',
-                    label: 'Power',
-                    formatter: (value, row) => `${value}W / ${row.powerLimit}W`
-                }
-            ],
+        const gpuTable = new Layer8DTable({
+            containerId: 'gpu-table',
+            columns: ProblerGpus.columns.GPU,
             data: gpuData,
-            rowsPerPage: 15,
+            pageSize: 15,
             sortable: true,
             filterable: true,
             statusColumn: 'status',
@@ -49,6 +26,7 @@ function initializeGPUs() {
                 showGPUDetailModal(rowData);
             }
         });
+        gpuTable.init();
     } catch (error) {
     }
 }

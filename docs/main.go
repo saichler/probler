@@ -16,6 +16,7 @@
 package main
 
 import (
+	"github.com/saichler/l8types/go/sec"
 	"os"
 	"time"
 
@@ -86,7 +87,7 @@ func CreateResources(alias string) ifs.IResources {
 
 	res.Set(registry.NewRegistry())
 
-	sec, err := ifs.LoadSecurityProvider(res)
+	sec, err := sec.LoadSecurityProvider(res)
 	if err != nil {
 		time.Sleep(time.Second * 10)
 		panic(err.Error())

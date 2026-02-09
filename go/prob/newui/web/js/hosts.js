@@ -1,4 +1,5 @@
 // Hosts & Virtual Machines Section Module
+// Columns: ProblerHosts.columns (probler/hosts/hosts-columns.js)
 
 // Generate mock hypervisor data
 function generateHypervisorMockData() {
@@ -134,12 +135,12 @@ function generateVMMockData() {
 // Initialize Hosts Section
 function initializeHosts() {
     // Initialize tab switching
-    const tabs = document.querySelectorAll('.content-tab');
-    const tabContents = document.querySelectorAll('.tab-content');
+    const tabs = document.querySelectorAll('.l8-module-tab');
+    const tabContents = document.querySelectorAll('.l8-module-content');
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            const tabName = tab.dataset.tab;
+            const tabName = tab.dataset.module;
 
             // Remove active class from all tabs and contents
             tabs.forEach(t => t.classList.remove('active'));
@@ -147,7 +148,7 @@ function initializeHosts() {
 
             // Add active class to clicked tab and corresponding content
             tab.classList.add('active');
-            const targetContent = document.querySelector(`.tab-content[data-content="${tabName}"]`);
+            const targetContent = document.querySelector(`.l8-module-content[data-module="${tabName}"]`);
             if (targetContent) {
                 targetContent.classList.add('active');
             }
@@ -175,31 +176,11 @@ function initializeHypervisorsTable() {
     const hypervisorData = generateHypervisorMockData();
 
     try {
-        const hypervisorsTable = new ProblerTable('hypervisors-table', {
-            columns: [
-                { key: 'name', label: 'Host Name' },
-                { key: 'type', label: 'Type' },
-                { key: 'cluster', label: 'Cluster' },
-                { key: 'status', label: 'Status' },
-                {
-                    key: 'cpuUsage',
-                    label: 'CPU %',
-                    formatter: (value) => `${value}%`
-                },
-                {
-                    key: 'memoryUsage',
-                    label: 'Memory %',
-                    formatter: (value) => `${value}%`
-                },
-                {
-                    key: 'vmCount',
-                    label: 'VMs',
-                    formatter: (value, row) => `${row.vmRunning}/${value}`
-                },
-                { key: 'datacenter', label: 'Datacenter' }
-            ],
+        const hypervisorsTable = new Layer8DTable({
+            containerId: 'hypervisors-table',
+            columns: ProblerHosts.columns.Hypervisor,
             data: hypervisorData,
-            rowsPerPage: 15,
+            pageSize: 15,
             sortable: true,
             filterable: true,
             statusColumn: 'status',
@@ -207,6 +188,7 @@ function initializeHypervisorsTable() {
                 showHypervisorDetailModal(rowData);
             }
         });
+        hypervisorsTable.init();
 
         window.hypervisorsTableInitialized = true;
     } catch (error) {
@@ -223,31 +205,11 @@ function initializeVMsTable() {
     const vmData = generateVMMockData();
 
     try {
-        const vmsTable = new ProblerTable('vms-table', {
-            columns: [
-                { key: 'name', label: 'VM Name' },
-                { key: 'os', label: 'Operating System' },
-                { key: 'hypervisor', label: 'Host' },
-                { key: 'status', label: 'Status' },
-                {
-                    key: 'cpuUsage',
-                    label: 'CPU %',
-                    formatter: (value) => `${value}%`
-                },
-                {
-                    key: 'memory',
-                    label: 'Memory',
-                    formatter: (value, row) => `${row.memoryUsed}/${value} GB`
-                },
-                {
-                    key: 'diskUsage',
-                    label: 'Disk %',
-                    formatter: (value) => `${value}%`
-                },
-                { key: 'ipAddress', label: 'IP Address' }
-            ],
+        const vmsTable = new Layer8DTable({
+            containerId: 'vms-table',
+            columns: ProblerHosts.columns.VM,
             data: vmData,
-            rowsPerPage: 15,
+            pageSize: 15,
             sortable: true,
             filterable: true,
             statusColumn: 'status',
@@ -255,6 +217,7 @@ function initializeVMsTable() {
                 showVMDetailModal(rowData);
             }
         });
+        vmsTable.init();
 
         window.vmsTableInitialized = true;
     } catch (error) {

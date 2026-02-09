@@ -108,6 +108,15 @@ limitations under the License.
     padding: 24px;
 }
 
+/* When body has no padding, tabs don't need negative margins */
+.probler-popup-body.no-padding .probler-popup-tabs {
+    margin: 0;
+}
+
+.probler-popup-body.no-padding .probler-popup-tab-content {
+    margin: 0;
+}
+
 .probler-popup-tab-pane {
     display: none;
 }

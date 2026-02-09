@@ -1,18 +1,467 @@
-<!-- Mobile Hosts Section - Placeholder -->
-<style>
-    .mobile-section { padding: var(--spacing-sm); }
-    .section-header {
-        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-        color: white; padding: var(--spacing-lg) var(--spacing-sm);
-        margin: calc(-1 * var(--spacing-sm)); margin-bottom: var(--spacing-md); text-align: center;
-    }
-    .section-header h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: var(--spacing-xs); }
-    .section-header p { font-size: 0.85rem; opacity: 0.9; }
-    .coming-soon { text-align: center; padding: var(--spacing-xl); color: var(--text-muted); }
-    .coming-soon .icon { font-size: 3rem; margin-bottom: var(--spacing-md); }
-    .coming-soon h3 { font-size: 1.2rem; color: var(--text-dark); margin-bottom: var(--spacing-sm); }
-</style>
+<!-- Mobile Hosts & VMs Section -->
 <div class="mobile-section">
-    <div class="section-header"><h2>🖥️ Hosts & VMs</h2><p>Hypervisor and VM management</p></div>
-    <div class="coming-soon"><div class="icon">🖥️</div><h3>Hosts & Virtual Machines</h3><p>Coming in future stages.</p></div>
+    <div class="section-header hosts-header">
+        <h2>Hosts & VMs</h2>
+        <p>Hypervisor Management - VM Orchestration</p>
+    </div>
+    <div class="hosts-tabs">
+        <button class="hosts-tab active" data-tab="hypervisors">Hypervisors</button>
+        <button class="hosts-tab" data-tab="vms">Virtual Machines</button>
+    </div>
+    <div id="hosts-hypervisors" class="hosts-content active">
+        <div id="hypervisors-table-container"></div>
+    </div>
+    <div id="hosts-vms" class="hosts-content">
+        <div id="vms-table-container"></div>
+    </div>
 </div>
+
+<script>
+(function() {
+    'use strict';
+
+    // Generate mock hypervisor data (matches desktop hosts.js)
+    function generateHypervisorMockData() {
+        var hypervisors = [];
+        var types = ['VMware ESXi', 'KVM', 'Hyper-V', 'Proxmox VE'];
+        var versions = {
+            'VMware ESXi': ['8.0 Update 2', '8.0 Update 1', '7.0 Update 3'],
+            'KVM': ['QEMU 8.0', 'QEMU 7.2', 'QEMU 7.1'],
+            'Hyper-V': ['Windows Server 2022', 'Windows Server 2019'],
+            'Proxmox VE': ['8.0', '7.4', '7.3']
+        };
+        var statuses = ['operational', 'operational', 'operational', 'operational', 'warning', 'critical'];
+        var datacenters = ['DC1', 'DC2', 'DC3'];
+        var clusters = ['Production', 'Development', 'Testing', 'DR'];
+
+        for (var i = 1; i <= 20; i++) {
+            var type = types[i % types.length];
+            var status = statuses[i % statuses.length];
+            var dc = datacenters[i % datacenters.length];
+            var cluster = clusters[i % clusters.length];
+            var totalCPU = [32, 64, 96, 128][i % 4];
+            var totalMem = [256, 512, 768, 1024][i % 4];
+            var totalStorage = [10, 20, 30, 50][i % 4];
+            var cpuUsage = status === 'operational' ? Math.floor(Math.random() * 40) + 40 : (status === 'warning' ? Math.floor(Math.random() * 20) + 75 : 0);
+            var memUsage = status === 'operational' ? Math.floor(Math.random() * 35) + 50 : (status === 'warning' ? Math.floor(Math.random() * 15) + 80 : 0);
+            var storageUsed = status === 'operational' ? Math.floor(totalStorage * 0.6) + Math.floor(Math.random() * totalStorage * 0.2) : 0;
+            var vmCount = status === 'operational' ? Math.floor(Math.random() * 100) + 50 : (status === 'warning' ? Math.floor(Math.random() * 30) + 10 : 0);
+            var vmRunning = status === 'operational' ? vmCount : (status === 'warning' ? Math.floor(vmCount * 0.7) : 0);
+
+            hypervisors.push({
+                id: 'hv-' + String(i).padStart(3, '0'),
+                name: type.split(' ')[0].toUpperCase() + '-HV-' + String(i).padStart(2, '0'),
+                hostname: type.split(' ')[0].toLowerCase() + '-hv-' + String(i).padStart(2, '0') + '.' + dc.toLowerCase() + '.datacenter.local',
+                type: type, version: versions[type][i % versions[type].length],
+                status: status, datacenter: dc, cluster: cluster,
+                cpuCores: totalCPU, cpuUsage: cpuUsage, memoryTotal: totalMem, memoryUsage: memUsage,
+                memoryUsed: Math.floor((memUsage / 100) * totalMem),
+                storageTotal: totalStorage, storageUsed: storageUsed,
+                vmCount: vmCount, vmRunning: vmRunning, vmStopped: vmCount - vmRunning,
+                uptime: status === 'operational' ? Math.floor(Math.random() * 300) + 30 : 0,
+                ipAddress: '10.' + i + '.' + Math.floor(Math.random() * 255) + '.' + Math.floor(Math.random() * 255),
+                manufacturer: type === 'VMware ESXi' ? 'Dell' : (type === 'Hyper-V' ? 'HP' : 'Supermicro'),
+                model: type === 'VMware ESXi' ? 'PowerEdge R750' : (type === 'Hyper-V' ? 'ProLiant DL380 Gen10' : 'SYS-220U-TNR'),
+                cpuModel: totalCPU >= 96 ? 'AMD EPYC 7763' : (totalCPU >= 64 ? 'Intel Xeon Gold 6330' : 'Intel Xeon Silver 4314'),
+                networkInterfaces: Math.floor(Math.random() * 4) + 4,
+                vSwitches: Math.floor(Math.random() * 3) + 2,
+                datastores: Math.floor(Math.random() * 5) + 3
+            });
+        }
+        return hypervisors;
+    }
+
+    // Generate mock VM data (matches desktop hosts.js)
+    function generateVMMockData() {
+        var vms = [];
+        var osTypes = ['Windows Server 2022', 'Ubuntu 22.04', 'RHEL 9', 'CentOS 7', 'Debian 11', 'Windows Server 2019'];
+        var statuses = ['running', 'running', 'running', 'running', 'running', 'stopped', 'suspended', 'error'];
+        var purposes = ['Web Server', 'Database Server', 'App Server', 'File Server', 'DC', 'Mail Server', 'Dev', 'Testing', 'Backup'];
+        var hvNames = [];
+        for (var h = 1; h <= 20; h++) {
+            var hvTypes = ['VMWARE', 'KVM', 'HYPER-V', 'PROXMOX'];
+            hvNames.push(hvTypes[h % hvTypes.length] + '-HV-' + String(h).padStart(2, '0'));
+        }
+
+        for (var i = 1; i <= 35; i++) {
+            var os = osTypes[i % osTypes.length];
+            var status = statuses[i % statuses.length];
+            var purpose = purposes[i % purposes.length];
+            var hypervisor = hvNames[i % hvNames.length];
+            var cpuCores = [2, 4, 8, 16][i % 4];
+            var memory = [4, 8, 16, 32, 64][i % 5];
+            var disk = [50, 100, 250, 500, 1000][i % 5];
+            var cpuUsage = status === 'running' ? Math.floor(Math.random() * 60) + 20 : 0;
+            var memUsage = status === 'running' ? Math.floor(Math.random() * 50) + 40 : 0;
+            var diskUsage = status === 'running' ? Math.floor(Math.random() * 40) + 40 : 0;
+            var uptime = status === 'running' ? Math.floor(Math.random() * 200) + 10 : 0;
+
+            vms.push({
+                id: 'vm-' + String(i).padStart(4, '0'),
+                name: purpose.replace(/\s+/g, '-').toLowerCase() + '-' + String(i).padStart(3, '0'),
+                os: os, status: status, purpose: purpose, hypervisor: hypervisor,
+                cpuCores: cpuCores, cpuUsage: cpuUsage,
+                memory: memory, memoryUsage: memUsage, memoryUsed: Math.floor((memUsage / 100) * memory),
+                diskTotal: disk, diskUsed: Math.floor((diskUsage / 100) * disk), diskUsage: diskUsage,
+                ipAddress: '192.168.' + (Math.floor(i / 255) + 1) + '.' + (i % 255),
+                macAddress: ('00:50:56:' + rHex() + ':' + rHex() + ':' + rHex()).toUpperCase(),
+                vlan: 10 + (i % 10) * 10,
+                snapshotCount: Math.floor(Math.random() * 5),
+                backupStatus: status === 'running' ? (i % 3 === 0 ? 'Completed' : 'Scheduled') : 'N/A',
+                lastBackup: status === 'running' ? '2025-10-0' + (Math.floor(Math.random() * 3) + 1) : 'N/A',
+                uptime: uptime,
+                createdDate: '2024-' + String(Math.floor(Math.random() * 12) + 1).padStart(2, '0') + '-' + String(Math.floor(Math.random() * 28) + 1).padStart(2, '0'),
+                owner: ['IT Team', 'Development', 'Operations', 'Finance', 'HR'][i % 5]
+            });
+        }
+        return vms;
+    }
+
+    function rHex() { return Math.floor(Math.random() * 256).toString(16).padStart(2, '0'); }
+
+    // Helpers
+    function escapeHtml(text) {
+        if (text == null || text === '--') return '--';
+        var div = document.createElement('div');
+        div.textContent = String(text);
+        return div.innerHTML;
+    }
+    function capitalize(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
+
+    function getHvStatusClass(status) {
+        if (!status) return 'offline';
+        var s = String(status).toLowerCase();
+        if (s === 'operational') return 'operational';
+        if (s === 'warning') return 'warning';
+        if (s === 'critical') return 'critical';
+        return 'offline';
+    }
+    function getVmStatusClass(status) {
+        if (!status) return 'offline';
+        var s = String(status).toLowerCase();
+        if (s === 'running') return 'operational';
+        if (s === 'suspended') return 'warning';
+        if (s === 'error') return 'critical';
+        return 'offline';
+    }
+
+    // Hypervisor card
+    function renderHvCard(hv, index, table) {
+        var statusClass = table.config.getStatusClass(hv.status);
+        return '<div class="mobile-table-card clickable" data-index="' + index + '">' +
+            '<div class="mobile-table-card-header">' +
+                '<div>' +
+                    '<h4 class="mobile-table-card-title">' + escapeHtml(hv.name) + '</h4>' +
+                    '<p class="mobile-table-card-subtitle">' + escapeHtml(hv.type) + ' | ' + escapeHtml(hv.cluster) + '</p>' +
+                '</div>' +
+                '<div class="mobile-table-status ' + statusClass + '">' +
+                    '<span class="mobile-table-status-indicator"></span>' +
+                    '<span>' + capitalize(hv.status) + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="mobile-table-card-body">' +
+                '<div class="host-metrics">' +
+                    '<div class="host-metric"><span class="host-metric-label">CPU</span><span class="host-metric-value">' + hv.cpuUsage + '%</span></div>' +
+                    '<div class="host-metric"><span class="host-metric-label">Memory</span><span class="host-metric-value">' + hv.memoryUsage + '%</span></div>' +
+                    '<div class="host-metric"><span class="host-metric-label">VMs</span><span class="host-metric-value">' + hv.vmRunning + '/' + hv.vmCount + '</span></div>' +
+                    '<div class="host-metric"><span class="host-metric-label">DC</span><span class="host-metric-value">' + escapeHtml(hv.datacenter) + '</span></div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }
+
+    // VM card
+    function renderVmCard(vm, index, table) {
+        var statusClass = table.config.getStatusClass(vm.status);
+        return '<div class="mobile-table-card clickable" data-index="' + index + '">' +
+            '<div class="mobile-table-card-header">' +
+                '<div>' +
+                    '<h4 class="mobile-table-card-title">' + escapeHtml(vm.name) + '</h4>' +
+                    '<p class="mobile-table-card-subtitle">' + escapeHtml(vm.os) + ' | ' + escapeHtml(vm.hypervisor) + '</p>' +
+                '</div>' +
+                '<div class="mobile-table-status ' + statusClass + '">' +
+                    '<span class="mobile-table-status-indicator"></span>' +
+                    '<span>' + capitalize(vm.status) + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="mobile-table-card-body">' +
+                '<div class="host-metrics">' +
+                    '<div class="host-metric"><span class="host-metric-label">CPU</span><span class="host-metric-value">' + vm.cpuUsage + '%</span></div>' +
+                    '<div class="host-metric"><span class="host-metric-label">Mem</span><span class="host-metric-value">' + vm.memoryUsed + '/' + vm.memory + ' GB</span></div>' +
+                    '<div class="host-metric"><span class="host-metric-label">Disk</span><span class="host-metric-value">' + vm.diskUsage + '%</span></div>' +
+                    '<div class="host-metric"><span class="host-metric-label">IP</span><span class="host-metric-value">' + escapeHtml(vm.ipAddress) + '</span></div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }
+
+    // Hypervisor detail popup
+    function showHvDetail(hv) {
+        var overviewContent =
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Host Information</div>' +
+                '<div class="detail-row"><span class="detail-label">Hostname</span><span class="detail-value">' + escapeHtml(hv.hostname) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">' + escapeHtml(hv.type) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Version</span><span class="detail-value">' + escapeHtml(hv.version) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Datacenter</span><span class="detail-value">' + escapeHtml(hv.datacenter) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Cluster</span><span class="detail-value">' + escapeHtml(hv.cluster) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">IP Address</span><span class="detail-value">' + escapeHtml(hv.ipAddress) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Manufacturer</span><span class="detail-value">' + escapeHtml(hv.manufacturer) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Model</span><span class="detail-value">' + escapeHtml(hv.model) + '</span></div>' +
+            '</div>';
+
+        var resourcesContent =
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">CPU</div>' +
+                '<div class="detail-row"><span class="detail-label">CPU Model</span><span class="detail-value">' + escapeHtml(hv.cpuModel) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Cores</span><span class="detail-value">' + hv.cpuCores + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Usage</span><span class="detail-value">' + hv.cpuUsage + '%</span></div>' +
+            '</div>' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Memory</div>' +
+                '<div class="detail-row"><span class="detail-label">Total</span><span class="detail-value">' + hv.memoryTotal + ' GB</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Used</span><span class="detail-value">' + hv.memoryUsed + ' GB (' + hv.memoryUsage + '%)</span></div>' +
+            '</div>' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Storage</div>' +
+                '<div class="detail-row"><span class="detail-label">Total</span><span class="detail-value">' + hv.storageTotal + ' TB</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Used</span><span class="detail-value">' + hv.storageUsed + ' TB</span></div>' +
+            '</div>';
+
+        var vmsContent =
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Virtual Machines</div>' +
+                '<div class="detail-row"><span class="detail-label">Total</span><span class="detail-value">' + hv.vmCount + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Running</span><span class="detail-value operational">' + hv.vmRunning + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Stopped</span><span class="detail-value">' + hv.vmStopped + '</span></div>' +
+            '</div>' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Network</div>' +
+                '<div class="detail-row"><span class="detail-label">Interfaces</span><span class="detail-value">' + hv.networkInterfaces + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">vSwitches</span><span class="detail-value">' + hv.vSwitches + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Datastores</span><span class="detail-value">' + hv.datastores + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Uptime</span><span class="detail-value">' + hv.uptime + ' days</span></div>' +
+            '</div>';
+
+        MobilePopup.show({
+            title: hv.name,
+            size: 'large',
+            showFooter: false,
+            tabs: [
+                { id: 'overview', label: 'Overview', content: overviewContent },
+                { id: 'resources', label: 'Resources', content: resourcesContent },
+                { id: 'vms', label: 'VMs & Network', content: vmsContent }
+            ]
+        });
+    }
+
+    // VM detail popup
+    function showVmDetail(vm) {
+        var overviewContent =
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">VM Information</div>' +
+                '<div class="detail-row"><span class="detail-label">Hostname</span><span class="detail-value">' + escapeHtml(vm.name) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">OS</span><span class="detail-value">' + escapeHtml(vm.os) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Hypervisor</span><span class="detail-value">' + escapeHtml(vm.hypervisor) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Purpose</span><span class="detail-value">' + escapeHtml(vm.purpose) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Status</span><span class="detail-value ' + getVmStatusClass(vm.status) + '">' + capitalize(vm.status) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">IP Address</span><span class="detail-value">' + escapeHtml(vm.ipAddress) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">MAC</span><span class="detail-value">' + escapeHtml(vm.macAddress) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">VLAN</span><span class="detail-value">' + vm.vlan + '</span></div>' +
+            '</div>';
+
+        var resourcesContent =
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">CPU</div>' +
+                '<div class="detail-row"><span class="detail-label">Cores</span><span class="detail-value">' + vm.cpuCores + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Usage</span><span class="detail-value">' + vm.cpuUsage + '%</span></div>' +
+            '</div>' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Memory</div>' +
+                '<div class="detail-row"><span class="detail-label">Total</span><span class="detail-value">' + vm.memory + ' GB</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Used</span><span class="detail-value">' + vm.memoryUsed + ' GB (' + vm.memoryUsage + '%)</span></div>' +
+            '</div>' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Disk</div>' +
+                '<div class="detail-row"><span class="detail-label">Total</span><span class="detail-value">' + vm.diskTotal + ' GB</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Used</span><span class="detail-value">' + vm.diskUsed + ' GB (' + vm.diskUsage + '%)</span></div>' +
+            '</div>';
+
+        var opsContent =
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Operations</div>' +
+                '<div class="detail-row"><span class="detail-label">Uptime</span><span class="detail-value">' + vm.uptime + ' days</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Snapshots</span><span class="detail-value">' + vm.snapshotCount + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Backup Status</span><span class="detail-value">' + escapeHtml(vm.backupStatus) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Last Backup</span><span class="detail-value">' + escapeHtml(vm.lastBackup) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Owner</span><span class="detail-value">' + escapeHtml(vm.owner) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">' + escapeHtml(vm.createdDate) + '</span></div>' +
+            '</div>';
+
+        MobilePopup.show({
+            title: vm.name,
+            size: 'large',
+            showFooter: false,
+            tabs: [
+                { id: 'overview', label: 'Overview', content: overviewContent },
+                { id: 'resources', label: 'Resources', content: resourcesContent },
+                { id: 'operations', label: 'Operations', content: opsContent }
+            ]
+        });
+    }
+
+    // Enum values for filtering
+    var hvStatusEnum = { 'operational': 'operational', 'warning': 'warning', 'critical': 'critical' };
+    var vmStatusEnum = { 'running': 'running', 'stopped': 'stopped', 'suspended': 'suspended', 'error': 'error' };
+
+    var hypervisorsTable = null;
+    var vmsTable = null;
+
+    // Initialize Mobile Hosts section
+    function initMobileHosts() {
+        // Tab switching
+        var tabs = document.querySelectorAll('.hosts-tab');
+        var contents = document.querySelectorAll('.hosts-content');
+        tabs.forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                var tabName = this.dataset.tab;
+                tabs.forEach(function(t) { t.classList.remove('active'); });
+                contents.forEach(function(c) { c.classList.remove('active'); });
+                this.classList.add('active');
+                var target = document.getElementById('hosts-' + tabName);
+                if (target) target.classList.add('active');
+
+                // Lazy init VMs table
+                if (tabName === 'vms' && !vmsTable) {
+                    initVmsTable();
+                }
+            });
+        });
+
+        // Init hypervisors table
+        initHypervisorsTable();
+    }
+
+    function initHypervisorsTable() {
+        var data = generateHypervisorMockData();
+        hypervisorsTable = new MobileTable('hypervisors-table-container', {
+            data: data, serverSide: false, rowsPerPage: 15,
+            columns: [
+                { key: 'name', label: 'Name' },
+                { key: 'type', label: 'Type' },
+                { key: 'cluster', label: 'Cluster' },
+                { key: 'status', label: 'Status', enumValues: hvStatusEnum }
+            ],
+            statusField: 'status', getStatusClass: getHvStatusClass,
+            renderCard: renderHvCard, onCardClick: showHvDetail,
+            emptyMessage: 'No hypervisors found.', emptyIcon: '&#x1F5A5;'
+        });
+    }
+
+    function initVmsTable() {
+        var data = generateVMMockData();
+        vmsTable = new MobileTable('vms-table-container', {
+            data: data, serverSide: false, rowsPerPage: 15,
+            columns: [
+                { key: 'name', label: 'Name' },
+                { key: 'os', label: 'OS' },
+                { key: 'hypervisor', label: 'Hypervisor' },
+                { key: 'status', label: 'Status', enumValues: vmStatusEnum }
+            ],
+            statusField: 'status', getStatusClass: getVmStatusClass,
+            renderCard: renderVmCard, onCardClick: showVmDetail,
+            emptyMessage: 'No virtual machines found.', emptyIcon: '&#x2601;'
+        });
+    }
+
+    window.initMobileHosts = initMobileHosts;
+})();
+</script>
+
+<style>
+/* Hosts section header */
+.hosts-header {
+    text-align: center;
+    padding: 20px 16px 24px !important;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+    margin: -12px -12px 0 -12px !important;
+    border-radius: 0;
+    color: white !important;
+}
+.hosts-header h2 { color: white !important; margin: 0 0 4px; font-size: 1.4rem; }
+.hosts-header p { color: rgba(255,255,255,0.8) !important; margin: 0; opacity: 1; }
+
+/* Tab switcher */
+.hosts-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--border-light, #e2e8f0);
+    margin: 0 -12px;
+    padding: 0;
+    background: var(--bg-light, #f5f7fa);
+}
+.hosts-tab {
+    flex: 1;
+    padding: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted, #718096);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: -2px;
+}
+.hosts-tab.active {
+    color: #8b5cf6;
+    border-bottom-color: #8b5cf6;
+    background: white;
+}
+.hosts-content { display: none; padding-top: 8px; }
+.hosts-content.active { display: block; }
+
+/* Host card metrics row */
+.host-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.host-metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+.host-metric-label {
+    font-size: 0.8rem;
+    color: var(--text-muted, #718096);
+    font-weight: 500;
+}
+.host-metric-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-dark, #1a1a2e);
+}
+
+/* Detail popup styles (shared with gpu section) */
+.detail-section { margin-bottom: 20px; }
+.detail-section:last-child { margin-bottom: 0; }
+.detail-section-title {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-muted); margin-bottom: 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
+}
+.detail-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 10px 0; border-bottom: 1px solid var(--border-light);
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-label { font-size: 0.85rem; color: var(--text-muted); flex-shrink: 0; }
+.detail-value {
+    font-size: 0.85rem; color: var(--text-dark); font-weight: 500;
+    text-align: right; word-break: break-word; margin-left: 16px;
+}
+.detail-value.operational { color: #22c55e; }
+.detail-value.warning { color: #f59e0b; }
+.detail-value.critical { color: #ef4444; }
+</style>

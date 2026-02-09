@@ -14,8 +14,7 @@ const sections = {
     automation: 'sections/automation.html',
     applications: 'sections/applications.html',
     analytics: 'sections/analytics.html',
-    security: 'sections/security.html',
-    system: 'sections/system.html'
+    system: 'sections/sys.html'
 };
 
 // Load section content dynamically
@@ -62,9 +61,11 @@ function loadSection(sectionName) {
                     if (sectionName === 'dashboard') {
                         // Dashboard now loads in iframe, self-initializes
                     } else if (sectionName === 'network') {
-                        // Network devices now loads in iframe, just init parallax
                         if (typeof initializeParallax === 'function') {
                             initializeParallax();
+                        }
+                        if (typeof initializeNetworkDevices === 'function') {
+                            initializeNetworkDevices();
                         }
                     } else if (sectionName === 'gpus') {
                         if (typeof initializeGPUs === 'function') {
@@ -75,17 +76,12 @@ function loadSection(sectionName) {
                             initializeHosts();
                         }
                     } else if (sectionName === 'kubernetes') {
-                        // Kubernetes now loads in iframe, self-initializes
+                        if (typeof initializeKubernetes === 'function') {
+                            initializeKubernetes();
+                        }
                     } else if (sectionName === 'system') {
-                        if (typeof initializeHealth === 'function') {
-                            initializeHealth();
-                        }
-                        if (typeof initializeParallax === 'function') {
-                            initializeParallax();
-                        }
-                    } else if (sectionName === 'security') {
-                        if (typeof setupSystemTabSwitching === 'function') {
-                            setupSystemTabSwitching();
+                        if (typeof initializeL8Sys === 'function') {
+                            initializeL8Sys();
                         }
                         if (typeof initializeParallax === 'function') {
                             initializeParallax();
@@ -109,5 +105,5 @@ function loadSection(sectionName) {
 function logout() {
     sessionStorage.removeItem('isLoggedIn');
     sessionStorage.removeItem('username');
-    window.location.href = 'login.html';
+    window.location.href = 'l8ui/login/index.html';
 }

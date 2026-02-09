@@ -19,7 +19,7 @@ class Layer8DTable {
     constructor(options) {
         this.containerId = options.containerId;
         this.columns = options.columns || [];
-        this.data = [];
+        this.data = options.data || [];
         this.pageSize = options.pageSize || 10;
         this.currentPage = 1;
         this.emptyMessage = options.emptyMessage || 'No data found.';
@@ -62,7 +62,7 @@ class Layer8DTable {
         this.sortColumn = null;
         this.sortDirection = 'asc';
         this.filters = {};
-        this.filteredData = [];
+        this.filteredData = this.data.length > 0 ? [...this.data] : [];
 
         this.container = null;
         this.tableId = options.tableId || 'l8-table-' + Date.now();

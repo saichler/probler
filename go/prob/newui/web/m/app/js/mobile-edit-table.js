@@ -820,11 +820,11 @@
                 });
             });
 
-            // Card body click (not action buttons)
+            // Card click (header + body, not action buttons)
             if (this.config.onCardClick) {
-                container.querySelectorAll('.mobile-edit-table-card-body').forEach(body => {
-                    body.addEventListener('click', () => {
-                        const card = body.closest('.mobile-edit-table-card');
+                container.querySelectorAll('.mobile-edit-table-card-header, .mobile-edit-table-card-body').forEach(area => {
+                    area.addEventListener('click', () => {
+                        const card = area.closest('.mobile-edit-table-card');
                         const index = parseInt(card.dataset.index);
                         const data = this._getPageData();
                         if (data[index]) {

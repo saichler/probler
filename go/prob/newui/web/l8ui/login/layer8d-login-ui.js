@@ -90,7 +90,7 @@ function logout() {
     if (window.location.pathname.includes('/login')) {
         window.location.reload();
     } else {
-        window.location.href = 'login/index.html';
+        window.location.href = 'l8ui/login/index.html';
     }
 }
 

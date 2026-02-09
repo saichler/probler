@@ -20,7 +20,7 @@ let LOGIN_CONFIG = null;
 // Load configuration from login.json
 async function loadConfig() {
     try {
-        const response = await fetch('/login.json');
+        const response = await fetch('../../login.json');
         if (!response.ok) {
             throw new Error('Failed to load configuration');
         }

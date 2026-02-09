@@ -1,8 +1,8 @@
-<div class="section-container gpu-section">
+<div class="section-container gpu-section l8-section">
     <!-- GPU Hero Header -->
-    <div class="gpu-hero">
-        <div class="hero-background">
-            <svg class="hero-illustration" viewBox="0 0 1200 150" xmlns="http://www.w3.org/2000/svg">
+    <div class="l8-header-frame gpu-hero parallax-container">
+        <div class="l8-header-bg parallax-layer" data-speed="0.5">
+            <svg class="l8-illustration" viewBox="0 0 1200 150" xmlns="http://www.w3.org/2000/svg">
                 <!-- Background Grid -->
                 <defs>
                     <pattern id="gpuGrid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -118,17 +118,18 @@
             </svg>
         </div>
 
-        <div class="hero-content">
-            <h1 class="hero-title">GPU Computing Infrastructure</h1>
-            <p class="hero-subtitle">Real-time GPU monitoring • 1,024 Active GPUs • AI & ML Workloads</p>
+        <div class="l8-header-content parallax-layer" data-speed="1">
+            <div class="l8-header-title">
+                <h1 class="l8-title">GPU Computing Infrastructure</h1>
+                <p class="l8-subtitle">Real-time GPU monitoring - AI & ML Workloads</p>
+            </div>
         </div>
     </div>
 
-    <div class="section-content gpu-content">
-        <div class="section-description">Monitor and manage GPU resources across compute clusters</div>
-
-        <!-- GPU Table -->
-        <div id="gpu-table"></div>
+    <div class="section-content">
+        <div class="l8-module-content active" data-module="gpus">
+            <div class="l8-table-container" id="gpu-table"></div>
+        </div>
     </div>
 </div>
 

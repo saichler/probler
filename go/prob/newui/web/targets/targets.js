@@ -206,7 +206,7 @@ function getEmptyMessage() {
 
 // Initialize the targets table with server-side pagination
 function initTargetsTable() {
-    targetsTable = new L8Table({
+    targetsTable = new Layer8DTable({
         containerId: 'targets-table-container',
         tableId: 'targets-table',
         endpoint: getTargetsEndpoint(),
@@ -242,7 +242,7 @@ function initTargetsTable() {
                 key: 'hosts',
                 render: (target) => {
                     const count = target.hosts ? Object.keys(target.hosts).length : 0;
-                    return L8Table.countBadge(count, 'host');
+                    return Layer8DTable.countBadge(count, 'host');
                 }
             },
             {
@@ -250,9 +250,12 @@ function initTargetsTable() {
                 key: 'state',
                 filterKey: 'state',
                 enumValues: targetStateEnum,
-                render: (target) => L8Table.statusTag(target.state === 2)
+                render: (target) => Layer8DTable.statusTag(target.state === 2)
             }
         ],
+        onRowClick: function(target) {
+            showTargetDetailsModal(target);
+        },
         onAdd: () => showTargetModal(),
         addButtonText: 'Add Target',
         onEdit: editTarget,

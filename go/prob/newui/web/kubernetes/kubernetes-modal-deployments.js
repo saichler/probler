@@ -10,7 +10,7 @@ async function showDeploymentDetailModal(deployment, cluster) {
 
     let deploymentDetails;
     try {
-        const response = await makeAuthenticatedRequest('/probler/0/exec', {
+        const response = await makeAuthenticatedRequest(Layer8DConfig.resolveEndpoint('/0/exec'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

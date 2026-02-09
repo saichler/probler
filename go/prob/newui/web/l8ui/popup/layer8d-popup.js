@@ -80,6 +80,7 @@ limitations under the License.
         body.className = 'probler-popup-body';
         if (config.noPadding) {
             body.style.padding = '0';
+            body.classList.add('no-padding');
         }
         body.innerHTML = config.content || '';
 

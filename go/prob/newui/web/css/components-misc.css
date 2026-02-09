@@ -12,91 +12,26 @@
     padding: 0 !important;
 }
 
-.network-hero {
-    position: relative;
-    width: 100%;
-    height: 150px;
-    overflow: hidden;
-    margin: 0 0 30px 0;
+/* Network hero gradient override (layout handled by l8-header-frame) */
+.network-section .l8-header-frame {
     background: linear-gradient(135deg, #0369a1 0%, #0e7490 100%);
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    height: 150px;
 }
 
-.network-content {
-    padding: 0 30px 30px 30px;
-}
-
-/* Hero Styles (shared by network section) */
-.hero-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-.hero-illustration {
-    width: 100%;
-    height: 100%;
-    opacity: 0.8;
-}
-
-.hero-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    z-index: 10;
-    width: 90%;
-    max-width: 1000px;
-}
-
-.hero-title {
-    font-size: 42px;
-    font-weight: 700;
+/* Dark-gradient header text overrides (l8-title/l8-subtitle default to dark text) */
+.gpu-section .l8-title,
+.hosts-section .l8-title,
+.network-section .l8-title,
+.k8s-section .l8-title {
     color: white;
-    margin-bottom: 15px;
-    margin-top: 20px;
-    text-transform: uppercase;
-    letter-spacing: 3px;
     text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    font-family: 'Figtree', sans-serif;
-    animation: hero-title-entrance 1s ease-out;
 }
 
-@keyframes hero-title-entrance {
-    0% {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.hero-subtitle {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.95);
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    opacity: 0.95;
-    animation: hero-subtitle-entrance 1s ease-out 0.2s both;
-}
-
-@keyframes hero-subtitle-entrance {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 0.9;
-        transform: translateY(0);
-    }
+.gpu-section .l8-subtitle,
+.hosts-section .l8-subtitle,
+.network-section .l8-subtitle,
+.k8s-section .l8-subtitle {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 /* Network Link Animation (used in network hero SVG) */
@@ -119,6 +54,47 @@
     25% { opacity: 1; }
     75% { opacity: 1; }
     100% { opacity: 0; cy: 250; }
+}
+
+/* ============================================ */
+/* STATUS BADGES (table cells) */
+/* ============================================ */
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    min-width: 80px;
+}
+
+.status-badge.status-operational {
+    background: rgba(0, 200, 83, 0.1);
+    color: #00c853;
+}
+
+.status-badge.status-warning {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.status-badge.status-critical {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.status-badge.status-offline {
+    background: rgba(117, 117, 117, 0.1);
+    color: #757575;
+}
+
+.status-badge.status-maintenance {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
 }
 
 /* ============================================ */

@@ -105,8 +105,8 @@
         if (confirmBtn) {
             confirmBtn.addEventListener('click', function() {
                 // Close the popup first
-                if (typeof ProblerPopup !== 'undefined') {
-                    ProblerPopup.close();
+                if (typeof Layer8DPopup !== 'undefined') {
+                    Layer8DPopup.close();
                 }
 
                 // Notify iframe if applicable
@@ -132,8 +132,8 @@
         if (cancelBtn) {
             cancelBtn.addEventListener('click', function() {
                 // Close the popup first
-                if (typeof ProblerPopup !== 'undefined') {
-                    ProblerPopup.close();
+                if (typeof Layer8DPopup !== 'undefined') {
+                    Layer8DPopup.close();
                 }
 
                 // Notify iframe if applicable
@@ -159,8 +159,8 @@
 
     // Show confirmation popup
     function show(config) {
-        if (typeof ProblerPopup === 'undefined') {
-            console.error('ProblerConfirm: ProblerPopup is required but not found');
+        if (typeof Layer8DPopup === 'undefined') {
+            console.error('ProblerConfirm: Layer8DPopup is required but not found');
             return;
         }
 
@@ -169,7 +169,7 @@
 
         const content = buildContent(config, typeConfig);
 
-        ProblerPopup.show({
+        Layer8DPopup.show({
             title: config.title || 'Confirm',
             content: content,
             size: 'small',

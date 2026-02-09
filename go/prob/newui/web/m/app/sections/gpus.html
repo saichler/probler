@@ -1,18 +1,327 @@
-<!-- Mobile GPUs Section - Placeholder -->
-<style>
-    .mobile-section { padding: var(--spacing-sm); }
-    .section-header {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-        color: white; padding: var(--spacing-lg) var(--spacing-sm);
-        margin: calc(-1 * var(--spacing-sm)); margin-bottom: var(--spacing-md); text-align: center;
-    }
-    .section-header h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: var(--spacing-xs); }
-    .section-header p { font-size: 0.85rem; opacity: 0.9; }
-    .coming-soon { text-align: center; padding: var(--spacing-xl); color: var(--text-muted); }
-    .coming-soon .icon { font-size: 3rem; margin-bottom: var(--spacing-md); }
-    .coming-soon h3 { font-size: 1.2rem; color: var(--text-dark); margin-bottom: var(--spacing-sm); }
-</style>
+<!-- Mobile GPUs Section - GPU Computing Infrastructure -->
 <div class="mobile-section">
-    <div class="section-header"><h2>🖧 GPUs</h2><p>GPU cluster monitoring</p></div>
-    <div class="coming-soon"><div class="icon">🖧</div><h3>GPU Clusters</h3><p>Coming in future stages.</p></div>
+    <div class="section-header gpu-header">
+        <h2>GPU Computing</h2>
+        <p>Real-time GPU monitoring - AI & ML Workloads</p>
+    </div>
+    <div id="gpu-table-container"></div>
 </div>
+
+<script>
+(function() {
+    'use strict';
+
+    // Generate GPU mock data (matches desktop gpus-mock-data.js)
+    function generateGPUMockData() {
+        var gpus = [];
+        var models = ['H100 PCIe', 'H100 SXM5', 'RTX 6000 Ada Generation', 'RTX 5900', 'A100 PCIe', 'A100 SXM4'];
+        var statuses = ['operational', 'operational', 'operational', 'operational', 'warning', 'critical'];
+        var hosts = ['ai-server', 'ml-compute', 'render-node', 'workstation', 'dev-workstation',
+                     'test-bench', 'training-cluster', 'inference-node', 'hpc-node', 'gaming-server'];
+
+        for (var i = 1; i <= 30; i++) {
+            var model = models[i % models.length];
+            var status = statuses[i % statuses.length];
+            var host = hosts[i % hosts.length];
+            var isH100 = model.indexOf('H100') >= 0;
+            var isA100 = model.indexOf('A100') >= 0;
+            var isRTX6000 = model.indexOf('RTX 6000') >= 0;
+
+            var memoryTotal = isH100 ? 80 : (isA100 ? 80 : (isRTX6000 ? 48 : 24));
+            var powerLimit = isH100 ? 350 : (isA100 ? 300 : (isRTX6000 ? 300 : 250));
+            var utilization = status === 'operational' ? Math.floor(Math.random() * 50) + 30 :
+                              (status === 'warning' ? Math.floor(Math.random() * 20) + 10 : 0);
+            var memoryUsed = status === 'operational' ? Math.floor(Math.random() * 40) + 20 :
+                             (status === 'warning' ? Math.floor(Math.random() * 15) + 5 : 0);
+            var temperature = status === 'operational' ? Math.floor(Math.random() * 20) + 55 :
+                              (status === 'warning' ? Math.floor(Math.random() * 15) + 75 : Math.floor(Math.random() * 10) + 85);
+            var powerDraw = status === 'operational' ? Math.floor(powerLimit * 0.6) + Math.floor(Math.random() * powerLimit * 0.2) :
+                            (status === 'warning' ? Math.floor(powerLimit * 0.3) : 0);
+
+            var arch = isH100 ? 'Hopper' : (isA100 ? 'Ampere' : 'Ada Lovelace');
+            var vramType = isH100 ? 'HBM3' : (isA100 ? 'HBM2e' : (isRTX6000 ? 'GDDR6' : 'GDDR6X'));
+            var cudaCores = isH100 ? 16896 : (isA100 ? 6912 : (isRTX6000 ? 18176 : 10240));
+            var tensorCores = isH100 ? 528 : (isA100 ? 432 : (isRTX6000 ? 568 : 320));
+
+            gpus.push({
+                id: 'gpu-' + String(i).padStart(3, '0'),
+                name: 'GPU-' + model.split(' ')[0] + '-' + String(i).padStart(3, '0'),
+                model: model,
+                vendor: 'NVIDIA',
+                architecture: arch,
+                hostName: host + '-' + String(Math.floor(i / 2) + 1).padStart(2, '0') + '.datacenter.local',
+                status: status,
+                utilization: utilization,
+                memoryUsed: memoryUsed,
+                memoryTotal: memoryTotal,
+                temperature: temperature,
+                powerDraw: powerDraw,
+                powerLimit: powerLimit,
+                clockSpeed: 1500 + Math.floor(Math.random() * 500),
+                clockSpeedMax: isH100 ? 1980 : (isA100 ? 1410 : 2505),
+                fanSpeed: Math.floor(temperature * 0.8) + Math.floor(Math.random() * 10),
+                computeMode: i % 3 === 0 ? 'Exclusive Process' : 'Default',
+                eccEnabled: isH100 || isA100 || isRTX6000,
+                cudaCores: cudaCores,
+                tensorCores: tensorCores,
+                vramType: vramType,
+                pcieLanes: 16,
+                pcieGen: isH100 ? 5 : 4,
+                driverVersion: '535.104.05',
+                cudaVersion: '12.2',
+                serialNumber: model.split(' ')[0] + '-' + String(1000000 + i)
+            });
+        }
+        return gpus;
+    }
+
+    // Helper: escape HTML
+    function escapeHtml(text) {
+        if (text == null || text === '--') return '--';
+        var div = document.createElement('div');
+        div.textContent = String(text);
+        return div.innerHTML;
+    }
+
+    // Helper: capitalize
+    function capitalize(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // Get status class
+    function getStatusClass(status) {
+        if (!status) return 'offline';
+        var s = String(status).toLowerCase();
+        if (s === 'operational') return 'operational';
+        if (s === 'warning') return 'warning';
+        if (s === 'critical' || s === 'error') return 'critical';
+        return 'offline';
+    }
+
+    // Get performance bar level class
+    function getBarLevel(value) {
+        if (value >= 80) return 'high';
+        if (value >= 50) return 'medium';
+        return 'low';
+    }
+
+    // Custom card renderer
+    function renderGPUCard(gpu, index, table) {
+        var statusClass = table.config.getStatusClass(gpu.status);
+        var memPercent = gpu.memoryTotal > 0 ? Math.round((gpu.memoryUsed / gpu.memoryTotal) * 100) : 0;
+
+        return '<div class="mobile-table-card clickable" data-index="' + index + '">' +
+            '<div class="mobile-table-card-header">' +
+                '<div>' +
+                    '<h4 class="mobile-table-card-title">' + escapeHtml(gpu.name) + '</h4>' +
+                    '<p class="mobile-table-card-subtitle">' + escapeHtml(gpu.model) + ' | ' + escapeHtml(gpu.hostName) + '</p>' +
+                '</div>' +
+                '<div class="mobile-table-status ' + statusClass + '">' +
+                    '<span class="mobile-table-status-indicator"></span>' +
+                    '<span>' + capitalize(gpu.status) + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="mobile-table-card-body">' +
+                '<div class="gpu-metrics">' +
+                    '<div class="gpu-metric">' +
+                        '<span class="gpu-metric-label">GPU</span>' +
+                        '<span class="gpu-metric-value ' + getBarLevel(gpu.utilization) + '">' + gpu.utilization + '%</span>' +
+                    '</div>' +
+                    '<div class="gpu-metric">' +
+                        '<span class="gpu-metric-label">Mem</span>' +
+                        '<span class="gpu-metric-value ' + getBarLevel(memPercent) + '">' + gpu.memoryUsed + '/' + gpu.memoryTotal + ' GB</span>' +
+                    '</div>' +
+                    '<div class="gpu-metric">' +
+                        '<span class="gpu-metric-label">Temp</span>' +
+                        '<span class="gpu-metric-value ' + getBarLevel(gpu.temperature > 80 ? 90 : (gpu.temperature > 65 ? 60 : 30)) + '">' + gpu.temperature + '°C</span>' +
+                    '</div>' +
+                    '<div class="gpu-metric">' +
+                        '<span class="gpu-metric-label">Power</span>' +
+                        '<span class="gpu-metric-value">' + gpu.powerDraw + '/' + gpu.powerLimit + ' W</span>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }
+
+    // Show GPU detail popup
+    function showGPUDetail(gpu) {
+        var memPercent = gpu.memoryTotal > 0 ? Math.round((gpu.memoryUsed / gpu.memoryTotal) * 100) : 0;
+        var powerPercent = gpu.powerLimit > 0 ? Math.round((gpu.powerDraw / gpu.powerLimit) * 100) : 0;
+        var clockPercent = gpu.clockSpeedMax > 0 ? Math.round((gpu.clockSpeed / gpu.clockSpeedMax) * 100) : 0;
+
+        var overviewContent =
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">GPU Information</div>' +
+                '<div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">' + escapeHtml(gpu.name) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Model</span><span class="detail-value">' + escapeHtml(gpu.model) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Vendor</span><span class="detail-value">' + escapeHtml(gpu.vendor) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Architecture</span><span class="detail-value">' + escapeHtml(gpu.architecture) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Host</span><span class="detail-value">' + escapeHtml(gpu.hostName) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Status</span><span class="detail-value ' + getStatusClass(gpu.status) + '">' + capitalize(gpu.status) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Compute Mode</span><span class="detail-value">' + escapeHtml(gpu.computeMode) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Serial</span><span class="detail-value">' + escapeHtml(gpu.serialNumber) + '</span></div>' +
+            '</div>';
+
+        var perfContent =
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Utilization</div>' +
+                '<div class="detail-row"><span class="detail-label">GPU Usage</span><span class="detail-value">' + gpu.utilization + '%</span></div>' +
+                '<div class="perf-bar"><div class="perf-bar-fill ' + getBarLevel(gpu.utilization) + '" style="width:' + gpu.utilization + '%"></div></div>' +
+                '<div class="detail-row"><span class="detail-label">Memory</span><span class="detail-value">' + gpu.memoryUsed + ' / ' + gpu.memoryTotal + ' GB (' + memPercent + '%)</span></div>' +
+                '<div class="perf-bar"><div class="perf-bar-fill ' + getBarLevel(memPercent) + '" style="width:' + memPercent + '%"></div></div>' +
+            '</div>' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Thermal & Power</div>' +
+                '<div class="detail-row"><span class="detail-label">Temperature</span><span class="detail-value">' + gpu.temperature + '°C</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Fan Speed</span><span class="detail-value">' + gpu.fanSpeed + '%</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Power Draw</span><span class="detail-value">' + gpu.powerDraw + ' / ' + gpu.powerLimit + ' W (' + powerPercent + '%)</span></div>' +
+                '<div class="perf-bar"><div class="perf-bar-fill ' + getBarLevel(powerPercent) + '" style="width:' + powerPercent + '%"></div></div>' +
+                '<div class="detail-row"><span class="detail-label">Clock Speed</span><span class="detail-value">' + gpu.clockSpeed + ' / ' + gpu.clockSpeedMax + ' MHz</span></div>' +
+                '<div class="perf-bar"><div class="perf-bar-fill ' + getBarLevel(clockPercent) + '" style="width:' + clockPercent + '%"></div></div>' +
+            '</div>';
+
+        var hwContent =
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Compute</div>' +
+                '<div class="detail-row"><span class="detail-label">CUDA Cores</span><span class="detail-value">' + gpu.cudaCores.toLocaleString() + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">Tensor Cores</span><span class="detail-value">' + gpu.tensorCores + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">ECC</span><span class="detail-value">' + (gpu.eccEnabled ? 'Enabled' : 'Disabled') + '</span></div>' +
+            '</div>' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Memory & Bus</div>' +
+                '<div class="detail-row"><span class="detail-label">VRAM Type</span><span class="detail-value">' + escapeHtml(gpu.vramType) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">VRAM Total</span><span class="detail-value">' + gpu.memoryTotal + ' GB</span></div>' +
+                '<div class="detail-row"><span class="detail-label">PCIe</span><span class="detail-value">Gen ' + gpu.pcieGen + ' x' + gpu.pcieLanes + '</span></div>' +
+            '</div>';
+
+        var swContent =
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Driver</div>' +
+                '<div class="detail-row"><span class="detail-label">Driver Version</span><span class="detail-value">' + escapeHtml(gpu.driverVersion) + '</span></div>' +
+                '<div class="detail-row"><span class="detail-label">CUDA Version</span><span class="detail-value">' + escapeHtml(gpu.cudaVersion) + '</span></div>' +
+            '</div>';
+
+        MobilePopup.show({
+            title: gpu.name,
+            size: 'large',
+            showFooter: false,
+            tabs: [
+                { id: 'overview', label: 'Overview', content: overviewContent },
+                { id: 'performance', label: 'Performance', content: perfContent },
+                { id: 'hardware', label: 'Hardware', content: hwContent },
+                { id: 'software', label: 'Software', content: swContent }
+            ]
+        });
+    }
+
+    // GPU status enum for filtering
+    var gpuStatusEnum = {
+        'operational': 'operational',
+        'warning': 'warning',
+        'critical': 'critical'
+    };
+
+    // Initialize Mobile GPU section
+    function initMobileGpus() {
+        var gpuData = generateGPUMockData();
+
+        new MobileTable('gpu-table-container', {
+            data: gpuData,
+            serverSide: false,
+            rowsPerPage: 15,
+
+            columns: [
+                { key: 'name', label: 'Name' },
+                { key: 'model', label: 'Model' },
+                { key: 'hostName', label: 'Host' },
+                { key: 'status', label: 'Status', enumValues: gpuStatusEnum }
+            ],
+
+            statusField: 'status',
+            getStatusClass: getStatusClass,
+
+            renderCard: renderGPUCard,
+            onCardClick: showGPUDetail,
+
+            emptyMessage: 'No GPUs found.',
+            emptyIcon: '&#x1F4BB;'
+        });
+    }
+
+    window.initMobileGpus = initMobileGpus;
+})();
+</script>
+
+<style>
+/* GPU section header */
+.gpu-header {
+    text-align: center;
+    padding: 20px 16px 24px !important;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+    margin: -12px -12px 8px !important;
+    border-radius: 0;
+    color: white !important;
+}
+.gpu-header h2 { color: white !important; margin: 0 0 4px; font-size: 1.4rem; }
+.gpu-header p { color: rgba(255,255,255,0.8) !important; margin: 0; opacity: 1; }
+
+/* GPU card metrics row */
+.gpu-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.gpu-metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+.gpu-metric-label {
+    font-size: 0.8rem;
+    color: var(--text-muted, #718096);
+    font-weight: 500;
+}
+.gpu-metric-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-dark, #1a1a2e);
+}
+.gpu-metric-value.low { color: #22c55e; }
+.gpu-metric-value.medium { color: #f59e0b; }
+.gpu-metric-value.high { color: #ef4444; }
+
+/* Detail popup styles */
+.detail-section { margin-bottom: 20px; }
+.detail-section:last-child { margin-bottom: 0; }
+.detail-section-title {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-muted); margin-bottom: 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
+}
+.detail-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 10px 0; border-bottom: 1px solid var(--border-light);
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-label { font-size: 0.85rem; color: var(--text-muted); flex-shrink: 0; }
+.detail-value {
+    font-size: 0.85rem; color: var(--text-dark); font-weight: 500;
+    text-align: right; word-break: break-word; margin-left: 16px;
+}
+.detail-value.operational { color: #22c55e; }
+.detail-value.warning { color: #f59e0b; }
+.detail-value.critical { color: #ef4444; }
+
+/* Performance bars */
+.perf-bar {
+    width: 100%; height: 6px; background: var(--border-light, #e2e8f0);
+    border-radius: 3px; overflow: hidden; margin: 4px 0 8px;
+}
+.perf-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
+.perf-bar-fill.low { background: #22c55e; }
+.perf-bar-fill.medium { background: #f59e0b; }
+.perf-bar-fill.high { background: #ef4444; }
+</style>

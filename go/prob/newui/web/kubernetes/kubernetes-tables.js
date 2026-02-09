@@ -94,12 +94,14 @@ function initializePodsTable(cluster) {
         { key: 'readinessGates', label: 'READINESS GATES' }
     ];
 
-    new ProblerTable(`pods-${cluster}-table`, {
+    const table = new Layer8DTable({
+        containerId: `pods-${cluster}-table`,
         columns: columns,
         data: pods,
-        rowsPerPage: 15,
+        pageSize: 15,
         onRowClick: (pod) => showPodDetailModal(pod, cluster)
     });
+    table.init();
 }
 
 function initializeDeploymentsTable(cluster) {
@@ -130,12 +132,14 @@ function initializeDeploymentsTable(cluster) {
         { key: 'selector', label: 'SELECTOR' }
     ];
 
-    new ProblerTable(`deployments-${cluster}-table`, {
+    const table = new Layer8DTable({
+        containerId: `deployments-${cluster}-table`,
         columns: columns,
         data: deployments,
-        rowsPerPage: 15,
+        pageSize: 15,
         onRowClick: (deployment) => showDeploymentDetailModal(deployment, cluster)
     });
+    table.init();
 }
 
 function initializeServicesTable(cluster) {
@@ -165,12 +169,14 @@ function initializeServicesTable(cluster) {
         { key: 'selector', label: 'SELECTOR' }
     ];
 
-    new ProblerTable(`services-${cluster}-table`, {
+    const table = new Layer8DTable({
+        containerId: `services-${cluster}-table`,
         columns: columns,
         data: services,
-        rowsPerPage: 15,
+        pageSize: 15,
         onRowClick: (service) => showServiceDetailModal(service, cluster)
     });
+    table.init();
 }
 
 function initializeNodesTable(cluster) {
@@ -203,12 +209,14 @@ function initializeNodesTable(cluster) {
         { key: 'containerRuntime', label: 'CONTAINER-RUNTIME' }
     ];
 
-    new ProblerTable(`nodes-${cluster}-table`, {
+    const table = new Layer8DTable({
+        containerId: `nodes-${cluster}-table`,
         columns: columns,
         data: nodes,
-        rowsPerPage: 15,
+        pageSize: 15,
         onRowClick: (node) => showNodeDetailModal(node, cluster)
     });
+    table.init();
 }
 
 function initializeStatefulSetsTable(cluster) {
@@ -236,12 +244,14 @@ function initializeStatefulSetsTable(cluster) {
         { key: 'images', label: 'IMAGES' }
     ];
 
-    new ProblerTable(`statefulsets-${cluster}-table`, {
+    const table = new Layer8DTable({
+        containerId: `statefulsets-${cluster}-table`,
         columns: columns,
         data: statefulsets,
-        rowsPerPage: 15,
+        pageSize: 15,
         onRowClick: (statefulset) => showStatefulSetDetailModal(statefulset, cluster)
     });
+    table.init();
 }
 
 function initializeDaemonSetsTable(cluster) {
@@ -275,12 +285,14 @@ function initializeDaemonSetsTable(cluster) {
         { key: 'selector', label: 'SELECTOR' }
     ];
 
-    new ProblerTable(`daemonsets-${cluster}-table`, {
+    const table = new Layer8DTable({
+        containerId: `daemonsets-${cluster}-table`,
         columns: columns,
         data: daemonsets,
-        rowsPerPage: 15,
+        pageSize: 15,
         onRowClick: (daemonset) => showDaemonSetDetailModal(daemonset, cluster)
     });
+    table.init();
 }
 
 function initializeNamespacesTable(cluster) {
@@ -304,12 +316,14 @@ function initializeNamespacesTable(cluster) {
         { key: 'age', label: 'AGE' }
     ];
 
-    new ProblerTable(`namespaces-${cluster}-table`, {
+    const table = new Layer8DTable({
+        containerId: `namespaces-${cluster}-table`,
         columns: columns,
         data: namespaces,
-        rowsPerPage: 15,
+        pageSize: 15,
         onRowClick: (namespace) => showNamespaceDetailModal(namespace, cluster)
     });
+    table.init();
 }
 
 function initializeNetworkPoliciesTable(cluster) {
@@ -327,10 +341,12 @@ function initializeNetworkPoliciesTable(cluster) {
         { key: 'age', label: 'AGE' }
     ];
 
-    new ProblerTable(`networkpolicies-${cluster}-table`, {
+    const table = new Layer8DTable({
+        containerId: `networkpolicies-${cluster}-table`,
         columns: columns,
         data: policies,
-        rowsPerPage: 15,
+        pageSize: 15,
         onRowClick: (policy) => showNetworkPolicyDetailModal(policy, cluster)
     });
+    table.init();
 }

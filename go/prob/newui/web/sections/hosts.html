@@ -1,8 +1,8 @@
-<div class="section-container hosts-section">
+<div class="section-container hosts-section l8-section">
     <!-- Hosts Hero Header -->
-    <div class="hosts-hero">
-        <div class="hero-background">
-            <svg class="hero-illustration" viewBox="0 0 1200 150" xmlns="http://www.w3.org/2000/svg">
+    <div class="l8-header-frame hosts-hero parallax-container">
+        <div class="l8-header-bg parallax-layer" data-speed="0.5">
+            <svg class="l8-illustration" viewBox="0 0 1200 150" xmlns="http://www.w3.org/2000/svg">
                 <!-- Background Grid -->
                 <defs>
                     <pattern id="hostsGrid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -106,38 +106,35 @@
             </svg>
         </div>
 
-        <div class="hero-content">
-            <h1 class="hero-title">Virtual Infrastructure</h1>
-            <p class="hero-subtitle">Hypervisor Management • VM Orchestration • Resource Optimization</p>
+        <div class="l8-header-content parallax-layer" data-speed="1">
+            <div class="l8-header-title">
+                <h1 class="l8-title">Virtual Infrastructure</h1>
+                <p class="l8-subtitle">Hypervisor Management - VM Orchestration</p>
+            </div>
         </div>
     </div>
 
-    <div class="section-content hosts-content">
-        <!-- Tabs -->
-        <div class="content-tabs">
-            <button class="content-tab active" data-tab="hypervisors">
-                <span class="tab-icon">🖥️</span>
-                <span class="tab-label">Hypervisors</span>
-            </button>
-            <button class="content-tab" data-tab="vms">
-                <span class="tab-icon">☁️</span>
-                <span class="tab-label">Virtual Machines</span>
-            </button>
+    <!-- Module Tabs -->
+    <div class="l8-module-tabs">
+        <button class="l8-module-tab active" data-module="hypervisors">
+            <span class="tab-icon">🖥️</span>
+            <span class="tab-label">Hypervisors</span>
+        </button>
+        <button class="l8-module-tab" data-module="vms">
+            <span class="tab-icon">☁️</span>
+            <span class="tab-label">Virtual Machines</span>
+        </button>
+    </div>
+
+    <div class="section-content">
+        <!-- Hypervisors Tab -->
+        <div class="l8-module-content active" data-module="hypervisors">
+            <div class="l8-table-container" id="hypervisors-table"></div>
         </div>
 
-        <!-- Tab Content -->
-        <div class="tab-content-container">
-            <!-- Hypervisors Tab -->
-            <div class="tab-content active" data-content="hypervisors">
-                <div class="section-description">Manage physical hypervisor hosts and monitor resource allocation</div>
-                <div id="hypervisors-table"></div>
-            </div>
-
-            <!-- VMs Tab -->
-            <div class="tab-content" data-content="vms">
-                <div class="section-description">Monitor and manage virtual machine instances across all hypervisors</div>
-                <div id="vms-table"></div>
-            </div>
+        <!-- VMs Tab -->
+        <div class="l8-module-content" data-module="vms">
+            <div class="l8-table-container" id="vms-table"></div>
         </div>
     </div>
 </div>

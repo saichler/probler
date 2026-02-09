@@ -3,7 +3,7 @@
         "appTitle": "Probler",
         "appDescription": "Datacenter Management System",
         "authEndpoint": "/auth",
-        "redirectUrl": "../app.html",
+        "redirectUrl": "../../app.html",
         "showRememberMe": true,
         "showRegister": true,
         "sessionTimeout": 30,
@@ -17,5 +17,9 @@
         "targetsPath": "/91/Targets",
         "registryPath": "/registry",
         "healthPath": "/0/Health"
+    },
+    "app": {
+        "apiPrefix": "/probler",
+        "dateFormat": "mm/dd/yyyy"
     }
 }

@@ -1,8 +1,8 @@
-<div class="section-container network-section">
+<div class="section-container network-section l8-section">
     <!-- Network Hero Header -->
-    <div class="network-hero">
-        <div class="hero-background">
-            <svg class="hero-illustration" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+    <div class="l8-header-frame network-hero parallax-container">
+        <div class="l8-header-bg parallax-layer" data-speed="0.5">
+            <svg class="l8-illustration" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
                 <!-- Background Grid -->
                 <defs>
                     <pattern id="networkGrid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -73,17 +73,17 @@
             </svg>
         </div>
 
-        <div class="hero-content">
-            <h1 class="hero-title">Network Infrastructure</h1>
-            <p class="hero-subtitle">Real-time monitoring • 247 Active Devices • 99.98% Uptime</p>
+        <div class="l8-header-content parallax-layer" data-speed="1">
+            <div class="l8-header-title">
+                <h1 class="l8-title">Network Infrastructure</h1>
+                <p class="l8-subtitle hero-subtitle">Real-time monitoring - 247 Active Devices - 99.98% Uptime</p>
+            </div>
         </div>
     </div>
 
-    <div class="section-content" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
-        <div class="table-container" style="padding: 0; flex: 1; min-height: 0;">
-            <iframe id="network-devices-iframe" src="network_devices/index.html"
-                    style="width: 100%; height: 100%; border: none; display: block;"
-                    title="Network Devices"></iframe>
+    <div class="section-content">
+        <div class="l8-module-content active" data-module="network">
+            <div class="l8-table-container" id="network-devices-table"></div>
         </div>
     </div>
 </div>

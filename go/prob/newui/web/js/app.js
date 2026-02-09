@@ -1,12 +1,22 @@
 // Main application initialization
 
+// Get authentication headers (used by Layer8DTable for server-side fetching)
+function getAuthHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    const bearerToken = sessionStorage.getItem('bearerToken');
+    if (bearerToken) {
+        headers['Authorization'] = 'Bearer ' + bearerToken;
+    }
+    return headers;
+}
+
 // Utility function for making authenticated API calls
 async function makeAuthenticatedRequest(url, options = {}) {
     const bearerToken = sessionStorage.getItem('bearerToken');
 
     if (!bearerToken) {
         console.error('No bearer token found');
-        window.location.href = 'login/index.html';
+        window.location.href = 'l8ui/login/index.html';
         return;
     }
 
@@ -26,7 +36,7 @@ async function makeAuthenticatedRequest(url, options = {}) {
         // If unauthorized, redirect to login
         if (response.status === 401) {
             sessionStorage.removeItem('bearerToken');
-            window.location.href = 'login/index.html';
+            window.location.href = 'l8ui/login/index.html';
             return;
         }
 
@@ -45,16 +55,16 @@ function logout() {
     localStorage.removeItem('rememberedUser');
 
     // Redirect to login page
-    window.location.href = 'login/index.html';
+    window.location.href = 'l8ui/login/index.html';
 }
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // Check if bearer token exists (user is logged in)
     // Using sessionStorage so session is cleared when browser tab is closed
     const bearerToken = sessionStorage.getItem('bearerToken');
     if (!bearerToken) {
-        window.location.href = 'login/index.html';
+        window.location.href = 'l8ui/login/index.html';
         return;
     }
 
@@ -62,6 +72,9 @@ document.addEventListener('DOMContentLoaded', function() {
     localStorage.setItem('bearerToken', bearerToken);
     // Also expose on window for iframes that check parent
     window.bearerToken = bearerToken;
+
+    // Load l8ui configuration (apiPrefix, dateFormat, etc.)
+    await Layer8DConfig.load();
 
     // Set username in header from current session
     const username = sessionStorage.getItem('currentUser') || 'Admin';
@@ -130,19 +143,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Listen for modal open/close events from iframes
     window.addEventListener('message', function(event) {
-        if (event.data && event.data.type === 'modal-open') {
-            const iframe = document.getElementById(event.data.iframeId);
-            if (iframe) {
-                iframe.classList.add('modal-active');
-                // Add class to body to remove overflow constraints from ancestors
-                document.body.classList.add('iframe-modal-active');
+        if (!event.data || !event.data.type) return;
+
+        switch (event.data.type) {
+            case 'modal-open': {
+                const iframe = document.getElementById(event.data.iframeId);
+                if (iframe) {
+                    iframe.classList.add('modal-active');
+                    document.body.classList.add('iframe-modal-active');
+                }
+                break;
             }
-        } else if (event.data && event.data.type === 'modal-close') {
-            const iframe = document.getElementById(event.data.iframeId);
-            if (iframe) {
-                iframe.classList.remove('modal-active');
-                document.body.classList.remove('iframe-modal-active');
+            case 'modal-close': {
+                const iframe = document.getElementById(event.data.iframeId);
+                if (iframe) {
+                    iframe.classList.remove('modal-active');
+                    document.body.classList.remove('iframe-modal-active');
+                }
+                break;
             }
+            // PostMessage bridge: forward iframe popup requests to Layer8DPopup
+            case 'probler-popup-show':
+                if (typeof Layer8DPopup !== 'undefined') {
+                    Layer8DPopup.show(event.data.config);
+                }
+                break;
+            case 'probler-popup-close':
+                if (typeof Layer8DPopup !== 'undefined') {
+                    Layer8DPopup.close();
+                }
+                break;
+            case 'probler-popup-update':
+                if (typeof Layer8DPopup !== 'undefined') {
+                    Layer8DPopup.updateContent(event.data.content);
+                }
+                break;
         }
     });
 });

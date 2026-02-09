@@ -48,12 +48,14 @@ function setupNodeModalTabs(content) {
 // Close Modal Functions
 function closeK8sDetailModal() {
     const modal = document.getElementById('k8s-detail-modal');
+    if (!modal) return;
     modal.classList.remove('active');
     document.body.style.overflow = '';
 }
 
 function closeNodeDetailModal() {
     const modal = document.getElementById('node-detail-modal');
+    if (!modal) return;
     modal.classList.remove('active');
     document.body.style.overflow = '';
 }

@@ -126,7 +126,7 @@ function getRedirectUrl() {
             return baseRedirectUrl.replace('app.html', 'm/app.html');
         }
         // Fallback for other patterns
-        return '/m/app.html';
+        return '../../m/app.html';
     }
 
     return baseRedirectUrl;

@@ -11,7 +11,7 @@ async function showNodeDetailModal(node, cluster) {
     let nodeDetails;
     try {
         console.log('Fetching node details for:', node.name);
-        const response = await makeAuthenticatedRequest('/probler/0/exec', {
+        const response = await makeAuthenticatedRequest(Layer8DConfig.resolveEndpoint('/0/exec'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

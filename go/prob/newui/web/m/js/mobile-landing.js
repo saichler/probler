@@ -230,7 +230,7 @@ function proceedToDemo() {
     sessionStorage.removeItem('bearerToken');
     localStorage.removeItem('bearerToken');
     sessionStorage.removeItem('currentUser');
-    window.open('../login/index.html', '_blank');
+    window.open('../l8ui/login/index.html', '_blank');
     closeDemoModal();
 }
 

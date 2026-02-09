@@ -254,7 +254,7 @@
             console.log('MobileAuth: Logged out');
 
             if (redirect) {
-                window.location.href = '../login/index.html';
+                window.location.href = '../l8ui/login/index.html';
             }
         },
 
@@ -279,7 +279,7 @@
                 _onSessionExpired();
             } else {
                 // Default: redirect to login
-                window.location.href = '../login/index.html';
+                window.location.href = '../l8ui/login/index.html';
             }
         },
 
@@ -289,7 +289,7 @@
          */
         requireAuth() {
             if (!this.isAuthenticated()) {
-                window.location.href = '../login/index.html';
+                window.location.href = '../l8ui/login/index.html';
                 return false;
             }
             return true;

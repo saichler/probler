@@ -134,7 +134,8 @@ function getAlarmsData() {
 function initializeAlarmsTable() {
     const alarmsData = getAlarmsData();
 
-    alarmsTable = new ProblerTable('alarms-table', {
+    alarmsTable = new Layer8DTable({
+        containerId: 'alarms-table',
         columns: [
             { key: 'timestamp', label: 'Timestamp' },
             { key: 'severity', label: 'Severity' },
@@ -144,11 +145,12 @@ function initializeAlarmsTable() {
             { key: 'location', label: 'Location' }
         ],
         data: alarmsData,
-        rowsPerPage: 15,
+        pageSize: 15,
         sortable: true,
         filterable: true,
         statusColumn: 'severity'
     });
+    alarmsTable.init();
 }
 
 // Initialize Dashboard
