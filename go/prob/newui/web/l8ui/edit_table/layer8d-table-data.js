@@ -102,9 +102,10 @@ Layer8DTable.prototype.fetchData = async function(page, pageSize) {
 
         const data = await response.json();
 
-        // Extract total count from metadata
-        let totalCount = 0;
-        if (data.metadata?.keyCount?.counts) {
+        // Extract total count from metadata (only on page 1 — server only
+        // returns valid aggregate metadata for the first page request)
+        let totalCount = this.totalItems;
+        if (page === 1 && data.metadata?.keyCount?.counts) {
             totalCount = data.metadata.keyCount.counts.Total || 0;
         }
 

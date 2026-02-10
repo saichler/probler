@@ -1,5 +1,198 @@
-<div class="section-container dashboard-section">
-    <iframe id="dashboard-iframe" src="dashboard/index.html"
-            style="width: 100%; height: 100%; border: none; display: block;"
-            title="Dashboard"></iframe>
+<div class="section-container dashboard-section l8-section">
+    <!-- Dashboard Hero Header -->
+    <div class="l8-header-frame parallax-container">
+        <div class="l8-header-bg parallax-layer" data-speed="0.5">
+            <svg class="l8-illustration" viewBox="0 0 1200 150" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="dashGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(14, 165, 233, 0.12)" stroke-width="1"/>
+                    </pattern>
+                    <linearGradient id="dashGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgba(14, 165, 233, 0.08);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgba(14, 165, 233, 0);stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="1200" height="150" fill="url(#dashGrid)"/>
+
+                <!-- Server Racks -->
+                <g class="hero-racks">
+                    <!-- Rack 1 -->
+                    <rect x="100" y="30" width="80" height="90" rx="4" fill="none" stroke="rgba(14, 165, 233, 0.6)" stroke-width="2"/>
+                    <rect x="108" y="38" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="108" y="52" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="108" y="66" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="108" y="80" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="108" y="94" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <circle cx="113" cy="43" r="1.5" fill="#10b981">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="113" cy="57" r="1.5" fill="#10b981">
+                        <animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" repeatCount="indefinite"/>
+                    </circle>
+
+                    <!-- Rack 2 -->
+                    <rect x="220" y="25" width="80" height="100" rx="4" fill="none" stroke="rgba(14, 165, 233, 0.6)" stroke-width="2"/>
+                    <rect x="228" y="33" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="228" y="47" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="228" y="61" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="228" y="75" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="228" y="89" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="228" y="103" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <circle cx="233" cy="38" r="1.5" fill="#10b981">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="233" cy="66" r="1.5" fill="#ffc107">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2.2s" repeatCount="indefinite"/>
+                    </circle>
+
+                    <!-- Rack 3 -->
+                    <rect x="340" y="30" width="80" height="95" rx="4" fill="none" stroke="rgba(14, 165, 233, 0.6)" stroke-width="2"/>
+                    <rect x="348" y="38" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="348" y="52" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="348" y="66" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.4)" class="rack-server rack-critical"/>
+                    <rect x="348" y="80" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <rect x="348" y="94" width="64" height="10" rx="2" fill="rgba(14, 165, 233, 0.5)" class="rack-server"/>
+                    <circle cx="353" cy="43" r="1.5" fill="#10b981">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2.1s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="353" cy="71" r="1.5" fill="#ef4444">
+                        <animate attributeName="opacity" values="0.5;1;0.5" dur="1s" repeatCount="indefinite"/>
+                    </circle>
+                </g>
+
+                <!-- Network Links between racks -->
+                <path d="M 180 75 Q 200 65 220 75" fill="none" stroke="rgba(14, 165, 233, 0.4)" stroke-width="2" stroke-dasharray="10,5">
+                    <animate attributeName="stroke-dashoffset" values="0;-15" dur="2s" repeatCount="indefinite"/>
+                </path>
+                <path d="M 300 70 Q 320 60 340 70" fill="none" stroke="rgba(14, 165, 233, 0.4)" stroke-width="2" stroke-dasharray="10,5">
+                    <animate attributeName="stroke-dashoffset" values="0;-15" dur="2s" repeatCount="indefinite"/>
+                </path>
+
+                <!-- Data Flow Particles -->
+                <circle cx="500" cy="40" r="2.5" fill="rgba(14, 165, 233, 0.8)">
+                    <animate attributeName="cx" values="500;700" dur="3s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0;0.8;0" dur="3s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="600" cy="75" r="2.5" fill="rgba(14, 165, 233, 0.8)">
+                    <animate attributeName="cx" values="600;850" dur="4s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0;0.8;0" dur="4s" repeatCount="indefinite"/>
+                </circle>
+
+                <!-- Stats on right side -->
+                <g class="stats-display">
+                    <rect x="920" y="25" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="42" fill="#334155" font-size="10">Datacenters:</text>
+                    <text x="1030" y="42" fill="rgba(14, 165, 233, 1)" font-size="12" font-weight="bold">3</text>
+                    <text x="1050" y="42" fill="rgba(16, 185, 129, 1)" font-size="10">Active</text>
+
+                    <rect x="920" y="65" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="82" fill="#334155" font-size="10">Total Devices:</text>
+                    <text x="1040" y="82" fill="rgba(14, 165, 233, 1)" font-size="12" font-weight="bold">4,727</text>
+
+                    <rect x="920" y="105" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="122" fill="#334155" font-size="10">Uptime:</text>
+                    <text x="1010" y="122" fill="rgba(16, 185, 129, 1)" font-size="12" font-weight="bold">99.98%</text>
+                </g>
+
+                <!-- Gradient Overlay -->
+                <rect width="1200" height="150" fill="url(#dashGradient)" opacity="0.2"/>
+            </svg>
+        </div>
+
+        <div class="l8-header-content parallax-layer" data-speed="1">
+            <div class="l8-header-title">
+                <h1 class="l8-title">Datacenter Dashboard</h1>
+                <p class="l8-subtitle">Real-time monitoring across all datacenters</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-content">
+        <div class="dashboard-content">
+            <!-- Metric Cards Grid -->
+            <div class="dashboard-grid">
+                <div class="metric-card">
+                    <div class="metric-card-header">
+                        <span class="metric-card-title">Network Devices</span>
+                        <span class="metric-card-icon">&#127760;</span>
+                    </div>
+                    <div class="metric-card-value">247</div>
+                    <div class="metric-card-details">
+                        <span class="metric-status">
+                            <span class="status-indicator status-operational"></span>
+                            <span>235 OK</span>
+                        </span>
+                        <span class="metric-status">
+                            <span class="status-indicator status-warning"></span>
+                            <span>8 WARN</span>
+                        </span>
+                        <span class="metric-status">
+                            <span class="status-indicator status-critical"></span>
+                            <span>4 CRIT</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-header">
+                        <span class="metric-card-title">GPU Clusters</span>
+                        <span class="metric-card-icon">&#128423;</span>
+                    </div>
+                    <div class="metric-card-value">1,024</div>
+                    <div class="metric-card-details">
+                        <span class="metric-status">
+                            <span class="status-indicator status-operational"></span>
+                            <span>1,018 OK</span>
+                        </span>
+                        <span class="metric-status">
+                            <span class="status-indicator status-warning"></span>
+                            <span>5 WARN</span>
+                        </span>
+                        <span class="metric-status">
+                            <span class="status-indicator status-critical"></span>
+                            <span>1 CRIT</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-header">
+                        <span class="metric-card-title">Hosts & VMs</span>
+                        <span class="metric-card-icon">&#128421;</span>
+                    </div>
+                    <div class="metric-card-value">3,456</div>
+                    <div class="metric-card-details">
+                        <span class="metric-status">
+                            <span class="status-indicator status-operational"></span>
+                            <span>3,398 OK</span>
+                        </span>
+                        <span class="metric-status">
+                            <span class="status-indicator status-warning"></span>
+                            <span>42 WARN</span>
+                        </span>
+                        <span class="metric-status">
+                            <span class="status-indicator status-critical"></span>
+                            <span>16 CRIT</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-card-header">
+                        <span class="metric-card-title">Storage Capacity</span>
+                        <span class="metric-card-icon">&#128190;</span>
+                    </div>
+                    <div class="metric-card-value">8.4 PB</div>
+                    <div class="metric-card-details">
+                        <span>Used: 6.2 PB</span>
+                        <span>Free: 2.2 PB</span>
+                        <span>74% Utilized</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Alarms Table -->
+            <h3 class="section-title">Top Critical Alarms</h3>
+            <div class="alarms-container">
+                <div id="alarms-table"></div>
+            </div>
+        </div>
+    </div>
 </div>

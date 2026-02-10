@@ -12,28 +12,6 @@
     padding: 0 !important;
 }
 
-/* Network hero gradient override (layout handled by l8-header-frame) */
-.network-section .l8-header-frame {
-    background: linear-gradient(135deg, #0369a1 0%, #0e7490 100%);
-    height: 150px;
-}
-
-/* Dark-gradient header text overrides (l8-title/l8-subtitle default to dark text) */
-.gpu-section .l8-title,
-.hosts-section .l8-title,
-.network-section .l8-title,
-.k8s-section .l8-title {
-    color: white;
-    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.gpu-section .l8-subtitle,
-.hosts-section .l8-subtitle,
-.network-section .l8-subtitle,
-.k8s-section .l8-subtitle {
-    color: rgba(255, 255, 255, 0.9);
-}
-
 /* Network Link Animation (used in network hero SVG) */
 .network-link {
     stroke-dasharray: 10, 5;

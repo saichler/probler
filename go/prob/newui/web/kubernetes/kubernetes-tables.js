@@ -98,7 +98,7 @@ function initializePodsTable(cluster) {
         containerId: `pods-${cluster}-table`,
         columns: columns,
         data: pods,
-        pageSize: 15,
+        pageSize: 10,
         onRowClick: (pod) => showPodDetailModal(pod, cluster)
     });
     table.init();
@@ -136,7 +136,7 @@ function initializeDeploymentsTable(cluster) {
         containerId: `deployments-${cluster}-table`,
         columns: columns,
         data: deployments,
-        pageSize: 15,
+        pageSize: 10,
         onRowClick: (deployment) => showDeploymentDetailModal(deployment, cluster)
     });
     table.init();
@@ -173,7 +173,7 @@ function initializeServicesTable(cluster) {
         containerId: `services-${cluster}-table`,
         columns: columns,
         data: services,
-        pageSize: 15,
+        pageSize: 10,
         onRowClick: (service) => showServiceDetailModal(service, cluster)
     });
     table.init();
@@ -213,7 +213,7 @@ function initializeNodesTable(cluster) {
         containerId: `nodes-${cluster}-table`,
         columns: columns,
         data: nodes,
-        pageSize: 15,
+        pageSize: 10,
         onRowClick: (node) => showNodeDetailModal(node, cluster)
     });
     table.init();
@@ -248,7 +248,7 @@ function initializeStatefulSetsTable(cluster) {
         containerId: `statefulsets-${cluster}-table`,
         columns: columns,
         data: statefulsets,
-        pageSize: 15,
+        pageSize: 10,
         onRowClick: (statefulset) => showStatefulSetDetailModal(statefulset, cluster)
     });
     table.init();
@@ -289,7 +289,7 @@ function initializeDaemonSetsTable(cluster) {
         containerId: `daemonsets-${cluster}-table`,
         columns: columns,
         data: daemonsets,
-        pageSize: 15,
+        pageSize: 10,
         onRowClick: (daemonset) => showDaemonSetDetailModal(daemonset, cluster)
     });
     table.init();
@@ -320,7 +320,7 @@ function initializeNamespacesTable(cluster) {
         containerId: `namespaces-${cluster}-table`,
         columns: columns,
         data: namespaces,
-        pageSize: 15,
+        pageSize: 10,
         onRowClick: (namespace) => showNamespaceDetailModal(namespace, cluster)
     });
     table.init();
@@ -345,7 +345,7 @@ function initializeNetworkPoliciesTable(cluster) {
         containerId: `networkpolicies-${cluster}-table`,
         columns: columns,
         data: policies,
-        pageSize: 15,
+        pageSize: 10,
         onRowClick: (policy) => showNetworkPolicyDetailModal(policy, cluster)
     });
     table.init();

@@ -2,19 +2,19 @@
     <!-- Hosts Hero Header -->
     <div class="l8-header-frame hosts-hero parallax-container">
         <div class="l8-header-bg parallax-layer" data-speed="0.5">
-            <svg class="l8-illustration" viewBox="0 0 1200 150" xmlns="http://www.w3.org/2000/svg">
+            <svg class="l8-illustration" viewBox="0 0 1200 150" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
                 <!-- Background Grid -->
                 <defs>
                     <pattern id="hostsGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1"/>
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(14, 165, 233, 0.12)" stroke-width="1"/>
                     </pattern>
                     <linearGradient id="hostsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:rgba(255, 255, 255, 0.1);stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:rgba(255, 255, 255, 0);stop-opacity:1" />
+                        <stop offset="0%" style="stop-color:rgba(14, 165, 233, 0.08);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgba(14, 165, 233, 0);stop-opacity:1" />
                     </linearGradient>
                     <linearGradient id="serverGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:rgba(99, 102, 241, 0.8);stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:rgba(168, 85, 247, 0.8);stop-opacity:1" />
+                        <stop offset="0%" style="stop-color:rgba(14, 165, 233, 0.8);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgba(2, 132, 199, 0.8);stop-opacity:1" />
                     </linearGradient>
                 </defs>
                 <rect width="1200" height="150" fill="url(#hostsGrid)"/>
@@ -23,13 +23,13 @@
                 <g class="server-racks">
                     <!-- Rack 1 - Physical Servers -->
                     <g>
-                        <rect x="100" y="35" width="100" height="90" rx="4" fill="none" stroke="rgba(255, 255, 255, 0.7)" stroke-width="2"/>
+                        <rect x="100" y="35" width="100" height="90" rx="4" fill="none" stroke="rgba(14, 165, 233, 0.5)" stroke-width="2"/>
                         <rect x="108" y="43" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
                         <rect x="108" y="58" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
-                        <rect x="108" y="73" width="84" height="12" rx="2" fill="rgba(99, 102, 241, 0.5)"/>
+                        <rect x="108" y="73" width="84" height="12" rx="2" fill="rgba(14, 165, 233, 0.5)"/>
                         <rect x="108" y="88" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
                         <rect x="108" y="103" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
-                        <text x="150" y="138" text-anchor="middle" fill="white" font-size="9" font-weight="bold">ESXi-01</text>
+                        <text x="150" y="138" text-anchor="middle" fill="#334155" font-size="9" font-weight="bold">ESXi-01</text>
                         <circle cx="113" cy="48" r="1.5" fill="rgba(0, 255, 100, 1)">
                             <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
                         </circle>
@@ -37,13 +37,13 @@
 
                     <!-- Rack 2 -->
                     <g>
-                        <rect x="230" y="40" width="100" height="90" rx="4" fill="none" stroke="rgba(255, 255, 255, 0.7)" stroke-width="2"/>
+                        <rect x="230" y="40" width="100" height="90" rx="4" fill="none" stroke="rgba(14, 165, 233, 0.5)" stroke-width="2"/>
                         <rect x="238" y="48" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
                         <rect x="238" y="63" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
                         <rect x="238" y="78" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
                         <rect x="238" y="93" width="84" height="12" rx="2" fill="rgba(255, 193, 7, 0.7)"/>
                         <rect x="238" y="108" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
-                        <text x="280" y="138" text-anchor="middle" fill="white" font-size="9" font-weight="bold">HV-02</text>
+                        <text x="280" y="138" text-anchor="middle" fill="#334155" font-size="9" font-weight="bold">HV-02</text>
                         <circle cx="243" cy="98" r="1.5" fill="rgba(255, 193, 7, 1)">
                             <animate attributeName="opacity" values="0.3;1;0.3" dur="2.5s" repeatCount="indefinite"/>
                         </circle>
@@ -51,13 +51,13 @@
 
                     <!-- Rack 3 -->
                     <g>
-                        <rect x="360" y="30" width="100" height="90" rx="4" fill="none" stroke="rgba(255, 255, 255, 0.7)" stroke-width="2"/>
+                        <rect x="360" y="30" width="100" height="90" rx="4" fill="none" stroke="rgba(14, 165, 233, 0.5)" stroke-width="2"/>
                         <rect x="368" y="38" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
                         <rect x="368" y="53" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
                         <rect x="368" y="68" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
                         <rect x="368" y="83" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
                         <rect x="368" y="98" width="84" height="12" rx="2" fill="url(#serverGradient)"/>
-                        <text x="410" y="130" text-anchor="middle" fill="white" font-size="9" font-weight="bold">KVM-03</text>
+                        <text x="410" y="130" text-anchor="middle" fill="#334155" font-size="9" font-weight="bold">KVM-03</text>
                         <circle cx="373" cy="43" r="1.5" fill="rgba(0, 255, 100, 1)">
                             <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/>
                         </circle>
@@ -65,39 +65,39 @@
 
                     <!-- VM Cloud Representation -->
                     <g>
-                        <ellipse cx="550" cy="75" rx="70" ry="40" fill="none" stroke="rgba(168, 85, 247, 0.6)" stroke-width="2" stroke-dasharray="5,3"/>
-                        <rect x="520" y="60" width="20" height="12" rx="2" fill="rgba(168, 85, 247, 0.5)"/>
-                        <rect x="545" y="68" width="20" height="12" rx="2" fill="rgba(168, 85, 247, 0.5)"/>
-                        <rect x="570" y="75" width="20" height="12" rx="2" fill="rgba(168, 85, 247, 0.5)"/>
-                        <rect x="530" y="85" width="20" height="12" rx="2" fill="rgba(168, 85, 247, 0.5)"/>
-                        <rect x="560" y="92" width="20" height="12" rx="2" fill="rgba(168, 85, 247, 0.5)"/>
-                        <text x="550" y="125" text-anchor="middle" fill="white" font-size="9" font-weight="bold">VMs</text>
-                        <text x="550" y="135" text-anchor="middle" fill="rgba(255, 255, 255, 0.7)" font-size="8">3,456 Active</text>
+                        <ellipse cx="550" cy="75" rx="70" ry="40" fill="none" stroke="rgba(14, 165, 233, 0.6)" stroke-width="2" stroke-dasharray="5,3"/>
+                        <rect x="520" y="60" width="20" height="12" rx="2" fill="rgba(14, 165, 233, 0.4)"/>
+                        <rect x="545" y="68" width="20" height="12" rx="2" fill="rgba(14, 165, 233, 0.4)"/>
+                        <rect x="570" y="75" width="20" height="12" rx="2" fill="rgba(14, 165, 233, 0.4)"/>
+                        <rect x="530" y="85" width="20" height="12" rx="2" fill="rgba(14, 165, 233, 0.4)"/>
+                        <rect x="560" y="92" width="20" height="12" rx="2" fill="rgba(14, 165, 233, 0.4)"/>
+                        <text x="550" y="125" text-anchor="middle" fill="#334155" font-size="9" font-weight="bold">VMs</text>
+                        <text x="550" y="135" text-anchor="middle" fill="#475569" font-size="8">3,456 Active</text>
                     </g>
                 </g>
 
                 <!-- Connection Lines -->
                 <g>
-                    <path d="M 200 80 Q 250 70 300 80" fill="none" stroke="rgba(255, 255, 255, 0.4)" stroke-width="1.5"/>
-                    <path d="M 330 75 Q 380 70 430 75" fill="none" stroke="rgba(255, 255, 255, 0.4)" stroke-width="1.5"/>
-                    <path d="M 460 75 L 480 75" fill="none" stroke="rgba(168, 85, 247, 0.6)" stroke-width="2"/>
-                    <circle cx="275" cy="70" r="2" fill="rgba(99, 102, 241, 0.9)" class="data-particle"/>
-                    <circle cx="405" cy="70" r="2" fill="rgba(168, 85, 247, 0.9)" class="data-particle"/>
+                    <path d="M 200 80 Q 250 70 300 80" fill="none" stroke="rgba(14, 165, 233, 0.25)" stroke-width="1.5"/>
+                    <path d="M 330 75 Q 380 70 430 75" fill="none" stroke="rgba(14, 165, 233, 0.25)" stroke-width="1.5"/>
+                    <path d="M 460 75 L 480 75" fill="none" stroke="rgba(14, 165, 233, 0.6)" stroke-width="2"/>
+                    <circle cx="275" cy="70" r="2" fill="rgba(14, 165, 233, 0.9)" class="data-particle"/>
+                    <circle cx="405" cy="70" r="2" fill="rgba(51, 139, 222, 0.9)" class="data-particle"/>
                 </g>
 
                 <!-- Stats -->
                 <g class="stats-display">
-                    <rect x="920" y="25" width="220" height="30" rx="4" fill="rgba(255, 255, 255, 0.1)" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1"/>
-                    <text x="935" y="42" fill="white" font-size="10">Hypervisors:</text>
-                    <text x="1030" y="42" fill="rgba(99, 102, 241, 1)" font-size="12" font-weight="bold">24</text>
+                    <rect x="920" y="25" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="42" fill="#334155" font-size="10">Hypervisors:</text>
+                    <text x="1030" y="42" fill="rgba(14, 165, 233, 1)" font-size="12" font-weight="bold">24</text>
                     <text x="1060" y="42" fill="rgba(0, 255, 100, 1)" font-size="10">Online</text>
 
-                    <rect x="920" y="65" width="220" height="30" rx="4" fill="rgba(255, 255, 255, 0.1)" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1"/>
-                    <text x="935" y="82" fill="white" font-size="10">Virtual Machines:</text>
-                    <text x="1040" y="82" fill="rgba(168, 85, 247, 1)" font-size="12" font-weight="bold">3,456</text>
+                    <rect x="920" y="65" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="82" fill="#334155" font-size="10">Virtual Machines:</text>
+                    <text x="1040" y="82" fill="rgba(51, 139, 222, 1)" font-size="12" font-weight="bold">3,456</text>
 
-                    <rect x="920" y="105" width="220" height="30" rx="4" fill="rgba(255, 255, 255, 0.1)" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1"/>
-                    <text x="935" y="122" fill="white" font-size="10">CPU Allocated:</text>
+                    <rect x="920" y="105" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="122" fill="#334155" font-size="10">CPU Allocated:</text>
                     <text x="1030" y="122" fill="rgba(255, 193, 7, 1)" font-size="12" font-weight="bold">82%</text>
                 </g>
 

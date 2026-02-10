@@ -1,174 +1,161 @@
 /* Kubernetes Section Styles */
 
-/* Status Badge Styles */
-.status-badge {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.status-operational {
-    background: rgba(16, 185, 129, 0.1);
-    color: #059669;
-}
-
-.status-warning {
-    background: rgba(245, 158, 11, 0.1);
-    color: #d97706;
-}
-
-.status-critical {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-}
 /* K8s Section */
 .k8s-section {
     padding: 0;
 }
 
-/* K8s Hero */
-.k8s-hero {
-    position: relative;
-    width: 100%;
-    height: 150px;
-    background: linear-gradient(135deg, #1a5490 0%, #0d2a4a 50%, #051729 100%);
-    overflow: hidden;
-    margin: 0 0 30px 0;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+/* Compact hero header */
+.k8s-section .l8-header-frame {
+    height: 60px;
 }
 
-.k8s-hero .hero-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-}
+/* Flex constraint chain: section-content → k8s-content → nav-bar + main-content → table
+   This ensures the table's .l8-table-container is height-constrained so it scrolls
+   internally and sticky headers work. */
 
-.k8s-hero .hero-illustration {
-    width: 100%;
-    height: 100%;
-}
-
-.k8s-hero .hero-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-    text-align: center;
-    color: white;
-}
-
-.k8s-hero .hero-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin: 0;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.k8s-hero .hero-subtitle {
-    font-size: 1rem;
-    margin: 8px 0 0 0;
-    opacity: 0.9;
-    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-}
 /* K8s Content */
 .k8s-content {
-    padding: 0 30px 30px 30px;
-}
-
-/* K8s Layout */
-.k8s-layout {
+    padding: 0 20px 20px 20px;
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 0;
-    min-height: 600px;
 }
 
-/* Horizontal Cluster Tabs */
-.k8s-cluster-tabs {
+/* ============================================ */
+/* SINGLE NAVIGATION BAR                        */
+/* Cluster dropdown (left) + resource tabs (right) */
+/* ============================================ */
+
+.k8s-nav-bar {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 12px;
     background: white;
     border-radius: 12px 12px 0 0;
-    padding: 16px 24px 0 24px;
+    padding: 0 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border-bottom: 2px solid #e2e8f0;
-    flex-wrap: wrap;
+    flex-shrink: 0;
 }
 
-.cluster-tab {
+/* Cluster Selector (left side) */
+.k8s-cluster-selector {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 24px;
+    padding: 8px 0;
+    flex-shrink: 0;
+    border-right: 1px solid #e2e8f0;
+    padding-right: 12px;
+}
+
+.k8s-cluster-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+    flex-shrink: 0;
+}
+
+#k8s-cluster-dropdown {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    background: #f8fafc;
+    cursor: pointer;
+    min-width: 120px;
+}
+
+#k8s-cluster-dropdown:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+}
+
+/* Resource Tabs (right side, scrollable) */
+.k8s-resource-tabs {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.k8s-resource-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.k8s-resource-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
     background: transparent;
     border: none;
     border-bottom: 3px solid transparent;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    white-space: nowrap;
     position: relative;
     bottom: -2px;
 }
 
-.cluster-tab:hover {
-    background: #f8fafc;
-}
-
-.cluster-tab:hover .cluster-name {
+.k8s-resource-tab:hover {
     color: #0ea5e9;
+    background: rgba(14, 165, 233, 0.04);
 }
 
-.cluster-tab.active {
+.k8s-resource-tab.active {
+    color: #0ea5e9;
     border-bottom-color: #0ea5e9;
-}
-
-.cluster-tab.active .cluster-name {
-    color: #0ea5e9;
     font-weight: 600;
 }
 
-.cluster-status {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.cluster-status.status-operational {
-    background: #10b981;
-    box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
-}
-
-.cluster-status.status-warning {
-    background: #f59e0b;
-    box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
-}
-
-.cluster-status.status-critical {
-    background: #ef4444;
-    box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
-}
-
-.cluster-name {
-    font-size: 1rem;
-    font-weight: 500;
+.k8s-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    font-size: 10px;
+    font-weight: 700;
+    background: #e2e8f0;
     color: #64748b;
-    margin: 0;
-    transition: color 0.3s ease;
 }
 
-/* K8s Main Content */
+.k8s-resource-tab.active .k8s-tab-count {
+    background: rgba(14, 165, 233, 0.15);
+    color: #0ea5e9;
+}
+
+/* ============================================ */
+/* MAIN CONTENT AREA                            */
+/* ============================================ */
+
 .k8s-main-content {
     flex: 1;
+    min-height: 0;
     background: white;
     border-radius: 0 0 12px 12px;
-    padding: 24px;
+    padding: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .cluster-content {
@@ -176,81 +163,16 @@
 }
 
 .cluster-content.active {
-    display: block;
-    animation: fade-in-content 0.4s ease-out;
-}
-
-@keyframes fade-in-content {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-.cluster-header {
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 2px solid #e2e8f0;
-}
-
-.cluster-header h3 {
-    margin: 0 0 12px 0;
-    font-size: 1.5rem;
-    color: #1e293b;
-}
-
-.cluster-stats {
     display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    animation: k8s-fade-in 0.3s ease-out;
 }
 
-.stat-item {
-    font-size: 0.9rem;
-    color: #64748b;
-}
-
-.stat-item strong {
-    color: #1e293b;
-    margin-right: 4px;
-}
-
-/* Horizontal Resource Tabs */
-.resource-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 24px;
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 0;
-    flex-wrap: wrap;
-}
-
-.resource-tab {
-    padding: 12px 24px;
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
-    color: #64748b;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    bottom: -2px;
-}
-
-.resource-tab:hover {
-    color: #0ea5e9;
-    background: #f8fafc;
-}
-
-.resource-tab.active {
-    color: #0ea5e9;
-    border-bottom-color: #0ea5e9;
-    font-weight: 600;
+@keyframes k8s-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .resource-content {
@@ -258,12 +180,25 @@
 }
 
 .resource-content.active {
-    display: block;
-    animation: fade-in-content 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
 }
 
-/* Modal Styles */
-.modal-overlay {
+/* Table container div (e.g. div#pods-{cluster}-table) passes flex chain to .l8-table-wrapper */
+.resource-content.active > div {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================ */
+/* K8s MODAL STYLES (scoped to prevent global leaks) */
+/* ============================================ */
+
+.k8s-section .modal-overlay {
     display: none;
     position: fixed;
     top: 0;
@@ -276,11 +211,11 @@
     align-items: center;
 }
 
-.modal-overlay.active {
+.k8s-section .modal-overlay.active {
     display: flex;
 }
 
-.modal-container {
+.k8s-section .modal-container {
     background: white;
     border-radius: 12px;
     width: 90%;
@@ -290,7 +225,7 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
-.modal-header {
+.k8s-section .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -299,13 +234,13 @@
     color: white;
 }
 
-.modal-title {
+.k8s-section .modal-title {
     font-size: 1.3rem;
     font-weight: 600;
     margin: 0;
 }
 
-.modal-close {
+.k8s-section .modal-close {
     background: none;
     border: none;
     color: white;
@@ -317,19 +252,19 @@
     transition: opacity 0.2s;
 }
 
-.modal-close:hover {
+.k8s-section .modal-close:hover {
     opacity: 1;
 }
 
-.modal-body {
+.k8s-section .modal-body {
     padding: 24px;
     overflow-y: auto;
     max-height: calc(85vh - 70px);
     color: #2d3748;
 }
 
-/* Modal Tabs */
-.modal-tabs {
+/* K8s Modal Tabs */
+.k8s-section .modal-tabs {
     display: flex;
     gap: 4px;
     margin-bottom: 24px;
@@ -337,7 +272,7 @@
     flex-wrap: wrap;
 }
 
-.modal-tab {
+.k8s-section .modal-tab {
     padding: 10px 20px;
     background: transparent;
     border: none;
@@ -351,30 +286,33 @@
     bottom: -2px;
 }
 
-.modal-tab:hover {
+.k8s-section .modal-tab:hover {
     color: #0ea5e9;
 }
 
-.modal-tab.active {
+.k8s-section .modal-tab.active {
     color: #0ea5e9;
     border-bottom-color: #0ea5e9;
     font-weight: 600;
 }
 
-.modal-tab-content {
+.k8s-section .modal-tab-content {
     display: none;
 }
 
-.modal-tab-content.active {
+.k8s-section .modal-tab-content.active {
     display: block;
 }
 
-/* Detail Sections */
-.detail-section {
+/* ============================================ */
+/* K8s DETAIL SECTIONS                          */
+/* ============================================ */
+
+.k8s-section .detail-section {
     margin-bottom: 24px;
 }
 
-.detail-section h3 {
+.k8s-section .detail-section h3 {
     font-size: 1.1rem;
     color: #1e293b;
     margin-bottom: 16px;
@@ -382,36 +320,36 @@
     border-bottom: 1px solid #e2e8f0;
 }
 
-.detail-section h4 {
+.k8s-section .detail-section h4 {
     font-size: 1rem;
     color: #0ea5e9;
     margin-bottom: 12px;
 }
 
-.detail-section h5 {
+.k8s-section .detail-section h5 {
     font-size: 0.9rem;
     color: #666;
     margin-top: 16px;
     margin-bottom: 8px;
 }
 
-.detail-grid {
+.k8s-section .detail-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 16px;
 }
 
-.detail-item {
+.k8s-section .detail-item {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.detail-item.full-width {
+.k8s-section .detail-item.full-width {
     grid-column: 1 / -1;
 }
 
-.detail-label {
+.k8s-section .detail-label {
     font-size: 0.8rem;
     color: #64748b;
     font-weight: 500;
@@ -419,12 +357,12 @@
     letter-spacing: 0.5px;
 }
 
-.detail-value {
+.k8s-section .detail-value {
     font-size: 0.95rem;
     color: #1e293b;
 }
 
-.detail-value code {
+.k8s-section .detail-value code {
     font-family: 'Monaco', 'Menlo', monospace;
     font-size: 0.85rem;
     background: #f1f5f9;
@@ -432,21 +370,21 @@
     border-radius: 4px;
 }
 
-/* Detail Tables */
-.detail-table {
+/* K8s Detail Tables */
+.k8s-section .detail-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
 }
 
-.detail-table th,
-.detail-table td {
+.k8s-section .detail-table th,
+.k8s-section .detail-table td {
     padding: 10px 12px;
     text-align: left;
     border-bottom: 1px solid #e2e8f0;
 }
 
-.detail-table th {
+.k8s-section .detail-table th {
     background: #f8fafc;
     font-weight: 600;
     color: #64748b;
@@ -455,11 +393,11 @@
     letter-spacing: 0.5px;
 }
 
-.detail-table td {
+.k8s-section .detail-table td {
     color: #1e293b;
 }
 
-.detail-table code {
+.k8s-section .detail-table code {
     font-family: 'Monaco', 'Menlo', monospace;
     font-size: 0.85rem;
     background: #f1f5f9;

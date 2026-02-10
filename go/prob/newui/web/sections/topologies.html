@@ -1,7 +1,109 @@
-<div class="section-container topologies-section">
-    <div class="topologies-frame">
-        <iframe src="topo/index.html"
-                style="width: 100%; height: 100%; border: none; display: block;"
-                title="Topology Viewer"></iframe>
+<div class="section-container topologies-section l8-section">
+    <!-- Topologies Hero Header -->
+    <div class="l8-header-frame parallax-container">
+        <div class="l8-header-bg parallax-layer" data-speed="0.5">
+            <svg class="l8-illustration" viewBox="0 0 1200 150" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="topoGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(14, 165, 233, 0.12)" stroke-width="1"/>
+                    </pattern>
+                    <linearGradient id="topoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:rgba(14, 165, 233, 0.08);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgba(14, 165, 233, 0);stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="1200" height="150" fill="url(#topoGrid)"/>
+
+                <!-- Central Hub Node -->
+                <circle cx="400" cy="75" r="20" fill="rgba(14, 165, 233, 0.2)" stroke="rgba(14, 165, 233, 0.7)" stroke-width="3"/>
+                <circle cx="400" cy="75" r="8" fill="rgba(14, 165, 233, 0.8)">
+                    <animate attributeName="r" values="7;9;7" dur="2s" repeatCount="indefinite"/>
+                </circle>
+
+                <!-- Spoke Nodes -->
+                <circle cx="250" cy="40" r="12" fill="rgba(14, 165, 233, 0.15)" stroke="rgba(14, 165, 233, 0.5)" stroke-width="2"/>
+                <circle cx="250" cy="40" r="4" fill="rgba(14, 165, 233, 0.7)"/>
+
+                <circle cx="250" cy="115" r="12" fill="rgba(14, 165, 233, 0.15)" stroke="rgba(14, 165, 233, 0.5)" stroke-width="2"/>
+                <circle cx="250" cy="115" r="4" fill="rgba(14, 165, 233, 0.7)"/>
+
+                <circle cx="550" cy="35" r="12" fill="rgba(14, 165, 233, 0.15)" stroke="rgba(14, 165, 233, 0.5)" stroke-width="2"/>
+                <circle cx="550" cy="35" r="4" fill="rgba(14, 165, 233, 0.7)"/>
+
+                <circle cx="550" cy="120" r="12" fill="rgba(14, 165, 233, 0.15)" stroke="rgba(14, 165, 233, 0.5)" stroke-width="2"/>
+                <circle cx="550" cy="120" r="4" fill="rgba(14, 165, 233, 0.7)"/>
+
+                <circle cx="150" cy="75" r="10" fill="rgba(14, 165, 233, 0.15)" stroke="rgba(14, 165, 233, 0.4)" stroke-width="1.5"/>
+                <circle cx="150" cy="75" r="3.5" fill="rgba(14, 165, 233, 0.6)"/>
+
+                <circle cx="650" cy="75" r="10" fill="rgba(14, 165, 233, 0.15)" stroke="rgba(14, 165, 233, 0.4)" stroke-width="1.5"/>
+                <circle cx="650" cy="75" r="3.5" fill="rgba(14, 165, 233, 0.6)"/>
+
+                <!-- Connection Lines (hub to spokes) -->
+                <line x1="382" y1="62" x2="262" y2="45" stroke="rgba(14, 165, 233, 0.4)" stroke-width="2" stroke-dasharray="8,4">
+                    <animate attributeName="stroke-dashoffset" values="0;-12" dur="1.5s" repeatCount="indefinite"/>
+                </line>
+                <line x1="382" y1="88" x2="262" y2="110" stroke="rgba(14, 165, 233, 0.4)" stroke-width="2" stroke-dasharray="8,4">
+                    <animate attributeName="stroke-dashoffset" values="0;-12" dur="1.8s" repeatCount="indefinite"/>
+                </line>
+                <line x1="418" y1="62" x2="538" y2="40" stroke="rgba(14, 165, 233, 0.4)" stroke-width="2" stroke-dasharray="8,4">
+                    <animate attributeName="stroke-dashoffset" values="0;-12" dur="2s" repeatCount="indefinite"/>
+                </line>
+                <line x1="418" y1="88" x2="538" y2="115" stroke="rgba(14, 165, 233, 0.4)" stroke-width="2" stroke-dasharray="8,4">
+                    <animate attributeName="stroke-dashoffset" values="0;-12" dur="1.6s" repeatCount="indefinite"/>
+                </line>
+                <line x1="380" y1="75" x2="160" y2="75" stroke="rgba(14, 165, 233, 0.3)" stroke-width="1.5" stroke-dasharray="6,4">
+                    <animate attributeName="stroke-dashoffset" values="0;-10" dur="2.2s" repeatCount="indefinite"/>
+                </line>
+                <line x1="420" y1="75" x2="640" y2="75" stroke="rgba(14, 165, 233, 0.3)" stroke-width="1.5" stroke-dasharray="6,4">
+                    <animate attributeName="stroke-dashoffset" values="0;-10" dur="2.4s" repeatCount="indefinite"/>
+                </line>
+
+                <!-- Data Pulses on links -->
+                <circle cx="320" cy="55" r="2.5" fill="rgba(14, 165, 233, 0.9)">
+                    <animate attributeName="cx" values="380;260" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="cy" values="62;45" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="480" cy="55" r="2.5" fill="rgba(14, 165, 233, 0.9)">
+                    <animate attributeName="cx" values="420;540" dur="2.5s" repeatCount="indefinite"/>
+                    <animate attributeName="cy" values="62;40" dur="2.5s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite"/>
+                </circle>
+
+                <!-- Stats on right -->
+                <g class="stats-display">
+                    <rect x="920" y="25" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="42" fill="#334155" font-size="10">Nodes:</text>
+                    <text x="1000" y="42" fill="rgba(14, 165, 233, 1)" font-size="12" font-weight="bold">247</text>
+
+                    <rect x="920" y="65" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="82" fill="#334155" font-size="10">Links:</text>
+                    <text x="1000" y="82" fill="rgba(51, 139, 222, 1)" font-size="12" font-weight="bold">1,842</text>
+
+                    <rect x="920" y="105" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="122" fill="#334155" font-size="10">Layers:</text>
+                    <text x="1010" y="122" fill="rgba(16, 185, 129, 1)" font-size="12" font-weight="bold">L2 / L3</text>
+                </g>
+
+                <!-- Gradient Overlay -->
+                <rect width="1200" height="150" fill="url(#topoGradient)" opacity="0.2"/>
+            </svg>
+        </div>
+
+        <div class="l8-header-content parallax-layer" data-speed="1">
+            <div class="l8-header-title">
+                <h1 class="l8-title">Topologies</h1>
+                <p class="l8-subtitle">Network Topology Visualization and Analysis</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-content" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+        <div class="topologies-frame">
+            <iframe src="topo/index.html"
+                    style="width: 100%; height: 100%; border: none; display: block;"
+                    title="Topology Viewer"></iframe>
+        </div>
     </div>
 </div>

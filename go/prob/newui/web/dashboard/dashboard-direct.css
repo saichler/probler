@@ -1,0 +1,186 @@
+/* Dashboard Direct Integration Styles */
+/* Scoped to .dashboard-section to prevent global leaks */
+
+/* Status Variables */
+.dashboard-section {
+    --status-operational: #00c853;
+    --status-warning: #ffc107;
+    --status-critical: #ff3d00;
+    --status-offline: #757575;
+    padding: 0 !important;
+}
+
+/* SVG Animations */
+.dashboard-section .rack-server {
+    animation: dashboard-server-pulse 3s ease-in-out infinite;
+}
+
+.dashboard-section .rack-server:nth-child(odd) {
+    animation-delay: 0.5s;
+}
+
+.dashboard-section .rack-critical {
+    animation: dashboard-critical-pulse 1s ease-in-out infinite !important;
+}
+
+@keyframes dashboard-server-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+@keyframes dashboard-critical-pulse {
+    0%, 100% { opacity: 1; stroke-width: 1; }
+    50% { opacity: 0.4; stroke-width: 2; }
+}
+
+.dashboard-section .network-node-pulse {
+    animation: dashboard-node-pulse 2s ease-in-out infinite;
+}
+
+@keyframes dashboard-node-pulse {
+    0%, 100% { r: 3; opacity: 0.8; }
+    50% { r: 5; opacity: 1; }
+}
+
+/* Dashboard Content */
+.dashboard-section .dashboard-content {
+    padding: 20px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-section .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* Metric Cards */
+.dashboard-section .metric-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-section .metric-card:hover {
+    border-color: #0ea5e9;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px);
+}
+
+.dashboard-section .metric-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.dashboard-section .metric-card-title {
+    font-size: 10px;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+}
+
+.dashboard-section .metric-card-icon {
+    font-size: 20px;
+    opacity: 0.6;
+}
+
+.dashboard-section .metric-card-value {
+    font-size: 28px;
+    color: #0ea5e9;
+    font-weight: 900;
+    font-family: 'Roboto Mono', monospace;
+    margin-bottom: 8px;
+}
+
+.dashboard-section .metric-card-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.dashboard-section .metric-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Status Indicators */
+.dashboard-section .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.dashboard-section .status-indicator.status-operational {
+    background: var(--status-operational);
+    box-shadow: 0 0 6px var(--status-operational);
+}
+
+.dashboard-section .status-indicator.status-warning {
+    background: var(--status-warning);
+    box-shadow: 0 0 6px var(--status-warning);
+}
+
+.dashboard-section .status-indicator.status-critical {
+    background: var(--status-critical);
+    box-shadow: 0 0 6px var(--status-critical);
+}
+
+.dashboard-section .status-indicator.status-offline {
+    background: var(--status-offline);
+}
+
+.dashboard-section .metric-status.unavailable {
+    color: #a0aec0;
+    font-style: italic;
+}
+
+/* Section Title */
+.dashboard-section .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0 0 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Alarms Table Container */
+.dashboard-section .alarms-container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-section #alarms-table {
+    flex: 1;
+    min-height: 300px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .dashboard-section .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-section .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}

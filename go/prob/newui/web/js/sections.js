@@ -59,7 +59,12 @@ function loadSection(sectionName) {
                 // Initialize section-specific content after DOM is ready
                 setTimeout(() => {
                     if (sectionName === 'dashboard') {
-                        // Dashboard now loads in iframe, self-initializes
+                        if (typeof initializeDashboard === 'function') {
+                            initializeDashboard();
+                        }
+                        if (typeof initializeParallax === 'function') {
+                            initializeParallax();
+                        }
                     } else if (sectionName === 'network') {
                         if (typeof initializeParallax === 'function') {
                             initializeParallax();
@@ -87,6 +92,10 @@ function loadSection(sectionName) {
                             initializeParallax();
                         }
                     } else if (sectionName === 'inventory') {
+                        if (typeof initializeParallax === 'function') {
+                            initializeParallax();
+                        }
+                    } else if (sectionName === 'topologies') {
                         if (typeof initializeParallax === 'function') {
                             initializeParallax();
                         }

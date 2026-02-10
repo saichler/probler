@@ -1,15 +1,15 @@
 <div class="section-container k8s-section l8-section">
-    <!-- Kubernetes Hero Header -->
-    <div class="l8-header-frame k8s-hero parallax-container">
+    <!-- Kubernetes Hero Header (compact) -->
+    <div class="l8-header-frame parallax-container">
         <div class="l8-header-bg parallax-layer" data-speed="0.5">
-            <svg class="l8-illustration" viewBox="0 0 1200 150" xmlns="http://www.w3.org/2000/svg">
+            <svg class="l8-illustration" viewBox="0 0 1200 150" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <pattern id="k8sGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1"/>
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(14, 165, 233, 0.12)" stroke-width="1"/>
                     </pattern>
                     <linearGradient id="k8sGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:rgba(255, 255, 255, 0.1);stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:rgba(255, 255, 255, 0);stop-opacity:1" />
+                        <stop offset="0%" style="stop-color:rgba(14, 165, 233, 0.08);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgba(14, 165, 233, 0);stop-opacity:1" />
                     </linearGradient>
                 </defs>
                 <rect width="1200" height="150" fill="url(#k8sGrid)"/>
@@ -19,10 +19,10 @@
                     <polygon points="0,-30 26,-15 26,15 0,30 -26,15 -26,-15" fill="none" stroke="rgba(51, 139, 222, 0.8)" stroke-width="2"/>
                     <polygon points="0,-20 17,-10 17,10 0,20 -17,10 -17,-10" fill="rgba(51, 139, 222, 0.3)"/>
                     <circle cx="0" cy="0" r="8" fill="rgba(51, 139, 222, 0.9)"/>
-                    <line x1="0" y1="-8" x2="0" y2="-20" stroke="white" stroke-width="2"/>
-                    <line x1="0" y1="8" x2="0" y2="20" stroke="white" stroke-width="2"/>
-                    <line x1="-7" y1="4" x2="-14" y2="8" stroke="white" stroke-width="2"/>
-                    <line x1="7" y1="4" x2="14" y2="8" stroke="white" stroke-width="2"/>
+                    <line x1="0" y1="-8" x2="0" y2="-20" stroke="rgba(51, 139, 222, 0.6)" stroke-width="2"/>
+                    <line x1="0" y1="8" x2="0" y2="20" stroke="rgba(51, 139, 222, 0.6)" stroke-width="2"/>
+                    <line x1="-7" y1="4" x2="-14" y2="8" stroke="rgba(51, 139, 222, 0.6)" stroke-width="2"/>
+                    <line x1="7" y1="4" x2="14" y2="8" stroke="rgba(51, 139, 222, 0.6)" stroke-width="2"/>
                 </g>
 
                 <!-- Pod representations -->
@@ -31,19 +31,19 @@
                     <circle cx="295" cy="65" r="3" fill="rgba(16, 185, 129, 1)"><animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/></circle>
                     <circle cx="310" cy="65" r="3" fill="rgba(16, 185, 129, 1)"><animate attributeName="opacity" values="0.3;1;0.3" dur="2.5s" repeatCount="indefinite"/></circle>
                     <circle cx="325" cy="65" r="3" fill="rgba(16, 185, 129, 1)"><animate attributeName="opacity" values="0.3;1;0.3" dur="2.2s" repeatCount="indefinite"/></circle>
-                    <text x="310" y="92" text-anchor="middle" fill="white" font-size="8">Pods</text>
+                    <text x="310" y="92" text-anchor="middle" fill="#334155" font-size="8">Pods</text>
 
                     <rect x="360" y="55" width="60" height="50" rx="6" fill="rgba(59, 130, 246, 0.3)" stroke="rgba(59, 130, 246, 0.8)" stroke-width="2"/>
                     <circle cx="375" cy="70" r="3" fill="rgba(59, 130, 246, 1)"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/></circle>
                     <circle cx="390" cy="70" r="3" fill="rgba(59, 130, 246, 1)"><animate attributeName="opacity" values="0.3;1;0.3" dur="2.3s" repeatCount="indefinite"/></circle>
                     <circle cx="405" cy="70" r="3" fill="rgba(59, 130, 246, 1)"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.9s" repeatCount="indefinite"/></circle>
-                    <text x="390" y="97" text-anchor="middle" fill="white" font-size="8">Services</text>
+                    <text x="390" y="97" text-anchor="middle" fill="#334155" font-size="8">Services</text>
 
                     <rect x="440" y="45" width="60" height="50" rx="6" fill="rgba(139, 92, 246, 0.3)" stroke="rgba(139, 92, 246, 0.8)" stroke-width="2"/>
                     <circle cx="455" cy="60" r="3" fill="rgba(139, 92, 246, 1)"><animate attributeName="opacity" values="0.3;1;0.3" dur="2.1s" repeatCount="indefinite"/></circle>
                     <circle cx="470" cy="60" r="3" fill="rgba(139, 92, 246, 1)"><animate attributeName="opacity" values="0.3;1;0.3" dur="2.4s" repeatCount="indefinite"/></circle>
                     <circle cx="485" cy="60" r="3" fill="rgba(139, 92, 246, 1)"><animate attributeName="opacity" values="0.3;1;0.3" dur="2.6s" repeatCount="indefinite"/></circle>
-                    <text x="470" y="87" text-anchor="middle" fill="white" font-size="8">Nodes</text>
+                    <text x="470" y="87" text-anchor="middle" fill="#334155" font-size="8">Nodes</text>
                 </g>
 
                 <!-- Connection lines -->
@@ -53,17 +53,17 @@
 
                 <!-- Stats -->
                 <g class="stats-display">
-                    <rect x="920" y="25" width="220" height="30" rx="4" fill="rgba(255, 255, 255, 0.1)" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1"/>
-                    <text x="935" y="42" fill="white" font-size="10">Clusters:</text>
+                    <rect x="920" y="25" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="42" fill="#334155" font-size="10">Clusters:</text>
                     <text x="1020" y="42" fill="rgba(51, 139, 222, 1)" font-size="12" font-weight="bold" id="hero-cluster-count">0</text>
                     <text x="1040" y="42" fill="rgba(16, 185, 129, 1)" font-size="10">Online</text>
 
-                    <rect x="920" y="65" width="220" height="30" rx="4" fill="rgba(255, 255, 255, 0.1)" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1"/>
-                    <text x="935" y="82" fill="white" font-size="10">Total Pods:</text>
+                    <rect x="920" y="65" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="82" fill="#334155" font-size="10">Total Pods:</text>
                     <text x="1030" y="82" fill="rgba(16, 185, 129, 1)" font-size="12" font-weight="bold" id="hero-pod-count">0</text>
 
-                    <rect x="920" y="105" width="220" height="30" rx="4" fill="rgba(255, 255, 255, 0.1)" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1"/>
-                    <text x="935" y="122" fill="white" font-size="10">Services:</text>
+                    <rect x="920" y="105" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
+                    <text x="935" y="122" fill="#334155" font-size="10">Services:</text>
                     <text x="1030" y="122" fill="rgba(59, 130, 246, 1)" font-size="12" font-weight="bold" id="hero-service-count">0</text>
                 </g>
 
@@ -79,11 +79,17 @@
         </div>
     </div>
 
-    <div class="k8s-content">
-        <div class="k8s-layout">
-            <!-- Horizontal Cluster Tabs -->
-            <div class="k8s-cluster-tabs">
-                <!-- Cluster tabs will be dynamically populated -->
+    <div class="section-content">
+        <div class="k8s-content">
+            <!-- Single Navigation Bar: cluster dropdown + resource tabs with counts -->
+            <div class="k8s-nav-bar">
+                <div class="k8s-cluster-selector">
+                    <span class="k8s-cluster-status status-operational"></span>
+                    <select id="k8s-cluster-dropdown"></select>
+                </div>
+                <div class="k8s-resource-tabs" id="k8s-resource-tabs">
+                    <!-- Resource tabs populated by JS -->
+                </div>
             </div>
 
             <!-- Main Content Area -->
@@ -91,28 +97,28 @@
                 <!-- Cluster content will be dynamically populated -->
             </div>
         </div>
-    </div>
 
-    <!-- Node Detail Modal -->
-    <div id="node-detail-modal" class="modal-overlay">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2 class="modal-title">Node Details</h2>
-                <button class="modal-close" onclick="closeNodeDetailModal()">&times;</button>
-            </div>
-            <div class="modal-body" id="node-detail-content">
+        <!-- Node Detail Modal -->
+        <div id="node-detail-modal" class="modal-overlay">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h2 class="modal-title">Node Details</h2>
+                    <button class="modal-close" onclick="closeNodeDetailModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="node-detail-content">
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- K8s Resource Detail Modal -->
-    <div id="k8s-detail-modal" class="modal-overlay">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2 class="modal-title">Resource Details</h2>
-                <button class="modal-close" onclick="closeK8sDetailModal()">&times;</button>
-            </div>
-            <div class="modal-body" id="k8s-detail-content">
+        <!-- K8s Resource Detail Modal -->
+        <div id="k8s-detail-modal" class="modal-overlay">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h2 class="modal-title">Resource Details</h2>
+                    <button class="modal-close" onclick="closeK8sDetailModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="k8s-detail-content">
+                </div>
             </div>
         </div>
     </div>

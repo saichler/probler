@@ -54,14 +54,6 @@
 }
 
 @media (max-width: 768px) {
-    .k8s-hero .hero-title {
-        font-size: 2rem;
-    }
-
-    .k8s-hero .hero-subtitle {
-        font-size: 0.9rem;
-    }
-
     .resource-tabs {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
