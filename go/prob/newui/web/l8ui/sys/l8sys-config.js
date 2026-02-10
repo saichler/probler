@@ -41,6 +41,11 @@ limitations under the License.
             label: 'Modules',
             icon: '🧩',
             services: []
+        },
+        'logs': {
+            label: 'Logs',
+            icon: '📋',
+            services: []
         }
     };
 
