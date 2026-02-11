@@ -28,6 +28,7 @@ import (
 )
 
 func main() {
+	logsDirectory := "/data/logs/probler"
 	ip := os.Getenv("NODE_IP")
 	if ip == "" {
 		fmt.Println("Env variable NODE_IP is not set, using machine ip")
@@ -36,8 +37,8 @@ func main() {
 
 	logpath := os.Getenv("LOGPATH")
 	if logpath == "" {
-		fmt.Println("Env variable LOGPATH is not set, using /data/logs")
-		logpath = "/data/logs"
+		fmt.Println("Env variable LOGPATH is not set, using " + logsDirectory)
+		logpath = logsDirectory
 	}
 
 	logfile := os.Getenv("LOGFILE")
@@ -46,7 +47,7 @@ func main() {
 		logfile = "*"
 	}
 
-	r := shared.ResourcesOf("logs", common.LOGS_VNET, 30, false)
+	r := shared.ResourcesOf("logs", common.LOGS_VNET, 30, logpath)
 	r.SysConfig().RemoteVnet = ip
 
 	nic := vnic.NewVirtualNetworkInterface(r, nil)

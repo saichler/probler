@@ -45,7 +45,8 @@ func init() {
 }
 
 func CreateResources(alias string) ifs.IResources {
-	logger.SetLogToFile(alias)
+	logsDir := "/data/logs/probler"
+	logger.SetLogToFile(logsDir, alias)
 	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
 	log.SetLogLevel(ifs.Info_Level)
 	res := resources.NewResources(log)
@@ -64,7 +65,9 @@ func CreateResources(alias string) ifs.IResources {
 		TxQueueSize:              resources.DEFAULT_QUEUE_SIZE,
 		LocalAlias:               alias,
 		VnetPort:                 uint32(PROBLER_VNET),
-		KeepAliveIntervalSeconds: 30}
+		KeepAliveIntervalSeconds: 30,
+		LogsDirectory:            logsDir,
+	}
 	res.Set(conf)
 
 	res.Set(introspecting.NewIntrospect(res.Registry()))

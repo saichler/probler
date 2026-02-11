@@ -22,11 +22,12 @@ import (
 )
 
 func main() {
+	logsDbDirectory := "/data/logsdb/probler"
 	resources := common.CreateResources("log-vnet")
 	resources.SysConfig().VnetPort = common.LOGS_VNET
 	net := vnet.NewVNet(resources, true)
 	net.Start()
-	logserver.ActivateLogService(net.VnetVnic())
+	logserver.ActivateLogService(logsDbDirectory, net.VnetVnic())
 	resources.Logger().Info("logs vnet started!")
 	common.WaitForSignal(resources)
 }
