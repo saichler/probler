@@ -29,7 +29,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: LOGPATH
-              value: /data/logs
+              value: /data/logs/probler
             - name: LOGFILE
               value: "*"
             - name: NODE_IP
