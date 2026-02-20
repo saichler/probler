@@ -99,7 +99,7 @@ message Chassis {
   repeated Module modules = 8;
   repeated PowerSupply power_supplies = 9;
   repeated Fan fans = 10;
-  double temperature = 11;
+  repeated l8api.L8TimeSeriesPoint temperature = 11; // Time series
 }
 
 message Slot {
@@ -119,7 +119,7 @@ message Module {
   repeated Port ports = 8;
   repeated Cpu cpus = 9;
   repeated Memory memory_modules = 10;
-  double temperature = 11;
+  repeated l8api.L8TimeSeriesPoint temperature = 11; // Time series
 }
 
 message Port {
@@ -154,8 +154,8 @@ message Cpu {
   uint32 cores = 5;
   uint32 frequency_mhz = 6;
   ComponentStatus status = 7;
-  double temperature = 8;
-  double utilization_percent = 9;
+  repeated l8api.L8TimeSeriesPoint temperature = 8; // Time series
+  repeated l8api.L8TimeSeriesPoint utilization_percent = 9; // Time series
 }
 
 message Memory {
@@ -165,7 +165,7 @@ message Memory {
   uint64 size_bytes = 4;
   uint32 frequency_mhz = 5;
   ComponentStatus status = 6;
-  double utilization_percent = 7;
+  repeated l8api.L8TimeSeriesPoint utilization_percent = 7; // Time series
 }
 
 message PowerSupply {
@@ -176,10 +176,10 @@ message PowerSupply {
   uint32 wattage = 5;
   PowerType power_type = 6;
   ComponentStatus status = 7;
-  double temperature = 8;
-  double load_percent = 9;
-  double voltage = 10;
-  double current = 11;
+  repeated l8api.L8TimeSeriesPoint temperature = 8; // Time series
+  repeated l8api.L8TimeSeriesPoint load_percent = 9; // Time series
+  repeated l8api.L8TimeSeriesPoint voltage = 10; // Time series
+  repeated l8api.L8TimeSeriesPoint current = 11; // Time series
 }
 
 message Fan {
@@ -189,15 +189,15 @@ message Fan {
   ComponentStatus status = 4;
   uint32 speed_rpm = 5;
   uint32 max_speed_rpm = 6;
-  double temperature = 7;
+  repeated l8api.L8TimeSeriesPoint temperature = 7; // Time series
   bool variable_speed = 8;
 }
 
 // Performance and Statistics Messages
 message PerformanceMetrics {
-  double cpu_usage_percent = 1;
-  double memory_usage_percent = 2;
-  double temperature_celsius = 3;
+  repeated l8api.L8TimeSeriesPoint cpu_usage_percent = 1; // Time series
+  repeated l8api.L8TimeSeriesPoint memory_usage_percent = 2; // Time series
+  repeated l8api.L8TimeSeriesPoint temperature_celsius = 3; // Time series
   string uptime = 4;
   uint64 load_average = 5;
   repeated ProcessInfo processes = 6;
@@ -207,8 +207,8 @@ message PerformanceMetrics {
 message ProcessInfo {
   string name = 1;
   uint32 pid = 2;
-  double cpu_percent = 3;
-  double memory_percent = 4;
+  repeated l8api.L8TimeSeriesPoint cpu_percent = 3; // Time series
+  repeated l8api.L8TimeSeriesPoint memory_percent = 4; // Time series
   string status = 5;
 }
 
