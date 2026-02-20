@@ -11,70 +11,6 @@
 (function() {
     'use strict';
 
-    // Generate GPU mock data (matches desktop gpus-mock-data.js)
-    function generateGPUMockData() {
-        var gpus = [];
-        var models = ['H100 PCIe', 'H100 SXM5', 'RTX 6000 Ada Generation', 'RTX 5900', 'A100 PCIe', 'A100 SXM4'];
-        var statuses = ['operational', 'operational', 'operational', 'operational', 'warning', 'critical'];
-        var hosts = ['ai-server', 'ml-compute', 'render-node', 'workstation', 'dev-workstation',
-                     'test-bench', 'training-cluster', 'inference-node', 'hpc-node', 'gaming-server'];
-
-        for (var i = 1; i <= 30; i++) {
-            var model = models[i % models.length];
-            var status = statuses[i % statuses.length];
-            var host = hosts[i % hosts.length];
-            var isH100 = model.indexOf('H100') >= 0;
-            var isA100 = model.indexOf('A100') >= 0;
-            var isRTX6000 = model.indexOf('RTX 6000') >= 0;
-
-            var memoryTotal = isH100 ? 80 : (isA100 ? 80 : (isRTX6000 ? 48 : 24));
-            var powerLimit = isH100 ? 350 : (isA100 ? 300 : (isRTX6000 ? 300 : 250));
-            var utilization = status === 'operational' ? Math.floor(Math.random() * 50) + 30 :
-                              (status === 'warning' ? Math.floor(Math.random() * 20) + 10 : 0);
-            var memoryUsed = status === 'operational' ? Math.floor(Math.random() * 40) + 20 :
-                             (status === 'warning' ? Math.floor(Math.random() * 15) + 5 : 0);
-            var temperature = status === 'operational' ? Math.floor(Math.random() * 20) + 55 :
-                              (status === 'warning' ? Math.floor(Math.random() * 15) + 75 : Math.floor(Math.random() * 10) + 85);
-            var powerDraw = status === 'operational' ? Math.floor(powerLimit * 0.6) + Math.floor(Math.random() * powerLimit * 0.2) :
-                            (status === 'warning' ? Math.floor(powerLimit * 0.3) : 0);
-
-            var arch = isH100 ? 'Hopper' : (isA100 ? 'Ampere' : 'Ada Lovelace');
-            var vramType = isH100 ? 'HBM3' : (isA100 ? 'HBM2e' : (isRTX6000 ? 'GDDR6' : 'GDDR6X'));
-            var cudaCores = isH100 ? 16896 : (isA100 ? 6912 : (isRTX6000 ? 18176 : 10240));
-            var tensorCores = isH100 ? 528 : (isA100 ? 432 : (isRTX6000 ? 568 : 320));
-
-            gpus.push({
-                id: 'gpu-' + String(i).padStart(3, '0'),
-                name: 'GPU-' + model.split(' ')[0] + '-' + String(i).padStart(3, '0'),
-                model: model,
-                vendor: 'NVIDIA',
-                architecture: arch,
-                hostName: host + '-' + String(Math.floor(i / 2) + 1).padStart(2, '0') + '.datacenter.local',
-                status: status,
-                utilization: utilization,
-                memoryUsed: memoryUsed,
-                memoryTotal: memoryTotal,
-                temperature: temperature,
-                powerDraw: powerDraw,
-                powerLimit: powerLimit,
-                clockSpeed: 1500 + Math.floor(Math.random() * 500),
-                clockSpeedMax: isH100 ? 1980 : (isA100 ? 1410 : 2505),
-                fanSpeed: Math.floor(temperature * 0.8) + Math.floor(Math.random() * 10),
-                computeMode: i % 3 === 0 ? 'Exclusive Process' : 'Default',
-                eccEnabled: isH100 || isA100 || isRTX6000,
-                cudaCores: cudaCores,
-                tensorCores: tensorCores,
-                vramType: vramType,
-                pcieLanes: 16,
-                pcieGen: isH100 ? 5 : 4,
-                driverVersion: '535.104.05',
-                cudaVersion: '12.2',
-                serialNumber: model.split(' ')[0] + '-' + String(1000000 + i)
-            });
-        }
-        return gpus;
-    }
-
     // Helper: escape HTML
     function escapeHtml(text) {
         if (text == null || text === '--') return '--';
@@ -225,7 +161,7 @@
 
     // Initialize Mobile GPU section
     function initMobileGpus() {
-        var gpuData = generateGPUMockData();
+        var gpuData = [];
 
         new MobileTable('gpu-table-container', {
             data: gpuData,

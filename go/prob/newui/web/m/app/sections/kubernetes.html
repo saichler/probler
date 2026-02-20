@@ -763,7 +763,7 @@
             });
 
             if (!response || !response.ok) {
-                podDetails = generatePodDetailsFallback(item, clusterName);
+                podDetails = null;
             } else {
                 const data = await response.json();
                 if (data && data.result) {
@@ -778,19 +778,24 @@
                         } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
                             podDetails = parsedData;
                         } else {
-                            podDetails = generatePodDetailsFallback(item, clusterName);
+                            podDetails = null;
                         }
                     } catch (error) {
-                        podDetails = generatePodDetailsFallback(item, clusterName);
+                        podDetails = null;
                     }
                 } else {
-                    podDetails = generatePodDetailsFallback(item, clusterName);
+                    podDetails = null;
                 }
             }
         } catch (error) {
-            podDetails = generatePodDetailsFallback(item, clusterName);
+            podDetails = null;
         }
 
+        if (!podDetails) {
+            return `<div class="k8s-detail-section"><h4>Pod Information</h4>
+                ${detailRow('Name', item.name)}${detailRow('Namespace', item.namespace)}${detailRow('Node', item.node)}${detailRow('IP', item.ip)}
+                <p style="color: #e53e3e; margin-top: 12px;">Could not fetch pod details from the API.</p></div>`;
+        }
         return generatePodModalContent(podDetails, item, clusterName);
     }
 
@@ -810,7 +815,7 @@
             });
 
             if (!response || !response.ok) {
-                nodeDetails = generateNodeDetailsFallback(item, clusterName);
+                nodeDetails = null;
             } else {
                 const data = await response.json();
                 if (data && data.result) {
@@ -825,19 +830,24 @@
                         } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
                             nodeDetails = parsedData;
                         } else {
-                            nodeDetails = generateNodeDetailsFallback(item, clusterName);
+                            nodeDetails = null;
                         }
                     } catch (error) {
-                        nodeDetails = generateNodeDetailsFallback(item, clusterName);
+                        nodeDetails = null;
                     }
                 } else {
-                    nodeDetails = generateNodeDetailsFallback(item, clusterName);
+                    nodeDetails = null;
                 }
             }
         } catch (error) {
-            nodeDetails = generateNodeDetailsFallback(item, clusterName);
+            nodeDetails = null;
         }
 
+        if (!nodeDetails) {
+            return `<div class="k8s-detail-section"><h4>Node Information</h4>
+                ${detailRow('Name', item.name)}${detailRow('Status', item.status)}${detailRow('Roles', item.roles)}
+                <p style="color: #e53e3e; margin-top: 12px;">Could not fetch node details from the API.</p></div>`;
+        }
         return generateNodeModalContent(nodeDetails, item, clusterName);
     }
 
@@ -857,7 +867,7 @@
             });
 
             if (!response || !response.ok) {
-                deploymentDetails = generateDeploymentDetailsFallback(item, clusterName);
+                deploymentDetails = null;
             } else {
                 const data = await response.json();
                 if (data && data.result) {
@@ -872,204 +882,25 @@
                         } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
                             deploymentDetails = parsedData;
                         } else {
-                            deploymentDetails = generateDeploymentDetailsFallback(item, clusterName);
+                            deploymentDetails = null;
                         }
                     } catch (error) {
-                        deploymentDetails = generateDeploymentDetailsFallback(item, clusterName);
+                        deploymentDetails = null;
                     }
                 } else {
-                    deploymentDetails = generateDeploymentDetailsFallback(item, clusterName);
+                    deploymentDetails = null;
                 }
             }
         } catch (error) {
-            deploymentDetails = generateDeploymentDetailsFallback(item, clusterName);
+            deploymentDetails = null;
         }
 
+        if (!deploymentDetails) {
+            return `<div class="k8s-detail-section"><h4>Deployment Information</h4>
+                ${detailRow('Name', item.name)}${detailRow('Namespace', item.namespace)}
+                <p style="color: #e53e3e; margin-top: 12px;">Could not fetch deployment details from the API.</p></div>`;
+        }
         return generateDeploymentModalContent(deploymentDetails, item, clusterName);
-    }
-
-    // ===== FALLBACK GENERATORS (like desktop *-generate.js files) =====
-
-    function generateUID() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
-    }
-
-    // Generate fallback Pod details (like desktop kubernetes-modal-pods-generate.js)
-    function generatePodDetailsFallback(pod, cluster) {
-        const statusText = getPodStatusText(pod.status);
-        return {
-            apiVersion: "v1",
-            kind: "Pod",
-            metadata: {
-                name: pod.name,
-                namespace: pod.namespace,
-                uid: generateUID(),
-                resourceVersion: String(Math.floor(Math.random() * 9000000) + 1000000),
-                creationTimestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-                generateName: pod.name.replace(/-[a-z0-9]+$/, '-'),
-                labels: { "app": pod.name.split('-')[0] },
-                annotations: {},
-                ownerReferences: []
-            },
-            spec: {
-                nodeName: pod.node || 'unknown',
-                serviceAccountName: 'default',
-                restartPolicy: 'Always',
-                dnsPolicy: 'ClusterFirst',
-                schedulerName: 'default-scheduler',
-                priority: 0,
-                preemptionPolicy: 'PreemptLowerPriority',
-                terminationGracePeriodSeconds: 30,
-                enableServiceLinks: true,
-                hostNetwork: false,
-                containers: [],
-                tolerations: [],
-                volumes: []
-            },
-            status: {
-                phase: statusText,
-                podIP: pod.ip || '',
-                hostIP: '',
-                startTime: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-                qosClass: 'BestEffort',
-                conditions: [
-                    { type: 'Initialized', status: 'True', lastTransitionTime: new Date().toISOString() },
-                    { type: 'Ready', status: statusText === 'Running' ? 'True' : 'False', lastTransitionTime: new Date().toISOString() },
-                    { type: 'ContainersReady', status: statusText === 'Running' ? 'True' : 'False', lastTransitionTime: new Date().toISOString() },
-                    { type: 'PodScheduled', status: 'True', lastTransitionTime: new Date().toISOString() }
-                ],
-                containerStatuses: [],
-                podIPs: pod.ip ? [{ ip: pod.ip }] : [],
-                hostIPs: []
-            }
-        };
-    }
-
-    // Generate fallback Node details (like desktop kubernetes-modal-node-generate.js)
-    function generateNodeDetailsFallback(node, cluster) {
-        return {
-            apiVersion: "v1",
-            kind: "Node",
-            metadata: {
-                name: node.name,
-                uid: generateUID(),
-                resourceVersion: String(Math.floor(Math.random() * 9000000) + 1000000),
-                creationTimestamp: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-                labels: {
-                    "kubernetes.io/hostname": node.name,
-                    "kubernetes.io/os": "linux",
-                    "kubernetes.io/arch": "amd64",
-                    "node-role.kubernetes.io/control-plane": node.roles?.includes('control-plane') ? "" : undefined
-                },
-                annotations: {}
-            },
-            spec: {
-                podCIDR: '10.244.0.0/24',
-                podCIDRs: ['10.244.0.0/24']
-            },
-            status: {
-                addresses: [
-                    { type: 'InternalIP', address: node.internalIp || '10.0.0.1' },
-                    { type: 'Hostname', address: node.name }
-                ],
-                capacity: {
-                    cpu: '4',
-                    memory: '16Gi',
-                    pods: '110',
-                    'ephemeral-storage': '100Gi'
-                },
-                allocatable: {
-                    cpu: '3800m',
-                    memory: '15Gi',
-                    pods: '110',
-                    'ephemeral-storage': '90Gi'
-                },
-                conditions: [
-                    { type: 'Ready', status: 'True', reason: 'KubeletReady', message: 'kubelet is posting ready status', lastHeartbeatTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() },
-                    { type: 'MemoryPressure', status: 'False', reason: 'KubeletHasSufficientMemory', message: 'kubelet has sufficient memory available', lastHeartbeatTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() },
-                    { type: 'DiskPressure', status: 'False', reason: 'KubeletHasNoDiskPressure', message: 'kubelet has no disk pressure', lastHeartbeatTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() },
-                    { type: 'PIDPressure', status: 'False', reason: 'KubeletHasSufficientPID', message: 'kubelet has sufficient PID available', lastHeartbeatTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() }
-                ],
-                nodeInfo: {
-                    osImage: node.osImage || 'Ubuntu 22.04 LTS',
-                    kernelVersion: node.kernelVersion || '5.15.0-generic',
-                    containerRuntimeVersion: node.containerRuntime || 'containerd://1.6.0',
-                    kubeletVersion: node.version || 'v1.28.0',
-                    kubeProxyVersion: node.version || 'v1.28.0',
-                    architecture: 'amd64',
-                    operatingSystem: 'linux',
-                    machineID: generateUID().replace(/-/g, ''),
-                    systemUUID: generateUID().toUpperCase(),
-                    bootID: generateUID()
-                },
-                daemonEndpoints: {
-                    kubeletEndpoint: { Port: 10250 }
-                },
-                images: []
-            }
-        };
-    }
-
-    // Generate fallback Deployment details (like desktop kubernetes-modal-deployments-generate.js)
-    function generateDeploymentDetailsFallback(deployment, cluster) {
-        const readyParts = typeof deployment.ready === 'object'
-            ? [deployment.ready.count || 0, deployment.ready.outof || 1]
-            : String(deployment.ready || '0/1').split('/').map(Number);
-        const readyReplicas = readyParts[0] || 0;
-        const totalReplicas = readyParts[1] || 1;
-
-        return {
-            apiVersion: "apps/v1",
-            kind: "Deployment",
-            metadata: {
-                name: deployment.name,
-                namespace: deployment.namespace,
-                uid: generateUID(),
-                resourceVersion: String(Math.floor(Math.random() * 9000000) + 1000000),
-                generation: 1,
-                creationTimestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-                labels: { "app": deployment.name },
-                annotations: { "deployment.kubernetes.io/revision": "1" }
-            },
-            spec: {
-                replicas: totalReplicas,
-                revisionHistoryLimit: 10,
-                progressDeadlineSeconds: 600,
-                selector: { matchLabels: { "app": deployment.name } },
-                strategy: {
-                    type: 'RollingUpdate',
-                    rollingUpdate: { maxUnavailable: '25%', maxSurge: '25%' }
-                },
-                template: {
-                    metadata: { labels: { "app": deployment.name } },
-                    spec: {
-                        containers: (deployment.containers || '').split(',').map((name, idx) => ({
-                            name: name.trim() || 'container',
-                            image: (deployment.images || '').split(',')[idx]?.trim() || 'nginx:latest',
-                            imagePullPolicy: 'Always'
-                        })),
-                        restartPolicy: 'Always',
-                        dnsPolicy: 'ClusterFirst',
-                        schedulerName: 'default-scheduler',
-                        terminationGracePeriodSeconds: 30
-                    }
-                }
-            },
-            status: {
-                replicas: totalReplicas,
-                updatedReplicas: totalReplicas,
-                readyReplicas: readyReplicas,
-                availableReplicas: readyReplicas,
-                observedGeneration: 1,
-                conditions: [
-                    { type: 'Available', status: readyReplicas > 0 ? 'True' : 'False', reason: readyReplicas > 0 ? 'MinimumReplicasAvailable' : 'MinimumReplicasUnavailable', message: readyReplicas > 0 ? 'Deployment has minimum availability.' : 'Deployment does not have minimum availability.', lastUpdateTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() },
-                    { type: 'Progressing', status: 'True', reason: 'NewReplicaSetAvailable', message: 'ReplicaSet has successfully progressed.', lastUpdateTime: new Date().toISOString(), lastTransitionTime: new Date().toISOString() }
-                ]
-            }
-        };
     }
 
     // ===== MODAL CONTENT GENERATORS WITH TABS =====
@@ -1629,9 +1460,9 @@
             : String(item.ready || '0/1').split('/').map(Number);
         const readyReplicas = readyParts[0] || 0;
         const totalReplicas = readyParts[1] || 1;
-        const uid = generateUID();
-        const creationTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString();
-        const resourceVersion = String(Math.floor(Math.random() * 9000000) + 1000000);
+        const uid = '-';
+        const creationTime = item.age || '-';
+        const resourceVersion = '-';
 
         // Parse containers/images
         const containerNames = (item.containers || '').split(',').map(c => c.trim()).filter(c => c);
@@ -1723,8 +1554,8 @@
                 </div>
                 <div class="k8s-detail-section">
                     <h4>Revisions</h4>
-                    ${detailRow('Current Revision', item.name + '-' + Math.random().toString(36).substring(2, 12))}
-                    ${detailRow('Update Revision', item.name + '-' + Math.random().toString(36).substring(2, 12))}
+                    ${detailRow('Current Revision', '-')}
+                    ${detailRow('Update Revision', '-')}
                 </div>
             </div>
         `;
@@ -1732,9 +1563,9 @@
 
     // DaemonSet detail with tabs (EXACT from desktop kubernetes-modal-daemonsets.js)
     function generateDaemonSetDetailWithTabs(item, clusterName) {
-        const uid = generateUID();
-        const creationTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString();
-        const resourceVersion = String(Math.floor(Math.random() * 9000000) + 1000000);
+        const uid = '-';
+        const creationTime = item.age || '-';
+        const resourceVersion = '-';
 
         // Parse containers/images
         const containerNames = (item.containers || '').split(',').map(c => c.trim()).filter(c => c);
@@ -1843,9 +1674,9 @@
 
     // Service detail with tabs (EXACT from desktop kubernetes-modal-services.js)
     function generateServiceDetailWithTabs(item, clusterName) {
-        const uid = generateUID();
-        const creationTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString();
-        const resourceVersion = String(Math.floor(Math.random() * 9000000) + 1000000);
+        const uid = '-';
+        const creationTime = item.age || '-';
+        const resourceVersion = '-';
 
         // Parse ports string
         const portEntries = (item.ports || '').split(',').map(p => {
@@ -1961,9 +1792,9 @@
     // Namespace detail with tabs (EXACT from desktop kubernetes-modal-namespaces.js)
     function generateNamespaceDetailWithTabs(item, clusterName) {
         const statusClass = item.status === 'Active' ? 'operational' : 'warning';
-        const uid = generateUID();
-        const creationTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString();
-        const resourceVersion = String(Math.floor(Math.random() * 9000000) + 1000000);
+        const uid = '-';
+        const creationTime = item.age || '-';
+        const resourceVersion = '-';
 
         return `
             <div class="k8s-modal-tabs">
@@ -2037,9 +1868,9 @@
 
     // Network Policy detail with tabs (EXACT from desktop kubernetes-modal-namespaces.js)
     function generateNetworkPolicyDetailWithTabs(item, clusterName) {
-        const uid = generateUID();
-        const creationTime = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString();
-        const resourceVersion = String(Math.floor(Math.random() * 9000000) + 1000000);
+        const uid = '-';
+        const creationTime = item.age || '-';
+        const resourceVersion = '-';
 
         // Parse policy types
         const policyTypes = item.policyTypes ? item.policyTypes.split(',').map(t => t.trim()) : ['Ingress'];

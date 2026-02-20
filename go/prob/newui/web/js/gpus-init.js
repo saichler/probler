@@ -10,7 +10,7 @@ function initializeGPUs() {
     // Initialize parallax effect for GPU hero section
     initializeGPUParallax();
 
-    const gpuData = generateGPUMockData();
+    const gpuData = [];
 
     try {
         // Create the GPU table

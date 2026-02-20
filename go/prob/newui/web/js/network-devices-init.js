@@ -15,16 +15,6 @@ function formatUptime(centiseconds) {
     return `${days}d ${hours}h ${minutes}m`;
 }
 
-// Calculate CPU and memory usage (generate random for demo)
-function getRandomUsage() {
-    return Math.floor(Math.random() * 100);
-}
-
-// Calculate temperature (generate random for demo)
-function getRandomTemperature() {
-    return Math.floor(Math.random() * 40) + 25;
-}
-
 // Transform JSON device data to table format
 function transformDeviceData(device) {
     const equipment = device.equipmentinfo || {};
@@ -38,8 +28,6 @@ function transformDeviceData(device) {
         deviceType: ProblerNetwork.enums.mapDeviceType(equipment.deviceType),
         location: equipment.location || '',
         status: ProblerNetwork.enums.mapDeviceStatus(equipment.deviceStatus),
-        cpuUsage: getRandomUsage(),
-        memoryUsage: getRandomUsage(),
         uptime: formatUptime(equipment.uptime),
         model: equipment.model || equipment.hardware || '',
         vendor: equipment.vendor || '',
@@ -51,7 +39,6 @@ function transformDeviceData(device) {
         hardware: equipment.hardware || '',
         sysOid: equipment.sysOid || '',
         interfaces: physicals['physical-0'] ? (physicals['physical-0'].ports || []).length : 0,
-        temperature: getRandomTemperature(),
         lastSeen: new Date().toISOString().replace('T', ' ').substring(0, 19),
         physicals: physicals
     };

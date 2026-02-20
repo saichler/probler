@@ -23,7 +23,7 @@ async function showPodDetailModal(pod, cluster) {
         });
 
         if (!response || !response.ok) {
-            podDetails = generatePodDetails(pod, cluster);
+            podDetails = null;
         } else {
             const data = await response.json();
             if (data && data.result) {
@@ -38,23 +38,20 @@ async function showPodDetailModal(pod, cluster) {
                     } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
                         podDetails = parsedData;
                     } else {
-                        podDetails = generatePodDetails(pod, cluster);
+                        podDetails = null;
                     }
                 } catch (error) {
-                    podDetails = generatePodDetails(pod, cluster);
+                    podDetails = null;
                 }
             } else {
-                podDetails = generatePodDetails(pod, cluster);
+                podDetails = null;
             }
         }
     } catch (error) {
-        podDetails = generatePodDetails(pod, cluster);
+        podDetails = null;
     }
 
-    try {
-        content.innerHTML = generatePodModalContent(podDetails, pod, cluster);
-    } catch (renderError) {
-        console.error('Error rendering pod details:', renderError);
+    if (!podDetails) {
         content.innerHTML = `<div class="detail-section"><h3>Pod Information</h3>
             <div class="detail-grid">
                 <div class="detail-item"><span class="detail-label">Name:</span><span class="detail-value">${pod.name}</span></div>
@@ -62,7 +59,19 @@ async function showPodDetailModal(pod, cluster) {
                 <div class="detail-item"><span class="detail-label">Node:</span><span class="detail-value">${pod.node || 'N/A'}</span></div>
                 <div class="detail-item"><span class="detail-label">IP:</span><span class="detail-value">${pod.ip || 'N/A'}</span></div>
             </div>
-            <p style="color: #e53e3e; margin-top: 16px;">Error rendering full details. Check console for more information.</p></div>`;
+            <p style="color: #e53e3e; margin-top: 16px;">Could not fetch pod details from the API.</p></div>`;
+    } else {
+        try {
+            content.innerHTML = generatePodModalContent(podDetails, pod, cluster);
+        } catch (renderError) {
+            console.error('Error rendering pod details:', renderError);
+            content.innerHTML = `<div class="detail-section"><h3>Pod Information</h3>
+                <div class="detail-grid">
+                    <div class="detail-item"><span class="detail-label">Name:</span><span class="detail-value">${pod.name}</span></div>
+                    <div class="detail-item"><span class="detail-label">Namespace:</span><span class="detail-value">${pod.namespace}</span></div>
+                </div>
+                <p style="color: #e53e3e; margin-top: 16px;">Error rendering details.</p></div>`;
+        }
     }
 
     setupK8sModalTabs(content);
@@ -228,6 +237,93 @@ function generatePodConditionsTab(podDetails) {
             ` : '<p style="color: #718096;">No conditions available</p>'}
         </div>
     `;
+}
+
+function generatePodContainersTab(podDetails) {
+    let html = '<div class="detail-section"><h3>Containers</h3>';
+
+    const containers = (podDetails.spec && podDetails.spec.containers) || [];
+    const statuses = (podDetails.status && podDetails.status.containerStatuses) || [];
+
+    containers.forEach((container, idx) => {
+        const status = statuses[idx];
+        const isRunning = status && status.state && status.state.running;
+
+        html += `
+            <div class="detail-section" style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                <h4 style="color: #0ea5e9; margin-bottom: 12px;">Container: ${container.name}</h4>
+                <div class="detail-grid">
+                    <div class="detail-item"><span class="detail-label">Image:</span><span class="detail-value"><code>${container.image}</code></span></div>
+                    <div class="detail-item"><span class="detail-label">Image Pull Policy:</span><span class="detail-value">${container.imagePullPolicy}</span></div>
+                    <div class="detail-item"><span class="detail-label">State:</span><span class="detail-value"><span class="status-badge ${isRunning ? 'status-operational' : 'status-warning'}">${isRunning ? 'Running' : 'Not Running'}</span></span></div>
+                    <div class="detail-item"><span class="detail-label">Ready:</span><span class="detail-value">${status ? status.ready : 'N/A'}</span></div>
+                    <div class="detail-item"><span class="detail-label">Restart Count:</span><span class="detail-value">${status ? status.restartCount : 'N/A'}</span></div>
+                    <div class="detail-item"><span class="detail-label">Started:</span><span class="detail-value">${status ? status.started : 'N/A'}</span></div>
+                </div>
+
+                ${container.env && container.env.length > 0 ? `
+                    <h5 style="color: #666; margin-top: 16px; margin-bottom: 8px;">Environment Variables</h5>
+                    <table class="detail-table">
+                        <thead><tr><th>Name</th><th>Value / Value From</th></tr></thead>
+                        <tbody>
+                            ${container.env.map(envVar => `<tr><td><code>${envVar.name}</code></td><td>${envVar.value || (envVar.valueFrom ? JSON.stringify(envVar.valueFrom.fieldRef) : 'N/A')}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                ` : ''}
+
+                ${container.volumeMounts && container.volumeMounts.length > 0 ? `
+                    <h5 style="color: #666; margin-top: 16px; margin-bottom: 8px;">Volume Mounts</h5>
+                    <table class="detail-table">
+                        <thead><tr><th>Name</th><th>Mount Path</th><th>Read Only</th></tr></thead>
+                        <tbody>
+                            ${container.volumeMounts.map(mount => `<tr><td>${mount.name}</td><td><code>${mount.mountPath}</code></td><td>${mount.readOnly ? 'Yes' : 'No'}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                ` : ''}
+            </div>
+        `;
+    });
+
+    html += '</div>';
+    return html;
+}
+
+function generatePodVolumesTab(podDetails) {
+    if (!podDetails.spec.volumes || podDetails.spec.volumes.length === 0) {
+        return '<div class="detail-section"><h3>Volumes</h3><p style="color: #718096;">No volumes defined</p></div>';
+    }
+
+    let html = '<div class="detail-section"><h3>Volumes</h3><table class="detail-table"><thead><tr><th>Name</th><th>Type</th><th>Details</th></tr></thead><tbody>';
+
+    podDetails.spec.volumes.forEach(volume => {
+        let volType = 'Unknown';
+        let volDetails = '';
+
+        if (volume.configMap) {
+            volType = 'ConfigMap';
+            volDetails = `Name: ${volume.configMap.name}`;
+        } else if (volume.secret) {
+            volType = 'Secret';
+            volDetails = `Name: ${volume.secret.secretName}`;
+        } else if (volume.emptyDir) {
+            volType = 'EmptyDir';
+            volDetails = volume.emptyDir.medium || 'Default';
+        } else if (volume.hostPath) {
+            volType = 'HostPath';
+            volDetails = `Path: ${volume.hostPath.path}`;
+        } else if (volume.persistentVolumeClaim) {
+            volType = 'PVC';
+            volDetails = `Claim: ${volume.persistentVolumeClaim.claimName}`;
+        } else if (volume.projected) {
+            volType = 'Projected';
+            volDetails = `Sources: ${volume.projected.sources.length}`;
+        }
+
+        html += `<tr><td><strong>${volume.name}</strong></td><td><span class="status-badge">${volType}</span></td><td>${volDetails}</td></tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    return html;
 }
 
 function generatePodStatusTab(podDetails) {

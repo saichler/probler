@@ -10,7 +10,6 @@ async function showNodeDetailModal(node, cluster) {
 
     let nodeDetails;
     try {
-        console.log('Fetching node details for:', node.name);
         const response = await makeAuthenticatedRequest(Layer8DConfig.resolveEndpoint('/0/exec'), {
             method: 'POST',
             headers: {
@@ -28,7 +27,7 @@ async function showNodeDetailModal(node, cluster) {
         });
 
         if (!response || !response.ok) {
-            nodeDetails = generateNodeDetails(node, cluster);
+            nodeDetails = null;
         } else {
             const data = await response.json();
 
@@ -47,17 +46,31 @@ async function showNodeDetailModal(node, cluster) {
                     } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
                         nodeDetails = parsedData;
                     } else {
-                        nodeDetails = generateNodeDetails(node, cluster);
+                        nodeDetails = null;
                     }
                 } catch (error) {
-                    nodeDetails = generateNodeDetails(node, cluster);
+                    nodeDetails = null;
                 }
             } else {
-                nodeDetails = generateNodeDetails(node, cluster);
+                nodeDetails = null;
             }
         }
     } catch (error) {
-        nodeDetails = generateNodeDetails(node, cluster);
+        nodeDetails = null;
+    }
+
+    if (!nodeDetails) {
+        content.innerHTML = `<div class="detail-section"><h3>Node Information</h3>
+            <div class="detail-grid">
+                <div class="detail-item"><span class="detail-label">Name:</span><span class="detail-value">${node.name}</span></div>
+                <div class="detail-item"><span class="detail-label">Status:</span><span class="detail-value">${node.status || 'N/A'}</span></div>
+                <div class="detail-item"><span class="detail-label">Roles:</span><span class="detail-value">${node.roles || 'N/A'}</span></div>
+            </div>
+            <p style="color: #e53e3e; margin-top: 16px;">Could not fetch node details from the API.</p></div>`;
+        setupNodeModalTabs(content);
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        return;
     }
 
     content.innerHTML = `

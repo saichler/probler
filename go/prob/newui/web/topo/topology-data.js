@@ -44,7 +44,7 @@ TopologyBrowser.prototype.loadTopologyList = async function() {
         console.error('Error loading topology list:', error);
         this.setStatus(`Error loading topology list: ${error.message}`, 'error');
 
-        this.topologies = ['Network-L1', 'Network-L2', 'Network-L3'];
+        this.topologies = [];
         this.topologyMetadataList = [];
         this.populateTopologySelect();
     }
@@ -85,8 +85,7 @@ TopologyBrowser.prototype.loadTopology = async function(name) {
         console.error('Error loading topology:', error);
         this.setStatus(`Error loading topology: ${error.message}`, 'error');
 
-        this.currentTopology = this.generateMockTopology(name);
-        this.renderTopology();
+        this.currentTopology = null;
     }
 };
 
@@ -143,86 +142,6 @@ TopologyBrowser.prototype.loadTopologyWithCanvas = async function(name) {
         console.error('Error loading topology with canvas:', error);
         this.setStatus(`Error loading topology: ${error.message}`, 'error');
     }
-};
-
-TopologyBrowser.prototype.generateMockTopology = function(name) {
-    return {
-        name: name,
-        nodes: {
-            'R1': {
-                nodeId: 'R1',
-                name: 'R1',
-                location: 'San Francisco, California, USA'
-            },
-            'R2': {
-                nodeId: 'R2',
-                name: 'R2',
-                location: 'London, United Kingdom'
-            },
-            'SW1': {
-                nodeId: 'SW1',
-                name: 'SW1',
-                location: 'Tokyo, Japan'
-            },
-            'FW1': {
-                nodeId: 'FW1',
-                name: 'FW1',
-                location: 'New York, New York, USA'
-            }
-        },
-        links: {
-            'networkdevice<{24}{24}R1>.physicals<{24}physical-1>.ports<{2}0>->networkdevice<{24}{24}R2>.physicals<{24}physical-1>.ports<{2}0>': {
-                linkId: 'networkdevice<{24}{24}R1>.physicals<{24}physical-1>.ports<{2}0>->networkdevice<{24}{24}R2>.physicals<{24}physical-1>.ports<{2}0>',
-                aside: 'networkdevice<{24}{24}R1>.physicals<{24}physical-1>.ports<{2}0>',
-                zside: 'networkdevice<{24}{24}R2>.physicals<{24}physical-1>.ports<{2}0>',
-                direction: 3,  // Bidirectional
-                status: 1      // Up
-            },
-            'networkdevice<{24}{24}R2>.physicals<{24}physical-1>.ports<{2}1>->networkdevice<{24}{24}SW1>.physicals<{24}physical-1>.ports<{2}0>': {
-                linkId: 'networkdevice<{24}{24}R2>.physicals<{24}physical-1>.ports<{2}1>->networkdevice<{24}{24}SW1>.physicals<{24}physical-1>.ports<{2}0>',
-                aside: 'networkdevice<{24}{24}R2>.physicals<{24}physical-1>.ports<{2}1>',
-                zside: 'networkdevice<{24}{24}SW1>.physicals<{24}physical-1>.ports<{2}0>',
-                direction: 1,  // AsideToZside
-                status: 1      // Up
-            },
-            'networkdevice<{24}{24}R1>.physicals<{24}physical-1>.ports<{2}1><-networkdevice<{24}{24}FW1>.physicals<{24}physical-1>.ports<{2}0>': {
-                linkId: 'networkdevice<{24}{24}R1>.physicals<{24}physical-1>.ports<{2}1><-networkdevice<{24}{24}FW1>.physicals<{24}physical-1>.ports<{2}0>',
-                aside: 'networkdevice<{24}{24}R1>.physicals<{24}physical-1>.ports<{2}1>',
-                zside: 'networkdevice<{24}{24}FW1>.physicals<{24}physical-1>.ports<{2}0>',
-                direction: 2,  // ZsideToAside
-                status: 2      // Down
-            },
-            'networkdevice<{24}{24}SW1>.physicals<{24}physical-1>.ports<{2}1><->networkdevice<{24}{24}FW1>.physicals<{24}physical-1>.ports<{2}1>': {
-                linkId: 'networkdevice<{24}{24}SW1>.physicals<{24}physical-1>.ports<{2}1><->networkdevice<{24}{24}FW1>.physicals<{24}physical-1>.ports<{2}1>',
-                aside: 'networkdevice<{24}{24}SW1>.physicals<{24}physical-1>.ports<{2}1>',
-                zside: 'networkdevice<{24}{24}FW1>.physicals<{24}physical-1>.ports<{2}1>',
-                direction: 3,  // Bidirectional
-                status: 3      // Partial
-            }
-        },
-        locations: {
-            'San Francisco, California, USA': {
-                location: 'San Francisco, California, USA',
-                longitude: -122.4194,
-                latitude: 37.7749
-            },
-            'London, United Kingdom': {
-                location: 'London, United Kingdom',
-                longitude: -0.1278,
-                latitude: 51.5074
-            },
-            'Tokyo, Japan': {
-                location: 'Tokyo, Japan',
-                longitude: 139.6917,
-                latitude: 35.6895
-            },
-            'New York, New York, USA': {
-                location: 'New York, New York, USA',
-                longitude: -74.0060,
-                latitude: 40.7128
-            }
-        }
-    };
 };
 
 TopologyBrowser.prototype.renderTopology = function() {

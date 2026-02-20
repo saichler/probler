@@ -3,9 +3,6 @@
 // Show device detail modal
 function showDeviceDetailModal(device) {
     const statusClass = 'status-' + device.status;
-    const cpuClass = device.cpuUsage < 50 ? 'low' : device.cpuUsage < 80 ? 'medium' : 'high';
-    const memClass = device.memoryUsage < 50 ? 'low' : device.memoryUsage < 80 ? 'medium' : 'high';
-    const tempClass = device.temperature < 40 ? 'low' : device.temperature < 55 ? 'medium' : 'high';
 
     const esc = Layer8DUtils.escapeHtml;
 
@@ -17,7 +14,7 @@ function showDeviceDetailModal(device) {
         '</div>';
 
     // Build the popup content with tabs
-    const content = buildDeviceContent(device, statusClass, cpuClass, memClass, tempClass, esc);
+    const content = buildDeviceContent(device, statusClass, esc);
 
     // Show popup directly
     Layer8DPopup.show({
@@ -53,18 +50,16 @@ function initializeDeviceTree(deviceData) {
 }
 
 // Build the device detail content HTML
-function buildDeviceContent(device, statusClass, cpuClass, memClass, tempClass, esc) {
+function buildDeviceContent(device, statusClass, esc) {
     return '<div class="probler-popup-tabs">' +
         '<div class="probler-popup-tab active" data-tab="overview">Overview</div>' +
         '<div class="probler-popup-tab" data-tab="equipment">Equipment</div>' +
         '<div class="probler-popup-tab" data-tab="physical">Physical Inventory</div>' +
-        '<div class="probler-popup-tab" data-tab="performance">Performance</div>' +
     '</div>' +
     '<div class="probler-popup-tab-content">' +
         buildOverviewTab(device, statusClass, esc) +
         buildEquipmentTab(device, esc) +
         buildPhysicalTab() +
-        buildPerformanceTab(device, cpuClass, memClass, tempClass) +
     '</div>';
 }
 
@@ -175,11 +170,6 @@ function buildEquipmentTab(device, esc) {
                     '<span class="detail-label">Management IP</span>' +
                     '<span class="detail-value">' + esc(device.ipAddress || '') + '</span>' +
                 '</div>' +
-                '<div class="detail-row">' +
-                    '<span class="detail-label">Temperature</span>' +
-                    '<span class="detail-value">' +
-                    (device.temperature ? device.temperature + '\u00B0C' : '') + '</span>' +
-                '</div>' +
             '</div>' +
         '</div>' +
     '</div>';
@@ -192,32 +182,3 @@ function buildPhysicalTab() {
     '</div>';
 }
 
-// Build Performance tab content
-function buildPerformanceTab(device, cpuClass, memClass, tempClass) {
-    return '<div class="probler-popup-tab-pane" data-pane="performance">' +
-        '<div class="detail-section detail-full-width">' +
-            '<div class="detail-section-title">Performance Metrics</div>' +
-            '<div class="detail-row">' +
-                '<span class="detail-label">CPU Usage</span>' +
-                '<span class="detail-value">' + device.cpuUsage + '%</span>' +
-            '</div>' +
-            '<div class="performance-bar">' +
-                '<div class="performance-bar-fill ' + cpuClass + '" style="width: ' + device.cpuUsage + '%"></div>' +
-            '</div>' +
-            '<div class="detail-row" style="margin-top: 15px;">' +
-                '<span class="detail-label">Memory Usage</span>' +
-                '<span class="detail-value">' + device.memoryUsage + '%</span>' +
-            '</div>' +
-            '<div class="performance-bar">' +
-                '<div class="performance-bar-fill ' + memClass + '" style="width: ' + device.memoryUsage + '%"></div>' +
-            '</div>' +
-            '<div class="detail-row" style="margin-top: 15px;">' +
-                '<span class="detail-label">Temperature</span>' +
-                '<span class="detail-value">' + device.temperature + '\u00B0C</span>' +
-            '</div>' +
-            '<div class="performance-bar">' +
-                '<div class="performance-bar-fill ' + tempClass + '" style="width: ' + Math.min(device.temperature, 100) + '%"></div>' +
-            '</div>' +
-        '</div>' +
-    '</div>';
-}

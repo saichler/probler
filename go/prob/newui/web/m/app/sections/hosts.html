@@ -20,105 +20,6 @@
 (function() {
     'use strict';
 
-    // Generate mock hypervisor data (matches desktop hosts.js)
-    function generateHypervisorMockData() {
-        var hypervisors = [];
-        var types = ['VMware ESXi', 'KVM', 'Hyper-V', 'Proxmox VE'];
-        var versions = {
-            'VMware ESXi': ['8.0 Update 2', '8.0 Update 1', '7.0 Update 3'],
-            'KVM': ['QEMU 8.0', 'QEMU 7.2', 'QEMU 7.1'],
-            'Hyper-V': ['Windows Server 2022', 'Windows Server 2019'],
-            'Proxmox VE': ['8.0', '7.4', '7.3']
-        };
-        var statuses = ['operational', 'operational', 'operational', 'operational', 'warning', 'critical'];
-        var datacenters = ['DC1', 'DC2', 'DC3'];
-        var clusters = ['Production', 'Development', 'Testing', 'DR'];
-
-        for (var i = 1; i <= 20; i++) {
-            var type = types[i % types.length];
-            var status = statuses[i % statuses.length];
-            var dc = datacenters[i % datacenters.length];
-            var cluster = clusters[i % clusters.length];
-            var totalCPU = [32, 64, 96, 128][i % 4];
-            var totalMem = [256, 512, 768, 1024][i % 4];
-            var totalStorage = [10, 20, 30, 50][i % 4];
-            var cpuUsage = status === 'operational' ? Math.floor(Math.random() * 40) + 40 : (status === 'warning' ? Math.floor(Math.random() * 20) + 75 : 0);
-            var memUsage = status === 'operational' ? Math.floor(Math.random() * 35) + 50 : (status === 'warning' ? Math.floor(Math.random() * 15) + 80 : 0);
-            var storageUsed = status === 'operational' ? Math.floor(totalStorage * 0.6) + Math.floor(Math.random() * totalStorage * 0.2) : 0;
-            var vmCount = status === 'operational' ? Math.floor(Math.random() * 100) + 50 : (status === 'warning' ? Math.floor(Math.random() * 30) + 10 : 0);
-            var vmRunning = status === 'operational' ? vmCount : (status === 'warning' ? Math.floor(vmCount * 0.7) : 0);
-
-            hypervisors.push({
-                id: 'hv-' + String(i).padStart(3, '0'),
-                name: type.split(' ')[0].toUpperCase() + '-HV-' + String(i).padStart(2, '0'),
-                hostname: type.split(' ')[0].toLowerCase() + '-hv-' + String(i).padStart(2, '0') + '.' + dc.toLowerCase() + '.datacenter.local',
-                type: type, version: versions[type][i % versions[type].length],
-                status: status, datacenter: dc, cluster: cluster,
-                cpuCores: totalCPU, cpuUsage: cpuUsage, memoryTotal: totalMem, memoryUsage: memUsage,
-                memoryUsed: Math.floor((memUsage / 100) * totalMem),
-                storageTotal: totalStorage, storageUsed: storageUsed,
-                vmCount: vmCount, vmRunning: vmRunning, vmStopped: vmCount - vmRunning,
-                uptime: status === 'operational' ? Math.floor(Math.random() * 300) + 30 : 0,
-                ipAddress: '10.' + i + '.' + Math.floor(Math.random() * 255) + '.' + Math.floor(Math.random() * 255),
-                manufacturer: type === 'VMware ESXi' ? 'Dell' : (type === 'Hyper-V' ? 'HP' : 'Supermicro'),
-                model: type === 'VMware ESXi' ? 'PowerEdge R750' : (type === 'Hyper-V' ? 'ProLiant DL380 Gen10' : 'SYS-220U-TNR'),
-                cpuModel: totalCPU >= 96 ? 'AMD EPYC 7763' : (totalCPU >= 64 ? 'Intel Xeon Gold 6330' : 'Intel Xeon Silver 4314'),
-                networkInterfaces: Math.floor(Math.random() * 4) + 4,
-                vSwitches: Math.floor(Math.random() * 3) + 2,
-                datastores: Math.floor(Math.random() * 5) + 3
-            });
-        }
-        return hypervisors;
-    }
-
-    // Generate mock VM data (matches desktop hosts.js)
-    function generateVMMockData() {
-        var vms = [];
-        var osTypes = ['Windows Server 2022', 'Ubuntu 22.04', 'RHEL 9', 'CentOS 7', 'Debian 11', 'Windows Server 2019'];
-        var statuses = ['running', 'running', 'running', 'running', 'running', 'stopped', 'suspended', 'error'];
-        var purposes = ['Web Server', 'Database Server', 'App Server', 'File Server', 'DC', 'Mail Server', 'Dev', 'Testing', 'Backup'];
-        var hvNames = [];
-        for (var h = 1; h <= 20; h++) {
-            var hvTypes = ['VMWARE', 'KVM', 'HYPER-V', 'PROXMOX'];
-            hvNames.push(hvTypes[h % hvTypes.length] + '-HV-' + String(h).padStart(2, '0'));
-        }
-
-        for (var i = 1; i <= 35; i++) {
-            var os = osTypes[i % osTypes.length];
-            var status = statuses[i % statuses.length];
-            var purpose = purposes[i % purposes.length];
-            var hypervisor = hvNames[i % hvNames.length];
-            var cpuCores = [2, 4, 8, 16][i % 4];
-            var memory = [4, 8, 16, 32, 64][i % 5];
-            var disk = [50, 100, 250, 500, 1000][i % 5];
-            var cpuUsage = status === 'running' ? Math.floor(Math.random() * 60) + 20 : 0;
-            var memUsage = status === 'running' ? Math.floor(Math.random() * 50) + 40 : 0;
-            var diskUsage = status === 'running' ? Math.floor(Math.random() * 40) + 40 : 0;
-            var uptime = status === 'running' ? Math.floor(Math.random() * 200) + 10 : 0;
-
-            vms.push({
-                id: 'vm-' + String(i).padStart(4, '0'),
-                name: purpose.replace(/\s+/g, '-').toLowerCase() + '-' + String(i).padStart(3, '0'),
-                os: os, status: status, purpose: purpose, hypervisor: hypervisor,
-                cpuCores: cpuCores, cpuUsage: cpuUsage,
-                memory: memory, memoryUsage: memUsage, memoryUsed: Math.floor((memUsage / 100) * memory),
-                diskTotal: disk, diskUsed: Math.floor((diskUsage / 100) * disk), diskUsage: diskUsage,
-                ipAddress: '192.168.' + (Math.floor(i / 255) + 1) + '.' + (i % 255),
-                macAddress: ('00:50:56:' + rHex() + ':' + rHex() + ':' + rHex()).toUpperCase(),
-                vlan: 10 + (i % 10) * 10,
-                snapshotCount: Math.floor(Math.random() * 5),
-                backupStatus: status === 'running' ? (i % 3 === 0 ? 'Completed' : 'Scheduled') : 'N/A',
-                lastBackup: status === 'running' ? '2025-10-0' + (Math.floor(Math.random() * 3) + 1) : 'N/A',
-                uptime: uptime,
-                createdDate: '2024-' + String(Math.floor(Math.random() * 12) + 1).padStart(2, '0') + '-' + String(Math.floor(Math.random() * 28) + 1).padStart(2, '0'),
-                owner: ['IT Team', 'Development', 'Operations', 'Finance', 'HR'][i % 5]
-            });
-        }
-        return vms;
-    }
-
-    function rHex() { return Math.floor(Math.random() * 256).toString(16).padStart(2, '0'); }
-
     // Helpers
     function escapeHtml(text) {
         if (text == null || text === '--') return '--';
@@ -343,7 +244,7 @@
     }
 
     function initHypervisorsTable() {
-        var data = generateHypervisorMockData();
+        var data = [];
         hypervisorsTable = new MobileTable('hypervisors-table-container', {
             data: data, serverSide: false, rowsPerPage: 15,
             columns: [
@@ -359,7 +260,7 @@
     }
 
     function initVmsTable() {
-        var data = generateVMMockData();
+        var data = [];
         vmsTable = new MobileTable('vms-table-container', {
             data: data, serverSide: false, rowsPerPage: 15,
             columns: [

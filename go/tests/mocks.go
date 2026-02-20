@@ -20,8 +20,16 @@ import (
 	"strings"
 	"time"
 
+	l8api "github.com/saichler/l8types/go/types/l8api"
 	"github.com/saichler/probler/go/types"
 )
+
+// tsPoint creates a single-point time series slice with the given value at the current time
+func tsPoint(value float64) []*l8api.L8TimeSeriesPoint {
+	return []*l8api.L8TimeSeriesPoint{
+		{Stamp: time.Now().Unix(), Value: value},
+	}
+}
 
 // GenerateMockNetworkDevice creates a mock NetworkDevice based on the same patterns
 // used in the device application's JavaScript mock data generation
@@ -123,7 +131,7 @@ func generateMockChassis(deviceType string) *types.Chassis {
 		Model:       "Main Chassis",
 		Description: fmt.Sprintf("%s Main Chassis", deviceType),
 		Status:      types.ComponentStatus_COMPONENT_STATUS_OK,
-		Temperature: 35.5,
+		Temperature: tsPoint(35.5),
 		Modules:     generateMockModules(deviceType),
 		Ports:       generateMockPorts(deviceType),
 	}
@@ -158,7 +166,7 @@ func generateMockModules(deviceType string) []*types.Module {
 			Description:   "Supervisor Engine",
 			ModuleType:    types.ModuleType_MODULE_TYPE_SUPERVISOR,
 			Status:        types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature:   42.3,
+			Temperature:   tsPoint(42.3),
 			Cpus:          []*types.Cpu{generateMockCpu("supervisor")},
 			MemoryModules: []*types.Memory{generateMockMemory("supervisor")},
 		}
@@ -171,7 +179,7 @@ func generateMockModules(deviceType string) []*types.Module {
 			Description: "48-Port Gigabit Line Card",
 			ModuleType:  types.ModuleType_MODULE_TYPE_LINE_CARD,
 			Status:      types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature: 38.7,
+			Temperature: tsPoint(38.7),
 			Ports:       generateSwitchPorts(),
 		}
 
@@ -186,7 +194,7 @@ func generateMockModules(deviceType string) []*types.Module {
 			Description:   "Main Route Processor",
 			ModuleType:    types.ModuleType_MODULE_TYPE_ROUTE_PROCESSOR,
 			Status:        types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature:   45.2,
+			Temperature:   tsPoint(45.2),
 			Cpus:          []*types.Cpu{generateMockCpu("route-processor")},
 			MemoryModules: []*types.Memory{generateMockMemory("route-processor")},
 		}
@@ -199,7 +207,7 @@ func generateMockModules(deviceType string) []*types.Module {
 			Description: "4-Port 10GE Interface Module",
 			ModuleType:  types.ModuleType_MODULE_TYPE_INTERFACE_MODULE,
 			Status:      types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature: 40.1,
+			Temperature: tsPoint(40.1),
 			Ports:       generateRouterPorts(),
 		}
 
@@ -214,7 +222,7 @@ func generateMockModules(deviceType string) []*types.Module {
 			Description:   "Main Management Processor",
 			ModuleType:    types.ModuleType_MODULE_TYPE_MANAGEMENT_PROCESSOR,
 			Status:        types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature:   41.5,
+			Temperature:   tsPoint(41.5),
 			Cpus:          []*types.Cpu{generateMockCpu("management")},
 			MemoryModules: []*types.Memory{generateMockMemory("management")},
 		}
@@ -227,7 +235,7 @@ func generateMockModules(deviceType string) []*types.Module {
 			Description: "Hardware Security Processing",
 			ModuleType:  types.ModuleType_MODULE_TYPE_SECURITY_PROCESSING_UNIT,
 			Status:      types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature: 39.8,
+			Temperature: tsPoint(39.8),
 		}
 
 		modules = append(modules, managementProcessor, securityModule)
@@ -241,7 +249,7 @@ func generateMockModules(deviceType string) []*types.Module {
 			Description:   "Main Processing Unit",
 			ModuleType:    types.ModuleType_MODULE_TYPE_UNKNOWN,
 			Status:        types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature:   40.0,
+			Temperature:   tsPoint(40.0),
 			Cpus:          []*types.Cpu{generateMockCpu("generic")},
 			MemoryModules: []*types.Memory{generateMockMemory("generic")},
 		}
@@ -255,8 +263,8 @@ func generateMockModules(deviceType string) []*types.Module {
 func generateMockCpu(processorType string) *types.Cpu {
 	cpu := &types.Cpu{
 		Status:             types.ComponentStatus_COMPONENT_STATUS_OK,
-		Temperature:        55.3,
-		UtilizationPercent: 15.7,
+		Temperature:        tsPoint(55.3),
+		UtilizationPercent: tsPoint(15.7),
 	}
 
 	switch processorType {
@@ -298,7 +306,7 @@ func generateMockMemory(processorType string) *types.Memory {
 		Status:             types.ComponentStatus_COMPONENT_STATUS_OK,
 		Type:               "DDR4",
 		FrequencyMhz:       2400,
-		UtilizationPercent: 32.5,
+		UtilizationPercent: tsPoint(32.5),
 	}
 
 	switch processorType {
@@ -473,10 +481,10 @@ func generateMockPowerSupplies(deviceType string) []*types.PowerSupply {
 				Wattage:      1100,
 				PowerType:    types.PowerType_POWER_TYPE_AC,
 				Status:       types.ComponentStatus_COMPONENT_STATUS_OK,
-				Temperature:  45.2,
-				LoadPercent:  35.8,
-				Voltage:      230.0,
-				Current:      4.8,
+				Temperature:  tsPoint(45.2),
+				LoadPercent:  tsPoint(35.8),
+				Voltage:      tsPoint(230.0),
+				Current:      tsPoint(4.8),
 			}
 			supplies = append(supplies, supply)
 		}
@@ -490,10 +498,10 @@ func generateMockPowerSupplies(deviceType string) []*types.PowerSupply {
 			Wattage:      2000,
 			PowerType:    types.PowerType_POWER_TYPE_AC,
 			Status:       types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature:  42.1,
-			LoadPercent:  28.5,
-			Voltage:      230.0,
-			Current:      5.2,
+			Temperature:  tsPoint(42.1),
+			LoadPercent:  tsPoint(28.5),
+			Voltage:      tsPoint(230.0),
+			Current:      tsPoint(5.2),
 		}
 		supplies = append(supplies, supply)
 	default:
@@ -506,10 +514,10 @@ func generateMockPowerSupplies(deviceType string) []*types.PowerSupply {
 			Wattage:      500,
 			PowerType:    types.PowerType_POWER_TYPE_AC,
 			Status:       types.ComponentStatus_COMPONENT_STATUS_OK,
-			Temperature:  40.0,
-			LoadPercent:  45.0,
-			Voltage:      230.0,
-			Current:      2.2,
+			Temperature:  tsPoint(40.0),
+			LoadPercent:  tsPoint(45.0),
+			Voltage:      tsPoint(230.0),
+			Current:      tsPoint(2.2),
 		}
 		supplies = append(supplies, supply)
 	}
@@ -531,7 +539,7 @@ func generateMockFans(deviceType string) []*types.Fan {
 				Status:        types.ComponentStatus_COMPONENT_STATUS_OK,
 				SpeedRpm:      3500,
 				MaxSpeedRpm:   5000,
-				Temperature:   35.0,
+				Temperature:   tsPoint(35.0),
 				VariableSpeed: true,
 			}
 			fans = append(fans, fan)
@@ -545,7 +553,7 @@ func generateMockFans(deviceType string) []*types.Fan {
 			Status:        types.ComponentStatus_COMPONENT_STATUS_OK,
 			SpeedRpm:      2800,
 			MaxSpeedRpm:   4000,
-			Temperature:   38.0,
+			Temperature:   tsPoint(38.0),
 			VariableSpeed: true,
 		}
 		fans = append(fans, fan)
@@ -556,9 +564,9 @@ func generateMockFans(deviceType string) []*types.Fan {
 
 func generateMockPerformanceMetrics() *types.PerformanceMetrics {
 	return &types.PerformanceMetrics{
-		CpuUsagePercent:    15.7,
-		MemoryUsagePercent: 32.5,
-		TemperatureCelsius: 42.3,
+		CpuUsagePercent:    tsPoint(15.7),
+		MemoryUsagePercent: tsPoint(32.5),
+		TemperatureCelsius: tsPoint(42.3),
 		Uptime:             "45d 12h 30m",
 		LoadAverage:        1500,
 		Processes:          generateMockProcesses(),
@@ -570,29 +578,29 @@ func generateMockProcesses() []*types.ProcessInfo {
 		{
 			Name:          "kernel",
 			Pid:           1,
-			CpuPercent:    0.1,
-			MemoryPercent: 0.5,
+			CpuPercent:    tsPoint(0.1),
+			MemoryPercent: tsPoint(0.5),
 			Status:        "running",
 		},
 		{
 			Name:          "network-daemon",
 			Pid:           1234,
-			CpuPercent:    5.2,
-			MemoryPercent: 12.3,
+			CpuPercent:    tsPoint(5.2),
+			MemoryPercent: tsPoint(12.3),
 			Status:        "running",
 		},
 		{
 			Name:          "routing-engine",
 			Pid:           2345,
-			CpuPercent:    8.7,
-			MemoryPercent: 15.8,
+			CpuPercent:    tsPoint(8.7),
+			MemoryPercent: tsPoint(15.8),
 			Status:        "running",
 		},
 		{
 			Name:          "management-interface",
 			Pid:           3456,
-			CpuPercent:    1.2,
-			MemoryPercent: 3.4,
+			CpuPercent:    tsPoint(1.2),
+			MemoryPercent: tsPoint(3.4),
 			Status:        "running",
 		},
 	}
@@ -1028,9 +1036,9 @@ func generateMockPhysicalForRealDevice(deviceType string, mockData deviceMockDat
 		PowerSupplies: generateMockPowerSupplies(deviceType),
 		Fans:          generateMockFans(deviceType),
 		Performance: &types.PerformanceMetrics{
-			CpuUsagePercent:    float64(mockData.cpuUsage),
-			MemoryUsagePercent: float64(mockData.memoryUsage),
-			TemperatureCelsius: float64(mockData.temperature),
+			CpuUsagePercent:    tsPoint(float64(mockData.cpuUsage)),
+			MemoryUsagePercent: tsPoint(float64(mockData.memoryUsage)),
+			TemperatureCelsius: tsPoint(float64(mockData.temperature)),
 			Uptime:             mockData.uptime,
 			LoadAverage:        uint64(mockData.cpuUsage * 10), // Approximation
 			Processes:          generateMockProcesses(),
@@ -1048,7 +1056,7 @@ func generateMockChassisForRealDevice(deviceType string, mockData deviceMockData
 		Model:        mockData.model,
 		Description:  fmt.Sprintf("%s - %s", mockData.name, mockData.model),
 		Status:       types.ComponentStatus_COMPONENT_STATUS_OK,
-		Temperature:  float64(mockData.temperature),
+		Temperature:  tsPoint(float64(mockData.temperature)),
 		Modules:      generateMockModules(deviceType),
 		Ports:        generateMockPortsForRealDevice(deviceType, mockData.interfaces),
 	}

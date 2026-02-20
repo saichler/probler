@@ -23,7 +23,7 @@ async function showDeploymentDetailModal(deployment, cluster) {
         });
 
         if (!response || !response.ok) {
-            deploymentDetails = generateDeploymentDetails(deployment, cluster);
+            deploymentDetails = null;
         } else {
             const data = await response.json();
             if (data && data.result) {
@@ -38,17 +38,30 @@ async function showDeploymentDetailModal(deployment, cluster) {
                     } else if (parsedData && parsedData.metadata && parsedData.metadata.name) {
                         deploymentDetails = parsedData;
                     } else {
-                        deploymentDetails = generateDeploymentDetails(deployment, cluster);
+                        deploymentDetails = null;
                     }
                 } catch (error) {
-                    deploymentDetails = generateDeploymentDetails(deployment, cluster);
+                    deploymentDetails = null;
                 }
             } else {
-                deploymentDetails = generateDeploymentDetails(deployment, cluster);
+                deploymentDetails = null;
             }
         }
     } catch (error) {
-        deploymentDetails = generateDeploymentDetails(deployment, cluster);
+        deploymentDetails = null;
+    }
+
+    if (!deploymentDetails) {
+        content.innerHTML = `<div class="detail-section"><h3>Deployment Information</h3>
+            <div class="detail-grid">
+                <div class="detail-item"><span class="detail-label">Name:</span><span class="detail-value">${deployment.name}</span></div>
+                <div class="detail-item"><span class="detail-label">Namespace:</span><span class="detail-value">${deployment.namespace}</span></div>
+            </div>
+            <p style="color: #e53e3e; margin-top: 16px;">Could not fetch deployment details from the API.</p></div>`;
+        setupK8sModalTabs(content);
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        return;
     }
 
     content.innerHTML = generateDeploymentModalContent(deploymentDetails, cluster);
@@ -156,6 +169,48 @@ function generateDeploymentSpecTab(deploymentDetails) {
                 <thead><tr><th>Key</th><th>Value</th></tr></thead>
                 <tbody>${Object.entries(deploymentDetails.spec.selector.matchLabels).map(([key, value]) => `<tr><td><code>${key}</code></td><td>${value}</td></tr>`).join('')}</tbody>
             </table>
+        </div>
+    `;
+}
+
+function generateDeploymentTemplateTab(deploymentDetails) {
+    return `
+        <div class="detail-section">
+            <h3>Pod Template</h3>
+            <div class="detail-grid">
+                <div class="detail-item"><span class="detail-label">DNS Policy:</span><span class="detail-value">${deploymentDetails.spec.template.spec.dnsPolicy}</span></div>
+                <div class="detail-item"><span class="detail-label">Restart Policy:</span><span class="detail-value">${deploymentDetails.spec.template.spec.restartPolicy}</span></div>
+                <div class="detail-item"><span class="detail-label">Scheduler Name:</span><span class="detail-value">${deploymentDetails.spec.template.spec.schedulerName}</span></div>
+                <div class="detail-item"><span class="detail-label">Termination Grace Period:</span><span class="detail-value">${deploymentDetails.spec.template.spec.terminationGracePeriodSeconds}s</span></div>
+            </div>
+        </div>
+        <div class="detail-section">
+            <h3>Template Labels</h3>
+            <table class="detail-table">
+                <thead><tr><th>Key</th><th>Value</th></tr></thead>
+                <tbody>${Object.entries(deploymentDetails.spec.template.metadata.labels).map(([key, value]) => `<tr><td><code>${key}</code></td><td>${value}</td></tr>`).join('')}</tbody>
+            </table>
+        </div>
+        <div class="detail-section">
+            <h3>Containers</h3>
+            ${deploymentDetails.spec.template.spec.containers.map(container => `
+                <div class="detail-section" style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                    <h4 style="color: #0ea5e9; margin-bottom: 12px;">Container: ${container.name}</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item"><span class="detail-label">Image:</span><span class="detail-value"><code>${container.image}</code></span></div>
+                        <div class="detail-item"><span class="detail-label">Image Pull Policy:</span><span class="detail-value">${container.imagePullPolicy}</span></div>
+                        <div class="detail-item"><span class="detail-label">Termination Message Path:</span><span class="detail-value"><code>${container.terminationMessagePath}</code></span></div>
+                        <div class="detail-item"><span class="detail-label">Termination Message Policy:</span><span class="detail-value">${container.terminationMessagePolicy}</span></div>
+                    </div>
+                    ${container.env && container.env.length > 0 ? `
+                        <h5 style="color: #666; margin-top: 16px; margin-bottom: 8px;">Environment Variables</h5>
+                        <table class="detail-table">
+                            <thead><tr><th>Name</th><th>Value / Value From</th></tr></thead>
+                            <tbody>${container.env.map(envVar => `<tr><td><code>${envVar.name}</code></td><td>${envVar.value || (envVar.valueFrom ? JSON.stringify(envVar.valueFrom.fieldRef) : 'N/A')}</td></tr>`).join('')}</tbody>
+                        </table>
+                    ` : ''}
+                </div>
+            `).join('')}
         </div>
     `;
 }

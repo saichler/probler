@@ -17,7 +17,5 @@ ProblerNetwork.columns.NetworkDevice = [
             return '<span class="status-badge ' + cssClass + '">' + Layer8DUtils.escapeHtml(status) + '</span>';
         }
     },
-    { key: 'cpuUsage', label: 'CPU %', sortKey: 'stats.cpuUsage', render: function(item) { return item.cpuUsage + '%'; } },
-    { key: 'memoryUsage', label: 'Memory %', sortKey: 'stats.memoryUsage', render: function(item) { return item.memoryUsage + '%'; } },
     { key: 'uptime', label: 'Uptime', filterKey: 'equipmentinfo.uptime', sortKey: 'equipmentinfo.uptime' }
 ];
