@@ -99,10 +99,20 @@
         <div class="dashboard-content">
             <!-- Metric Cards Grid -->
             <div class="dashboard-grid">
-                <div class="metric-card">
+                <div class="metric-card" data-section="network" id="dashboard-card-network">
                     <div class="metric-card-header">
                         <span class="metric-card-title">Network Devices</span>
                         <span class="metric-card-icon">&#127760;</span>
+                    </div>
+                    <div class="metric-card-value">--</div>
+                    <div class="metric-card-details">
+                        <span class="metric-status unavailable">Loading...</span>
+                    </div>
+                </div>
+                <div class="metric-card" data-section="kubernetes" id="dashboard-card-k8s">
+                    <div class="metric-card-header">
+                        <span class="metric-card-title">Kubernetes</span>
+                        <span class="metric-card-icon">&#9784;</span>
                     </div>
                     <div class="metric-card-value">--</div>
                     <div class="metric-card-details">

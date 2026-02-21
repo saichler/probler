@@ -36,8 +36,8 @@ func main() {
 	startDb(nic)
 
 	//Activate targets
-	//targets.Activate(common.DB_CREDS, common.DB_NAME, nic)
-	targets.Activate("admin", "admin", nic)
+	targets.Activate(common.DB_CREDS, common.DB_NAME, nic)
+	//targets.Activate("admin", "admin", nic)
 	common.WaitForSignal(res)
 }
 

@@ -40,8 +40,10 @@ async function fetchNetworkDeviceStats() {
 async function updateNetworkDevicesCard() {
     const stats = await fetchNetworkDeviceStats();
 
-    const cardValue = document.querySelector('.dashboard-section .metric-card .metric-card-value');
-    const cardDetails = document.querySelector('.dashboard-section .metric-card .metric-card-details');
+    var card = document.getElementById('dashboard-card-network');
+    if (!card) return;
+    const cardValue = card.querySelector('.metric-card-value');
+    const cardDetails = card.querySelector('.metric-card-details');
 
     if (stats) {
         const totalDevices = stats.Total || 0;
@@ -95,7 +97,83 @@ function initializeAlarmsTable() {
     alarmsTable.init();
 }
 
+async function fetchK8sStats() {
+    try {
+        const endpoint = Layer8DConfig.resolveEndpoint('/1/KCache');
+        const url = endpoint +
+            '?body=' + encodeURIComponent(JSON.stringify({
+                text: 'select * from K8sCluster'
+            }));
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: getAuthHeaders()
+        });
+
+        if (!response || !response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+        var clusters = data.list || [];
+        var totalNodes = 0;
+        var totalPods = 0;
+        clusters.forEach(function(c) {
+            if (c.nodes) totalNodes += Object.keys(c.nodes).length;
+            if (c.pods) totalPods += Object.keys(c.pods).length;
+        });
+        return { clusters: clusters.length, nodes: totalNodes, pods: totalPods };
+    } catch (error) {
+        console.error('Error fetching K8s stats:', error);
+        return null;
+    }
+}
+
+async function updateK8sCard() {
+    var card = document.getElementById('dashboard-card-k8s');
+    if (!card) return;
+
+    var cardValue = card.querySelector('.metric-card-value');
+    var cardDetails = card.querySelector('.metric-card-details');
+
+    var stats = await fetchK8sStats();
+    if (stats) {
+        if (cardValue) {
+            cardValue.textContent = stats.clusters;
+        }
+        if (cardDetails) {
+            cardDetails.innerHTML =
+                '<span class="metric-status">' +
+                    '<span class="status-indicator status-operational"></span>' +
+                    '<span>' + stats.nodes + ' Nodes</span>' +
+                '</span>' +
+                '<span class="metric-status">' +
+                    '<span class="status-indicator status-operational"></span>' +
+                    '<span>' + stats.pods + ' Pods</span>' +
+                '</span>';
+        }
+    } else {
+        if (cardValue) cardValue.textContent = '--';
+        if (cardDetails) {
+            cardDetails.innerHTML = '<span class="metric-status unavailable">Data unavailable</span>';
+        }
+    }
+}
+
+function initializeDashboardCardNavigation() {
+    document.querySelectorAll('.dashboard-section .metric-card[data-section]').forEach(function(card) {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', function() {
+            var section = this.getAttribute('data-section');
+            if (section && typeof loadSection === 'function') {
+                loadSection(section);
+            }
+        });
+    });
+}
+
 async function initializeDashboard() {
-    await updateNetworkDevicesCard();
+    initializeDashboardCardNavigation();
+    await Promise.all([updateNetworkDevicesCard(), updateK8sCard()]);
     initializeAlarmsTable();
 }
