@@ -31,8 +31,8 @@ import (
 )
 
 const (
-	PROBLER_VNET = 36000
-	LOGS_VNET    = 37000
+	PROBLER_VNET = 26000
+	LOGS_VNET    = 27000
 	PREFIX       = "/probler/"
 	DB_CREDS     = "postgres"
 	DB_NAME      = "problerdb"
@@ -44,7 +44,7 @@ func init() {
 
 func CreateResources(alias string) ifs.IResources {
 	logsDir := "/data/logs/probler"
-	//logger.SetLogToFile(logsDir, alias)
+	logger.SetLogToFile(logsDir, alias)
 	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
 	log.SetLogLevel(ifs.Info_Level)
 	res := resources.NewResources(log)
