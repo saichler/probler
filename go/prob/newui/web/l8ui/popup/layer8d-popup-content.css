@@ -144,7 +144,7 @@ limitations under the License.
     border: 1px solid #e2e8f0;
     padding: 20px;
     border-left: 3px solid #0ea5e9;
-    border-radius: 8px;
+    border-radius: 0;
 }
 
 .probler-popup-body .detail-section-title {
@@ -209,6 +209,51 @@ limitations under the License.
 }
 
 /* ============================================ */
+/* Performance Sub-Tabs (nested inside perf pane) */
+/* ============================================ */
+
+.perf-sub-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--layer8d-bg-light, #f1f5f9);
+    border-radius: 0;
+    padding: 4px;
+    margin-bottom: 20px;
+}
+
+.perf-sub-tab {
+    padding: 8px 18px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--layer8d-text-medium, #64748b);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-family: 'Figtree', sans-serif;
+    white-space: nowrap;
+}
+
+.perf-sub-tab:hover {
+    background: var(--layer8d-bg-white, #ffffff);
+    color: var(--layer8d-primary, #0ea5e9);
+}
+
+.perf-sub-tab.active {
+    background: var(--layer8d-bg-white, #ffffff);
+    color: var(--layer8d-primary, #0ea5e9);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.perf-sub-pane {
+    display: none;
+}
+
+.perf-sub-pane.active {
+    display: block;
+    animation: probler-popup-fade-in-up 0.3s ease-out;
+}
+
+/* ============================================ */
 /* Performance Bars */
 /* ============================================ */
 
@@ -246,7 +291,7 @@ limitations under the License.
 .probler-popup-body .tree-view-container {
     background: #f7fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border-radius: 0;
     padding: 15px;
     font-family: 'Roboto Mono', monospace;
     font-size: 12px;

@@ -65,7 +65,7 @@ limitations under the License.
 /* Container - the popup box */
 .probler-popup-container {
     background: white;
-    border-radius: 16px;
+    border-radius: 0;
     width: 90%;
     max-height: 90vh;
     overflow: hidden;
@@ -100,7 +100,7 @@ limitations under the License.
     align-items: center;
     padding: 20px 24px;
     background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    border-radius: 16px 16px 0 0;
+    border-radius: 0;
     flex-shrink: 0;
 }
 

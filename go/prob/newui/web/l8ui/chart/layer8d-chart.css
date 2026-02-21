@@ -9,7 +9,7 @@ Layer 8 Ecosystem - Chart Component Styles
     width: 100%;
     min-height: 300px;
     background: var(--layer8d-bg-white);
-    border-radius: 8px;
+    border-radius: 0;
     padding: 16px;
     box-sizing: border-box;
 }

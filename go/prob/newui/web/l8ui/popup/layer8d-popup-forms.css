@@ -118,7 +118,7 @@ limitations under the License.
 /* Nested Table Styles */
 .probler-popup-body .nested-table-container {
     border: 1px solid var(--layer8d-border, #e2e8f0);
-    border-radius: var(--layer8d-radius-md, 8px);
+    border-radius: 0;
     overflow: hidden;
 }
 
@@ -262,7 +262,7 @@ limitations under the License.
     max-height: 200px;
     overflow-y: auto;
     border: 1px solid var(--layer8d-border, #e2e8f0);
-    border-radius: var(--layer8d-radius-md, 8px);
+    border-radius: 0;
     padding: 10px;
     background: var(--layer8d-bg-light, #f7fafc);
 }

@@ -38,7 +38,7 @@ limitations under the License.
 
 .layer8d-notification {
     background: var(--layer8d-bg-white, #ffffff);
-    border-radius: var(--layer8d-radius-lg, 12px);
+    border-radius: 0;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
     border-left: 4px solid;
     pointer-events: auto;

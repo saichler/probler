@@ -1,4 +1,15 @@
 // Network Device Detail Modal - Direct Layer8DPopup integration
+// Performance tab & charts: network-device-modal-perf.js
+
+// Decode SNMP DateAndTime hex string (e.g., "07E5010F000000" → "2021-01-15")
+function formatMfgDate(hex) {
+    if (!hex || hex.length < 8) return hex || '';
+    var year = parseInt(hex.substring(0, 4), 16);
+    var month = parseInt(hex.substring(4, 6), 16);
+    var day = parseInt(hex.substring(6, 8), 16);
+    if (isNaN(year) || isNaN(month) || isNaN(day)) return hex;
+    return year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+}
 
 // Show device detail modal
 function showDeviceDetailModal(device) {
@@ -30,6 +41,17 @@ function showDeviceDetailModal(device) {
     initializePerformanceCharts(device);
 }
 
+// Recursively strip a key from all nested objects/arrays
+function stripKeyRecursive(obj, keyToStrip) {
+    if (!obj || typeof obj !== 'object') return;
+    if (Array.isArray(obj)) {
+        obj.forEach(function(item) { stripKeyRecursive(item, keyToStrip); });
+        return;
+    }
+    delete obj[keyToStrip];
+    Object.keys(obj).forEach(function(k) { stripKeyRecursive(obj[k], keyToStrip); });
+}
+
 // Initialize device physical inventory tree
 function initializeDeviceTree(deviceData) {
     setTimeout(function() {
@@ -37,12 +59,13 @@ function initializeDeviceTree(deviceData) {
         if (!treeContainer) return;
 
         if (deviceData.physicals && Object.keys(deviceData.physicals).length > 0 && typeof ProblerTree !== 'undefined') {
-            // Clone physicals and strip performance data (shown in Performance tab instead)
+            // Clone physicals and strip performance + temperature data (shown in Performance tab)
             var treeData = JSON.parse(JSON.stringify(deviceData.physicals));
             Object.keys(treeData).forEach(function(key) {
                 if (treeData[key] && treeData[key].performance) {
                     delete treeData[key].performance;
                 }
+                stripKeyRecursive(treeData[key], 'temperature');
             });
             new ProblerTree('physical-inventory-tree', {
                 data: treeData,
@@ -59,15 +82,18 @@ function initializeDeviceTree(deviceData) {
 
 // Build the device detail content HTML
 function buildDeviceContent(device, statusClass, esc) {
+    var hasInterfaces = device.logicals && Object.keys(device.logicals).length > 0;
     return '<div class="probler-popup-tabs">' +
         '<div class="probler-popup-tab active" data-tab="overview">Overview</div>' +
         '<div class="probler-popup-tab" data-tab="equipment">Equipment</div>' +
+        (hasInterfaces ? '<div class="probler-popup-tab" data-tab="interfaces">Interfaces</div>' : '') +
         '<div class="probler-popup-tab" data-tab="physical">Physical Inventory</div>' +
         '<div class="probler-popup-tab" data-tab="performance">Performance</div>' +
     '</div>' +
     '<div class="probler-popup-tab-content">' +
         buildOverviewTab(device, statusClass, esc) +
         buildEquipmentTab(device, esc) +
+        (hasInterfaces ? buildInterfacesTab(device, esc) : '') +
         buildPhysicalTab() +
         buildPerformanceTab(device) +
     '</div>';
@@ -169,8 +195,20 @@ function buildEquipmentTab(device, esc) {
                     '<span class="detail-value">' + esc(device.software || '') + '</span>' +
                 '</div>' +
                 '<div class="detail-row">' +
+                    '<span class="detail-label">Hardware</span>' +
+                    '<span class="detail-value">' + esc(device.hardware || '') + '</span>' +
+                '</div>' +
+                '<div class="detail-row">' +
+                    '<span class="detail-label">Version</span>' +
+                    '<span class="detail-value">' + esc(device.version || '') + '</span>' +
+                '</div>' +
+                '<div class="detail-row">' +
                     '<span class="detail-label">Firmware Version</span>' +
                     '<span class="detail-value">' + esc(device.firmware || '') + '</span>' +
+                '</div>' +
+                '<div class="detail-row">' +
+                    '<span class="detail-label">System OID</span>' +
+                    '<span class="detail-value">' + esc(device.sysOid || '') + '</span>' +
                 '</div>' +
                 '<div class="detail-row">' +
                     '<span class="detail-label">Device Type</span>' +
@@ -180,6 +218,53 @@ function buildEquipmentTab(device, esc) {
                     '<span class="detail-label">Management IP</span>' +
                     '<span class="detail-value">' + esc(device.ipAddress || '') + '</span>' +
                 '</div>' +
+            '</div>' +
+        '</div>' +
+        buildEntityMibSection(device, esc) +
+    '</div>';
+}
+
+// Build Entity MIB / Asset Information section (RFC 4133)
+function buildEntityMibSection(device, esc) {
+    // Only show if any Entity MIB field is populated
+    if (!device.manufacturerName && !device.manufacturingDate && !device.assetId &&
+        !device.physicalAlias && !device.vendorTypeOid && !device.identificationUris &&
+        !device.isFru) {
+        return '';
+    }
+    return '<div class="detail-grid" style="margin-top: 12px;">' +
+        '<div class="detail-section">' +
+            '<div class="detail-section-title">Asset Information</div>' +
+            '<div class="detail-row">' +
+                '<span class="detail-label">Manufacturer</span>' +
+                '<span class="detail-value">' + esc(device.manufacturerName || '') + '</span>' +
+            '</div>' +
+            '<div class="detail-row">' +
+                '<span class="detail-label">Manufacturing Date</span>' +
+                '<span class="detail-value">' + esc(formatMfgDate(device.manufacturingDate)) + '</span>' +
+            '</div>' +
+            '<div class="detail-row">' +
+                '<span class="detail-label">Asset ID</span>' +
+                '<span class="detail-value">' + esc(device.assetId || '') + '</span>' +
+            '</div>' +
+            '<div class="detail-row">' +
+                '<span class="detail-label">Physical Alias</span>' +
+                '<span class="detail-value">' + esc(device.physicalAlias || '') + '</span>' +
+            '</div>' +
+        '</div>' +
+        '<div class="detail-section">' +
+            '<div class="detail-section-title">Entity MIB Details</div>' +
+            '<div class="detail-row">' +
+                '<span class="detail-label">Vendor Type OID</span>' +
+                '<span class="detail-value">' + esc(device.vendorTypeOid || '') + '</span>' +
+            '</div>' +
+            '<div class="detail-row">' +
+                '<span class="detail-label">Field Replaceable</span>' +
+                '<span class="detail-value">' + (device.isFru ? 'Yes' : 'No') + '</span>' +
+            '</div>' +
+            '<div class="detail-row">' +
+                '<span class="detail-label">Identification URIs</span>' +
+                '<span class="detail-value">' + esc(device.identificationUris || '') + '</span>' +
             '</div>' +
         '</div>' +
     '</div>';
@@ -192,104 +277,80 @@ function buildPhysicalTab() {
     '</div>';
 }
 
-// Find performance data from the first physical entry that has it
-function findPerformanceData(device) {
-    if (!device.physicals) return null;
-    var keys = Object.keys(device.physicals);
-    for (var i = 0; i < keys.length; i++) {
-        var phys = device.physicals[keys[i]];
-        if (phys && phys.performance) return phys.performance;
-    }
-    return null;
+// Format interface speed (bps) to human-readable
+function formatIfSpeed(bps) {
+    if (!bps || bps === 0) return '';
+    if (bps >= 1000000000) return (bps / 1000000000) + ' Gbps';
+    if (bps >= 1000000) return (bps / 1000000) + ' Mbps';
+    if (bps >= 1000) return (bps / 1000) + ' Kbps';
+    return bps + ' bps';
 }
 
-// Build Performance tab content
-function buildPerformanceTab(device) {
-    var perf = findPerformanceData(device);
-    if (!perf) {
-        return '<div class="probler-popup-tab-pane" data-pane="performance">' +
-            '<p style="color: var(--layer8d-text-muted, #718096); text-align: center; padding: 40px;">' +
-            'No performance data available</p></div>';
-    }
-    var esc = Layer8DUtils.escapeHtml;
-    return '<div class="probler-popup-tab-pane" data-pane="performance">' +
-        '<div class="detail-grid">' +
-            '<div class="detail-section">' +
-                '<div class="detail-section-title">Summary</div>' +
-                '<div class="detail-row">' +
-                    '<span class="detail-label">Uptime</span>' +
-                    '<span class="detail-value">' + esc(perf.uptime || '-') + '</span>' +
-                '</div>' +
-                '<div class="detail-row">' +
-                    '<span class="detail-label">Load Average</span>' +
-                    '<span class="detail-value">' + (perf.loadAverage || 0) + '</span>' +
-                '</div>' +
-                '<div class="detail-row">' +
-                    '<span class="detail-label">Active Connections</span>' +
-                    '<span class="detail-value">' + (perf.activeConnections || 0) + '</span>' +
-                '</div>' +
-            '</div>' +
-        '</div>' +
-        '<div id="perf-cpu-chart" style="margin-top:16px;min-height:200px;"></div>' +
-        '<div id="perf-memory-chart" style="margin-top:16px;min-height:200px;"></div>' +
-        '<div id="perf-temp-chart" style="margin-top:16px;min-height:200px;"></div>' +
-    '</div>';
-}
+// Map InterfaceType enum to display string
+var INTERFACE_TYPE_NAMES = {
+    0: '', 1: 'Ethernet', 2: 'Fast Ethernet', 3: 'GigE',
+    4: '10GigE', 5: '25GigE', 6: '40GigE', 7: '100GigE',
+    8: 'Serial', 9: 'ATM', 10: 'Frame Relay', 11: 'Loopback',
+    12: 'Management', 13: 'Tunnel', 14: 'VLAN', 15: 'Bridge'
+};
 
-// Format a Unix-seconds timestamp for chart X-axis labels
-function formatChartTimestamp(stamp, spanHours) {
-    var d = new Date(stamp * 1000);
-    var hh = String(d.getHours()).padStart(2, '0');
-    var mm = String(d.getMinutes()).padStart(2, '0');
-    if (spanHours <= 24) return hh + ':' + mm;
-    var mon = String(d.getMonth() + 1).padStart(2, '0');
-    var day = String(d.getDate()).padStart(2, '0');
-    return mon + '/' + day + ' ' + hh + ':' + mm;
-}
-
-// Initialize performance charts after popup renders
-function initializePerformanceCharts(device) {
-    if (typeof Layer8DChart === 'undefined') return;
-    var perf = findPerformanceData(device);
-    if (!perf) return;
-
-    setTimeout(function() {
-        var metrics = [
-            { field: 'cpuUsagePercent',    containerId: 'perf-cpu-chart',    title: 'CPU Usage %' },
-            { field: 'memoryUsagePercent', containerId: 'perf-memory-chart', title: 'Memory Usage %' },
-            { field: 'temperatureCelsius', containerId: 'perf-temp-chart',   title: 'Temperature (C)' }
-        ];
-
-        metrics.forEach(function(m) {
-            var series = perf[m.field];
-            if (!series || !series.length) return;
-            if (!document.getElementById(m.containerId)) return;
-
-            // Determine time span for label formatting
-            var firstStamp = series[0].stamp || 0;
-            var lastStamp = series[series.length - 1].stamp || 0;
-            var spanHours = (lastStamp - firstStamp) / 3600;
-
-            var chartData = series.map(function(pt) {
-                return {
-                    label: formatChartTimestamp(pt.stamp, spanHours),
-                    value: pt.value
-                };
+// Collect all interfaces from logicals map into a flat array
+function collectInterfaces(logicals) {
+    var all = [];
+    Object.keys(logicals).forEach(function(key) {
+        var logical = logicals[key];
+        if (logical && logical.interfaces) {
+            logical.interfaces.forEach(function(iface) {
+                all.push(iface);
             });
-
-            var chart = new Layer8DChart({
-                containerId: m.containerId,
-                viewConfig: {
-                    chartType: 'line',
-                    title: m.title,
-                    categoryField: 'label',
-                    valueField: 'value',
-                    aggregation: 'avg'
-                }
-            });
-            chart.init();
-            chart.setData(chartData, chartData.length);
-        });
-    }, 100);
+        }
+    });
+    return all;
 }
+
+// Build Interfaces tab content
+function buildInterfacesTab(device, esc) {
+    var interfaces = collectInterfaces(device.logicals);
+    if (interfaces.length === 0) {
+        return '<div class="probler-popup-tab-pane" data-pane="interfaces">' +
+            '<p style="color: var(--layer8d-text-muted); text-align: center; padding: 40px;">' +
+            'No interface data available</p></div>';
+    }
+    var html = '<div class="probler-popup-tab-pane" data-pane="interfaces">' +
+        '<div style="overflow-x: auto;">' +
+        '<table class="layer8d-tree-grid-table" style="width: 100%; font-size: 12px;">' +
+        '<thead><tr>' +
+            '<th>Name</th>' +
+            '<th>Status</th>' +
+            '<th>Admin</th>' +
+            '<th>Type</th>' +
+            '<th>IP Address</th>' +
+            '<th>MAC Address</th>' +
+            '<th>Speed</th>' +
+            '<th>MTU</th>' +
+            '<th>Description</th>' +
+        '</tr></thead><tbody>';
+    interfaces.forEach(function(iface) {
+        var operStatus = esc(iface.status || '');
+        var operClass = operStatus.toLowerCase() === 'up' ? 'status-online' :
+                        operStatus.toLowerCase() === 'down' ? 'status-offline' : '';
+        var adminLabel = iface.adminStatus ? 'Up' : 'Down';
+        var adminClass = iface.adminStatus ? 'status-online' : 'status-offline';
+        html += '<tr>' +
+            '<td style="font-weight: 500;">' + esc(iface.name || iface.id || '') + '</td>' +
+            '<td><span class="' + operClass + '">' + operStatus + '</span></td>' +
+            '<td><span class="' + adminClass + '">' + adminLabel + '</span></td>' +
+            '<td>' + esc(INTERFACE_TYPE_NAMES[iface.interfaceType] || '') + '</td>' +
+            '<td>' + esc(iface.ipAddress || '') + '</td>' +
+            '<td style="font-family: monospace; font-size: 11px;">' + esc(iface.macAddress || '') + '</td>' +
+            '<td>' + formatIfSpeed(iface.speed) + '</td>' +
+            '<td>' + (iface.mtu || '') + '</td>' +
+            '<td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' +
+                esc(iface.description || '') + '</td>' +
+        '</tr>';
+    });
+    html += '</tbody></table></div></div>';
+    return html;
+}
+
 

@@ -35,11 +35,21 @@ function transformDeviceData(device) {
         family: equipment.family || '',
         software: equipment.software || '',
         serialNumber: equipment.serialNumber || '',
-        firmware: equipment.version || '',
+        firmware: equipment.firmwareVersion || equipment.version || '',
+        version: equipment.version || '',
         hardware: equipment.hardware || '',
         sysOid: equipment.sysOid || '',
-        interfaces: physicals['physical-0'] ? (physicals['physical-0'].ports || []).length : 0,
+        interfaces: equipment.interfaceCount || (physicals['physical-0'] ? (physicals['physical-0'].ports || []).length : 0),
         lastSeen: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        // Entity MIB fields (RFC 4133)
+        vendorTypeOid: equipment.vendorTypeOid || '',
+        physicalAlias: equipment.physicalAlias || '',
+        assetId: equipment.assetId || '',
+        isFru: equipment.isFru || false,
+        manufacturingDate: equipment.manufacturingDate || '',
+        manufacturerName: equipment.manufacturerName || '',
+        identificationUris: equipment.identificationUris || '',
+        logicals: device.logicals || {},
         physicals: physicals
     };
 }

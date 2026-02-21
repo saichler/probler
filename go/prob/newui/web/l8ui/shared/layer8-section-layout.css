@@ -35,7 +35,7 @@ limitations under the License.
     margin: -7px -7px 20px -7px;
     height: 120px;
     background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
-    border-radius: 16px 16px 0 0;
+    border-radius: 0;
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(14, 165, 233, 0.15);
 }
@@ -314,7 +314,7 @@ limitations under the License.
 
 .l8-table-container {
     background: white;
-    border-radius: 12px;
+    border-radius: 0;
     overflow: hidden;
     flex: 1;
     min-height: 0;
@@ -328,7 +328,7 @@ limitations under the License.
 /* ============================================ */
 
 .hcm-section { position: relative; overflow: visible; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-.hcm-header-frame { position: relative; width: calc(100% + 14px); margin: -7px -7px 20px -7px; height: 120px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%); border-radius: 16px 16px 0 0; overflow: hidden; box-shadow: 0 8px 32px rgba(14, 165, 233, 0.15); }
+.hcm-header-frame { position: relative; width: calc(100% + 14px); margin: -7px -7px 20px -7px; height: 120px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%); border-radius: 0; overflow: hidden; box-shadow: 0 8px 32px rgba(14, 165, 233, 0.15); }
 .hcm-header-frame.parallax-container { position: relative; transform-style: preserve-3d; }
 .hcm-header-bg { z-index: 1; }
 .hcm-illustration { width: 100%; height: 100%; display: block; }
@@ -358,4 +358,4 @@ limitations under the License.
 .hcm-service-title { font-size: 20px; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 10px; }
 .hcm-service-title .service-icon { font-size: 24px; }
 .hcm-service-description { font-size: 13px; color: #64748b; margin-top: 4px; }
-.hcm-table-container { background: white; border-radius: 12px; overflow: hidden; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.hcm-table-container { background: white; border-radius: 0; overflow: hidden; flex: 1; min-height: 0; display: flex; flex-direction: column; }
