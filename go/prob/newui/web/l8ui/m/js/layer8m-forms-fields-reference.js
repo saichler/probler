@@ -148,6 +148,79 @@ limitations under the License.
         `;
     };
 
+    // ========================================
+    // PERIOD FIELD
+    // ========================================
+
+    const PERIOD_MONTHS = [
+        [1, 'January'], [2, 'February'], [3, 'March'], [4, 'April'],
+        [5, 'May'], [6, 'June'], [7, 'July'], [8, 'August'],
+        [9, 'September'], [10, 'October'], [11, 'November'], [12, 'December']
+    ];
+    const PERIOD_QUARTERS = [[13, 'Q1'], [14, 'Q2'], [15, 'Q3'], [16, 'Q4']];
+
+    F.renderPeriodField = function(config, value, readonly) {
+        const periodObj = (typeof value === 'object' && value !== null) ? value : {};
+        const periodType = periodObj.periodType || 0;
+        const periodYear = periodObj.periodYear || new Date().getFullYear();
+        const periodValue = periodObj.periodValue || 0;
+        const disabled = readonly ? ' disabled' : '';
+        const reqAttr = config.required ? ' required' : '';
+
+        // Period Type
+        const typeOptions = [['', '-- Select --'], ['1', 'Yearly'], ['2', 'Quarterly'], ['3', 'Monthly']];
+        let typeHtml = `<select name="${config.key}.__periodType" class="mobile-form-select period-type-select" onchange="Layer8MFormFields.onPeriodTypeChange(this)"${disabled}${reqAttr}>`;
+        for (const [val, lbl] of typeOptions) {
+            typeHtml += `<option value="${val}"${String(periodType) === val ? ' selected' : ''}>${lbl}</option>`;
+        }
+        typeHtml += '</select>';
+
+        // Year
+        let yearHtml = `<select name="${config.key}.__periodYear" class="mobile-form-select period-year-select"${disabled}>`;
+        for (let y = 2050; y >= 1970; y--) {
+            yearHtml += `<option value="${y}"${y === periodYear ? ' selected' : ''}>${y}</option>`;
+        }
+        yearHtml += '</select>';
+
+        // Period Value
+        const hidden = (Number(periodType) === 1);
+        let options = [];
+        if (Number(periodType) === 2) options = PERIOD_QUARTERS;
+        else if (Number(periodType) === 3) options = PERIOD_MONTHS;
+        let valHtml = `<select name="${config.key}.__periodValue" class="mobile-form-select period-value-select"${hidden ? ' style="display:none"' : ''}${disabled}>`;
+        valHtml += '<option value="">--</option>';
+        for (const [val, lbl] of options) {
+            valHtml += `<option value="${val}"${Number(periodValue) === val ? ' selected' : ''}>${lbl}</option>`;
+        }
+        valHtml += '</select>';
+
+        return `
+            <div class="mobile-form-field">
+                <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
+                <div class="period-input-group">${typeHtml}${yearHtml}${valHtml}</div>
+            </div>
+        `;
+    };
+
+    F.onPeriodTypeChange = function(selectEl) {
+        const group = selectEl.closest('.period-input-group');
+        if (!group) return;
+        const valueSelect = group.querySelector('.period-value-select');
+        if (!valueSelect) return;
+
+        const periodType = Number(selectEl.value);
+        let options = [];
+        if (periodType === 2) options = PERIOD_QUARTERS;
+        else if (periodType === 3) options = PERIOD_MONTHS;
+
+        let html = '<option value="">--</option>';
+        for (const [val, lbl] of options) {
+            html += `<option value="${val}">${lbl}</option>`;
+        }
+        valueSelect.innerHTML = html;
+        valueSelect.style.display = (periodType === 1 || periodType === 0) ? 'none' : '';
+    };
+
     /**
      * Handle currency dropdown change on mobile — convert amount using exchange rate
      */

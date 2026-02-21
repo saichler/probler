@@ -193,229 +193,53 @@ limitations under the License.
             `;
         },
 
-        renderCurrencyField(config, value, readonly) {
-            const requiredAttr = config.required ? 'required' : '';
-            const readonlyAttr = readonly ? 'readonly' : '';
-            const displayValue = value ? (value / 100).toFixed(2) : '';
+        renderToggleField(config, value, readonly) {
+            const disabledAttr = readonly ? 'disabled' : '';
+            const checkedAttr = value ? 'checked' : '';
+
+            return `
+                <div class="mobile-form-field mobile-form-field-checkbox">
+                    <label class="l8-toggle-label">
+                        <input type="checkbox"
+                               name="${config.key}"
+                               value="1"
+                               class="l8-toggle-input"
+                               ${checkedAttr}
+                               ${disabledAttr}>
+                        <span class="l8-toggle-track"><span class="l8-toggle-thumb"></span></span>
+                        <span class="mobile-form-checkbox-text">${Layer8MUtils.escapeHtml(config.label)}</span>
+                    </label>
+                </div>
+            `;
+        },
+
+        renderSliderField(config, value, readonly) {
+            const readonlyAttr = readonly ? 'disabled' : '';
+            const min = config.min !== undefined ? config.min : 0;
+            const max = config.max !== undefined ? config.max : 100;
+            const step = config.step !== undefined ? config.step : 1;
+            const val = value !== null && value !== undefined ? value : min;
 
             return `
                 <div class="mobile-form-field">
                     <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
-                    <div class="mobile-form-input-group">
-                        <span class="mobile-form-input-prefix">$</span>
-                        <input type="number"
+                    <div class="l8-slider-wrapper">
+                        <input type="range"
                                name="${config.key}"
-                               value="${displayValue}"
-                               step="0.01"
-                               min="0"
-                               class="mobile-form-input with-prefix"
-                               data-format="currency"
-                               ${requiredAttr}
+                               value="${val}" min="${min}" max="${max}" step="${step}"
+                               class="l8-slider mobile-form-input"
+                               oninput="this.nextElementSibling.textContent=this.value"
                                ${readonlyAttr}>
+                        <span class="l8-slider-value">${Layer8MUtils.escapeHtml(String(val))}</span>
                     </div>
                 </div>
             `;
         },
 
-        renderPercentageField(config, value, readonly) {
-            const requiredAttr = config.required ? 'required' : '';
-            const readonlyAttr = readonly ? 'readonly' : '';
-            const displayValue = value ? (value * 100).toFixed(2) : '';
-
-            return `
-                <div class="mobile-form-field">
-                    <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
-                    <div class="mobile-form-input-group">
-                        <input type="number"
-                               name="${config.key}"
-                               value="${displayValue}"
-                               step="0.01"
-                               min="0"
-                               max="100"
-                               class="mobile-form-input with-suffix"
-                               data-format="percentage"
-                               ${requiredAttr}
-                               ${readonlyAttr}>
-                        <span class="mobile-form-input-suffix">%</span>
-                    </div>
-                </div>
-            `;
-        },
-
-        renderPhoneField(config, value, readonly) {
-            const requiredAttr = config.required ? 'required' : '';
-            const readonlyAttr = readonly ? 'readonly' : '';
-
-            return `
-                <div class="mobile-form-field">
-                    <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
-                    <input type="tel"
-                           name="${config.key}"
-                           value="${Layer8MUtils.escapeAttr(value || '')}"
-                           placeholder="(555) 555-5555"
-                           class="mobile-form-input"
-                           data-format="phone"
-                           ${requiredAttr}
-                           ${readonlyAttr}>
-                </div>
-            `;
-        },
-
-        renderSSNField(config, value, readonly) {
-            const requiredAttr = config.required ? 'required' : '';
-            const readonlyAttr = readonly ? 'readonly' : '';
-            const displayValue = readonly && value ? Layer8MUtils.formatSSN(value) : (value || '');
-
-            return `
-                <div class="mobile-form-field">
-                    <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
-                    <input type="${readonly ? 'text' : 'password'}"
-                           name="${config.key}"
-                           value="${Layer8MUtils.escapeAttr(displayValue)}"
-                           placeholder="XXX-XX-XXXX"
-                           class="mobile-form-input"
-                           data-format="ssn"
-                           maxlength="11"
-                           ${requiredAttr}
-                           ${readonlyAttr}>
-                </div>
-            `;
-        },
-
-        renderUrlField(config, value, readonly) {
-            const requiredAttr = config.required ? 'required' : '';
-            const readonlyAttr = readonly ? 'readonly' : '';
-
-            return `
-                <div class="mobile-form-field">
-                    <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
-                    <input type="url"
-                           name="${config.key}"
-                           value="${Layer8MUtils.escapeAttr(value || '')}"
-                           placeholder="https://..."
-                           class="mobile-form-input"
-                           data-format="url"
-                           ${requiredAttr}
-                           ${readonlyAttr}>
-                </div>
-            `;
-        },
-
-        renderRatingField(config, value, readonly) {
-            const requiredAttr = config.required ? 'required' : '';
-            const readonlyAttr = readonly ? 'readonly' : '';
-            const min = config.min || 1;
-            const max = config.max || 5;
-
-            return `
-                <div class="mobile-form-field">
-                    <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
-                    <input type="number"
-                           name="${config.key}"
-                           value="${value || ''}"
-                           min="${min}"
-                           max="${max}"
-                           class="mobile-form-input"
-                           data-format="rating"
-                           ${requiredAttr}
-                           ${readonlyAttr}>
-                </div>
-            `;
-        },
-
-        renderHoursField(config, value, readonly) {
-            const requiredAttr = config.required ? 'required' : '';
-            const readonlyAttr = readonly ? 'readonly' : '';
-            let displayValue = '';
-            if (value) {
-                const hours = Math.floor(value / 60);
-                const mins = value % 60;
-                displayValue = `${hours}:${mins.toString().padStart(2, '0')}`;
-            }
-
-            return `
-                <div class="mobile-form-field">
-                    <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
-                    <input type="text"
-                           name="${config.key}"
-                           value="${Layer8MUtils.escapeAttr(displayValue)}"
-                           placeholder="HH:MM"
-                           class="mobile-form-input"
-                           data-format="hours"
-                           ${requiredAttr}
-                           ${readonlyAttr}>
-                </div>
-            `;
-        },
-
-        renderEinField(config, value, readonly) {
-            const requiredAttr = config.required ? 'required' : '';
-            const readonlyAttr = readonly ? 'readonly' : '';
-
-            return `
-                <div class="mobile-form-field">
-                    <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
-                    <input type="text"
-                           name="${config.key}"
-                           value="${Layer8MUtils.escapeAttr(value || '')}"
-                           placeholder="XX-XXXXXXX"
-                           class="mobile-form-input"
-                           data-format="ein"
-                           maxlength="10"
-                           ${requiredAttr}
-                           ${readonlyAttr}>
-                </div>
-            `;
-        },
-
-        renderRoutingNumberField(config, value, readonly) {
-            const requiredAttr = config.required ? 'required' : '';
-            const readonlyAttr = readonly ? 'readonly' : '';
-
-            return `
-                <div class="mobile-form-field">
-                    <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
-                    <input type="text"
-                           name="${config.key}"
-                           value="${Layer8MUtils.escapeAttr(value || '')}"
-                           placeholder="9-digit routing number"
-                           class="mobile-form-input"
-                           data-format="routingNumber"
-                           maxlength="9"
-                           ${requiredAttr}
-                           ${readonlyAttr}>
-                </div>
-            `;
-        },
-
-        renderColorCodeField(config, value, readonly) {
-            const requiredAttr = config.required ? 'required' : '';
-            const readonlyAttr = readonly ? 'readonly' : '';
-            const colorValue = value || '#000000';
-
-            return `
-                <div class="mobile-form-field">
-                    <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
-                    <div class="mobile-form-input-group">
-                        <input type="color"
-                               name="${config.key}"
-                               value="${Layer8MUtils.escapeAttr(colorValue)}"
-                               class="mobile-form-color-input"
-                               data-format="colorCode"
-                               ${requiredAttr}
-                               ${readonlyAttr}>
-                        <input type="text"
-                               value="${Layer8MUtils.escapeAttr(colorValue)}"
-                               class="mobile-form-input color-text-input"
-                               placeholder="#RRGGBB"
-                               maxlength="7"
-                               ${readonlyAttr}>
-                    </div>
-                </div>
-            `;
-        },
-
-        // renderReferenceField and renderMoneyField are in layer8m-forms-fields-reference.js
+        // Extended renderers: currency, percentage, phone, SSN, URL, rating,
+        // hours, EIN, routingNumber, colorCode are in layer8m-forms-fields-ext.js
+        // Reference and money renderers are in layer8m-forms-fields-reference.js
+        // Inline table, _formatMobileCell, _onInlineRowClick are in layer8m-forms-fields-ext.js
     };
 
 })();

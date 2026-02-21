@@ -125,6 +125,25 @@ limitations under the License.
         },
 
         /**
+         * Render an L8Period object as human-readable text.
+         * Yearly: "2025"  Quarterly: "2025 / Q2"  Monthly: "2025 / February"
+         */
+        renderL8Period(value) {
+            if (!value || typeof value !== 'object') return '-';
+            const NAMES = {
+                1: 'January', 2: 'February', 3: 'March', 4: 'April',
+                5: 'May', 6: 'June', 7: 'July', 8: 'August',
+                9: 'September', 10: 'October', 11: 'November', 12: 'December',
+                13: 'Q1', 14: 'Q2', 15: 'Q3', 16: 'Q4'
+            };
+            const year = value.periodYear;
+            if (!year) return '-';
+            if (value.periodType === 1) return String(year); // Yearly
+            const valName = NAMES[value.periodValue];
+            return valName ? `${year} / ${valName}` : String(year);
+        },
+
+        /**
          * Render rating (e.g., 4/5)
          * @param {number} rating - Rating value
          * @param {number} maxRating - Maximum rating (default 5)

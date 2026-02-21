@@ -129,7 +129,7 @@ limitations under the License.
             }
 
             const title = `${service.label.replace(/s$/, '')} Details`;
-            let content = formsNS.generateFormHtml(formDef, item);
+            let content = formsNS.generateFormHtml(formDef, item, { readOnly: true });
 
             Layer8DPopup.show({
                 title: title,
@@ -137,11 +137,13 @@ limitations under the License.
                 size: 'large',
                 showFooter: false,
                 onShow: (body) => {
-                    if (typeof Layer8DForms !== 'undefined' && Layer8DForms.setFormContext) {
-                        Layer8DForms.setFormContext(formDef, service);
-                    }
-                    if (typeof Layer8DForms !== 'undefined' && Layer8DForms.attachDatePickers) {
-                        Layer8DForms.attachDatePickers(body);
+                    if (typeof Layer8DFormsPickers !== 'undefined') {
+                        Layer8DFormsPickers.setFormContext(formDef, service);
+                        Layer8DFormsPickers.attachDatePickers(body);
+                        Layer8DFormsPickers.attachInlineTableHandlers(body);
+                    } else if (typeof Layer8DForms !== 'undefined') {
+                        if (Layer8DForms.setFormContext) Layer8DForms.setFormContext(formDef, service);
+                        if (Layer8DForms.attachDatePickers) Layer8DForms.attachDatePickers(body);
                     }
                     body.querySelectorAll('input, select, textarea').forEach(el => {
                         el.disabled = true;

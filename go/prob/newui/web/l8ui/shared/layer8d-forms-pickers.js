@@ -212,6 +212,178 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
     }
 
     // ========================================
+    // INLINE TABLE HANDLERS
+    // ========================================
+
+    /**
+     * Attach event handlers for inline table add/edit/delete and row click
+     */
+    function attachInlineTableHandlers(container) {
+        container.querySelectorAll('.form-inline-table').forEach(table => {
+            const fieldKey = table.dataset.inlineTable;
+            const hiddenInput = table.querySelector(`input[data-inline-table-data="${fieldKey}"]`);
+            const isReadOnly = table.classList.contains('form-inline-table-readonly');
+
+            // Find the field definition from the current form context
+            const formCtx = currentFormContext;
+            let fieldDef = null;
+            if (formCtx && formCtx.formDef) {
+                fieldDef = findFieldDef(formCtx.formDef, fieldKey);
+            }
+            if (!fieldDef || !fieldDef.columns) return;
+
+            function getRows() {
+                try { return JSON.parse(hiddenInput.value || '[]'); } catch (e) { return []; }
+            }
+
+            function setRows(rows) {
+                hiddenInput.value = JSON.stringify(rows);
+                rerenderTable(table, fieldDef, rows, isReadOnly);
+            }
+
+            // Delegate all button/row click events
+            table.addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-action]');
+                const clickedRow = e.target.closest('.form-inline-table-row');
+
+                if (btn) {
+                    const action = btn.dataset.action;
+                    const rowIndex = parseInt(btn.dataset.rowIndex, 10);
+
+                    if (action === 'add-row') {
+                        openRowEditor(fieldDef, -1, {}, (newRow) => {
+                            const rows = getRows();
+                            rows.push(newRow);
+                            setRows(rows);
+                        });
+                    } else if (action === 'edit-row') {
+                        e.stopPropagation();
+                        const rows = getRows();
+                        openRowEditor(fieldDef, rowIndex, rows[rowIndex] || {}, (updatedRow) => {
+                            const rows = getRows();
+                            rows[rowIndex] = updatedRow;
+                            setRows(rows);
+                        });
+                    } else if (action === 'delete-row') {
+                        e.stopPropagation();
+                        if (confirm('Delete this row?')) {
+                            const rows = getRows();
+                            rows.splice(rowIndex, 1);
+                            setRows(rows);
+                        }
+                    }
+                } else if (clickedRow && isReadOnly) {
+                    // Read-only row click — show child detail popup
+                    const rowIndex = parseInt(clickedRow.dataset.rowIndex, 10);
+                    const rows = getRows();
+                    if (rows[rowIndex]) {
+                        showChildDetail(fieldDef, rows[rowIndex]);
+                    }
+                }
+            });
+        });
+    }
+
+    /**
+     * Re-render table body after add/edit/delete
+     */
+    function rerenderTable(tableEl, fieldDef, rows, isReadOnly) {
+        const body = tableEl.querySelector('.form-inline-table-body');
+        if (!body) return;
+        const visibleCols = fieldDef.columns.filter(c => !c.hidden);
+        const gridCols = isReadOnly
+            ? visibleCols.map(() => '1fr').join(' ')
+            : visibleCols.map(() => '1fr').join(' ') + ' 100px';
+
+        let html = '';
+        if (rows.length > 0) {
+            rows.forEach((row, idx) => {
+                const clickClass = isReadOnly ? ' l8-clickable-row' : '';
+                html += `<div class="form-inline-table-row${clickClass}" data-row-index="${idx}" style="grid-template-columns: ${gridCols}">`;
+                visibleCols.forEach(col => {
+                    html += `<span class="form-inline-table-cell">${Layer8DFormsFields.formatInlineTableCell ? Layer8DFormsFields.formatInlineTableCell(col, row[col.key]) : (row[col.key] || '-')}</span>`;
+                });
+                if (!isReadOnly) {
+                    html += `<span class="form-inline-table-actions">`;
+                    html += `<button type="button" class="form-inline-table-btn edit" data-action="edit-row" data-row-index="${idx}">Edit</button>`;
+                    html += `<button type="button" class="form-inline-table-btn delete" data-action="delete-row" data-row-index="${idx}">Delete</button>`;
+                    html += `</span>`;
+                }
+                html += '</div>';
+            });
+        } else {
+            html = '<div class="form-inline-table-empty">No records</div>';
+        }
+        body.innerHTML = html;
+    }
+
+    /**
+     * Open a row editor sub-form popup (for add or edit)
+     */
+    function openRowEditor(fieldDef, rowIndex, rowData, onSave) {
+        const miniFormDef = {
+            title: fieldDef.label,
+            sections: [{
+                title: rowIndex >= 0 ? 'Edit' : 'Add',
+                fields: fieldDef.columns.filter(col => !col.hidden)
+            }]
+        };
+
+        const html = Layer8DFormsFields.generateFormHtml(miniFormDef, rowData || {});
+
+        Layer8DPopup.show({
+            title: rowIndex >= 0 ? `Edit ${fieldDef.label}` : `Add ${fieldDef.label}`,
+            content: html,
+            size: 'large',
+            showFooter: true,
+            saveButtonText: rowIndex >= 0 ? 'Update' : 'Add',
+            onShow: (body) => {
+                attachDatePickers(body);
+            },
+            onSave: () => {
+                const data = Layer8DFormsData.collectFormData(miniFormDef);
+                if (!data) return;
+                // Preserve hidden fields from original row
+                fieldDef.columns.forEach(col => {
+                    if (col.hidden && rowData[col.key] !== undefined) {
+                        data[col.key] = rowData[col.key];
+                    }
+                });
+                onSave(data);
+                Layer8DPopup.close();
+            }
+        });
+    }
+
+    /**
+     * Show child detail popup (read-only) when clicking a row in detail mode
+     */
+    function showChildDetail(fieldDef, rowData) {
+        const miniFormDef = {
+            title: fieldDef.label,
+            sections: [{
+                title: 'Details',
+                fields: fieldDef.columns.filter(col => !col.hidden)
+            }]
+        };
+
+        const html = Layer8DFormsFields.generateFormHtml(miniFormDef, rowData);
+
+        Layer8DPopup.show({
+            title: `${fieldDef.label} Details`,
+            content: html,
+            size: 'large',
+            showFooter: false,
+            onShow: (body) => {
+                attachDatePickers(body);
+                body.querySelectorAll('input, select, textarea').forEach(el => {
+                    el.disabled = true;
+                });
+            }
+        });
+    }
+
+    // ========================================
     // FORM CONTEXT MANAGEMENT
     // ========================================
 
@@ -232,6 +404,8 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
     function updateFormContext(updates) {
         if (currentFormContext) {
             Object.assign(currentFormContext, updates);
+        } else {
+            currentFormContext = Object.assign({}, updates);
         }
     }
 
@@ -244,6 +418,7 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
         attachDatePickers,
         attachInputFormatters,
         attachReferencePickers,
+        attachInlineTableHandlers,
         fetchReferenceDisplayValue,
         getEndpointForModel,
         findFieldDef,

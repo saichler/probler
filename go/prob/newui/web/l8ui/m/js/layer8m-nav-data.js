@@ -15,43 +15,73 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
 
     window.Layer8MNavData = {
         /**
-         * Load service data into table
+         * Load service data into a view (table, chart, kanban, etc.)
          */
         loadServiceData(serviceConfig) {
             const container = document.getElementById('service-table-container');
             if (!container) return;
 
-            // Get form definition for this service
             const formDef = this.getServiceFormDef(serviceConfig);
             const columns = this.getServiceColumns(serviceConfig);
             const transformData = this.getServiceTransformData(serviceConfig);
+            const viewType = serviceConfig.viewType || 'table';
+            const primaryKey = serviceConfig.idField || 'id';
 
-            // Build table config
-            const tableConfig = {
-                endpoint: Layer8MConfig.resolveEndpoint(serviceConfig.endpoint),
+            // Build view options
+            const viewOptions = {
+                containerId: 'service-table-container',
+                endpoint: serviceConfig.endpoint,
                 modelName: serviceConfig.model,
                 columns: columns,
-                rowsPerPage: 15,
-                getItemId: (item) => item[serviceConfig.idField] || item.id
+                pageSize: 15,
+                primaryKey: primaryKey,
+                viewConfig: serviceConfig.viewConfig || {},
+                getItemId: (item) => item[primaryKey] || item.id
             };
 
-            // Add transform if available
             if (transformData) {
-                tableConfig.transformData = transformData;
+                viewOptions.transformData = transformData;
             }
 
-            // Add CRUD callbacks only for non-readOnly services
             if (!serviceConfig.readOnly) {
-                tableConfig.statusField = 'status';
-                tableConfig.addButtonText = `Add ${serviceConfig.label.replace(/s$/, '')}`;
-                tableConfig.onAdd = () => Layer8MNavCrud.openServiceForm(serviceConfig, formDef, null);
-                tableConfig.onEdit = (id, item) => Layer8MNavCrud.openServiceForm(serviceConfig, formDef, item);
-                tableConfig.onDelete = (id, item) => Layer8MNavCrud.deleteServiceRecord(serviceConfig, id, item);
-                tableConfig.onRowClick = (item, id) => Layer8MNavCrud.showRecordDetails(serviceConfig, formDef, item);
+                viewOptions.statusField = 'status';
+                viewOptions.addButtonText = `Add ${serviceConfig.label.replace(/s$/, '')}`;
+                viewOptions.onAdd = () => Layer8MNavCrud.openServiceForm(serviceConfig, formDef, null);
+                viewOptions.onEdit = (id, item) => Layer8MNavCrud.openServiceForm(serviceConfig, formDef, item);
+                viewOptions.onDelete = (id, item) => Layer8MNavCrud.deleteServiceRecord(serviceConfig, id, item);
+                viewOptions.onRowClick = (item, id) => Layer8MNavCrud.showRecordDetails(serviceConfig, formDef, item);
             }
 
-            const activeTable = new Layer8MEditTable('service-table-container', tableConfig);
-            setActiveTable(activeTable);
+            // Determine available view types (mirror desktop auto-detection)
+            const allViewTypes = serviceConfig.supportedViews
+                ? serviceConfig.supportedViews.slice() : ['table'];
+            const hasDate = columns.some(c => c.type === 'date');
+            const hasMoney = columns.some(c => c.type === 'money');
+            if (hasDate && hasMoney && allViewTypes.indexOf('chart') === -1) {
+                allViewTypes.push('chart');
+            }
+
+            // Create view via factory
+            let currentView = Layer8MViewFactory.create(viewType, viewOptions);
+
+            // Render view switcher if multiple views available
+            const switcherSlot = document.getElementById('service-view-switcher');
+            if (allViewTypes.length > 1 && switcherSlot && typeof Layer8ViewSwitcher !== 'undefined') {
+                const switcherKey = serviceConfig.model || serviceConfig.key;
+                switcherSlot.innerHTML = Layer8ViewSwitcher.render(switcherKey, allViewTypes, viewType);
+                Layer8ViewSwitcher.attach(switcherSlot, function(newType) {
+                    if (currentView && typeof currentView.destroy === 'function') {
+                        currentView.destroy();
+                    }
+                    container.innerHTML = '';
+                    currentView = Layer8MViewFactory.create(newType, viewOptions);
+                    if (currentView && currentView.init) currentView.init();
+                    setActiveTable(currentView);
+                });
+            }
+
+            if (currentView && currentView.init) currentView.init();
+            setActiveTable(currentView);
         },
 
         /**

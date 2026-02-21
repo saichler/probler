@@ -161,6 +161,28 @@ limitations under the License.
     background: var(--layer8d-primary-dark);
 }
 
+/* Desktop core view Add buttons match mobile table Add button */
+#service-table-container .layer8d-btn.layer8d-btn-primary.layer8d-btn-small {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--layer8d-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    box-shadow: none;
+    transform: none;
+    transition: background var(--transition-fast);
+}
+
+#service-table-container .layer8d-btn.layer8d-btn-primary.layer8d-btn-small:hover,
+#service-table-container .layer8d-btn.layer8d-btn-primary.layer8d-btn-small:active {
+    background: var(--layer8d-primary-dark);
+    box-shadow: none;
+    transform: none;
+}
+
 .mobile-edit-table-add-btn.large {
     padding: var(--spacing-md) var(--spacing-lg);
     font-size: var(--font-size-base);

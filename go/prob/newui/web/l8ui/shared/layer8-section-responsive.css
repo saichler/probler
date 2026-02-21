@@ -24,7 +24,7 @@ limitations under the License.
 @media (max-width: 1024px) {
     .l8-header-frame,
     .hcm-header-frame {
-        height: 85px;
+        height: 100px;
     }
 
     .l8-title,
@@ -58,7 +58,7 @@ limitations under the License.
     /* Header */
     .l8-header-frame,
     .hcm-header-frame {
-        height: 70px;
+        height: 80px;
     }
 
     .l8-header-title,

@@ -264,6 +264,7 @@ limitations under the License.
             }
 
             let html = renderDataListHeader(serviceConfig.label, 'Tap a record to view details');
+            html += '<div id="service-view-switcher" style="text-align:right;padding:0 12px 8px"></div>';
             html += '<div id="service-table-container"></div>';
 
             content.innerHTML = html;

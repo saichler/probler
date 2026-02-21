@@ -197,7 +197,7 @@ limitations under the License.
 
     // Update the popup body with current page content and pagination
     function updatePopupContent() {
-        var popupBody = document.querySelector('#layer8d-popup-root .probler-popup-overlay:not(.stacked) .probler-popup-body');
+        var popupBody = Layer8DPopup.getBody();
         if (!popupBody) return;
 
         if (totalBytes === 0) {
@@ -260,7 +260,9 @@ limitations under the License.
         var fullPath = selectedFile.path + '/' + selectedFile.name;
         var maxPage = Math.max(0, Math.ceil(totalBytes / BYTES_PER_PAGE) - 1);
 
-        document.querySelectorAll('#layer8d-popup-root .probler-popup-overlay:not(.stacked) .l8logs-pagination-btn').forEach(function(btn) {
+        var body = Layer8DPopup.getBody();
+        if (!body) return;
+        body.querySelectorAll('.l8logs-pagination-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 var action = btn.getAttribute('data-action');
                 var newPage = currentPage;

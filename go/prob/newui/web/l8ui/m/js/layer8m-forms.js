@@ -50,6 +50,20 @@ limitations under the License.
                     return F.renderSelectField(fieldConfig, value, readonly);
                 case 'checkbox':
                     return F.renderCheckboxField(fieldConfig, value, readonly);
+                case 'toggle':
+                    return F.renderToggleField(fieldConfig, value, readonly);
+                case 'slider':
+                    return F.renderSliderField(fieldConfig, value, readonly);
+                case 'time':
+                    return F.renderTimeField(fieldConfig, value, readonly);
+                case 'tags':
+                    return F.renderTagsField(fieldConfig, value, readonly);
+                case 'multiselect':
+                    return F.renderMultiselectField(fieldConfig, value, readonly);
+                case 'richtext':
+                    return F.renderRichtextField(fieldConfig, value, readonly);
+                case 'period':
+                    return F.renderPeriodField(fieldConfig, value, readonly);
                 case 'money':
                     return F.renderMoneyField(fieldConfig, value, readonly);
                 case 'currency':
@@ -74,6 +88,8 @@ limitations under the License.
                     return F.renderRoutingNumberField(fieldConfig, value, readonly);
                 case 'colorCode':
                     return F.renderColorCodeField(fieldConfig, value, readonly);
+                case 'inlineTable':
+                    return F.renderInlineTableField(fieldConfig, value, readonly);
                 default:
                     return F.renderTextField(fieldConfig, value, readonly);
             }
@@ -131,7 +147,7 @@ limitations under the License.
                     return;
                 }
 
-                if (input.type === 'checkbox') {
+                if (input.type === 'checkbox' || input.classList.contains('l8-toggle-input')) {
                     formData[input.name] = input.checked ? 1 : 0;
                 } else if (input.dataset.format === 'currency') {
                     formData[input.name] = Math.round(parseFloat(input.value || 0) * 100);
@@ -161,6 +177,39 @@ limitations under the License.
                 }
             });
 
+            // Post-process inline table fields (hidden JSON inputs)
+            form.querySelectorAll('input[data-inline-table-data]').forEach(hiddenInput => {
+                const key = hiddenInput.name;
+                if (hiddenInput.value) {
+                    try { formData[key] = JSON.parse(hiddenInput.value); } catch (e) { formData[key] = []; }
+                }
+            });
+
+            // Post-process tags fields (hidden JSON inputs)
+            form.querySelectorAll('input[data-tags-value]').forEach(hiddenInput => {
+                const key = hiddenInput.name;
+                if (hiddenInput.value) {
+                    try { formData[key] = JSON.parse(hiddenInput.value); } catch (e) { formData[key] = []; }
+                }
+            });
+
+            // Post-process multiselect fields (hidden JSON inputs)
+            form.querySelectorAll('input[data-multiselect-value]').forEach(hiddenInput => {
+                const key = hiddenInput.name;
+                if (hiddenInput.value) {
+                    try { formData[key] = JSON.parse(hiddenInput.value); } catch (e) { formData[key] = []; }
+                }
+            });
+
+            // Post-process richtext fields (contenteditable divs)
+            form.querySelectorAll('.l8-richtext-editor[data-field-key]').forEach(editor => {
+                const key = editor.dataset.fieldKey;
+                let html = editor.innerHTML || '';
+                html = html.replace(/<script[\s\S]*?<\/script>/gi, '');
+                html = html.replace(/\s*on\w+\s*=\s*(['"])[^'"]*\1/gi, '');
+                formData[key] = html.trim() || null;
+            });
+
             // Post-process money compound fields (__currencyId + __amount → Money object)
             const moneyKeys = new Set();
             for (const key of Object.keys(formData)) {
@@ -172,6 +221,21 @@ limitations under the License.
                 formData[baseKey] = cents != null ? { amount: parseInt(cents, 10) || 0, currencyId: currId || '' } : null;
                 delete formData[baseKey + '.__amount'];
                 delete formData[baseKey + '.__currencyId'];
+            }
+
+            // Post-process period compound fields (__periodType + __periodYear + __periodValue → L8Period object)
+            const periodKeys = new Set();
+            for (const key of Object.keys(formData)) {
+                if (key.endsWith('.__periodType')) periodKeys.add(key.replace('.__periodType', ''));
+            }
+            for (const baseKey of periodKeys) {
+                const pt = parseInt(formData[baseKey + '.__periodType'], 10) || 0;
+                const py = parseInt(formData[baseKey + '.__periodYear'], 10) || 0;
+                const pv = parseInt(formData[baseKey + '.__periodValue'], 10) || 0;
+                formData[baseKey] = pt ? { periodType: pt, periodYear: py, periodValue: pv } : null;
+                delete formData[baseKey + '.__periodType'];
+                delete formData[baseKey + '.__periodYear'];
+                delete formData[baseKey + '.__periodValue'];
             }
 
             return formData;
@@ -227,12 +291,16 @@ limitations under the License.
         },
 
         /**
-         * Initialize interactive form fields (date pickers, reference pickers)
+         * Initialize interactive form fields (date pickers, reference pickers, inline tables)
          * Call this after form is rendered to container
          */
-        initFormFields(container) {
+        initFormFields(container, formDef) {
             this.initReferencePickers(container);
+            if (formDef) this.initInlineTableHandlers(container, formDef);
         },
+
+        // initInlineTableHandlers, _openMobileRowEditor, _showMobileChildDetail,
+        // _rerenderMobileTable are in layer8m-forms-inline.js
 
         /**
          * Initialize reference picker fields - MATCHES DESKTOP attachReferencePickers() EXACTLY

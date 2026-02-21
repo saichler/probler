@@ -140,11 +140,16 @@ limitations under the License.
             return module.services.find(s => s.key === serviceKey);
         };
 
-        // Refresh current table
+        // Refresh current view (table, chart, kanban, etc.)
         moduleNS.refreshCurrentTable = function() {
             const tableId = `${moduleNS._state.currentModule}-${moduleNS._state.currentService}-table`;
-            if (moduleNS._state.serviceTables[tableId]) {
-                moduleNS._state.serviceTables[tableId].fetchData(1, moduleNS._state.serviceTables[tableId].pageSize);
+            const view = moduleNS._state.serviceTables[tableId];
+            if (view) {
+                if (typeof view.refresh === 'function') {
+                    view.refresh();
+                } else if (typeof view.fetchData === 'function') {
+                    view.fetchData(1, view.pageSize);
+                }
             }
         };
 

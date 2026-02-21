@@ -17,19 +17,17 @@ package common
 
 import (
 	"github.com/saichler/l8pollaris/go/pollaris/targets"
-	"github.com/saichler/l8types/go/sec"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-
 	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8services/go/services/manager"
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/sec"
 	"github.com/saichler/l8types/go/types/l8sysconfig"
 	"github.com/saichler/l8utils/go/utils/logger"
 	"github.com/saichler/l8utils/go/utils/registry"
 	"github.com/saichler/l8utils/go/utils/resources"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 const (
@@ -46,7 +44,7 @@ func init() {
 
 func CreateResources(alias string) ifs.IResources {
 	logsDir := "/data/logs/probler"
-	logger.SetLogToFile(logsDir, alias)
+	//logger.SetLogToFile(logsDir, alias)
 	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
 	log.SetLogLevel(ifs.Info_Level)
 	res := resources.NewResources(log)
@@ -55,8 +53,8 @@ func CreateResources(alias string) ifs.IResources {
 
 	sec, err := sec.LoadSecurityProvider(res)
 	if err != nil {
-		time.Sleep(time.Second * 10)
-		panic(err.Error())
+		//time.Sleep(time.Second * 10)
+		//panic(err.Error())
 	}
 	res.Set(sec)
 

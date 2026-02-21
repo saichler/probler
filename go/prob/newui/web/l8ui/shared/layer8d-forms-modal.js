@@ -39,7 +39,10 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
             saveButtonText: 'Save',
             cancelButtonText: 'Cancel',
             onSave: handleFormSave,
-            onShow: Layer8DFormsPickers.attachDatePickers
+            onShow: (body) => {
+                Layer8DFormsPickers.attachDatePickers(body);
+                Layer8DFormsPickers.attachInlineTableHandlers(body);
+            }
         });
     }
 
@@ -89,7 +92,10 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                 saveButtonText: 'Save',
                 cancelButtonText: 'Cancel',
                 onSave: handleFormSave,
-                onShow: Layer8DFormsPickers.attachDatePickers
+                onShow: (body) => {
+                    Layer8DFormsPickers.attachDatePickers(body);
+                    Layer8DFormsPickers.attachInlineTableHandlers(body);
+                }
             });
 
         } catch (error) {

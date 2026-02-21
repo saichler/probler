@@ -33,7 +33,7 @@ limitations under the License.
     position: relative;
     width: calc(100% + 14px);
     margin: -7px -7px 20px -7px;
-    height: 100px;
+    height: 120px;
     background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
     border-radius: 16px 16px 0 0;
     overflow: hidden;
@@ -257,7 +257,7 @@ limitations under the License.
 
 .l8-service-content {
     flex: 1;
-    padding: 20px;
+    padding: 0;
     min-width: 0;
     min-height: 0;
     display: flex;
@@ -273,6 +273,7 @@ limitations under the License.
     display: flex;
     flex-direction: column;
     flex: 1;
+    position: relative;
     min-height: 0;
     overflow: hidden;
     animation: l8-fade-in-content 0.3s ease-out;
@@ -282,8 +283,8 @@ limitations under the License.
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
+    margin-bottom: 0;
+    padding: 16px 16px 12px;
     border-bottom: 1px solid #e2e8f0;
 }
 
@@ -327,7 +328,7 @@ limitations under the License.
 /* ============================================ */
 
 .hcm-section { position: relative; overflow: visible; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-.hcm-header-frame { position: relative; width: calc(100% + 14px); margin: -7px -7px 20px -7px; height: 100px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%); border-radius: 16px 16px 0 0; overflow: hidden; box-shadow: 0 8px 32px rgba(14, 165, 233, 0.15); }
+.hcm-header-frame { position: relative; width: calc(100% + 14px); margin: -7px -7px 20px -7px; height: 120px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%); border-radius: 16px 16px 0 0; overflow: hidden; box-shadow: 0 8px 32px rgba(14, 165, 233, 0.15); }
 .hcm-header-frame.parallax-container { position: relative; transform-style: preserve-3d; }
 .hcm-header-bg { z-index: 1; }
 .hcm-illustration { width: 100%; height: 100%; display: block; }
@@ -350,10 +351,10 @@ limitations under the License.
 .hcm-subnav-item.active { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; border-left-color: #0ea5e9; font-weight: 600; }
 .hcm-subnav-item .subnav-icon { font-size: 16px; width: 20px; text-align: center; }
 .hcm-subnav-item .subnav-label { flex: 1; }
-.hcm-service-content { flex: 1; padding: 20px; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.hcm-service-content { flex: 1; padding: 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 .hcm-service-view { display: none; }
 .hcm-service-view.active { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; animation: l8-fade-in-content 0.3s ease-out; }
-.hcm-service-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
+.hcm-service-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0; padding: 16px 16px 12px; border-bottom: 1px solid #e2e8f0; }
 .hcm-service-title { font-size: 20px; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 10px; }
 .hcm-service-title .service-icon { font-size: 24px; }
 .hcm-service-description { font-size: 13px; color: #64748b; margin-top: 4px; }

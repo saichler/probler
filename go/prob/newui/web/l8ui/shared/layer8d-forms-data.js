@@ -39,7 +39,18 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
     // ========================================
 
     function collectFormData(formDef) {
-        const form = document.getElementById('layer8d-edit-form');
+        // Scope to topmost popup body to avoid picking up a stacked parent form
+        // when a child row editor is open on top
+        let form = null;
+        if (typeof Layer8DPopup !== 'undefined') {
+            const body = Layer8DPopup.getBody();
+            if (body) {
+                form = body.querySelector('#layer8d-edit-form');
+            }
+        }
+        if (!form) {
+            form = document.getElementById('layer8d-edit-form');
+        }
         if (!form) return null;
 
         const data = {};
@@ -47,16 +58,19 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
         formDef.sections.forEach(section => {
             section.fields.forEach(field => {
                 // Money fields use compound sub-elements (fieldKey.__amount, fieldKey.__currencyId)
+                // Inline tables use a hidden input with data-inline-table-data attribute
                 // so form.elements[field.key] won't find a match — skip the guard for them
                 const element = form.elements[field.key];
-                if (!element && field.type !== 'money') return;
+                if (!element && field.type !== 'money' && field.type !== 'period' && field.type !== 'inlineTable' && field.type !== 'tags' && field.type !== 'multiselect' && field.type !== 'richtext') return;
 
                 let value;
                 switch (field.type) {
                     case 'checkbox':
+                    case 'toggle':
                         value = element.checked;
                         break;
                     case 'number':
+                    case 'slider':
                         value = element.value ? parseFloat(element.value) : null;
                         break;
                     case 'date':
@@ -129,6 +143,64 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                         }
                         const currId = currencyEl ? currencyEl.value : '';
                         value = cents != null ? { amount: cents, currencyId: currId } : null;
+                        break;
+                    }
+
+                    case 'period': {
+                        const ptEl = form.querySelector(`select[name="${field.key}.__periodType"]`);
+                        const pyEl = form.querySelector(`select[name="${field.key}.__periodYear"]`);
+                        const pvEl = form.querySelector(`select[name="${field.key}.__periodValue"]`);
+                        const pt = ptEl ? parseInt(ptEl.value, 10) : 0;
+                        const py = pyEl ? parseInt(pyEl.value, 10) : 0;
+                        const pv = pvEl ? parseInt(pvEl.value, 10) : 0;
+                        value = pt ? { periodType: pt, periodYear: py, periodValue: pv } : null;
+                        break;
+                    }
+
+                    case 'inlineTable': {
+                        const hiddenInput = form.querySelector(`input[data-inline-table-data="${field.key}"]`);
+                        if (hiddenInput && hiddenInput.value) {
+                            try { value = JSON.parse(hiddenInput.value); } catch (e) { value = []; }
+                        } else {
+                            value = [];
+                        }
+                        break;
+                    }
+
+                    case 'tags': {
+                        const tagsHidden = form.querySelector(`input[data-tags-value="${field.key}"]`);
+                        if (tagsHidden && tagsHidden.value) {
+                            try { value = JSON.parse(tagsHidden.value); } catch (e) { value = []; }
+                        } else {
+                            value = [];
+                        }
+                        break;
+                    }
+
+                    case 'multiselect': {
+                        const msHidden = form.querySelector(`input[data-multiselect-value="${field.key}"]`);
+                        if (msHidden && msHidden.value) {
+                            try { value = JSON.parse(msHidden.value); } catch (e) { value = []; }
+                        } else {
+                            value = [];
+                        }
+                        break;
+                    }
+
+                    case 'time':
+                        value = element.value || null;
+                        break;
+
+                    case 'richtext': {
+                        const rtEditor = form.querySelector(`.l8-richtext-editor[data-field-key="${field.key}"]`);
+                        if (rtEditor) {
+                            let html = rtEditor.innerHTML || '';
+                            html = html.replace(/<script[\s\S]*?<\/script>/gi, '');
+                            html = html.replace(/\s*on\w+\s*=\s*(['"])[^'"]*\1/gi, '');
+                            value = html.trim() || null;
+                        } else {
+                            value = null;
+                        }
                         break;
                     }
 

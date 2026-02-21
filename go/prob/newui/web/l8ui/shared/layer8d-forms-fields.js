@@ -31,8 +31,9 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
     // Formatted field types that use Layer8DInputFormatter
     const FORMATTED_TYPES = ['ssn', 'phone', 'currency', 'percentage', 'routingNumber', 'ein', 'email', 'url', 'colorCode', 'rating', 'hours'];
 
-    function generateFormHtml(formDef, data = {}) {
+    function generateFormHtml(formDef, data = {}, options = {}) {
         const sections = formDef.sections;
+        const readOnly = options.readOnly || false;
         let html = '<form id="layer8d-edit-form">';
 
         // Tabs header
@@ -51,15 +52,22 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
             html += '<div class="detail-grid"><div class="detail-section detail-full-width">';
 
             const fields = section.fields;
-            for (let i = 0; i < fields.length; i += 2) {
+            for (let i = 0; i < fields.length; i++) {
                 const field1 = fields[i];
-                const field2 = fields[i + 1];
 
-                if (field2) {
+                // Inline tables always span full width
+                if (field1.type === 'inlineTable') {
+                    html += Layer8DFormsFields.generateInlineTableHtml(field1, data[field1.key] || [], readOnly);
+                    continue;
+                }
+
+                const field2 = fields[i + 1];
+                if (field2 && field2.type !== 'inlineTable') {
                     html += '<div class="form-row">';
                     html += generateFieldHtml(field1, getNestedValue(data, field1.key));
                     html += generateFieldHtml(field2, getNestedValue(data, field2.key));
                     html += '</div>';
+                    i++; // skip field2 since we consumed it
                 } else {
                     html += generateFieldHtml(field1, getNestedValue(data, field1.key));
                 }
@@ -151,9 +159,118 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                     </div>
                 `;
 
+            case 'toggle': {
+                const togChecked = value ? 'checked' : '';
+                return `
+                    <div class="form-group">
+                        <label class="l8-toggle-label">
+                            <input type="checkbox" id="field-${field.key}" name="${field.key}" ${togChecked} class="l8-toggle-input">
+                            <span class="l8-toggle-track"><span class="l8-toggle-thumb"></span></span>
+                            <span>${escapeHtml(field.label)}</span>
+                        </label>
+                    </div>
+                `;
+            }
+
+            case 'slider': {
+                const sliderMin = field.min !== undefined ? field.min : 0;
+                const sliderMax = field.max !== undefined ? field.max : 100;
+                const sliderStep = field.step !== undefined ? field.step : 1;
+                const sliderVal = value !== null && value !== undefined ? value : sliderMin;
+                inputHtml = `<div class="l8-slider-wrapper">
+                    <input type="range" id="field-${field.key}" name="${field.key}"
+                        value="${escapeAttr(String(sliderVal))}" min="${sliderMin}" max="${sliderMax}" step="${sliderStep}"
+                        class="l8-slider" oninput="this.nextElementSibling.textContent=this.value" ${required}>
+                    <span class="l8-slider-value">${escapeHtml(String(sliderVal))}</span>
+                </div>`;
+                break;
+            }
+
+            case 'time':
+                inputHtml = `<input type="time" id="field-${field.key}" name="${field.key}" value="${escapeAttr(value || '')}" ${required}>`;
+                break;
+
+            case 'tags': {
+                const tagsArr = Array.isArray(value) ? value : [];
+                let chipsHtml = tagsArr.map(t =>
+                    `<span class="l8-tag-chip">${escapeHtml(t)}<span class="l8-tag-remove" onclick="Layer8DFormsFields.removeTag(this)">&times;</span></span>`
+                ).join('');
+                inputHtml = `<div class="l8-tags-wrapper">
+                    <div class="l8-tags-chips">${chipsHtml}</div>
+                    <input type="text" class="l8-tags-input" placeholder="Type and press Enter"
+                           onkeydown="Layer8DFormsFields.onTagKeydown(event, this)">
+                    <input type="hidden" name="${field.key}" data-tags-value="${escapeAttr(field.key)}" value="${escapeAttr(JSON.stringify(tagsArr))}">
+                </div>`;
+                break;
+            }
+
+            case 'multiselect': {
+                const msValues = Array.isArray(value) ? value : [];
+                const msOptions = field.options || {};
+                let msChipsHtml = msValues.map(v => {
+                    const label = msOptions[v] || v;
+                    return `<span class="l8-tag-chip">${escapeHtml(String(label))}<span class="l8-tag-remove" onclick="Layer8DFormsFields.removeMultiselectValue(this, '${escapeAttr(String(v))}')">&times;</span></span>`;
+                }).join('');
+                let msOptsHtml = Object.entries(msOptions).map(([val, label]) => {
+                    const chk = msValues.includes(val) || msValues.includes(Number(val)) ? 'checked' : '';
+                    return `<label class="l8-multiselect-option"><input type="checkbox" value="${escapeAttr(val)}" ${chk} onchange="Layer8DFormsFields.onMultiselectChange(this)">${escapeHtml(label)}</label>`;
+                }).join('');
+                inputHtml = `<div class="l8-multiselect-wrapper">
+                    <div class="l8-multiselect-chips">${msChipsHtml}</div>
+                    <div class="l8-multiselect-trigger" onclick="Layer8DFormsFields.toggleMultiselectDropdown(this)">Select options...</div>
+                    <div class="l8-multiselect-dropdown" style="display:none">${msOptsHtml}</div>
+                    <input type="hidden" name="${field.key}" data-multiselect-value="${escapeAttr(field.key)}" value="${escapeAttr(JSON.stringify(msValues))}">
+                </div>`;
+                break;
+            }
+
             case 'lookup':
                 inputHtml = `<input type="text" id="field-${field.key}" name="${field.key}" value="${escapeAttr(value || '')}" ${required} placeholder="Enter ${field.lookupModel} ID">`;
                 break;
+
+            case 'richtext': {
+                const rtContent = value || '';
+                inputHtml = `<div class="l8-richtext-wrapper">
+                    <div class="l8-richtext-toolbar">
+                        <button type="button" onclick="document.execCommand('bold')" title="Bold"><b>B</b></button>
+                        <button type="button" onclick="document.execCommand('italic')" title="Italic"><i>I</i></button>
+                        <button type="button" onclick="document.execCommand('insertUnorderedList')" title="Bullet List">&#8226;</button>
+                        <button type="button" onclick="document.execCommand('insertOrderedList')" title="Numbered List">1.</button>
+                    </div>
+                    <div class="l8-richtext-editor" contenteditable="true"
+                         data-field-key="${escapeAttr(field.key)}">${rtContent}</div>
+                    <input type="hidden" name="${field.key}" data-richtext-value="${escapeAttr(field.key)}" value="${escapeAttr(rtContent)}">
+                </div>`;
+                break;
+            }
+
+            case 'period': {
+                const periodObj = (typeof value === 'object' && value !== null) ? value : {};
+                const periodType = periodObj.periodType || 0;
+                const periodYear = periodObj.periodYear || new Date().getFullYear();
+                const periodValue = periodObj.periodValue || 0;
+
+                // Period Type select
+                const typeOptions = [['', '-- Select --'], ['1', 'Yearly'], ['2', 'Quarterly'], ['3', 'Monthly']];
+                let typeHtml = `<select name="${field.key}.__periodType" class="period-type-select" onchange="Layer8DFormsFields.onPeriodTypeChange(this)" ${field.required ? 'required' : ''}>`;
+                for (const [val, lbl] of typeOptions) {
+                    typeHtml += `<option value="${val}"${String(periodType) === val ? ' selected' : ''}>${lbl}</option>`;
+                }
+                typeHtml += '</select>';
+
+                // Year select (2050 down to 1970)
+                let yearHtml = `<select name="${field.key}.__periodYear" class="period-year-select">`;
+                for (let y = 2050; y >= 1970; y--) {
+                    yearHtml += `<option value="${y}"${y === periodYear ? ' selected' : ''}>${y}</option>`;
+                }
+                yearHtml += '</select>';
+
+                // Period Value select (content depends on type)
+                let valHtml = generatePeriodValueSelect(field.key, periodType, periodValue);
+
+                inputHtml = `<div class="period-input-group">${typeHtml}${yearHtml}${valHtml}</div>`;
+                break;
+            }
 
             case 'reference':
                 inputHtml = generateReferenceInput(field, value);
@@ -337,7 +454,29 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
         }
     }
 
-    // Export
+    // ========================================
+    // PERIOD FIELD HELPERS (onPeriodTypeChange in layer8d-forms-fields-ext.js)
+    // ========================================
+
+    function generatePeriodValueSelect(fieldKey, periodType, selectedValue) {
+        const months = [[1,'January'],[2,'February'],[3,'March'],[4,'April'],[5,'May'],[6,'June'],
+                        [7,'July'],[8,'August'],[9,'September'],[10,'October'],[11,'November'],[12,'December']];
+        const quarters = [[13,'Q1'],[14,'Q2'],[15,'Q3'],[16,'Q4']];
+        const hidden = (Number(periodType) === 1);
+        let options = Number(periodType) === 2 ? quarters : Number(periodType) === 3 ? months : [];
+
+        let html = `<select name="${fieldKey}.__periodValue" class="period-value-select"${hidden ? ' style="display:none"' : ''}>`;
+        html += '<option value="">--</option>';
+        for (const [val, lbl] of options) {
+            html += `<option value="${val}"${Number(selectedValue) === val ? ' selected' : ''}>${lbl}</option>`;
+        }
+        html += '</select>';
+        return html;
+    }
+
+    // Inline table HTML, tags/multiselect & period handlers are in layer8d-forms-fields-ext.js
+
+    // Export (extended by layer8d-forms-fields-ext.js)
     window.Layer8DFormsFields = {
         generateFormHtml,
         generateFieldHtml,

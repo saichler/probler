@@ -38,8 +38,8 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                 return;
             }
 
-            // Generate SAME form as edit (no readonly flag) - matches desktop hcm-crud.js:105
-            const content = Layer8MForms.renderForm(formDef, freshRecord);
+            // Generate form with readOnly flag for inline tables
+            const content = Layer8MForms.renderForm(formDef, freshRecord, true);
 
             Layer8MPopup.show({
                 title: `${serviceConfig.label.replace(/s$/, '')} Details`,
@@ -50,8 +50,8 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                 showCancelButton: true,
                 cancelButtonText: 'Close',
                 onShow: (popup) => {
-                    // Initialize form fields (date pickers, reference pickers)
-                    Layer8MForms.initFormFields(popup.body);
+                    // Initialize form fields (date pickers, reference pickers, inline tables)
+                    Layer8MForms.initFormFields(popup.body, formDef);
                     // Disable all form inputs - matches desktop hcm-crud.js:123-125
                     popup.body.querySelectorAll('input, select, textarea').forEach(el => {
                         el.disabled = true;
@@ -112,6 +112,9 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                 content: content,
                 size: 'large',
                 saveButtonText: isEdit ? 'Update' : 'Create',
+                onShow: (popup) => {
+                    Layer8MForms.initFormFields(popup.body, formDef);
+                },
                 onSave: async (popup) => {
                     const body = popup.body;
                     const errors = Layer8MForms.validateForm(body);

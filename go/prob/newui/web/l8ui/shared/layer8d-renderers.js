@@ -181,6 +181,31 @@ limitations under the License.
     }
 
     // ========================================
+    // PERIOD RENDERER
+    // ========================================
+
+    const PERIOD_VALUE_NAMES = {
+        1: 'January', 2: 'February', 3: 'March', 4: 'April',
+        5: 'May', 6: 'June', 7: 'July', 8: 'August',
+        9: 'September', 10: 'October', 11: 'November', 12: 'December',
+        13: 'Q1', 14: 'Q2', 15: 'Q3', 16: 'Q4'
+    };
+
+    /**
+     * Render an L8Period object as human-readable text.
+     * Yearly: "2025"  Quarterly: "2025 / Q2"  Monthly: "2025 / February"
+     */
+    function renderPeriod(value) {
+        if (!value || typeof value !== 'object') return '-';
+        const year = value.periodYear;
+        const type = value.periodType;
+        if (!year) return '-';
+        if (type === 1) return String(year); // Yearly
+        const valName = PERIOD_VALUE_NAMES[value.periodValue];
+        return valName ? `${year} / ${valName}` : String(year);
+    }
+
+    // ========================================
     // EXPORT
     // ========================================
 
@@ -198,6 +223,7 @@ limitations under the License.
         renderTag,
         renderTags,
         renderEmpty,
+        renderPeriod,
 
         // Constants
         DEFAULT_STATUS_CLASSES

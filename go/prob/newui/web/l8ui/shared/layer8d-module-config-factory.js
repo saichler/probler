@@ -68,10 +68,16 @@ limitations under the License.
          * @param {string} icon - Emoji icon (e.g., '📋')
          * @param {string} endpoint - API endpoint (e.g., '/35/BiReport')
          * @param {string} model - Model name (e.g., 'BiReport')
+         * @param {string} [viewType] - View type (e.g., 'table', 'chart', 'kanban')
+         * @param {Object} [viewConfig] - View-type-specific configuration
          * @returns {Object} Service configuration object
          */
-        service: function(key, label, icon, endpoint, model) {
-            return { key: key, label: label, icon: icon, endpoint: endpoint, model: model };
+        service: function(key, label, icon, endpoint, model, viewType, viewConfig, alternateViews) {
+            const svc = { key: key, label: label, icon: icon, endpoint: endpoint, model: model };
+            if (viewType) svc.viewType = viewType;
+            if (viewConfig) svc.viewConfig = viewConfig;
+            if (alternateViews) svc.alternateViews = alternateViews;
+            return svc;
         },
 
         /**

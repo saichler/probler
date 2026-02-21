@@ -222,8 +222,10 @@ ${this._generateInitScript(config)}
             const views = mod.services.map(svc => {
                 const activeClass = svc.isDefault ? ' active' : '';
                 const containerId = `${mod.key}-${svc.key}-table-container`;
+                const switcherId = `${mod.key}-${svc.key}-view-switcher`;
                 return `
                 <div class="l8-service-view${activeClass}" data-service="${svc.key}">
+                    <div class="l8-view-switcher-slot" id="${switcherId}"></div>
                     <div class="l8-table-container" id="${containerId}"></div>
                 </div>`;
             }).join('');

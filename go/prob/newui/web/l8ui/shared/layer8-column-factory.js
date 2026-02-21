@@ -31,7 +31,7 @@ limitations under the License.
 (function() {
     'use strict';
 
-    const { renderBoolean, renderDate, renderMoney } = window.Layer8DRenderers || {};
+    const { renderBoolean, renderDate, renderMoney, renderPeriod } = window.Layer8DRenderers || {};
 
     window.Layer8ColumnFactory = {
         /**
@@ -79,6 +79,7 @@ limitations under the License.
                 key: key,
                 label: label || this._toTitleCase(key),
                 sortKey: key,
+                type: 'boolean',
                 render: options
                     ? (item) => renderBoolean(item[key], options)
                     : (item) => renderBoolean(item[key])
@@ -94,13 +95,19 @@ limitations under the License.
          * @returns {Array} - Single column in array format
          */
         status: function(key, label, enumValues, renderer) {
+            if (typeof renderer !== 'function') {
+                console.error(`Layer8ColumnFactory.status('${key}', '${label}'): renderer is not a function (got ${typeof renderer}). Check that the render object is populated before columns are defined.`);
+            }
             return [{
                 key: key,
                 label: label,
                 sortKey: key,
                 filterKey: key,
+                type: 'status',
                 enumValues: enumValues,
-                render: (item) => renderer(item[key])
+                render: typeof renderer === 'function'
+                    ? (item) => renderer(item[key])
+                    : (item) => String(item[key] ?? '')
             }];
         },
 
@@ -113,12 +120,18 @@ limitations under the License.
          * @returns {Array} - Single column in array format
          */
         enum: function(key, label, enumValues, renderer) {
+            if (typeof renderer !== 'function') {
+                console.error(`Layer8ColumnFactory.enum('${key}', '${label}'): renderer is not a function (got ${typeof renderer}). Check that the render object is populated before columns are defined.`);
+            }
             const col = {
                 key: key,
                 label: label,
                 sortKey: key,
                 filterKey: key,
-                render: (item) => renderer(item[key])
+                type: 'enum',
+                render: typeof renderer === 'function'
+                    ? (item) => renderer(item[key])
+                    : (item) => String(item[key] ?? '')
             };
             if (enumValues) {
                 col.enumValues = enumValues;
@@ -137,6 +150,7 @@ limitations under the License.
                 key: key,
                 label: label || this._toTitleCase(key),
                 sortKey: key,
+                type: 'date',
                 render: (item) => renderDate(item[key])
             }];
         },
@@ -152,7 +166,24 @@ limitations under the License.
                 key: key,
                 label: label || this._toTitleCase(key),
                 sortKey: key,
+                type: 'money',
                 render: (item) => renderMoney(item[key])
+            }];
+        },
+
+        /**
+         * Create a period column (renders L8Period as "2025 / Q2").
+         * @param {string} key - The field key
+         * @param {string} [label] - Optional label
+         * @returns {Array} - Single column in array format
+         */
+        period: function(key, label) {
+            return [{
+                key: key,
+                label: label || this._toTitleCase(key),
+                sortKey: key,
+                type: 'period',
+                render: (item) => renderPeriod(item[key])
             }];
         },
 
@@ -167,7 +198,8 @@ limitations under the License.
                 key: key,
                 label: label || 'ID',
                 sortKey: key,
-                filterKey: key
+                filterKey: key,
+                type: 'id'
             }];
         },
 

@@ -302,3 +302,136 @@ limitations under the License.
 .mobile-money-input-group .mobile-money-amount {
     flex: 1;
 }
+
+/* Period field (3 cascading selects) */
+.period-input-group { display: flex; gap: 8px; align-items: center; }
+.period-input-group select { flex: 1; min-width: 0; }
+
+/* Inline Table (embedded repeated child entities - card layout) */
+.mobile-form-inline-table {
+    margin-top: var(--spacing-sm);
+}
+
+.mobile-form-inline-card {
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+    overflow: hidden;
+    background: var(--bg-primary);
+}
+
+.mobile-form-inline-card.l8-clickable-row {
+    cursor: pointer;
+}
+
+.mobile-form-inline-card.l8-clickable-row:active {
+    background: var(--bg-secondary);
+}
+
+.mobile-form-inline-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.mobile-form-inline-card-title {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mobile-form-inline-card-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+}
+
+.mobile-form-inline-card-actions button {
+    padding: 6px 12px;
+    min-height: 32px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    background: var(--bg-primary);
+    font-family: var(--font-family);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.mobile-form-inline-card-actions button[data-action="edit-row"] {
+    color: var(--layer8d-primary);
+    border-color: var(--layer8d-primary);
+}
+
+.mobile-form-inline-card-actions button[data-action="delete-row"] {
+    color: var(--status-terminated);
+    border-color: var(--status-terminated);
+}
+
+.mobile-form-inline-card-body {
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.mobile-form-inline-card-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.mobile-form-inline-card-row:last-child {
+    border-bottom: none;
+}
+
+.mobile-form-inline-card-label {
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+}
+
+.mobile-form-inline-card-value {
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-normal);
+    color: var(--text-primary);
+    text-align: right;
+}
+
+.mobile-form-inline-add {
+    width: 100%;
+    min-height: var(--touch-target);
+    border: 2px dashed var(--border-light);
+    border-radius: var(--radius-md);
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--layer8d-primary);
+    margin-top: var(--spacing-sm);
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.mobile-form-inline-add:active {
+    background: rgba(14, 165, 233, 0.05);
+    border-color: var(--layer8d-primary);
+}
+
+.mobile-form-inline-empty {
+    text-align: center;
+    padding: var(--spacing-lg) var(--spacing-md);
+    color: var(--text-muted);
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    font-style: italic;
+}

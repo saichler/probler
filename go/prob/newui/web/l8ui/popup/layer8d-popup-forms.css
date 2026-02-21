@@ -443,3 +443,8 @@ limitations under the License.
 .money-input-group { display: flex; gap: 8px; align-items: stretch; }
 .money-input-group .money-currency-select { width: 80px; min-width: 80px; flex-shrink: 0; }
 .money-input-group .formatted-input-wrapper { flex: 1; }
+
+/* Period field (3 cascading selects) */
+.period-input-group { display: flex; gap: 8px; align-items: center; }
+.period-input-group select { flex: 1; min-width: 0; }
+

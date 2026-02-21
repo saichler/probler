@@ -78,20 +78,8 @@
                     <animate attributeName="opacity" values="0;0.8;0" dur="4s" repeatCount="indefinite"/>
                 </circle>
 
-                <!-- Stats on right side -->
+                <!-- Stats on right side (populated dynamically) -->
                 <g class="stats-display">
-                    <rect x="920" y="25" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
-                    <text x="935" y="42" fill="#334155" font-size="10">Datacenters:</text>
-                    <text x="1030" y="42" fill="rgba(14, 165, 233, 1)" font-size="12" font-weight="bold">3</text>
-                    <text x="1050" y="42" fill="rgba(16, 185, 129, 1)" font-size="10">Active</text>
-
-                    <rect x="920" y="65" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
-                    <text x="935" y="82" fill="#334155" font-size="10">Total Devices:</text>
-                    <text x="1040" y="82" fill="rgba(14, 165, 233, 1)" font-size="12" font-weight="bold">4,727</text>
-
-                    <rect x="920" y="105" width="220" height="30" rx="4" fill="rgba(14, 165, 233, 0.08)" stroke="rgba(14, 165, 233, 0.2)" stroke-width="1"/>
-                    <text x="935" y="122" fill="#334155" font-size="10">Uptime:</text>
-                    <text x="1010" y="122" fill="rgba(16, 185, 129, 1)" font-size="12" font-weight="bold">99.98%</text>
                 </g>
 
                 <!-- Gradient Overlay -->
@@ -116,74 +104,9 @@
                         <span class="metric-card-title">Network Devices</span>
                         <span class="metric-card-icon">&#127760;</span>
                     </div>
-                    <div class="metric-card-value">247</div>
+                    <div class="metric-card-value">--</div>
                     <div class="metric-card-details">
-                        <span class="metric-status">
-                            <span class="status-indicator status-operational"></span>
-                            <span>235 OK</span>
-                        </span>
-                        <span class="metric-status">
-                            <span class="status-indicator status-warning"></span>
-                            <span>8 WARN</span>
-                        </span>
-                        <span class="metric-status">
-                            <span class="status-indicator status-critical"></span>
-                            <span>4 CRIT</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-card-header">
-                        <span class="metric-card-title">GPU Clusters</span>
-                        <span class="metric-card-icon">&#128423;</span>
-                    </div>
-                    <div class="metric-card-value">1,024</div>
-                    <div class="metric-card-details">
-                        <span class="metric-status">
-                            <span class="status-indicator status-operational"></span>
-                            <span>1,018 OK</span>
-                        </span>
-                        <span class="metric-status">
-                            <span class="status-indicator status-warning"></span>
-                            <span>5 WARN</span>
-                        </span>
-                        <span class="metric-status">
-                            <span class="status-indicator status-critical"></span>
-                            <span>1 CRIT</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-card-header">
-                        <span class="metric-card-title">Hosts & VMs</span>
-                        <span class="metric-card-icon">&#128421;</span>
-                    </div>
-                    <div class="metric-card-value">3,456</div>
-                    <div class="metric-card-details">
-                        <span class="metric-status">
-                            <span class="status-indicator status-operational"></span>
-                            <span>3,398 OK</span>
-                        </span>
-                        <span class="metric-status">
-                            <span class="status-indicator status-warning"></span>
-                            <span>42 WARN</span>
-                        </span>
-                        <span class="metric-status">
-                            <span class="status-indicator status-critical"></span>
-                            <span>16 CRIT</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-card-header">
-                        <span class="metric-card-title">Storage Capacity</span>
-                        <span class="metric-card-icon">&#128190;</span>
-                    </div>
-                    <div class="metric-card-value">8.4 PB</div>
-                    <div class="metric-card-details">
-                        <span>Used: 6.2 PB</span>
-                        <span>Free: 2.2 PB</span>
-                        <span>74% Utilized</span>
+                        <span class="metric-status unavailable">Loading...</span>
                     </div>
                 </div>
             </div>

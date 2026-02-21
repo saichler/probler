@@ -70,7 +70,7 @@ limitations under the License.
         return lookup(parentModule, 'primaryKeys', modelName) || 'id';
     }
 
-    // Initialize a service table (Layer8DTable) for a module
+    // Initialize a service view for a module (table, chart, kanban, etc.)
     function initializeServiceTable(moduleNS, parentModule, moduleKey, service, tableId) {
         const containerId = `${moduleKey}-${service.key}-table-container`;
         const container = document.getElementById(containerId);
@@ -82,12 +82,12 @@ limitations under the License.
 
         const columns = getColumns(parentModule, service.model);
         const primaryKey = getPrimaryKey(parentModule, service.model);
+        const viewType = service.viewType || 'table';
 
-        const table = new Layer8DTable({
+        const viewOptions = {
             containerId: containerId,
             endpoint: Layer8DConfig.resolveEndpoint(service.endpoint),
             modelName: service.model,
-            serverSide: true,
             columns: columns,
             primaryKey: primaryKey,
             pageSize: 10,
@@ -95,11 +95,27 @@ limitations under the License.
             onEdit: (id) => moduleNS._openEditModal(service, id),
             onDelete: (id) => moduleNS._confirmDeleteItem(service, id),
             onRowClick: (item, id) => moduleNS._showDetailsModal(service, item, id),
-            addButtonText: `Add ${service.label.replace(/s$/, '')}`
-        });
+            addButtonText: `Add ${service.label.replace(/s$/, '')}`,
+            viewConfig: service.viewConfig || {}
+        };
 
-        table.init();
-        moduleNS._state.serviceTables[tableId] = table;
+        const switcherKey = `${moduleKey}-${service.key}`;
+        const allViewTypes = service.supportedViews ? service.supportedViews.slice() : ['table'];
+        const hasDate = columns.some(c => c.type === 'date');
+        const hasMoney = columns.some(c => c.type === 'money');
+        if (hasDate && hasMoney && allViewTypes.indexOf('chart') === -1) {
+            allViewTypes.push('chart');
+        }
+        const view = (allViewTypes.length > 1 && Layer8DViewFactory.createWithSwitcher)
+            ? Layer8DViewFactory.createWithSwitcher(viewType, viewOptions, allViewTypes, switcherKey, function(newView) {
+                moduleNS._state.serviceTables[tableId] = newView;
+            })
+            : Layer8DViewFactory.create(viewType, viewOptions);
+
+        if (view) {
+            view.init();
+            moduleNS._state.serviceTables[tableId] = view;
+        }
     }
 
     // Get list of registered parent module names

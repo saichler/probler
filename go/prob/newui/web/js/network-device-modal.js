@@ -25,8 +25,9 @@ function showDeviceDetailModal(device) {
         id: 'device-detail-' + device.id
     });
 
-    // Initialize physical inventory tree after popup renders
+    // Initialize physical inventory tree and performance charts after popup renders
     initializeDeviceTree(device);
+    initializePerformanceCharts(device);
 }
 
 // Initialize device physical inventory tree
@@ -36,8 +37,15 @@ function initializeDeviceTree(deviceData) {
         if (!treeContainer) return;
 
         if (deviceData.physicals && Object.keys(deviceData.physicals).length > 0 && typeof ProblerTree !== 'undefined') {
+            // Clone physicals and strip performance data (shown in Performance tab instead)
+            var treeData = JSON.parse(JSON.stringify(deviceData.physicals));
+            Object.keys(treeData).forEach(function(key) {
+                if (treeData[key] && treeData[key].performance) {
+                    delete treeData[key].performance;
+                }
+            });
             new ProblerTree('physical-inventory-tree', {
-                data: deviceData.physicals,
+                data: treeData,
                 expandAll: true,
                 maxHeight: '600px'
             });
@@ -55,11 +63,13 @@ function buildDeviceContent(device, statusClass, esc) {
         '<div class="probler-popup-tab active" data-tab="overview">Overview</div>' +
         '<div class="probler-popup-tab" data-tab="equipment">Equipment</div>' +
         '<div class="probler-popup-tab" data-tab="physical">Physical Inventory</div>' +
+        '<div class="probler-popup-tab" data-tab="performance">Performance</div>' +
     '</div>' +
     '<div class="probler-popup-tab-content">' +
         buildOverviewTab(device, statusClass, esc) +
         buildEquipmentTab(device, esc) +
         buildPhysicalTab() +
+        buildPerformanceTab(device) +
     '</div>';
 }
 
@@ -180,5 +190,106 @@ function buildPhysicalTab() {
     return '<div class="probler-popup-tab-pane" data-pane="physical">' +
         '<div id="physical-inventory-tree"></div>' +
     '</div>';
+}
+
+// Find performance data from the first physical entry that has it
+function findPerformanceData(device) {
+    if (!device.physicals) return null;
+    var keys = Object.keys(device.physicals);
+    for (var i = 0; i < keys.length; i++) {
+        var phys = device.physicals[keys[i]];
+        if (phys && phys.performance) return phys.performance;
+    }
+    return null;
+}
+
+// Build Performance tab content
+function buildPerformanceTab(device) {
+    var perf = findPerformanceData(device);
+    if (!perf) {
+        return '<div class="probler-popup-tab-pane" data-pane="performance">' +
+            '<p style="color: var(--layer8d-text-muted, #718096); text-align: center; padding: 40px;">' +
+            'No performance data available</p></div>';
+    }
+    var esc = Layer8DUtils.escapeHtml;
+    return '<div class="probler-popup-tab-pane" data-pane="performance">' +
+        '<div class="detail-grid">' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Summary</div>' +
+                '<div class="detail-row">' +
+                    '<span class="detail-label">Uptime</span>' +
+                    '<span class="detail-value">' + esc(perf.uptime || '-') + '</span>' +
+                '</div>' +
+                '<div class="detail-row">' +
+                    '<span class="detail-label">Load Average</span>' +
+                    '<span class="detail-value">' + (perf.loadAverage || 0) + '</span>' +
+                '</div>' +
+                '<div class="detail-row">' +
+                    '<span class="detail-label">Active Connections</span>' +
+                    '<span class="detail-value">' + (perf.activeConnections || 0) + '</span>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+        '<div id="perf-cpu-chart" style="margin-top:16px;min-height:200px;"></div>' +
+        '<div id="perf-memory-chart" style="margin-top:16px;min-height:200px;"></div>' +
+        '<div id="perf-temp-chart" style="margin-top:16px;min-height:200px;"></div>' +
+    '</div>';
+}
+
+// Format a Unix-seconds timestamp for chart X-axis labels
+function formatChartTimestamp(stamp, spanHours) {
+    var d = new Date(stamp * 1000);
+    var hh = String(d.getHours()).padStart(2, '0');
+    var mm = String(d.getMinutes()).padStart(2, '0');
+    if (spanHours <= 24) return hh + ':' + mm;
+    var mon = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return mon + '/' + day + ' ' + hh + ':' + mm;
+}
+
+// Initialize performance charts after popup renders
+function initializePerformanceCharts(device) {
+    if (typeof Layer8DChart === 'undefined') return;
+    var perf = findPerformanceData(device);
+    if (!perf) return;
+
+    setTimeout(function() {
+        var metrics = [
+            { field: 'cpuUsagePercent',    containerId: 'perf-cpu-chart',    title: 'CPU Usage %' },
+            { field: 'memoryUsagePercent', containerId: 'perf-memory-chart', title: 'Memory Usage %' },
+            { field: 'temperatureCelsius', containerId: 'perf-temp-chart',   title: 'Temperature (C)' }
+        ];
+
+        metrics.forEach(function(m) {
+            var series = perf[m.field];
+            if (!series || !series.length) return;
+            if (!document.getElementById(m.containerId)) return;
+
+            // Determine time span for label formatting
+            var firstStamp = series[0].stamp || 0;
+            var lastStamp = series[series.length - 1].stamp || 0;
+            var spanHours = (lastStamp - firstStamp) / 3600;
+
+            var chartData = series.map(function(pt) {
+                return {
+                    label: formatChartTimestamp(pt.stamp, spanHours),
+                    value: pt.value
+                };
+            });
+
+            var chart = new Layer8DChart({
+                containerId: m.containerId,
+                viewConfig: {
+                    chartType: 'line',
+                    title: m.title,
+                    categoryField: 'label',
+                    valueField: 'value',
+                    aggregation: 'avg'
+                }
+            });
+            chart.init();
+            chart.setData(chartData, chartData.length);
+        });
+    }, 100);
 }
 
