@@ -86,6 +86,7 @@ message Physical {
 message Logical {
   string id = 1;
   repeated Interface interfaces = 2;
+  repeated VrfInstance vrfs = 3;
 }
 
 message Chassis {
@@ -143,6 +144,8 @@ message Interface {
   BgpInfo bgp_info = 13;
   MplsInfo mpls_info = 14;
   InterfaceStatistics statistics = 15;
+  OspfInfo ospf_info = 16;
+  string vrf_name = 17;
 }
 
 // Hardware Component Messages
@@ -429,6 +432,55 @@ message BgpStats {
   uint64 updates_received = 6;
 }
 
+// OSPF Information
+message OspfInfo {
+  bool ospf_enabled = 1;
+  string router_id = 2;
+  uint32 process_id = 3;
+  string area_id = 4;
+  OspfAreaType area_type = 5;
+  OspfNetworkType network_type = 6;
+  uint32 cost = 7;
+  uint32 hello_interval = 8;
+  uint32 dead_interval = 9;
+  uint32 retransmit_interval = 10;
+  uint32 priority = 11;
+  repeated OspfNeighbor neighbors = 12;
+  repeated OspfLsa lsas = 13;
+  OspfStats statistics = 14;
+}
+
+message OspfNeighbor {
+  string neighbor_id = 1;
+  string neighbor_ip = 2;
+  OspfNeighborState state = 3;
+  uint32 priority = 4;
+  uint32 dead_timer = 5;
+  uint32 uptime = 6;
+  string designated_router = 7;
+  string backup_designated_router = 8;
+}
+
+message OspfLsa {
+  OspfLsaType lsa_type = 1;
+  string link_state_id = 2;
+  string advertising_router = 3;
+  uint32 sequence_number = 4;
+  uint32 age = 5;
+  uint32 checksum = 6;
+}
+
+message OspfStats {
+  uint32 total_neighbors = 1;
+  uint32 full_neighbors = 2;
+  uint32 total_lsas = 3;
+  uint32 spf_runs = 4;
+  uint64 hello_sent = 5;
+  uint64 hello_received = 6;
+  uint64 lsa_sent = 7;
+  uint64 lsa_received = 8;
+}
+
 // MPLS Information
 message MplsInfo {
   bool mpls_enabled = 1;
@@ -512,6 +564,41 @@ message SrPathMetrics {
   uint32 utilization_percent = 3;
 }
 
+// VRF (Virtual Routing and Forwarding) Information
+message VrfInstance {
+  string vrf_name = 1;
+  string route_distinguisher = 2;
+  repeated string route_targets_import = 3;
+  repeated string route_targets_export = 4;
+  string description = 5;
+  VrfStatus status = 6;
+  repeated string interface_ids = 7;
+  BgpInfo bgp_info = 8;
+  OspfInfo ospf_info = 9;
+  repeated VrfRoute routing_table = 10;
+  VrfStats statistics = 11;
+}
+
+message VrfRoute {
+  string prefix = 1;
+  uint32 prefix_length = 2;
+  string next_hop = 3;
+  VrfRouteProtocol protocol = 4;
+  uint32 metric = 5;
+  uint32 preference = 6;
+  bool active = 7;
+  uint32 age = 8;
+  string outgoing_interface = 9;
+}
+
+message VrfStats {
+  uint32 total_routes = 1;
+  uint32 active_routes = 2;
+  uint32 total_interfaces = 3;
+  uint64 packets_forwarded = 4;
+  uint64 bytes_forwarded = 5;
+}
+
 // Additional Enums
 enum BgpPeerState {
   BGP_PEER_UNKNOWN = 0;
@@ -534,6 +621,46 @@ enum BgpOrigin {
   BGP_ORIGIN_IGP = 1;
   BGP_ORIGIN_EGP = 2;
   BGP_ORIGIN_INCOMPLETE = 3;
+}
+
+enum OspfNeighborState {
+  OSPF_NEIGHBOR_UNKNOWN = 0;
+  OSPF_NEIGHBOR_DOWN = 1;
+  OSPF_NEIGHBOR_ATTEMPT = 2;
+  OSPF_NEIGHBOR_INIT = 3;
+  OSPF_NEIGHBOR_TWO_WAY = 4;
+  OSPF_NEIGHBOR_EXSTART = 5;
+  OSPF_NEIGHBOR_EXCHANGE = 6;
+  OSPF_NEIGHBOR_LOADING = 7;
+  OSPF_NEIGHBOR_FULL = 8;
+}
+
+enum OspfAreaType {
+  OSPF_AREA_TYPE_UNKNOWN = 0;
+  OSPF_AREA_TYPE_BACKBONE = 1;
+  OSPF_AREA_TYPE_NORMAL = 2;
+  OSPF_AREA_TYPE_STUB = 3;
+  OSPF_AREA_TYPE_NSSA = 4;
+  OSPF_AREA_TYPE_TOTALLY_STUBBY = 5;
+}
+
+enum OspfNetworkType {
+  OSPF_NETWORK_TYPE_UNKNOWN = 0;
+  OSPF_NETWORK_TYPE_BROADCAST = 1;
+  OSPF_NETWORK_TYPE_POINT_TO_POINT = 2;
+  OSPF_NETWORK_TYPE_NBMA = 3;
+  OSPF_NETWORK_TYPE_POINT_TO_MULTIPOINT = 4;
+  OSPF_NETWORK_TYPE_VIRTUAL_LINK = 5;
+}
+
+enum OspfLsaType {
+  OSPF_LSA_TYPE_UNKNOWN = 0;
+  OSPF_LSA_TYPE_ROUTER = 1;
+  OSPF_LSA_TYPE_NETWORK = 2;
+  OSPF_LSA_TYPE_SUMMARY_NETWORK = 3;
+  OSPF_LSA_TYPE_SUMMARY_ASBR = 4;
+  OSPF_LSA_TYPE_EXTERNAL = 5;
+  OSPF_LSA_TYPE_NSSA_EXTERNAL = 7;
 }
 
 enum MplsLabelType {
@@ -573,6 +700,24 @@ enum SrSegmentType {
   SR_SEGMENT_NODE = 1;
   SR_SEGMENT_ADJACENCY = 2;
   SR_SEGMENT_BINDING = 3;
+}
+
+enum VrfStatus {
+  VRF_STATUS_UNKNOWN = 0;
+  VRF_STATUS_ACTIVE = 1;
+  VRF_STATUS_INACTIVE = 2;
+  VRF_STATUS_ADMIN_DOWN = 3;
+}
+
+enum VrfRouteProtocol {
+  VRF_ROUTE_PROTOCOL_UNKNOWN = 0;
+  VRF_ROUTE_PROTOCOL_CONNECTED = 1;
+  VRF_ROUTE_PROTOCOL_STATIC = 2;
+  VRF_ROUTE_PROTOCOL_BGP = 3;
+  VRF_ROUTE_PROTOCOL_OSPF = 4;
+  VRF_ROUTE_PROTOCOL_ISIS = 5;
+  VRF_ROUTE_PROTOCOL_RIP = 6;
+  VRF_ROUTE_PROTOCOL_LOCAL = 7;
 }
 
 enum DeviceType {
