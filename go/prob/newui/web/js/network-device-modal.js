@@ -83,10 +83,12 @@ function initializeDeviceTree(deviceData) {
 // Build the device detail content HTML
 function buildDeviceContent(device, statusClass, esc) {
     var hasInterfaces = device.logicals && Object.keys(device.logicals).length > 0;
+    var hasRouting = typeof hasRoutingData === 'function' && hasRoutingData(device);
     return '<div class="probler-popup-tabs">' +
         '<div class="probler-popup-tab active" data-tab="overview">Overview</div>' +
         '<div class="probler-popup-tab" data-tab="equipment">Equipment</div>' +
         (hasInterfaces ? '<div class="probler-popup-tab" data-tab="interfaces">Interfaces</div>' : '') +
+        (hasRouting ? '<div class="probler-popup-tab" data-tab="routing">Routing</div>' : '') +
         '<div class="probler-popup-tab" data-tab="physical">Physical Inventory</div>' +
         '<div class="probler-popup-tab" data-tab="performance">Performance</div>' +
     '</div>' +
@@ -94,6 +96,7 @@ function buildDeviceContent(device, statusClass, esc) {
         buildOverviewTab(device, statusClass, esc) +
         buildEquipmentTab(device, esc) +
         (hasInterfaces ? buildInterfacesTab(device, esc) : '') +
+        (hasRouting ? buildRoutingTab(device, esc) : '') +
         buildPhysicalTab() +
         buildPerformanceTab(device) +
     '</div>';
@@ -294,28 +297,72 @@ var INTERFACE_TYPE_NAMES = {
     12: 'Management', 13: 'Tunnel', 14: 'VLAN', 15: 'Bridge'
 };
 
-// Collect all interfaces from logicals map into a flat array
-function collectInterfaces(logicals) {
-    var all = [];
-    Object.keys(logicals).forEach(function(key) {
-        var logical = logicals[key];
-        if (logical && logical.interfaces) {
-            logical.interfaces.forEach(function(iface) {
-                all.push(iface);
-            });
-        }
-    });
-    return all;
+// Format byte count to human-readable
+function formatBytes(bytes) {
+    if (!bytes) return '';
+    var n = Number(bytes);
+    if (isNaN(n) || n === 0) return '0';
+    if (n >= 1073741824) return (n / 1073741824).toFixed(2) + ' GB';
+    if (n >= 1048576) return (n / 1048576).toFixed(1) + ' MB';
+    if (n >= 1024) return (n / 1024).toFixed(0) + ' KB';
+    return n + ' B';
+}
+
+// Format packet count with thousands separator
+function formatPackets(pkts) {
+    if (!pkts) return '';
+    var n = Number(pkts);
+    if (isNaN(n)) return '';
+    return n.toLocaleString();
+}
+
+// Collect all interfaces, preferring physical port interfaces (richer data with statistics)
+function collectInterfaces(device) {
+    var byName = {};
+    // Physical port interfaces have the most complete data (speed, mac, statistics)
+    if (device.physicals) {
+        Object.keys(device.physicals).forEach(function(key) {
+            var phys = device.physicals[key];
+            if (phys && phys.ports) {
+                phys.ports.forEach(function(port) {
+                    if (port && port.interfaces) {
+                        port.interfaces.forEach(function(iface) {
+                            if (iface && (iface.name || iface.id)) {
+                                byName[iface.name || iface.id] = iface;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+    // Add logical interfaces not already covered
+    if (device.logicals) {
+        Object.keys(device.logicals).forEach(function(key) {
+            var logical = device.logicals[key];
+            if (logical && logical.interfaces) {
+                logical.interfaces.forEach(function(iface) {
+                    if (iface && (iface.name || iface.id)) {
+                        var k = iface.name || iface.id;
+                        if (!byName[k]) byName[k] = iface;
+                    }
+                });
+            }
+        });
+    }
+    return Object.values(byName);
 }
 
 // Build Interfaces tab content
 function buildInterfacesTab(device, esc) {
-    var interfaces = collectInterfaces(device.logicals);
+    var interfaces = collectInterfaces(device);
     if (interfaces.length === 0) {
         return '<div class="probler-popup-tab-pane" data-pane="interfaces">' +
             '<p style="color: var(--layer8d-text-muted); text-align: center; padding: 40px;">' +
             'No interface data available</p></div>';
     }
+    // Check if any interface has statistics
+    var hasStats = interfaces.some(function(iface) { return iface.statistics; });
     var html = '<div class="probler-popup-tab-pane" data-pane="interfaces">' +
         '<div style="overflow-x: auto;">' +
         '<table class="layer8d-tree-grid-table" style="width: 100%; font-size: 12px;">' +
@@ -328,7 +375,7 @@ function buildInterfacesTab(device, esc) {
             '<th>MAC Address</th>' +
             '<th>Speed</th>' +
             '<th>MTU</th>' +
-            '<th>Description</th>' +
+            (hasStats ? '<th>RX Bytes</th><th>TX Bytes</th><th>RX Pkts</th><th>TX Pkts</th>' : '') +
         '</tr></thead><tbody>';
     interfaces.forEach(function(iface) {
         var operStatus = esc(iface.status || '');
@@ -336,6 +383,7 @@ function buildInterfacesTab(device, esc) {
                         operStatus.toLowerCase() === 'down' ? 'status-offline' : '';
         var adminLabel = iface.adminStatus ? 'Up' : 'Down';
         var adminClass = iface.adminStatus ? 'status-online' : 'status-offline';
+        var stats = iface.statistics || {};
         html += '<tr>' +
             '<td style="font-weight: 500;">' + esc(iface.name || iface.id || '') + '</td>' +
             '<td><span class="' + operClass + '">' + operStatus + '</span></td>' +
@@ -345,8 +393,10 @@ function buildInterfacesTab(device, esc) {
             '<td style="font-family: monospace; font-size: 11px;">' + esc(iface.macAddress || '') + '</td>' +
             '<td>' + formatIfSpeed(iface.speed) + '</td>' +
             '<td>' + (iface.mtu || '') + '</td>' +
-            '<td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' +
-                esc(iface.description || '') + '</td>' +
+            (hasStats ? '<td style="text-align: right;">' + formatBytes(stats.rxBytes) + '</td>' +
+                '<td style="text-align: right;">' + formatBytes(stats.txBytes) + '</td>' +
+                '<td style="text-align: right;">' + formatPackets(stats.rxPackets) + '</td>' +
+                '<td style="text-align: right;">' + formatPackets(stats.txPackets) + '</td>' : '') +
         '</tr>';
     });
     html += '</tbody></table></div></div>';

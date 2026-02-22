@@ -78,6 +78,8 @@ function buildPerformanceTab(device) {
     html += '<div class="perf-sub-content">';
     if (perf) {
         // Summary pane
+        var processCount = (perf.processes && perf.processes.length > 0) ?
+            perf.processes[0].status || '0' : '';
         html += '<div class="perf-sub-pane active" data-perf-pane="summary">' +
             '<div class="detail-grid">' +
                 '<div class="detail-section">' +
@@ -94,6 +96,10 @@ function buildPerformanceTab(device) {
                         '<span class="detail-label">Active Connections</span>' +
                         '<span class="detail-value">' + (perf.activeConnections || 0) + '</span>' +
                     '</div>' +
+                    (processCount ? '<div class="detail-row">' +
+                        '<span class="detail-label">Running Processes</span>' +
+                        '<span class="detail-value">' + Number(processCount).toLocaleString() + '</span>' +
+                    '</div>' : '') +
                 '</div>' +
             '</div>' +
         '</div>';
