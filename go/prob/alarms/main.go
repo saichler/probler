@@ -1,11 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"github.com/saichler/l8alarms/go/alm/services"
 	"github.com/saichler/l8alarms/go/alm/ui"
 	"github.com/saichler/l8bus/go/overlay/vnic"
+	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/probler/go/prob/common"
 	"os"
+	"os/exec"
+	"time"
 )
 
 func main() {
@@ -16,7 +20,25 @@ func main() {
 	nic.Start()
 	nic.WaitForConnection()
 
-	services.ActivateAlmServices(common.DB_CREDS, common.DB_NAME, nic)
+	//Start postgres
+	startDb(nic)
+
+	services.ActivateAlmServices(common.DB_CREDS, common.DB_ALARMS_NAME, nic)
 	resources.Logger().Info("alm services activated!")
 	common.WaitForSignal(resources)
+}
+
+func startDb(nic ifs.IVNic) {
+	_, user, pass, _, err := nic.Resources().Security().Credential(common.DB_CREDS, common.DB_ALARMS_NAME, nic.Resources())
+	if err != nil {
+		panic(common.DB_CREDS + " " + err.Error())
+	}
+	fmt.Println("/start-postgres.sh", common.DB_ALARMS_NAME, user, pass)
+	cmd := exec.Command("nohup", "/start-postgres.sh", common.DB_ALARMS_NAME, user, pass)
+	out, err := cmd.Output()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(out))
+	time.Sleep(time.Second * 5)
 }

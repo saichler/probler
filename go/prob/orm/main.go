@@ -36,18 +36,18 @@ func main() {
 	startDb(nic)
 
 	//Activate targets
-	targets.Activate(common.DB_CREDS, common.DB_NAME, nic)
+	targets.Activate(common.DB_CREDS, common.DB_TARGETS_NAME, nic)
 	//targets.Activate("admin", "admin", nic)
 	common.WaitForSignal(res)
 }
 
 func startDb(nic ifs.IVNic) {
-	_, user, pass, _, err := nic.Resources().Security().Credential(common.DB_CREDS, common.DB_NAME, nic.Resources())
+	_, user, pass, _, err := nic.Resources().Security().Credential(common.DB_CREDS, common.DB_TARGETS_NAME, nic.Resources())
 	if err != nil {
 		panic(common.DB_CREDS + " " + err.Error())
 	}
-	fmt.Println("/start-postgres.sh", common.DB_NAME, user, pass)
-	cmd := exec.Command("nohup", "/start-postgres.sh", common.DB_NAME, user, pass)
+	fmt.Println("/start-postgres.sh", common.DB_TARGETS_NAME, user, pass)
+	cmd := exec.Command("nohup", "/start-postgres.sh", common.DB_TARGETS_NAME, user, pass)
 	out, err := cmd.Output()
 	if err != nil {
 		panic(err)
