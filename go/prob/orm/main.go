@@ -46,7 +46,7 @@ func startDb(nic ifs.IVNic) {
 	if err != nil {
 		panic(common.DB_CREDS + " " + err.Error())
 	}
-	fmt.Println("/start-postgres.sh", common.DB_TARGETS_NAME, user, pass)
+	fmt.Println("/start-postgres.sh", common.DB_TARGETS_NAME, user, pass, port)
 	cmd := exec.Command("nohup", "/start-postgres.sh", common.DB_TARGETS_NAME, user, pass, port)
 	out, err := cmd.Output()
 	if err != nil {

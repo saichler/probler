@@ -14,6 +14,7 @@ import (
 
 func main() {
 	resources := common.CreateResources("alm-" + os.Getenv("HOSTNAME"))
+	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	ui.RegisterAlmTypes(resources)
 
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
@@ -33,7 +34,7 @@ func startDb(nic ifs.IVNic) {
 	if err != nil {
 		panic(common.DB_CREDS + " " + err.Error())
 	}
-	fmt.Println("/start-postgres.sh", common.DB_ALARMS_NAME, user, pass)
+	fmt.Println("/start-postgres.sh", common.DB_ALARMS_NAME, user, pass, port)
 	cmd := exec.Command("nohup", "/start-postgres.sh", common.DB_ALARMS_NAME, user, pass, port)
 	out, err := cmd.Output()
 	if err != nil {
