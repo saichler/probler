@@ -21,7 +21,7 @@ func main() {
 	nic.WaitForConnection()
 
 	//Start postgres
-	startDb(nic)
+	//startDb(nic)
 
 	services.ActivateAlmServices(common.DB_CREDS, common.DB_ALARMS_NAME, nic)
 	resources.Logger().Info("alm services activated!")
@@ -29,12 +29,12 @@ func main() {
 }
 
 func startDb(nic ifs.IVNic) {
-	_, user, pass, _, err := nic.Resources().Security().Credential(common.DB_CREDS, common.DB_ALARMS_NAME, nic.Resources())
+	_, user, pass, port, err := nic.Resources().Security().Credential(common.DB_CREDS, common.DB_ALARMS_NAME, nic.Resources())
 	if err != nil {
 		panic(common.DB_CREDS + " " + err.Error())
 	}
 	fmt.Println("/start-postgres.sh", common.DB_ALARMS_NAME, user, pass)
-	cmd := exec.Command("nohup", "/start-postgres.sh", common.DB_ALARMS_NAME, user, pass)
+	cmd := exec.Command("nohup", "/start-postgres.sh", common.DB_ALARMS_NAME, user, pass, port)
 	out, err := cmd.Output()
 	if err != nil {
 		panic(err)

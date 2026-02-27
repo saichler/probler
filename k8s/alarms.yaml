@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: probler-alarms
+  labels:
+    name: probler-alarms
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler-alarms
+  name: probler-alarms
+  labels:
+    app: probler-alarms
+spec:
+  serviceName: probler-alarms
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probler-alarms
+  template:
+    metadata:
+      labels:
+        app: probler-alarms
+    spec:
+      containers:
+        - name: probler-alarms
+          image: saichler/probler-alarms:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate

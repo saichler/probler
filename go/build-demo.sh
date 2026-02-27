@@ -31,6 +31,11 @@ cd ../orm/
 go build -o orm_demo
 mv ./orm_demo ../../demo/.
 
+echo "Building Alarms"
+cd ../alarms/
+go build -o alarms_demo
+mv ./alarms_demo ../../demo/.
+
 echo "Building Collector"
 cd ../collector/
 go build -o collector_demo

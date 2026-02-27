@@ -13,6 +13,7 @@ if [ -z "$1" ]; then
   nohup ./logvnet_demo > logvnet_demo.log 2>&1 &
   sleep 5
   nohup ./orm_demo > orm_demo.log 2>&1 &
+  nohup ./alarms_demo > alarms_demo.log 2>&1 &
   nohup ./collector_demo > collector_demo.log 2>&1 &
   nohup ./parser_demo > parser_demo.log 2>&1 &
   nohup ./box_demo > box_demo.log 2>&1 &
