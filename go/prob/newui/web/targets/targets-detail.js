@@ -22,8 +22,7 @@ function showTargetDetailsModal(target) {
                 titleHtml: titleHtml,
                 size: 'large',
                 content: contentHtml,
-                showFooter: false,
-                noPadding: true
+                showFooter: false
             }
         }, '*');
     }
