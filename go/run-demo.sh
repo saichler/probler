@@ -5,7 +5,7 @@ cp -r ../prob/newui/web ./.
 if [ -z "$1" ]; then
   echo "Starting all demo services..."
   pkill demo 2>/dev/null
-  docker stop $(docker ps -q) 2>/dev/null
+  #docker stop $(docker ps -q) 2>/dev/null
   sleep 1
 
   # Start background services with nohup so they survive when webui_demo exits

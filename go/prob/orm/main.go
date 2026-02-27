@@ -33,7 +33,7 @@ func main() {
 	nic.WaitForConnection()
 
 	//Start postgres
-	//startDb(nic)
+	startDb(nic)
 
 	//Activate targets
 	targets.Activate(common.DB_CREDS, common.DB_TARGETS_NAME, nic)

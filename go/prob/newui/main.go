@@ -16,6 +16,7 @@
 package main
 
 import (
+	"github.com/saichler/l8alarms/go/alm/ui"
 	"strconv"
 
 	"github.com/saichler/l8bus/go/overlay/health"
@@ -81,6 +82,8 @@ func createVnic(vnet uint32) ifs.IVNic {
 	nic.Resources().SysConfig().KeepAliveIntervalSeconds = 60
 	nic.Start()
 	nic.WaitForConnection()
+
+	ui.RegisterAlmTypes(resources)
 
 	nic.Resources().Registry().Register(&l8tpollaris.L8Pollaris{})
 	nic.Resources().Registry().Register(&l8tpollaris.L8PTarget{})

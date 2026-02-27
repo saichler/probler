@@ -21,7 +21,7 @@ func main() {
 	nic.WaitForConnection()
 
 	//Start postgres
-	//startDb(nic)
+	startDb(nic)
 
 	services.ActivateAlmServices(common.DB_CREDS, common.DB_ALARMS_NAME, nic)
 	resources.Logger().Info("alm services activated!")
