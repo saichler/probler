@@ -31,11 +31,12 @@ import (
 )
 
 const (
-	PROBLER_VNET = 26000
-	LOGS_VNET    = 27000
-	PREFIX       = "/probler/"
-	DB_CREDS     = "postgres"
-	DB_NAME      = "problerdb"
+	PROBLER_VNET    = 26000
+	LOGS_VNET       = 27000
+	PREFIX          = "/probler/"
+	DB_CREDS        = "postgres"
+	DB_TARGETS_NAME = "problerdb"
+	DB_ALARMS_NAME  = "probleralarms"
 )
 
 func init() {

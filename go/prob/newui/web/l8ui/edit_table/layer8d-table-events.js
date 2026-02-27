@@ -108,7 +108,7 @@ Layer8DTable.prototype.attachEventListeners = function() {
                     return;
                 }
                 const rowIndex = parseInt(row.dataset.rowIndex, 10);
-                const item = this.getPaginatedData()[rowIndex];
+                const item = this.data[rowIndex];
                 if (item) {
                     this.onRowClick(item, this.getItemId(item));
                 }

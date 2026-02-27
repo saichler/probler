@@ -10,7 +10,7 @@ const sections = {
     kubernetes: 'sections/kubernetes.html',
     infrastructure: 'sections/infrastructure.html',
     topologies: 'sections/topologies.html',
-    events: 'sections/events.html',
+    alarms: 'sections/alarms.html',
     automation: 'sections/automation.html',
     applications: 'sections/applications.html',
     analytics: 'sections/analytics.html',
@@ -42,6 +42,15 @@ function loadSection(sectionName) {
         .then(html => {
             setTimeout(() => {
                 contentArea.innerHTML = html;
+
+                // Handle section generator placeholder pattern
+                const placeholder = contentArea.querySelector('[id$="-section-placeholder"]');
+                if (placeholder && window.Layer8SectionGenerator) {
+                    const generatedHtml = Layer8SectionGenerator.generate(sectionName);
+                    const temp = document.createElement('div');
+                    temp.innerHTML = generatedHtml;
+                    placeholder.replaceWith(...temp.children);
+                }
 
                 // Add fade-in animation
                 setTimeout(() => {
@@ -99,6 +108,15 @@ function loadSection(sectionName) {
                         if (typeof initializeParallax === 'function') {
                             initializeParallax();
                         }
+                    } else if (sectionName === 'alarms') {
+                        if (typeof initializeAlm === 'function') {
+                            initializeAlm();
+                        }
+                    }
+
+                    // Apply module filter to hide disabled sub-modules/services
+                    if (window.Layer8DModuleFilter) {
+                        Layer8DModuleFilter.applyToSection(sectionName);
                     }
                 }, 100);
             }, 200);

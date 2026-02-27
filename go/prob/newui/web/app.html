@@ -54,6 +54,10 @@
     <!-- Dashboard -->
     <link rel="stylesheet" href="dashboard/dashboard-direct.css">
 
+    <!-- ALM Module -->
+    <link rel="stylesheet" href="alm/alm.css">
+    <link rel="stylesheet" href="alm/alarms/alarms-correlation-tree.css">
+
     <!-- Kubernetes -->
     <link rel="stylesheet" href="kubernetes/kubernetes.css?v=4">
 
@@ -153,7 +157,7 @@
                     <span class="nav-icon">🗺️</span>
                     <span>Topologies</span>
                 </a></li>
-                <li><a href="#" data-section="events" class="nav-link">
+                <li><a href="#" data-section="alarms" class="nav-link">
                     <span class="nav-icon">🔔</span>
                     <span>Events & Alarms</span>
                 </a></li>
@@ -196,6 +200,9 @@
     <script src="l8ui/shared/layer8-svg-factory.js"></script>
     <script src="l8ui/shared/layer8d-module-config-factory.js"></script>
     <script src="l8ui/shared/layer8-section-generator.js"></script>
+
+    <!-- ALM Reference Registry -->
+    <script src="js/reference-registry-alm.js"></script>
 
     <!-- L8UI Notification -->
     <script src="l8ui/notification/layer8d-notification.js"></script>
@@ -304,6 +311,30 @@
     <script src="probler/k8s/k8s-enums.js"></script>
     <script src="probler/k8s/k8s-columns.js"></script>
     <script src="probler/probler-init.js"></script>
+
+    <!-- ALM Module -->
+    <script src="alm/alm-config.js"></script>
+    <script src="alm/alm-section-config.js"></script>
+    <script src="alm/alarms/alarms-enums.js"></script>
+    <script src="alm/alarms/alarms-columns.js"></script>
+    <script src="alm/alarms/alarms-forms.js"></script>
+    <script src="alm/events/events-enums.js"></script>
+    <script src="alm/events/events-columns.js"></script>
+    <script src="alm/events/events-forms.js"></script>
+    <script src="alm/correlation/correlation-enums.js"></script>
+    <script src="alm/correlation/correlation-columns.js"></script>
+    <script src="alm/correlation/correlation-forms.js"></script>
+    <script src="alm/policies/policies-enums.js"></script>
+    <script src="alm/policies/policies-columns.js"></script>
+    <script src="alm/policies/policies-forms.js"></script>
+    <script src="alm/maintenance/maintenance-enums.js"></script>
+    <script src="alm/maintenance/maintenance-columns.js"></script>
+    <script src="alm/maintenance/maintenance-forms.js"></script>
+    <script src="alm/archive/archive-enums.js"></script>
+    <script src="alm/archive/archive-columns.js"></script>
+    <script src="alm/archive/archive-forms.js"></script>
+    <script src="alm/alm-init.js"></script>
+    <script src="alm/alarms/alarms-correlation-tree.js"></script>
 
     <!-- Network Devices -->
     <script src="js/network-devices-init.js?v=2"></script>
