@@ -14,6 +14,6 @@ sleep 2
 kubectl apply -f alarms.yaml
 sleep 2
 kubectl apply -f webui2.yaml
-sleep 2
+#sleep 2
 #kubectl apply -f topo.yaml
 #kubectl apply -f log-agent.yaml

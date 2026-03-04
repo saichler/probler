@@ -148,6 +148,9 @@ async function getApiErrorMessage(response, defaultMessage) {
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async () => {
     await loadConfig();
+    if (typeof Layer8DConfig !== 'undefined' && TARGETS_CONFIG) {
+        Layer8DConfig.setPrefix(TARGETS_CONFIG.apiPrefix);
+    }
 
     // Initialize inventory type dropdown
     initInventoryTypeFilter();

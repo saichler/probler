@@ -99,6 +99,23 @@ Layer8DTable.prototype.attachEventListeners = function() {
         });
     });
 
+    // Export CSV button
+    this.container.querySelectorAll('[data-action="export"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (typeof Layer8CsvExport !== 'undefined' && this.endpoint && this.modelName) {
+                const parsed = Layer8CsvExport.parseEndpoint(this.endpoint);
+                if (parsed) {
+                    Layer8CsvExport.export({
+                        modelName: this.modelName,
+                        serviceName: parsed.serviceName,
+                        serviceArea: parsed.serviceArea,
+                        filename: this.modelName
+                    });
+                }
+            }
+        });
+    });
+
     // Row click handler for details view
     if (this.onRowClick) {
         this.container.querySelectorAll('tbody tr.l8-clickable-row').forEach(row => {

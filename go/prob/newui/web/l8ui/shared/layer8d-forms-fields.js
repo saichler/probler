@@ -64,12 +64,12 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                 const field2 = fields[i + 1];
                 if (field2 && field2.type !== 'inlineTable') {
                     html += '<div class="form-row">';
-                    html += generateFieldHtml(field1, getNestedValue(data, field1.key));
-                    html += generateFieldHtml(field2, getNestedValue(data, field2.key));
+                    html += generateFieldHtml(field1, getNestedValue(data, field1.key), readOnly);
+                    html += generateFieldHtml(field2, getNestedValue(data, field2.key), readOnly);
                     html += '</div>';
                     i++; // skip field2 since we consumed it
                 } else {
-                    html += generateFieldHtml(field1, getNestedValue(data, field1.key));
+                    html += generateFieldHtml(field1, getNestedValue(data, field1.key), readOnly);
                 }
             }
 
@@ -80,12 +80,23 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
         return html;
     }
 
-    function generateFieldHtml(field, value) {
+    function generateFieldHtml(field, value, formReadOnly) {
         const required = field.required ? 'required' : '';
         const requiredMark = field.required ? ' <span style="color: var(--layer8d-error);">*</span>' : '';
+        const isReadOnly = formReadOnly || field.readOnly;
 
-        // Field-level readOnly: render as display-only span
-        if (field.readOnly) {
+        // Field-level or form-level readOnly: render as display-only span
+        // (file fields have their own readOnly rendering with download button)
+        if (isReadOnly && field.type === 'file') {
+            return `
+                <div class="form-group">
+                    <label for="field-${field.key}">${escapeHtml(field.label)}</label>
+                    ${Layer8DFormsFields.generateFileFieldHtml(field, value, true)}
+                </div>
+            `;
+        }
+
+        if (isReadOnly) {
             let displayValue = '-';
             if (value !== null && value !== undefined && value !== '' && value !== 0) {
                 if (field.type === 'select' && field.options && field.options[value] !== undefined) {
@@ -300,6 +311,10 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
 
             case 'reference':
                 inputHtml = generateReferenceInput(field, value);
+                break;
+
+            case 'file':
+                inputHtml = Layer8DFormsFields.generateFileFieldHtml(field, value);
                 break;
 
             default:

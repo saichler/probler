@@ -13,16 +13,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 /**
- * ERP Application Configuration
+ * Application Configuration
  * Loads and provides access to app-level configuration settings
  */
 (function() {
     'use strict';
 
-    // Default configuration
+    // Default configuration — no apiPrefix fallback, must be loaded from login.json
     const DEFAULT_CONFIG = {
         dateFormat: 'mm/dd/yyyy',
-        apiPrefix: '/erp'
+        apiPrefix: ''
     };
 
     // Current configuration (starts with defaults)
@@ -39,7 +39,7 @@ limitations under the License.
         try {
             const response = await fetch('login.json');
             if (!response.ok) {
-                console.warn('Could not load login.json, using default config');
+                console.error('Layer8DConfig: failed to load login.json (HTTP ' + response.status + '). API calls will fail.');
                 configLoaded = true;
                 return;
             }
@@ -52,11 +52,20 @@ limitations under the License.
             }
 
             configLoaded = true;
-            console.log('App config loaded:', currentConfig);
         } catch (error) {
-            console.warn('Error loading app config, using defaults:', error);
+            console.error('Layer8DConfig: error loading login.json. API calls will fail.', error);
             configLoaded = true;
         }
+    }
+
+    /**
+     * Set the API prefix directly (for iframes or contexts where login.json
+     * is not at the expected relative path).
+     * @param {string} prefix - API prefix (e.g., '/probler')
+     */
+    function setPrefix(prefix) {
+        currentConfig.apiPrefix = prefix;
+        configLoaded = true;
     }
 
     /**
@@ -69,16 +78,16 @@ limitations under the License.
 
     /**
      * Get the configured API prefix
-     * @returns {string} API prefix (e.g., '/erp')
+     * @returns {string} API prefix
      */
     function getApiPrefix() {
-        return currentConfig.apiPrefix || DEFAULT_CONFIG.apiPrefix;
+        return currentConfig.apiPrefix;
     }
 
     /**
      * Resolve a relative endpoint path to a full API endpoint
      * @param {string} path - Relative path (e.g., '/30/Employee')
-     * @returns {string} Full endpoint (e.g., '/erp/30/Employee')
+     * @returns {string} Full endpoint
      */
     function resolveEndpoint(path) {
         return getApiPrefix() + path;
@@ -103,6 +112,7 @@ limitations under the License.
     // Export
     window.Layer8DConfig = {
         load,
+        setPrefix,
         getDateFormat,
         getApiPrefix,
         resolveEndpoint,

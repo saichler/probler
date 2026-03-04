@@ -118,8 +118,8 @@ limitations under the License.
             }
         };
 
-        // Show details modal
-        moduleNS._showDetailsModal = function(service, item, itemId) {
+        // Show details modal — fetches fresh data from server to get ALL fields
+        moduleNS._showDetailsModal = async function(service, item, itemId) {
             const formDef = Layer8DServiceRegistry.getFormDef(parentModule, service.model);
             const formsNS = getFormsNS();
 
@@ -129,7 +129,31 @@ limitations under the License.
             }
 
             const title = `${service.label.replace(/s$/, '')} Details`;
-            let content = formsNS.generateFormHtml(formDef, item, { readOnly: true });
+
+            // Fetch fresh record from server to get ALL fields (table row data only has visible columns)
+            let data = item;
+            if (itemId && typeof Layer8DFormsData !== 'undefined') {
+                try {
+                    const serviceConfig = {
+                        endpoint: Layer8DConfig.resolveEndpoint(service.endpoint),
+                        primaryKey: Layer8DServiceRegistry.getPrimaryKey(parentModule, service.model),
+                        modelName: service.model
+                    };
+                    const freshRecord = await Layer8DFormsData.fetchRecord(
+                        serviceConfig.endpoint,
+                        serviceConfig.primaryKey,
+                        itemId,
+                        serviceConfig.modelName
+                    );
+                    if (freshRecord) {
+                        data = freshRecord;
+                    }
+                } catch (e) {
+                    // Fall back to table row data
+                }
+            }
+
+            let content = formsNS.generateFormHtml(formDef, data, { readOnly: true });
 
             Layer8DPopup.show({
                 title: title,

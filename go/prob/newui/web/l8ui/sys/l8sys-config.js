@@ -46,6 +46,11 @@ limitations under the License.
             label: 'Logs',
             icon: '📋',
             services: []
+        },
+        'dataimport': {
+            label: 'Data Import',
+            icon: '📥',
+            services: []
         }
     };
 

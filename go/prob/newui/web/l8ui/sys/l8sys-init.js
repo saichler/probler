@@ -36,6 +36,7 @@ limitations under the License.
         if (window.L8Health) L8Health.initialize();
         if (window.L8SysModules) L8SysModules.initialize();
         if (window.L8Logs) L8Logs.initialize();
+        if (window.L8DataImport) L8DataImport.initialize();
     };
 
     // 3. Override CRUD methods to route to custom handlers per model

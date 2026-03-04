@@ -179,6 +179,118 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
         valueSelect.style.display = (periodType === 1 || periodType === 0) ? 'none' : '';
     }
 
+    // ========================================
+    // FILE UPLOAD FIELD
+    // ========================================
+
+    function generateFileFieldHtml(field, value, readOnly) {
+        const storagePath = (typeof value === 'object' && value !== null) ? value.storagePath : (value || '');
+        const fileName = (typeof value === 'object' && value !== null) ? (value.fileName || '') : '';
+        const fileSize = (typeof value === 'object' && value !== null) ? (value.fileSize || 0) : 0;
+        const sizeStr = (typeof Layer8FileUpload !== 'undefined' && fileSize) ? Layer8FileUpload.formatSize(fileSize) : '';
+
+        if (readOnly || field.readOnly) {
+            if (!storagePath) {
+                return '<span class="form-display-value">No file</span>';
+            }
+            const displayName = escapeHtml(fileName || storagePath.split('/').pop() || 'File');
+            return `<div class="l8-file-display">
+                <span class="l8-file-display-name">${displayName}</span>
+                ${sizeStr ? `<span class="l8-file-display-size">${escapeHtml(sizeStr)}</span>` : ''}
+                <button type="button" class="l8-file-download-btn" data-storage-path="${escapeAttr(storagePath)}" data-file-name="${escapeAttr(fileName)}" onclick="Layer8DFormsFields.onFileDownload(this)">Download</button>
+            </div>`;
+        }
+
+        let html = '';
+        if (storagePath) {
+            const displayName = escapeHtml(fileName || storagePath.split('/').pop() || 'File');
+            html += `<div class="l8-file-existing">
+                <span>${displayName}</span>
+                ${sizeStr ? `<span>(${escapeHtml(sizeStr)})</span>` : ''}
+                <button type="button" class="l8-file-download-btn" data-storage-path="${escapeAttr(storagePath)}" data-file-name="${escapeAttr(fileName)}" onclick="Layer8DFormsFields.onFileDownload(this)">Download</button>
+            </div>`;
+        }
+
+        html += `<div class="l8-file-drop-area" data-field-key="${escapeAttr(field.key)}"
+                      ondragover="Layer8DFormsFields.onFileDragOver(event, this)"
+                      ondragleave="Layer8DFormsFields.onFileDragLeave(event, this)"
+                      ondrop="Layer8DFormsFields.onFileDrop(event, this)"
+                      onclick="this.querySelector('input[type=file]').click()">
+            <div class="l8-file-drop-text">Drop file here or click to browse (max 5MB)</div>
+            <input type="file" onchange="Layer8DFormsFields.onFileSelect(event, this)">
+            <div class="l8-file-status"></div>
+        </div>`;
+
+        html += `<input type="hidden" name="${escapeAttr(field.key)}" data-file-upload="${escapeAttr(field.key)}" value="${escapeAttr(storagePath)}">`;
+
+        return html;
+    }
+
+    function onFileSelect(event, input) {
+        var file = input.files && input.files[0];
+        if (!file) return;
+        var dropArea = input.closest('.l8-file-drop-area');
+        triggerFileUpload(file, dropArea);
+    }
+
+    function onFileDragOver(event, el) {
+        event.preventDefault();
+        event.stopPropagation();
+        el.classList.add('l8-file-drag-over');
+    }
+
+    function onFileDragLeave(event, el) {
+        event.preventDefault();
+        event.stopPropagation();
+        el.classList.remove('l8-file-drag-over');
+    }
+
+    function onFileDrop(event, el) {
+        event.preventDefault();
+        event.stopPropagation();
+        el.classList.remove('l8-file-drag-over');
+        var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+        if (!file) return;
+        triggerFileUpload(file, el);
+    }
+
+    function triggerFileUpload(file, dropArea) {
+        if (typeof Layer8FileUpload === 'undefined') {
+            console.error('Layer8FileUpload not loaded');
+            return;
+        }
+        var status = dropArea.querySelector('.l8-file-status');
+        var fieldKey = dropArea.dataset.fieldKey;
+        var form = dropArea.closest('form');
+
+        status.textContent = 'Uploading ' + file.name + '...';
+        status.className = 'l8-file-status';
+
+        Layer8FileUpload.upload(file).then(function(result) {
+            status.textContent = 'Uploaded: ' + result.fileName + ' (' + Layer8FileUpload.formatSize(result.fileSize) + ')';
+            status.className = 'l8-file-status l8-file-status-success';
+
+            if (form) {
+                var hidden = form.querySelector('input[data-file-upload="' + fieldKey + '"]');
+                if (hidden) {
+                    hidden.value = result.storagePath;
+                    hidden.dataset.uploadResult = JSON.stringify(result);
+                }
+            }
+        }).catch(function(err) {
+            status.textContent = 'Error: ' + err.message;
+            status.className = 'l8-file-status l8-file-status-error';
+        });
+    }
+
+    function onFileDownload(btn) {
+        var path = btn.dataset.storagePath;
+        var name = btn.dataset.fileName;
+        if (typeof Layer8FileUpload !== 'undefined') {
+            Layer8FileUpload.download(path, name);
+        }
+    }
+
     // Extend exports
     F.onPeriodTypeChange = onPeriodTypeChange;
     F.generateInlineTableHtml = generateInlineTableHtml;
@@ -188,5 +300,11 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
     F.toggleMultiselectDropdown = toggleMultiselectDropdown;
     F.onMultiselectChange = onMultiselectChange;
     F.removeMultiselectValue = removeMultiselectValue;
+    F.generateFileFieldHtml = generateFileFieldHtml;
+    F.onFileSelect = onFileSelect;
+    F.onFileDragOver = onFileDragOver;
+    F.onFileDragLeave = onFileDragLeave;
+    F.onFileDrop = onFileDrop;
+    F.onFileDownload = onFileDownload;
 
 })();

@@ -312,6 +312,7 @@ limitations under the License.
                 if (data.length === 0) {
                     html += this._renderEmpty();
                 } else {
+                    html += this._renderExportBar();
                     html += this._renderPagination();
                     html += this._renderCards(data);
                 }
@@ -368,6 +369,11 @@ limitations under the License.
                 html += '</div>';
             }
             return html + '</div>';
+        }
+
+        _renderExportBar() {
+            if (!this.config.endpoint || !this.config.modelName) return '';
+            return '<div class="mobile-table-export-bar" style="text-align:right;padding:4px 8px;"><button class="mobile-table-export-btn" data-action="export" style="font-size:13px;padding:4px 12px;border:1px solid var(--layer8d-border,#ccc);border-radius:4px;background:var(--layer8d-bg-white,#fff);color:var(--layer8d-text-medium,#555);cursor:pointer;">Export</button></div>';
         }
 
         _renderPagination() {
@@ -435,6 +441,23 @@ limitations under the License.
                         const data = this._getPageData();
                         if (data[index]) this.config.onCardClick(data[index], index);
                     });
+                });
+            }
+
+            const exportBtn = container.querySelector('[data-action="export"]');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', () => {
+                    if (typeof Layer8CsvExport !== 'undefined' && this.config.endpoint && this.config.modelName) {
+                        const parsed = Layer8CsvExport.parseEndpoint(this.config.endpoint);
+                        if (parsed) {
+                            Layer8CsvExport.export({
+                                modelName: this.config.modelName,
+                                serviceName: parsed.serviceName,
+                                serviceArea: parsed.serviceArea,
+                                filename: this.config.modelName
+                            });
+                        }
+                    }
                 });
             }
 

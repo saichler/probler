@@ -236,6 +236,82 @@ limitations under the License.
             `;
         },
 
+        renderFileField(config, value, readonly) {
+            const storagePath = (typeof value === 'object' && value !== null) ? value.storagePath : (value || '');
+            const fileName = (typeof value === 'object' && value !== null) ? (value.fileName || '') : '';
+            const fileSize = (typeof value === 'object' && value !== null) ? (value.fileSize || 0) : 0;
+            const sizeStr = (typeof Layer8FileUpload !== 'undefined' && fileSize) ? Layer8FileUpload.formatSize(fileSize) : '';
+            const displayName = fileName || (storagePath ? storagePath.split('/').pop() : '');
+
+            if (readonly) {
+                if (!storagePath) {
+                    return `<div class="mobile-form-field">
+                        <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}</label>
+                        <span class="mobile-form-display-value">No file</span>
+                    </div>`;
+                }
+                return `<div class="mobile-form-field">
+                    <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}</label>
+                    <div class="l8-file-display">
+                        <span class="l8-file-display-name">${Layer8MUtils.escapeHtml(displayName)}</span>
+                        ${sizeStr ? `<span class="l8-file-display-size">${Layer8MUtils.escapeHtml(sizeStr)}</span>` : ''}
+                        <button type="button" class="l8-file-download-btn" onclick="Layer8FileUpload.download('${Layer8MUtils.escapeAttr(storagePath)}', '${Layer8MUtils.escapeAttr(fileName)}')">Download</button>
+                    </div>
+                </div>`;
+            }
+
+            let existingHtml = '';
+            if (storagePath) {
+                existingHtml = `<div class="l8-file-existing">
+                    <span>${Layer8MUtils.escapeHtml(displayName)}</span>
+                    ${sizeStr ? `<span>(${Layer8MUtils.escapeHtml(sizeStr)})</span>` : ''}
+                    <button type="button" class="l8-file-download-btn" onclick="Layer8FileUpload.download('${Layer8MUtils.escapeAttr(storagePath)}', '${Layer8MUtils.escapeAttr(fileName)}')">Download</button>
+                </div>`;
+            }
+
+            return `<div class="mobile-form-field">
+                <label class="mobile-form-label">${Layer8MUtils.escapeHtml(config.label)}${config.required ? ' *' : ''}</label>
+                ${existingHtml}
+                <input type="file" name="${config.key}" class="mobile-form-input"
+                       data-file-field="${Layer8MUtils.escapeAttr(config.key)}"
+                       onchange="Layer8MFormFields._onMobileFileSelect(this)">
+                <div class="l8-file-status" data-file-status="${Layer8MUtils.escapeAttr(config.key)}"></div>
+                <input type="hidden" name="${config.key}.__storagePath" data-file-upload="${Layer8MUtils.escapeAttr(config.key)}" value="${Layer8MUtils.escapeAttr(storagePath)}">
+            </div>`;
+        },
+
+        _onMobileFileSelect(input) {
+            var file = input.files && input.files[0];
+            if (!file || typeof Layer8FileUpload === 'undefined') return;
+            var fieldKey = input.dataset.fileField;
+            var form = input.closest('form');
+            var status = form ? form.querySelector('[data-file-status="' + fieldKey + '"]') : null;
+
+            if (status) {
+                status.textContent = 'Uploading...';
+                status.className = 'l8-file-status';
+            }
+
+            Layer8FileUpload.upload(file).then(function(result) {
+                if (status) {
+                    status.textContent = 'Uploaded: ' + result.fileName;
+                    status.className = 'l8-file-status l8-file-status-success';
+                }
+                if (form) {
+                    var hidden = form.querySelector('input[data-file-upload="' + fieldKey + '"]');
+                    if (hidden) {
+                        hidden.value = result.storagePath;
+                        hidden.dataset.uploadResult = JSON.stringify(result);
+                    }
+                }
+            }).catch(function(err) {
+                if (status) {
+                    status.textContent = 'Error: ' + err.message;
+                    status.className = 'l8-file-status l8-file-status-error';
+                }
+            });
+        },
+
         // Extended renderers: currency, percentage, phone, SSN, URL, rating,
         // hours, EIN, routingNumber, colorCode are in layer8m-forms-fields-ext.js
         // Reference and money renderers are in layer8m-forms-fields-reference.js

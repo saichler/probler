@@ -90,6 +90,8 @@ limitations under the License.
                     return F.renderColorCodeField(fieldConfig, value, readonly);
                 case 'inlineTable':
                     return F.renderInlineTableField(fieldConfig, value, readonly);
+                case 'file':
+                    return F.renderFileField(fieldConfig, value, readonly);
                 default:
                     return F.renderTextField(fieldConfig, value, readonly);
             }

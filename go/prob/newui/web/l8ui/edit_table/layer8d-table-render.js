@@ -72,9 +72,11 @@ Layer8DTable.prototype.render = function() {
 Layer8DTable.prototype.renderPagination = function(totalPages, startItem, endItem, totalItems) {
     const addButton = this.onAdd ?
         `<button class="l8-btn l8-btn-primary" data-action="add">${Layer8DUtils.escapeHtml(this.addButtonText)}</button>` : '';
+    const exportButton = (this.endpoint && this.modelName) ?
+        '<button class="l8-btn l8-btn-secondary l8-btn-small" data-action="export" title="Export CSV">Export</button>' : '';
 
     if (totalItems === 0) {
-        return `<div class="l8-pagination"><div class="l8-pagination-info"></div><div class="l8-pagination-controls">${addButton}</div></div>`;
+        return `<div class="l8-pagination"><div class="l8-pagination-info"></div><div class="l8-pagination-controls">${exportButton}${addButton}</div></div>`;
     }
 
     return `
@@ -108,6 +110,7 @@ Layer8DTable.prototype.renderPagination = function(totalPages, startItem, endIte
                         &raquo;
                     </button>
                 </div>
+                ${exportButton}
                 ${this.onAdd ? `<button class="l8-btn l8-btn-primary" data-action="add">${Layer8DUtils.escapeHtml(this.addButtonText)}</button>` : ''}
             </div>
         </div>

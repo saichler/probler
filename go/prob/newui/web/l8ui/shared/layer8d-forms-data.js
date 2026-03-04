@@ -64,7 +64,7 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                 if (field.type === 'datetime' || field.readOnly) return;
 
                 const element = form.elements[field.key];
-                if (!element && field.type !== 'money' && field.type !== 'period' && field.type !== 'inlineTable' && field.type !== 'tags' && field.type !== 'multiselect' && field.type !== 'richtext') return;
+                if (!element && field.type !== 'money' && field.type !== 'period' && field.type !== 'inlineTable' && field.type !== 'tags' && field.type !== 'multiselect' && field.type !== 'richtext' && field.type !== 'file') return;
 
                 let value;
                 switch (field.type) {
@@ -237,6 +237,29 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                             value = element.value || null;
                         }
                         break;
+
+                    case 'file': {
+                        const fileHidden = form.querySelector(`input[data-file-upload="${field.key}"]`);
+                        if (fileHidden) {
+                            const uploadResult = fileHidden.dataset.uploadResult;
+                            if (uploadResult) {
+                                try {
+                                    const result = JSON.parse(uploadResult);
+                                    setNestedValue(data, 'storagePath', result.storagePath || '');
+                                    setNestedValue(data, 'fileName', result.fileName || '');
+                                    setNestedValue(data, 'fileSize', result.fileSize || 0);
+                                    setNestedValue(data, 'mimeType', result.mimeType || '');
+                                    setNestedValue(data, 'checksum', result.checksum || '');
+                                    return; // skip post-switch setNestedValue
+                                } catch (e) {
+                                    value = fileHidden.value || null;
+                                }
+                            } else {
+                                value = fileHidden.value || null;
+                            }
+                        }
+                        break;
+                    }
 
                     default:
                         value = element.value || null;

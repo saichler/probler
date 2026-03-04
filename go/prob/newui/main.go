@@ -17,6 +17,7 @@ package main
 
 import (
 	"github.com/saichler/l8alarms/go/alm/ui"
+	"github.com/saichler/l8services/go/services/csvexport"
 	"strconv"
 
 	"github.com/saichler/l8bus/go/overlay/health"
@@ -53,6 +54,7 @@ func startWebServer(port int, cert string) {
 	}
 
 	nic1 := createVnic(common.PROBLER_VNET)
+	csvexport.Activate(nic1)
 	nic2 := createVnic(common.LOGS_VNET)
 
 	hs, ok := nic1.Resources().Services().ServiceHandler(health.ServiceName, 0)

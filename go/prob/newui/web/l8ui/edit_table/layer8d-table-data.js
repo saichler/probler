@@ -102,16 +102,10 @@ Layer8DTable.prototype.fetchData = async function(page, pageSize) {
 
         const data = await response.json();
 
-        // Extract total count from metadata — ONLY on page 1.
-        // Server only returns valid metadata (total count, key counts) on the
-        // first page. Subsequent pages return stale/zero metadata that must be
-        // ignored to prevent overwriting the correct totals.
+        // Extract total count from metadata
         let totalCount = 0;
-        if (page === 1 && data.metadata?.keyCount?.counts) {
+        if (data.metadata?.keyCount?.counts) {
             totalCount = data.metadata.keyCount.counts.Total || 0;
-            this.totalItems = totalCount;
-        } else {
-            totalCount = this.totalItems;
         }
 
         // Transform data if transformer provided
@@ -120,7 +114,7 @@ Layer8DTable.prototype.fetchData = async function(page, pageSize) {
             items = items.map(item => this.transformData(item));
         }
 
-        // Update table — pass preserved totalCount (not raw metadata)
+        // Update table
         this.setServerData(items, totalCount);
         this.setInvalidFilters(invalidFilters);
 

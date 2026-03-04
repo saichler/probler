@@ -18,7 +18,7 @@
         load: async function(bearerToken) {
             try {
                 var query = encodeURIComponent(JSON.stringify({ text: 'select * from SysModuleConfig' }));
-                var resp = await fetch('/erp/0/ModConfig?body=' + query, {
+                var resp = await fetch(Layer8DConfig.resolveEndpoint('/0/ModConfig') + '?body=' + query, {
                     headers: {
                         'Authorization': 'Bearer ' + bearerToken,
                         'Content-Type': 'application/json'
@@ -123,7 +123,7 @@
                 }
 
                 var method = this._configId ? 'PUT' : 'POST';
-                var resp = await fetch('/erp/0/ModConfig', {
+                var resp = await fetch(Layer8DConfig.resolveEndpoint('/0/ModConfig'), {
                     method: method,
                     headers: {
                         'Authorization': 'Bearer ' + bearerToken,

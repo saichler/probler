@@ -1,0 +1,102 @@
+/*
+© 2025 Sharon Aicler (saichler@gmail.com)
+
+Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+*/
+
+/* File upload drop area */
+.l8-file-drop-area {
+    border: 2px dashed var(--layer8d-border);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.l8-file-drop-area:hover {
+    border-color: var(--layer8d-primary);
+    background: var(--layer8d-bg-light);
+}
+
+.l8-file-drop-area.l8-file-drag-over {
+    border-color: var(--layer8d-primary);
+    background: var(--layer8d-bg-light);
+}
+
+.l8-file-drop-text {
+    color: var(--layer8d-text-muted);
+    font-size: 13px;
+}
+
+.l8-file-drop-area input[type="file"] {
+    display: none;
+}
+
+/* Upload status */
+.l8-file-status {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--layer8d-text-medium);
+}
+
+.l8-file-status.l8-file-status-error {
+    color: var(--layer8d-error);
+}
+
+.l8-file-status.l8-file-status-success {
+    color: var(--layer8d-success);
+}
+
+/* Existing file display (read-only) */
+.l8-file-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--layer8d-bg-light);
+    border: 1px solid var(--layer8d-border);
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.l8-file-display-name {
+    flex: 1;
+    color: var(--layer8d-text-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.l8-file-display-size {
+    color: var(--layer8d-text-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.l8-file-download-btn {
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    background: var(--layer8d-primary);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+}
+
+.l8-file-download-btn:hover {
+    opacity: 0.9;
+}
+
+/* Existing file info in edit mode */
+.l8-file-existing {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    background: var(--layer8d-bg-light);
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--layer8d-text-medium);
+}

@@ -415,6 +415,23 @@ limitations under the License.
             return [field];
         },
 
+        /**
+         * Create a file upload field.
+         * @param {string} key - The field key (maps to storagePath or similar)
+         * @param {string} [label] - Optional label
+         * @param {boolean} [required] - Whether required
+         * @returns {Array} - Single field in array format
+         */
+        file: function(key, label, required) {
+            const field = {
+                key: key,
+                label: label || this._toTitleCase(key),
+                type: 'file'
+            };
+            if (required) field.required = true;
+            return [field];
+        },
+
         inlineTable: function(key, label, columns, required) {
             const field = {
                 key: key,

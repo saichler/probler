@@ -27,5 +27,6 @@ func main() {
 	net := vnet.NewVNet(resources)
 	net.Start()
 	resources.Logger().Info("vnet started!")
+
 	common2.WaitForSignal(resources)
 }
