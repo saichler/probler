@@ -146,6 +146,53 @@ limitations under the License.
         return div.innerHTML;
     }
 
+    // Fetch memory dump for a service and download as .dat file
+    function fetchMemoryDump(rawData, button) {
+        if (!rawData) return;
+        var origText = button.textContent;
+        button.textContent = 'Downloading...';
+        button.disabled = true;
+
+        var endpoint = getHealthEndpoint();
+        var body = encodeURIComponent(JSON.stringify(rawData));
+        var headers = typeof getAuthHeaders === 'function' ? getAuthHeaders() : { 'Content-Type': 'application/json' };
+
+        fetch(endpoint + '?body=' + body, {
+            method: 'GET',
+            headers: headers
+        })
+        .then(function(response) {
+            if (!response.ok) throw new Error('Failed to fetch memory dump');
+            return response.json();
+        })
+        .then(function(data) {
+            var item = data && data.list && data.list[0];
+            if (!item || !item.pprof) {
+                alert('No pprof data returned for ' + (rawData.alias || 'Unknown'));
+                return;
+            }
+            var binaryStr = atob(item.pprof);
+            var bytes = new Uint8Array(binaryStr.length);
+            for (var i = 0; i < binaryStr.length; i++) {
+                bytes[i] = binaryStr.charCodeAt(i);
+            }
+            var blob = new Blob([bytes], { type: 'application/octet-stream' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = (rawData.alias || 'unknown') + '.dat';
+            a.click();
+            URL.revokeObjectURL(url);
+        })
+        .catch(function(err) {
+            alert('Error fetching memory dump: ' + err.message);
+        })
+        .finally(function() {
+            button.textContent = origText;
+            button.disabled = false;
+        });
+    }
+
     // Show health detail modal using Layer8DPopup
     function showHealthDetailsModal(rowData) {
         var rawData = healthDataMap.get(rowData.service);
@@ -158,7 +205,15 @@ limitations under the License.
             title: 'Service Health - ' + rowData.service,
             size: 'xlarge',
             content: contentHtml,
-            showFooter: false
+            showFooter: false,
+            onShow: function(body) {
+                var btn = body.querySelector('#l8health-memory-dump-btn');
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        fetchMemoryDump(rawData, btn);
+                    });
+                }
+            }
         });
     }
 
@@ -317,6 +372,9 @@ limitations under the License.
                         '</div>' +
                     '</div>' +
                 '</div>' +
+            '</div>' +
+            '<div style="text-align:right;padding:12px 16px 4px;">' +
+                '<button id="l8health-memory-dump-btn" class="layer8d-btn layer8d-btn-primary layer8d-btn-small">Memory Dump</button>' +
             '</div>';
     }
 
