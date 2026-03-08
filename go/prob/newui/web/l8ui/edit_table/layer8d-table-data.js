@@ -102,10 +102,15 @@ Layer8DTable.prototype.fetchData = async function(page, pageSize) {
 
         const data = await response.json();
 
-        // Extract total count from metadata
+        // Extract total count from metadata — ONLY on page 1.
+        // Server only computes aggregate metadata on page 0 (first page).
+        // Page 2+ returns zero/stale metadata, so reuse the cached value.
         let totalCount = 0;
-        if (data.metadata?.keyCount?.counts) {
+        if (page === 1 && data.metadata?.keyCount?.counts) {
             totalCount = data.metadata.keyCount.counts.Total || 0;
+            this.totalItems = totalCount;
+        } else {
+            totalCount = this.totalItems || 0;
         }
 
         // Transform data if transformer provided
@@ -154,9 +159,13 @@ Layer8DTable.prototype.setData = function(data) {
 };
 
 // Set data with server-side pagination metadata
+// NOTE: totalItems should only reflect page-1 metadata. If the caller passes 0
+// (e.g., from page 2+ response), preserve the previously cached value.
 Layer8DTable.prototype.setServerData = function(data, totalItems) {
     this.data = Array.isArray(data) ? data : Object.values(data);
-    this.totalItems = totalItems || 0;
+    if (totalItems > 0) {
+        this.totalItems = totalItems;
+    }
     this.render();
 };
 

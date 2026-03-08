@@ -88,10 +88,14 @@ limitations under the License.
 
             const data = await response.json();
 
-            // Extract total count from metadata
+            // Extract total count from metadata — ONLY on page 0 (first page).
+            // Server only computes aggregate metadata on the first page.
+            // Page 2+ returns zero/stale metadata, so reuse the cached value.
             let totalCount = 0;
-            if (data.metadata?.keyCount?.counts) {
+            if (state.currentPage === 0 && data.metadata?.keyCount?.counts) {
                 totalCount = data.metadata.keyCount.counts.Total || 0;
+            } else {
+                totalCount = state.totalItems || 0;
             }
 
             // Get items list
