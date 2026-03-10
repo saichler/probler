@@ -46,10 +46,10 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
             if (!serviceConfig.readOnly) {
                 viewOptions.statusField = 'status';
                 viewOptions.addButtonText = `Add ${serviceConfig.label.replace(/s$/, '')}`;
-                viewOptions.onAdd = () => Layer8MNavCrud.openServiceForm(serviceConfig, formDef, null);
-                viewOptions.onEdit = (id, item) => Layer8MNavCrud.openServiceForm(serviceConfig, formDef, item);
-                viewOptions.onDelete = (id, item) => Layer8MNavCrud.deleteServiceRecord(serviceConfig, id, item);
-                viewOptions.onRowClick = (item, id) => Layer8MNavCrud.showRecordDetails(serviceConfig, formDef, item);
+                viewOptions.onAdd = serviceConfig.onAdd || (() => Layer8MNavCrud.openServiceForm(serviceConfig, formDef, null));
+                viewOptions.onEdit = serviceConfig.onEdit || ((id, item) => Layer8MNavCrud.openServiceForm(serviceConfig, formDef, item));
+                viewOptions.onDelete = serviceConfig.onDelete || ((id, item) => Layer8MNavCrud.deleteServiceRecord(serviceConfig, id, item));
+                viewOptions.onRowClick = serviceConfig.onRowClick || ((item, id) => Layer8MNavCrud.showRecordDetails(serviceConfig, formDef, item));
             } else if (serviceConfig.onRowClick) {
                 viewOptions.onRowClick = serviceConfig.onRowClick;
             }
