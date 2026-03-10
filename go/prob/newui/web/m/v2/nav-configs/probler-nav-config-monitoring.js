@@ -85,7 +85,12 @@
             ],
             services: {
                 'targets': [
-                    { key: 'targets', label: 'Targets', icon: 'inventory', endpoint: '/91/Targets', model: 'L8PTarget', idField: 'targetId', supportedViews: ['table'] }
+                    { key: 'targets', label: 'Targets', icon: 'inventory', endpoint: '/91/Targets', model: 'L8PTarget', idField: 'targetId', supportedViews: ['table'],
+                        onRowClick: function(item) { if (typeof MobileTargetsDetail !== 'undefined') MobileTargetsDetail.showDetails({ endpoint: '/91/Targets', label: 'Targets', model: 'L8PTarget', idField: 'targetId' }, item); },
+                        onAdd: function() { if (typeof MobileTargetsCRUD !== 'undefined') MobileTargetsCRUD.openAdd({ endpoint: '/91/Targets', label: 'Targets', model: 'L8PTarget', idField: 'targetId' }); },
+                        onEdit: function(id, item) { if (typeof MobileTargetsCRUD !== 'undefined') MobileTargetsCRUD.openEdit({ endpoint: '/91/Targets', label: 'Targets', model: 'L8PTarget', idField: 'targetId' }, id); },
+                        onDelete: function(id) { if (typeof MobileTargetsDetail !== 'undefined') MobileTargetsDetail.confirmDelete({ endpoint: '/91/Targets', label: 'Targets', model: 'L8PTarget', idField: 'targetId' }, id); }
+                    }
                 ]
             }
         },
