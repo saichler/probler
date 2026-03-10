@@ -123,13 +123,24 @@ limitations under the License.
             currentState = prev;
 
             // Render the previous view directly (don't push to stack)
+            // For module/submodule levels that would auto-skip, go back further
             switch (prev.level) {
                 case 'home':
                     this._renderHomeView();
                     break;
-                case 'module':
-                    this._renderModuleView(prev.module);
+                case 'module': {
+                    const mc = LAYER8M_NAV_CONFIG[prev.module];
+                    if (mc && mc.section) {
+                        // Section-based module — render it
+                        this._renderModuleView(prev.module);
+                    } else if (mc && mc.subModules && this._wouldAutoSkip(mc)) {
+                        // This level auto-skips, go back further
+                        this.navigateBack();
+                    } else {
+                        this._renderModuleView(prev.module);
+                    }
                     break;
+                }
                 case 'submodule':
                     this._renderSubModuleView(prev.module, prev.subModule);
                     break;
@@ -149,7 +160,8 @@ limitations under the License.
             const content = document.getElementById('nav-content');
             if (!content) return;
 
-            let html = '<div class="nav-section-title">ERP Modules</div>';
+            const sectionTitle = LAYER8M_NAV_CONFIG.homeSectionTitle || 'Modules';
+            let html = '<div class="nav-section-title">' + Layer8MUtils.escapeHtml(sectionTitle) + '</div>';
             html += '<div class="nav-card-grid">';
 
             const filter = window.Layer8DModuleFilter;
@@ -173,6 +185,8 @@ limitations under the License.
 
         /**
          * Render module view (sub-modules list)
+         * Auto-skips intermediate levels for single-service modules.
+         * Handles special section-based modules (e.g., dashboard).
          */
         _renderModuleView(moduleKey) {
             const statsEl = document.getElementById('nav-stats');
@@ -182,24 +196,71 @@ limitations under the License.
             if (!content) return;
 
             const moduleConfig = LAYER8M_NAV_CONFIG[moduleKey];
-            if (!moduleConfig || !moduleConfig.subModules) {
+            if (!moduleConfig) {
                 this.showComingSoon(moduleKey);
                 return;
             }
 
-            const moduleInfo = LAYER8M_NAV_CONFIG.modules.find(m => m.key === moduleKey);
-            const moduleLabel = moduleInfo ? moduleInfo.label : moduleKey;
+            // Special section-based module (e.g., dashboard)
+            if (moduleConfig.section) {
+                this._renderSectionModule(moduleKey, moduleConfig);
+                return;
+            }
+
+            if (!moduleConfig.subModules) {
+                this.showComingSoon(moduleKey);
+                return;
+            }
 
             const filter = window.Layer8DModuleFilter;
             const visibleSubModules = filter
                 ? moduleConfig.subModules.filter(sm => filter.isEnabled(moduleKey + '.' + sm.key))
                 : moduleConfig.subModules;
 
+            // Auto-skip: 1 sub-module → check services
+            if (visibleSubModules.length === 1) {
+                const smKey = visibleSubModules[0].key;
+                const services = moduleConfig.services && moduleConfig.services[smKey];
+                if (services && services.length === 1) {
+                    // Single sub-module with single service → skip to data
+                    currentState = { level: 'service', module: moduleKey, subModule: smKey, service: services[0].key };
+                    this._renderServiceView(moduleKey, smKey, services[0].key);
+                    return;
+                }
+                // Single sub-module with multiple services → skip to services list
+                currentState = { level: 'submodule', module: moduleKey, subModule: smKey, service: null };
+                this._renderSubModuleView(moduleKey, smKey);
+                return;
+            }
+
+            const moduleInfo = LAYER8M_NAV_CONFIG.modules.find(m => m.key === moduleKey);
+            const moduleLabel = moduleInfo ? moduleInfo.label : moduleKey;
+
             let html = renderBackHeader(moduleLabel, 'Select a sub-module');
             html += renderCardGrid(visibleSubModules,
                 (sm) => `Layer8MNav.navigateToSubModule('${moduleKey}', '${sm.key}')`);
 
             content.innerHTML = html;
+        },
+
+        /**
+         * Render a section-based module (loads section HTML instead of nav cards)
+         */
+        _renderSectionModule(moduleKey, moduleConfig) {
+            const content = document.getElementById('nav-content');
+            if (!content) return;
+
+            const moduleInfo = LAYER8M_NAV_CONFIG.modules.find(m => m.key === moduleKey);
+            const moduleLabel = moduleInfo ? moduleInfo.label : moduleKey;
+
+            let html = renderBackHeader(moduleLabel, '');
+            html += `<div id="section-${moduleConfig.section}-container" class="mobile-section-container"></div>`;
+            content.innerHTML = html;
+
+            // Load section HTML if a loader callback is registered
+            if (typeof LAYER8M_NAV_CONFIG.onSectionLoad === 'function') {
+                LAYER8M_NAV_CONFIG.onSectionLoad(moduleConfig.section, `section-${moduleConfig.section}-container`);
+            }
         },
 
         /**
@@ -295,6 +356,17 @@ limitations under the License.
          */
         getCurrentState() {
             return { ...currentState };
+        },
+
+        /**
+         * Check if a module config would trigger auto-skip
+         */
+        _wouldAutoSkip(moduleConfig) {
+            const filter = window.Layer8DModuleFilter;
+            const subs = filter
+                ? moduleConfig.subModules.filter(sm => filter.isEnabled(sm.key))
+                : moduleConfig.subModules;
+            return subs.length === 1;
         },
 
         /**

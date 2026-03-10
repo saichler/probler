@@ -50,6 +50,8 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                 viewOptions.onEdit = (id, item) => Layer8MNavCrud.openServiceForm(serviceConfig, formDef, item);
                 viewOptions.onDelete = (id, item) => Layer8MNavCrud.deleteServiceRecord(serviceConfig, id, item);
                 viewOptions.onRowClick = (item, id) => Layer8MNavCrud.showRecordDetails(serviceConfig, formDef, item);
+            } else if (serviceConfig.onRowClick) {
+                viewOptions.onRowClick = serviceConfig.onRowClick;
             }
 
             // Determine available view types (mirror desktop auto-detection)
@@ -94,7 +96,9 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                     window.MobileHCM, window.MobileFIN, window.MobileSCM,
                     window.MobileSales, window.MobileMfg, window.MobileCrm,
                     window.MobileBi, window.MobileDoc, window.MobileComp,
-                    window.MobilePrj, window.MobileEcom, window.MobileSYS
+                    window.MobilePrj, window.MobileEcom, window.MobileSYS,
+                    window.MobileMonitoring, window.MobileALM,
+                    window.MobileSystem, window.MobileTargets
                 ];
                 for (const reg of registries) {
                     if (reg && reg.getColumns) {
@@ -121,7 +125,9 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                     window.MobileHCM, window.MobileFIN, window.MobileSCM,
                     window.MobileSales, window.MobileMfg, window.MobileCrm,
                     window.MobileBi, window.MobileDoc, window.MobileComp,
-                    window.MobilePrj, window.MobileEcom, window.MobileSYS
+                    window.MobilePrj, window.MobileEcom, window.MobileSYS,
+                    window.MobileMonitoring, window.MobileALM,
+                    window.MobileSystem, window.MobileTargets
                 ];
                 for (const reg of registries) {
                     if (reg && reg.getTransformData) {
@@ -143,7 +149,9 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                     window.MobileHCM, window.MobileFIN, window.MobileSCM,
                     window.MobileSales, window.MobileMfg, window.MobileCrm,
                     window.MobileBi, window.MobileDoc, window.MobileComp,
-                    window.MobilePrj, window.MobileEcom, window.MobileSYS
+                    window.MobilePrj, window.MobileEcom, window.MobileSYS,
+                    window.MobileMonitoring, window.MobileALM,
+                    window.MobileSystem, window.MobileTargets
                 ];
                 for (const reg of registries) {
                     if (reg && reg.getFormDef) {

@@ -1,0 +1,139 @@
+<div class="section-container" id="dashboard-section">
+    <!-- Dashboard Stats -->
+    <div id="nav-stats" class="nav-stats-grid">
+        <!-- Network Devices -->
+        <div class="nav-stat-card">
+            <div class="nav-stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+            </div>
+            <div class="nav-stat-content">
+                <div class="nav-stat-value" id="stat-devices">-</div>
+                <div class="nav-stat-label">Network Devices</div>
+            </div>
+        </div>
+        <!-- GPUs -->
+        <div class="nav-stat-card">
+            <div class="nav-stat-icon success">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                    <rect x="9" y="9" width="6" height="6"></rect>
+                    <line x1="9" y1="1" x2="9" y2="4"></line>
+                    <line x1="15" y1="1" x2="15" y2="4"></line>
+                    <line x1="9" y1="20" x2="9" y2="23"></line>
+                    <line x1="15" y1="20" x2="15" y2="23"></line>
+                    <line x1="20" y1="9" x2="23" y2="9"></line>
+                    <line x1="20" y1="14" x2="23" y2="14"></line>
+                    <line x1="1" y1="9" x2="4" y2="9"></line>
+                    <line x1="1" y1="14" x2="4" y2="14"></line>
+                </svg>
+            </div>
+            <div class="nav-stat-content">
+                <div class="nav-stat-value" id="stat-gpus">-</div>
+                <div class="nav-stat-label">GPUs</div>
+            </div>
+        </div>
+        <!-- Hosts -->
+        <div class="nav-stat-card">
+            <div class="nav-stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                    <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                    <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                </svg>
+            </div>
+            <div class="nav-stat-content">
+                <div class="nav-stat-value" id="stat-hosts">-</div>
+                <div class="nav-stat-label">Hosts & VMs</div>
+            </div>
+        </div>
+        <!-- K8s -->
+        <div class="nav-stat-card">
+            <div class="nav-stat-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                </svg>
+            </div>
+            <div class="nav-stat-content">
+                <div class="nav-stat-value" id="stat-k8s">-</div>
+                <div class="nav-stat-label">K8s Pods</div>
+            </div>
+        </div>
+        <!-- Active Alarms -->
+        <div class="nav-stat-card">
+            <div class="nav-stat-icon warning">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+            </div>
+            <div class="nav-stat-content">
+                <div class="nav-stat-value" id="stat-alarms">-</div>
+                <div class="nav-stat-label">Active Alarms</div>
+            </div>
+        </div>
+        <!-- Critical -->
+        <div class="nav-stat-card">
+            <div class="nav-stat-icon" style="color: var(--status-terminated)">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+            <div class="nav-stat-content">
+                <div class="nav-stat-value" id="stat-critical">-</div>
+                <div class="nav-stat-label">Critical</div>
+            </div>
+        </div>
+    </div>
+    <!-- Dynamic Navigation Content (Layer8MNav renders here) -->
+    <div id="nav-content"></div>
+</div>
+
+<style>
+    #nav-stats { margin-bottom: var(--spacing-lg); }
+</style>
+
+<script>
+function initMobileDashboard() {
+    loadDashboardStats();
+    Layer8MNav.showHome();
+}
+
+async function loadDashboardStats() {
+    const kpis = [
+        { id: 'stat-devices', endpoint: '/0/NCache', query: 'select * from NetworkDevice limit 1 page 0' },
+        { id: 'stat-gpus', endpoint: '/0/NCache', query: 'select * from GpuDevice limit 1 page 0' },
+        { id: 'stat-hosts', endpoint: '/0/NCache', query: 'select * from Hypervisor limit 1 page 0' },
+        { id: 'stat-k8s', endpoint: '/0/NCache', query: 'select * from K8sPod limit 1 page 0' },
+        { id: 'stat-alarms', endpoint: '/20/Alarm', query: 'select * from Alarm limit 1 page 0' },
+        { id: 'stat-critical', endpoint: '/20/Alarm', query: 'select * from Alarm where severity=4 limit 1 page 0' }
+    ];
+    await Promise.all(kpis.map(kpi => loadKPI(kpi)));
+}
+
+async function loadKPI(kpi) {
+    try {
+        const body = encodeURIComponent(JSON.stringify({ text: kpi.query }));
+        const response = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint(kpi.endpoint) + '?body=' + body);
+        const element = document.getElementById(kpi.id);
+        if (element) {
+            if (response && response.metadata?.keyCount?.counts) {
+                element.textContent = response.metadata.keyCount.counts.Total || 0;
+            } else {
+                element.textContent = '0';
+            }
+        }
+    } catch (error) {
+        const element = document.getElementById(kpi.id);
+        if (element) element.textContent = '0';
+    }
+}
+</script>

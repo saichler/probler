@@ -61,6 +61,12 @@ limitations under the License.
                     var mod = findModule(modules, modelName);
                     return (mod && mod.render) ? mod.render : null;
                 },
+                getTransformData: function(modelName) {
+                    var mod = findModule(modules, modelName);
+                    if (mod && mod.getTransformData) return mod.getTransformData(modelName);
+                    if (mod && mod.transforms && mod.transforms[modelName]) return mod.transforms[modelName];
+                    return null;
+                },
                 getAllModels: function() {
                     var models = [];
                     for (var i = 0; i < modules.length; i++) {
