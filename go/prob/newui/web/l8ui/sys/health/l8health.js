@@ -146,15 +146,86 @@ limitations under the License.
         return div.innerHTML;
     }
 
-    // Fetch memory dump for a service and download as .dat file
-    function fetchMemoryDump(rawData, button) {
+    // Download base64-encoded binary data as a file
+    function downloadBinaryFile(base64Data, filename) {
+        var binaryStr = atob(base64Data);
+        var bytes = new Uint8Array(binaryStr.length);
+        for (var i = 0; i < binaryStr.length; i++) {
+            bytes[i] = binaryStr.charCodeAt(i);
+        }
+        var blob = new Blob([bytes], { type: 'application/octet-stream' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // Fetch pprof memory and CPU profiles and download as .dat files
+    function fetchPprofData(rawData, button) {
         if (!rawData) return;
         var origText = button.textContent;
-        button.textContent = 'Downloading...';
+        button.textContent = 'Profiling...';
         button.disabled = true;
 
+        // Track whether fetch has completed and countdown has finished
+        var fetchDone = false;
+        var countdownDone = false;
+        var fetchError = null;
+        var fetchResult = null;
+
+        function onBothDone() {
+            Layer8DPopup.close();
+            if (fetchError) {
+                alert('Error fetching pprof data: ' + fetchError);
+            } else if (fetchResult) {
+                var alias = rawData.alias || 'unknown';
+                if (fetchResult.pprofMemory) {
+                    downloadBinaryFile(fetchResult.pprofMemory, alias + '-memory.dat');
+                }
+                if (fetchResult.pprofCpu) {
+                    downloadBinaryFile(fetchResult.pprofCpu, alias + '-cpu.dat');
+                }
+                if (!fetchResult.pprofMemory && !fetchResult.pprofCpu) {
+                    alert('No pprof data returned for ' + (rawData.alias || 'Unknown'));
+                }
+            }
+            button.textContent = origText;
+            button.disabled = false;
+        }
+
+        // Show countdown modal while CPU profile is being collected
+        var countdown = 5;
+        Layer8DPopup.show({
+            id: 'pprof-countdown-modal',
+            title: 'CPU Profiling',
+            size: 'small',
+            content: '<div style="text-align:center;padding:24px;">' +
+                '<div style="font-size:14px;color:var(--layer8d-text-medium);margin-bottom:16px;">Collecting CPU profile...</div>' +
+                '<div id="pprof-countdown" style="font-size:48px;font-weight:bold;color:var(--layer8d-primary);">5</div>' +
+                '<div style="font-size:12px;color:var(--layer8d-text-muted);margin-top:8px;">seconds remaining</div>' +
+            '</div>',
+            showFooter: false,
+            onShow: function() {
+                var intervalId = setInterval(function() {
+                    countdown--;
+                    var el = document.getElementById('pprof-countdown');
+                    if (countdown <= 0) {
+                        clearInterval(intervalId);
+                        if (el) el.textContent = '0';
+                        countdownDone = true;
+                        if (fetchDone) onBothDone();
+                        return;
+                    }
+                    if (el) el.textContent = countdown;
+                }, 1000);
+            }
+        });
+
         var endpoint = getHealthEndpoint();
-        var body = encodeURIComponent(JSON.stringify(rawData));
+        var payload = { aUuid: rawData.aUuid, pprofCollect: true };
+        var body = encodeURIComponent(JSON.stringify(payload));
         var headers = typeof getAuthHeaders === 'function' ? getAuthHeaders() : { 'Content-Type': 'application/json' };
 
         fetch(endpoint + '?body=' + body, {
@@ -162,34 +233,19 @@ limitations under the License.
             headers: headers
         })
         .then(function(response) {
-            if (!response.ok) throw new Error('Failed to fetch memory dump');
+            if (!response.ok) throw new Error('Failed to fetch pprof data');
             return response.json();
         })
         .then(function(data) {
             var item = data && data.list && data.list[0];
-            if (!item || !item.pprof) {
-                alert('No pprof data returned for ' + (rawData.alias || 'Unknown'));
-                return;
-            }
-            var binaryStr = atob(item.pprof);
-            var bytes = new Uint8Array(binaryStr.length);
-            for (var i = 0; i < binaryStr.length; i++) {
-                bytes[i] = binaryStr.charCodeAt(i);
-            }
-            var blob = new Blob([bytes], { type: 'application/octet-stream' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = (rawData.alias || 'unknown') + '.dat';
-            a.click();
-            URL.revokeObjectURL(url);
+            fetchResult = item || {};
         })
         .catch(function(err) {
-            alert('Error fetching memory dump: ' + err.message);
+            fetchError = err.message;
         })
         .finally(function() {
-            button.textContent = origText;
-            button.disabled = false;
+            fetchDone = true;
+            if (countdownDone) onBothDone();
         });
     }
 
@@ -207,10 +263,10 @@ limitations under the License.
             content: contentHtml,
             showFooter: false,
             onShow: function(body) {
-                var btn = body.querySelector('#l8health-memory-dump-btn');
+                var btn = body.querySelector('#l8health-pprof-btn');
                 if (btn) {
                     btn.addEventListener('click', function() {
-                        fetchMemoryDump(rawData, btn);
+                        fetchPprofData(rawData, btn);
                     });
                 }
             }
@@ -374,7 +430,7 @@ limitations under the License.
                 '</div>' +
             '</div>' +
             '<div style="text-align:right;padding:12px 16px 4px;">' +
-                '<button id="l8health-memory-dump-btn" class="layer8d-btn layer8d-btn-primary layer8d-btn-small">Memory Dump</button>' +
+                '<button id="l8health-pprof-btn" class="layer8d-btn layer8d-btn-primary layer8d-btn-small">Memory & CPU</button>' +
             '</div>';
     }
 
