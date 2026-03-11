@@ -2,131 +2,365 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta name="theme-color" content="#0f2027">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Probler - Mobile App</title>
-    <link rel="icon" href="../favicon.ico" type="image/x-icon">
-    <!-- Mobile App CSS - Base -->
-    <link rel="stylesheet" href="app/css/app-base.css">
-    <link rel="stylesheet" href="app/css/app-header.css">
-    <link rel="stylesheet" href="app/css/app-nav.css">
-    <!-- Mobile App CSS - Components -->
-    <link rel="stylesheet" href="app/css/app-components.css">
-    <link rel="stylesheet" href="app/css/app-sections.css">
-    <link rel="stylesheet" href="app/css/mobile-popup.css">
-    <link rel="stylesheet" href="app/css/mobile-confirm.css">
-    <link rel="stylesheet" href="app/css/mobile-table.css">
-    <link rel="stylesheet" href="app/css/mobile-edit-table.css">
-    <link rel="stylesheet" href="app/css/mobile-tree.css">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>Probler - Datacenter Management</title>
+    <link rel="icon" href="../l8ui/images/logo.gif">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/app-base.css">
+    <link rel="stylesheet" href="css/app-header.css">
+    <link rel="stylesheet" href="css/app-nav.css">
+    <link rel="stylesheet" href="css/app-sidebar.css">
+    <link rel="stylesheet" href="css/app-details.css">
+    <link rel="stylesheet" href="../l8ui/shared/layer8d-toggle-tree.css">
+    <link rel="stylesheet" href="../css/components-misc.css">
+    <link rel="stylesheet" href="../l8ui/sys/modules/l8sys-modules.css">
+    <link rel="stylesheet" href="../l8ui/sys/logs/l8logs.css">
+    <link rel="stylesheet" href="../l8ui/sys/dataimport/l8dataimport.css">
+    <link rel="stylesheet" href="../l8ui/m/css/layer8m-popup.css">
+    <link rel="stylesheet" href="../l8ui/m/css/layer8m-confirm.css">
+    <link rel="stylesheet" href="../l8ui/m/css/layer8m-table.css">
+    <link rel="stylesheet" href="../l8ui/m/css/layer8m-edit-table.css">
+    <link rel="stylesheet" href="../l8ui/m/css/layer8m-forms.css">
+    <link rel="stylesheet" href="../l8ui/shared/layer8d-form-fields.css">
+    <link rel="stylesheet" href="../l8ui/shared/layer8-file-upload.css">
+    <link rel="stylesheet" href="../l8ui/m/css/layer8m-datepicker.css">
+    <link rel="stylesheet" href="../l8ui/m/css/layer8m-reference-picker.css">
+    <link rel="stylesheet" href="../l8ui/m/css/layer8m-nav-cards.css">
+    <link rel="stylesheet" href="../l8ui/chart/layer8d-chart.css">
+    <link rel="stylesheet" href="../l8ui/kanban/layer8d-kanban.css">
+    <link rel="stylesheet" href="../l8ui/timeline/layer8d-timeline.css">
+    <link rel="stylesheet" href="../l8ui/calendar/layer8d-calendar.css">
+    <link rel="stylesheet" href="../l8ui/tree_grid/layer8d-tree-grid.css">
+    <link rel="stylesheet" href="../l8ui/gantt/layer8d-gantt.css">
+    <link rel="stylesheet" href="../l8ui/wizard/layer8d-wizard.css">
+    <link rel="stylesheet" href="../l8ui/dashboard/layer8d-widget.css">
+    <link rel="stylesheet" href="../l8ui/shared/layer8-view-switcher.css">
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
-        <header class="app-header">
-            <div class="header-left">
-                <img src="../images/logo.gif" alt="Probler" class="header-logo">
-                <div class="header-title">
-                    <h1>Probler</h1>
-                    <p class="header-subtitle">Mobile Operations</p>
-                </div>
+        <header class="mobile-header">
+            <button class="header-menu-btn" id="menu-toggle">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="header-logo">
+                <img src="../l8ui/images/logo.gif" alt="Probler">
+                <span class="header-logo-text">Probler</span>
             </div>
-            <div class="header-right">
-                <div class="user-menu">
-                    <span class="username">Admin</span>
-                    <button class="logout-btn" onclick="logout()">Logout</button>
-                </div>
+            <div class="header-actions">
+                <button class="header-action-btn" id="refresh-btn" title="Refresh">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                </button>
             </div>
         </header>
 
-        <!-- Main Content Area -->
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <!-- Sidebar -->
+        <aside class="mobile-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="../l8ui/images/logo.gif" alt="Probler">
+                    <span class="sidebar-logo-text">Probler</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Main</div>
+                    <a href="#dashboard" class="sidebar-item active" data-section="dashboard">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Datacenter Dashboard
+                    </a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Modules</div>
+                    <a href="#inventory" class="sidebar-item" data-section="inventory">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                        Inventory
+                    </a>
+                    <a href="#network" class="sidebar-item" data-section="network">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                        Network Devices
+                    </a>
+                    <a href="#gpus" class="sidebar-item" data-section="gpus">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                            <rect x="9" y="9" width="6" height="6"></rect>
+                            <line x1="9" y1="1" x2="9" y2="4"></line>
+                            <line x1="15" y1="1" x2="15" y2="4"></line>
+                        </svg>
+                        GPUs
+                    </a>
+                    <a href="#hosts" class="sidebar-item" data-section="hosts">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                        </svg>
+                        Hosts & VMs
+                    </a>
+                    <a href="#kubernetes" class="sidebar-item" data-section="kubernetes">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                        Kubernetes Clusters
+                    </a>
+                    <a href="#infrastructure" class="sidebar-item" data-section="infrastructure">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 7h-4V3H8v4H4L2 17h20L20 7z"></path>
+                            <line x1="12" y1="11" x2="12" y2="17"></line>
+                        </svg>
+                        Storage, Power & Temp
+                    </a>
+                    <a href="#topologies" class="sidebar-item" data-section="topologies">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="5" r="3"></circle>
+                            <circle cx="5" cy="19" r="3"></circle>
+                            <circle cx="19" cy="19" r="3"></circle>
+                            <line x1="12" y1="8" x2="5" y2="16"></line>
+                            <line x1="12" y1="8" x2="19" y2="16"></line>
+                        </svg>
+                        Topologies
+                    </a>
+                    <a href="#alarms" class="sidebar-item" data-section="alarms">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        Events & Alarms
+                    </a>
+                    <a href="#automation" class="sidebar-item" data-section="automation">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6"></polyline>
+                            <polyline points="8 6 2 12 8 18"></polyline>
+                        </svg>
+                        Automation & Workflows
+                    </a>
+                    <a href="#applications" class="sidebar-item" data-section="applications">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                        Applications
+                    </a>
+                    <a href="#analytics" class="sidebar-item" data-section="analytics">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                        Analytics
+                    </a>
+                    <a href="#system" class="sidebar-item" data-section="system">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        System
+                    </a>
+                </div>
+            </nav>
+            <div class="sidebar-user">
+                <div class="sidebar-user-info">
+                    <div class="sidebar-avatar" id="user-avatar">U</div>
+                    <div class="sidebar-user-details">
+                        <div class="sidebar-user-name" id="user-name">User</div>
+                        <div class="sidebar-user-role">Administrator</div>
+                    </div>
+                </div>
+                <button class="sidebar-logout-btn" onclick="MobileApp.logout()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
         <main class="main-content">
             <div id="content-area">
                 <div class="loading">Loading</div>
             </div>
         </main>
-
-        <!-- Bottom Navigation (order matches desktop: Dashboard, Inventory, Network, ...) -->
-        <nav class="bottom-nav">
-            <a href="#" class="nav-item active" data-section="dashboard">
-                <span class="nav-icon">📊</span>
-                <span class="nav-label">Dashboard</span>
-            </a>
-            <a href="#" class="nav-item" data-section="inventory">
-                <span class="nav-icon">📦</span>
-                <span class="nav-label">Inventory</span>
-            </a>
-            <a href="#" class="nav-item" data-section="network">
-                <span class="nav-icon">🌐</span>
-                <span class="nav-label">Network</span>
-            </a>
-            <a href="#" class="nav-item" data-section="events">
-                <span class="nav-icon">🔔</span>
-                <span class="nav-label">Events</span>
-                <span class="nav-badge" id="events-badge"></span>
-            </a>
-            <button class="nav-item-more" aria-label="More options">
-                <span class="nav-icon">☰</span>
-                <span class="nav-label">More</span>
-            </button>
-        </nav>
-
-        <!-- More Menu Drawer -->
-        <div class="more-drawer">
-            <div class="more-drawer-content">
-                <div class="more-drawer-header">
-                    <h3>More Sections</h3>
-                    <button class="close-drawer-btn" aria-label="Close">&times;</button>
-                </div>
-                <ul class="more-menu-list">
-                    <li><a href="#" class="more-menu-item" data-section="gpus">
-                        <span class="nav-icon">🖧</span>
-                        <span>GPUs</span>
-                    </a></li>
-                    <li><a href="#" class="more-menu-item" data-section="hosts">
-                        <span class="nav-icon">🖥️</span>
-                        <span>Hosts & VMs</span>
-                    </a></li>
-                    <li><a href="#" class="more-menu-item" data-section="kubernetes">
-                        <span class="nav-icon">☸️</span>
-                        <span>Kubernetes</span>
-                    </a></li>
-                    <li><a href="#" class="more-menu-item" data-section="security">
-                        <span class="nav-icon">🔒</span>
-                        <span>Security</span>
-                    </a></li>
-                    <li><a href="#" class="more-menu-item" data-section="system">
-                        <span class="nav-icon">👥</span>
-                        <span>System</span>
-                    </a></li>
-                </ul>
-                <div class="desktop-link">
-                    <a href="#" onclick="switchToDesktop(); return false;">
-                        🖥️ View Desktop Version
-                    </a>
-                </div>
-            </div>
-        </div>
     </div>
 
-    <!-- Mobile App JavaScript - Core Infrastructure (Phase 1) -->
-    <script src="app/js/mobile-config.js"></script>
-    <script src="app/js/mobile-auth.js"></script>
-    <script src="app/js/mobile-popup.js"></script>
-    <script src="app/js/mobile-confirm.js"></script>
-    <!-- Mobile App JavaScript - Components (Phase 2 & 3) -->
-    <script src="app/js/mobile-table.js"></script>
-    <script src="app/js/mobile-edit-table.js"></script>
-    <script src="app/js/mobile-tree.js"></script>
-    <!-- Mobile App JavaScript - Utilities -->
-    <script src="app/js/app-components.js"></script>
-    <!-- Mobile App JavaScript - Section Detail Popups -->
-    <script src="app/js/network-device-detail.js"></script>
-    <!-- Mobile App JavaScript - App Core -->
-    <script src="app/js/app-core.js"></script>
+    <!-- Scripts - Core -->
+    <script src="../l8ui/m/js/layer8m-config.js"></script>
+    <script src="../l8ui/m/js/layer8m-auth.js"></script>
+    <script src="../l8ui/m/js/layer8m-utils.js"></script>
+    <!-- Shared Desktop Utilities -->
+    <script src="../l8ui/shared/layer8d-config.js"></script>
+    <script src="../l8ui/shared/layer8d-utils.js"></script>
+    <script src="../l8ui/shared/layer8d-renderers.js"></script>
+    <script src="../l8ui/shared/layer8d-reference-registry.js"></script>
+    <!-- Factory Components -->
+    <script src="../l8ui/shared/layer8-enum-factory.js"></script>
+    <script src="../l8ui/shared/layer8-ref-factory.js"></script>
+    <script src="../l8ui/shared/layer8-column-factory.js"></script>
+    <script src="../l8ui/shared/layer8-form-factory.js"></script>
+    <script src="../l8ui/shared/layer8-form-factory-presets.js"></script>
+    <!-- Mobile Components -->
+    <script src="../l8ui/m/js/layer8m-module-registry.js"></script>
+    <script src="../l8ui/m/js/layer8m-popup.js"></script>
+    <script src="../l8ui/m/js/layer8m-confirm.js"></script>
+    <script src="../l8ui/m/js/layer8m-data-source.js"></script>
+    <script src="../l8ui/m/js/layer8m-table.js"></script>
+    <script src="../l8ui/m/js/layer8m-edit-table.js"></script>
+    <script src="../l8ui/shared/layer8-csv-export.js"></script>
+    <script src="../l8ui/shared/layer8-file-upload.js"></script>
+    <script src="../l8ui/m/js/layer8m-view-factory.js"></script>
+    <script src="../l8ui/shared/layer8d-view-factory.js"></script>
+    <script src="../l8ui/shared/layer8d-data-source.js"></script>
+    <script src="../l8ui/shared/layer8-view-switcher.js"></script>
+    <!-- Charts -->
+    <script src="../l8ui/chart/layer8d-chart-core.js"></script>
+    <script src="../l8ui/chart/layer8d-chart-bar.js"></script>
+    <script src="../l8ui/chart/layer8d-chart-line.js"></script>
+    <script src="../l8ui/chart/layer8d-chart-pie.js"></script>
+    <script src="../l8ui/m/js/layer8m-chart.js"></script>
+    <!-- Kanban -->
+    <script src="../l8ui/kanban/layer8d-kanban-core.js"></script>
+    <script src="../l8ui/kanban/layer8d-kanban-render.js"></script>
+    <script src="../l8ui/kanban/layer8d-kanban-events.js"></script>
+    <script src="../l8ui/m/js/layer8m-kanban.js"></script>
+    <!-- Timeline -->
+    <script src="../l8ui/timeline/layer8d-timeline.js"></script>
+    <script src="../l8ui/m/js/layer8m-timeline.js"></script>
+    <!-- Calendar -->
+    <script src="../l8ui/calendar/layer8d-calendar-core.js"></script>
+    <script src="../l8ui/calendar/layer8d-calendar-render.js"></script>
+    <script src="../l8ui/calendar/layer8d-calendar-events.js"></script>
+    <script src="../l8ui/m/js/layer8m-calendar.js"></script>
+    <!-- Tree Grid -->
+    <script src="../l8ui/tree_grid/layer8d-tree-grid-core.js"></script>
+    <script src="../l8ui/tree_grid/layer8d-tree-grid-render.js"></script>
+    <script src="../l8ui/tree_grid/layer8d-tree-grid-events.js"></script>
+    <script src="../l8ui/m/js/layer8m-tree-grid.js"></script>
+    <!-- Gantt -->
+    <script src="../l8ui/gantt/layer8d-gantt-core.js"></script>
+    <script src="../l8ui/gantt/layer8d-gantt-render.js"></script>
+    <script src="../l8ui/gantt/layer8d-gantt-events.js"></script>
+    <script src="../l8ui/m/js/layer8m-gantt.js"></script>
+    <!-- Wizard -->
+    <script src="../l8ui/wizard/layer8d-wizard-core.js"></script>
+    <script src="../l8ui/wizard/layer8d-wizard-render.js"></script>
+    <script src="../l8ui/m/js/layer8m-wizard.js"></script>
+    <!-- Dashboard Widget -->
+    <script src="../l8ui/dashboard/layer8d-widget.js"></script>
+    <!-- Forms -->
+    <script src="../l8ui/m/js/layer8m-forms-fields.js"></script>
+    <script src="../l8ui/m/js/layer8m-forms-fields-reference.js"></script>
+    <script src="../l8ui/m/js/layer8m-forms-fields-ext.js"></script>
+    <script src="../l8ui/m/js/layer8m-forms.js"></script>
+    <script src="../l8ui/m/js/layer8m-forms-inline.js"></script>
+    <script src="../l8ui/m/js/layer8m-datepicker.js"></script>
+    <!-- Reference Registry -->
+    <script src="../l8ui/m/js/layer8m-reference-registry.js"></script>
+    <script src="../l8ui/m/js/layer8m-reference-picker.js"></script>
+    <!-- Renderers -->
+    <script src="../l8ui/m/js/layer8m-renderers.js"></script>
+    <!-- Probler Module Data -->
+    <!-- Monitoring: Network -->
+    <script src="modules/monitoring/network-enums.js"></script>
+    <script src="modules/monitoring/network-columns.js"></script>
+    <!-- Monitoring: GPUs -->
+    <script src="modules/monitoring/gpus-enums.js"></script>
+    <script src="modules/monitoring/gpus-columns.js"></script>
+    <!-- Monitoring: Hosts -->
+    <script src="modules/monitoring/hosts-enums.js"></script>
+    <script src="modules/monitoring/hosts-columns.js"></script>
+    <!-- Monitoring: Kubernetes -->
+    <script src="modules/monitoring/k8s-enums.js"></script>
+    <script src="modules/monitoring/k8s-columns.js"></script>
+    <!-- ALM Module -->
+    <script src="modules/alm/alm-enums.js"></script>
+    <script src="modules/alm/alm-columns.js"></script>
+    <script src="modules/alm/alm-forms.js"></script>
+    <script src="modules/alm/alm-reference-registry.js"></script>
+    <!-- Module Registries -->
+    <script src="modules/monitoring-index.js"></script>
+    <script src="modules/alm-index.js"></script>
+    <!-- Targets -->
+    <script src="modules/targets/targets-enums.js"></script>
+    <script src="modules/targets/targets-columns.js"></script>
+    <script src="modules/targets/targets-hosts.js"></script>
+    <script src="modules/targets/targets-crud.js"></script>
+    <script src="modules/targets/targets-detail.js"></script>
+    <script src="modules/targets-index.js"></script>
+    <!-- Infrastructure (includes columns inline) -->
+    <script src="modules/infrastructure-index.js"></script>
+    <!-- System Module -->
+    <script src="modules/system/health-columns.js"></script>
+    <script src="modules/system/security-enums.js"></script>
+    <script src="modules/system/security-columns.js"></script>
+    <script src="modules/system/security-users-crud.js"></script>
+    <script src="modules/system/security-roles-crud.js"></script>
+    <script src="modules/system/security-credentials-crud.js"></script>
+    <!-- Tree Component -->
+    <script src="../js/tree.js"></script>
+    <!-- Detail Popups -->
+    <script src="js/details/detail-helpers.js"></script>
+    <script src="js/details/network-device-detail.js"></script>
+    <script src="js/details/gpu-detail.js"></script>
+    <script src="js/details/host-detail.js"></script>
+    <script src="js/details/k8s-detail.js"></script>
+    <script src="js/details/k8s-detail-simple.js"></script>
+    <script src="js/details/health-detail.js"></script>
+    <!-- Shared Components -->
+    <script src="../l8ui/shared/layer8d-toggle-tree.js"></script>
+    <script src="../l8ui/shared/layer8d-module-filter.js"></script>
+    <script src="../l8ui/sys/modules/l8sys-dependency-graph.js"></script>
+    <script src="../l8ui/sys/modules/l8sys-modules-map.js"></script>
+    <script src="../l8ui/sys/modules/l8sys-modules.js"></script>
+    <script src="../l8ui/sys/logs/l8logs.js"></script>
+    <script src="../l8ui/sys/dataimport/l8dataimport.js"></script>
+    <script src="../l8ui/sys/dataimport/l8dataimport-templates.js"></script>
+    <script src="../l8ui/sys/dataimport/l8dataimport-transfer.js"></script>
+    <script src="../l8ui/sys/dataimport/l8dataimport-execute.js"></script>
+    <!-- Navigation Core -->
+    <script src="../l8ui/m/js/layer8m-nav-crud.js"></script>
+    <script src="../l8ui/m/js/layer8m-nav-data.js"></script>
+    <script src="../l8ui/m/js/layer8m-nav.js"></script>
+    <!-- Probler Navigation Config -->
+    <script src="nav-configs/probler-nav-config-base.js"></script>
+    <script src="nav-configs/probler-nav-config-icons.js"></script>
+    <script src="nav-configs/probler-nav-config-monitoring.js"></script>
+    <script src="nav-configs/probler-nav-config-alm.js"></script>
+    <script src="nav-configs/probler-nav-config-system.js"></script>
+    <script src="nav-configs/probler-nav-config.js"></script>
+    <!-- App Core (must be last) -->
+    <script src="js/app-core.js"></script>
 </body>
 </html>
