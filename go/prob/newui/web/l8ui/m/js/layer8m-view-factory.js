@@ -29,8 +29,8 @@ limitations under the License.
         create(type, options) {
             const factory = _viewTypes[type];
             if (!factory) {
-                console.warn(`Unknown mobile view type "${type}", falling back to table`);
-                return _viewTypes['table'] ? _viewTypes['table'](options) : null;
+                console.error(`Layer8MViewFactory: Unknown view type "${type}". Registered types: ${Object.keys(_viewTypes).join(', ')}. Register it via Layer8MViewFactory.register().`);
+                return null;
             }
             return factory(options);
         },
@@ -51,8 +51,10 @@ limitations under the License.
             modelName: options.modelName,
             columns: options.columns,
             rowsPerPage: options.pageSize || 15,
+            baseWhereClause: options.baseWhereClause || null,
             statusField: options.statusField || 'status',
             addButtonText: options.addButtonText,
+            getItemId: options.getItemId,
             onAdd: options.onAdd,
             onEdit: options.onEdit,
             onDelete: options.onDelete,

@@ -24,7 +24,7 @@
     }
 
     async function fetchPprofData(rawData) {
-        var endpoint = Layer8DConfig.resolveEndpoint('/0/Health');
+        var endpoint = Layer8MConfig.resolveEndpoint('/0/Health');
         var payload = { aUuid: rawData.aUuid, pprofCollect: true };
         var body = encodeURIComponent(JSON.stringify(payload));
 

@@ -281,11 +281,15 @@ limitations under the License.
                     displayLabel: config.displayLabel || null
                 };
             }
-            return { idColumn: 'id', displayColumn: 'name', selectColumns: ['id', 'name'], displayFormat: null, displayLabel: null };
+            console.error(`Layer8MReferencePicker: No reference config registered for model "${modelName}". Register it via Layer8MReferenceRegistry.`);
+            return null;
         }
 
         static getEndpointForModel(modelName) {
-            if (typeof LAYER8M_NAV_CONFIG === 'undefined') return null;
+            if (typeof LAYER8M_NAV_CONFIG === 'undefined') {
+                console.error('Layer8MReferencePicker: LAYER8M_NAV_CONFIG is not defined. Cannot resolve endpoint for model "' + modelName + '".');
+                return null;
+            }
             for (const moduleKey in LAYER8M_NAV_CONFIG) {
                 const mod = LAYER8M_NAV_CONFIG[moduleKey];
                 if (!mod || !mod.services) continue;
@@ -295,6 +299,7 @@ limitations under the License.
                     }
                 }
             }
+            console.error(`Layer8MReferencePicker: No service found for model "${modelName}" in LAYER8M_NAV_CONFIG. Check model name and nav config registration.`);
             return null;
         }
 

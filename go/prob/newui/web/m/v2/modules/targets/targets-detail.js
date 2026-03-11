@@ -52,14 +52,10 @@
         return html;
     }
 
-    async function showDetails(service, item) {
-        var target = null;
-        try {
-            var query = encodeURIComponent(JSON.stringify({ text: 'select * from L8PTarget where targetId=' + item.targetId }));
-            var data = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint(service.endpoint) + '?body=' + query);
-            target = (data && data.list && data.list.length > 0) ? data.list[0] : null;
-        } catch (e) { /* fallback */ }
-        if (!target) target = item;
+    function showDetails(service, item) {
+        // Use item directly from table's loaded data — no server re-fetch needed
+        // (matches desktop targets-detail.js pattern: showTargetDetailsModal(target))
+        var target = item;
 
         var stateLabel = TARGET_STATES[target.state] || 'Unknown';
         var typeLabel = INVENTORY_TYPES[target.inventoryType] || 'Unknown';
@@ -81,16 +77,7 @@
             title: 'Target Details',
             content: content,
             size: 'large',
-            showFooter: true,
-            saveButtonText: 'Edit',
-            showCancelButton: true,
-            cancelButtonText: 'Close',
-            onSave: function() {
-                Layer8MPopup.close();
-                if (typeof MobileTargetsCRUD !== 'undefined') {
-                    MobileTargetsCRUD.openEdit(service, target.targetId);
-                }
-            }
+            showFooter: false
         });
     }
 

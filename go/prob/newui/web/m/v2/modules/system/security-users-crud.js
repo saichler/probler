@@ -145,19 +145,11 @@
         });
     }
 
-    // Open Edit User modal
-    async function openEdit(service, userId) {
+    // Open Edit User modal — item passed directly from table's loaded data
+    async function openEdit(service, item) {
         await fetchAllRoles();
 
-        var user = null;
-        try {
-            var query = encodeURIComponent(JSON.stringify({ text: 'select * from L8User where userId=' + userId }));
-            var data = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint(service.endpoint) + '?body=' + query);
-            user = (data && data.list && data.list.length > 0) ? data.list[0] : null;
-        } catch (e) {
-            Layer8MUtils.showError('Failed to load user');
-            return;
-        }
+        var user = item;
         if (!user) { Layer8MUtils.showError('User not found'); return; }
 
         Layer8MPopup.show({
@@ -166,38 +158,24 @@
             size: 'large',
             showFooter: true,
             saveButtonText: 'Save',
-            onSave: function() { handleSave(service, true, userId); }
+            onSave: function() { handleSave(service, true, user.userId); }
         });
     }
 
-    // Show user details (read-only)
-    async function showDetails(service, item) {
-        await fetchAllRoles();
-        var userId = item.userId;
+    // Show user details (read-only) — item passed directly from table's loaded data
+    function showDetails(service, item) {
+        fetchAllRoles().then(function() {
+            var user = item;
 
-        var user = null;
-        try {
-            var query = encodeURIComponent(JSON.stringify({ text: 'select * from L8User where userId=' + userId }));
-            var data = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint(service.endpoint) + '?body=' + query);
-            user = (data && data.list && data.list.length > 0) ? data.list[0] : null;
-        } catch (e) { /* use item as fallback */ }
-        if (!user) user = item;
-
-        Layer8MPopup.show({
-            title: 'User Details',
-            content: generateUserFormHtml(user, true),
-            size: 'large',
-            showFooter: true,
-            saveButtonText: 'Edit',
-            showCancelButton: true,
-            cancelButtonText: 'Close',
-            onShow: function(popup) {
-                popup.body.querySelectorAll('input, select, textarea').forEach(function(el) { el.disabled = true; });
-            },
-            onSave: function() {
-                Layer8MPopup.close();
-                openEdit(service, userId);
-            }
+            Layer8MPopup.show({
+                title: 'User Details',
+                content: generateUserFormHtml(user, true),
+                size: 'large',
+                showFooter: false,
+                onShow: function(popup) {
+                    popup.body.querySelectorAll('input, select, textarea').forEach(function(el) { el.disabled = true; });
+                }
+            });
         });
     }
 

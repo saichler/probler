@@ -191,6 +191,9 @@ limitations under the License.
                     overlay.querySelectorAll('.mobile-popup-tab-content').forEach(content => {
                         content.classList.toggle('active', content.dataset.tabContent === tabId);
                     });
+                    if (config.onTabChange) {
+                        setTimeout(() => config.onTabChange(tabId, popup), 50);
+                    }
                 });
             });
 

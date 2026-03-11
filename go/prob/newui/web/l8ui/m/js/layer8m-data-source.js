@@ -103,7 +103,10 @@ limitations under the License.
          * Fetch data from server
          */
         async fetchData(page) {
-            if (!this.endpoint || !this.modelName) return null;
+            if (!this.endpoint || !this.modelName) {
+                console.error(`Layer8MDataSource: fetchData called without ${!this.endpoint ? 'endpoint' : 'modelName'}. Cannot fetch data.`);
+                return null;
+            }
 
             const { query, isInvalid } = this.buildQuery(page, this.pageSize);
 

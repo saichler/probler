@@ -144,21 +144,13 @@
         });
     }
 
-    // Open Edit Role modal
-    async function openEdit(service, roleId) {
+    // Open Edit Role modal — item passed directly from table's loaded data
+    function openEdit(service, item) {
         initEnums();
         currentService = service;
         currentIsEdit = true;
 
-        var role = null;
-        try {
-            var query = encodeURIComponent(JSON.stringify({ text: 'select * from L8Role where roleId=' + roleId }));
-            var data = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint(service.endpoint) + '?body=' + query);
-            role = (data && data.list && data.list.length > 0) ? data.list[0] : null;
-        } catch (e) {
-            Layer8MUtils.showError('Failed to load role');
-            return;
-        }
+        var role = item;
         if (!role) { Layer8MUtils.showError('Role not found'); return; }
 
         tempRules = role.rules ? JSON.parse(JSON.stringify(Object.values(role.rules))) : [];
@@ -174,19 +166,13 @@
         });
     }
 
-    // Show role details (read-only)
-    async function showDetails(service, item) {
+    // Show role details (read-only) — item passed directly from table's loaded data
+    function showDetails(service, item) {
         initEnums();
         currentService = service;
         currentIsEdit = true;
 
-        var role = null;
-        try {
-            var query = encodeURIComponent(JSON.stringify({ text: 'select * from L8Role where roleId=' + item.roleId }));
-            var data = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint(service.endpoint) + '?body=' + query);
-            role = (data && data.list && data.list.length > 0) ? data.list[0] : null;
-        } catch (e) { /* fallback */ }
-        if (!role) role = item;
+        var role = item;
 
         tempRules = role.rules ? JSON.parse(JSON.stringify(Object.values(role.rules))) : [];
 
@@ -194,16 +180,9 @@
             title: 'Role Details',
             content: generateRoleFormHtml(role.roleId, role.roleName),
             size: 'large',
-            showFooter: true,
-            saveButtonText: 'Edit',
-            showCancelButton: true,
-            cancelButtonText: 'Close',
+            showFooter: false,
             onShow: function(popup) {
                 popup.body.querySelectorAll('input, select, textarea, button[data-action]').forEach(function(el) { el.disabled = true; });
-            },
-            onSave: function() {
-                Layer8MPopup.close();
-                openEdit(service, item.roleId);
             }
         });
     }

@@ -41,7 +41,8 @@ limitations under the License.
             if (refConfig && refConfig.idColumn) {
                 return item[refConfig.idColumn];
             }
-            return item.id || item.Id || '';
+            console.error(`Layer8MEditTable: Cannot resolve item ID for model "${this.config.modelName}". No getItemId provided and no reference config found. Pass getItemId to the table constructor or register a reference config.`);
+            return undefined;
         }
 
         render() {

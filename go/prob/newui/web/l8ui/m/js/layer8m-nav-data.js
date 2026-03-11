@@ -25,7 +25,10 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
             const columns = this.getServiceColumns(serviceConfig);
             const transformData = this.getServiceTransformData(serviceConfig);
             const viewType = serviceConfig.viewType || 'table';
-            const primaryKey = serviceConfig.idField || 'id';
+            const primaryKey = serviceConfig.idField;
+            if (!primaryKey) {
+                console.error(`Layer8MNav: Service "${serviceConfig.key}" has no idField configured. Every service config must specify idField.`);
+            }
 
             // Build view options
             const viewOptions = {
@@ -35,8 +38,9 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                 columns: columns,
                 pageSize: 15,
                 primaryKey: primaryKey,
+                baseWhereClause: serviceConfig.baseWhereClause || null,
                 viewConfig: serviceConfig.viewConfig || {},
-                getItemId: (item) => item[primaryKey] || item.id
+                getItemId: (item) => item[primaryKey]
             };
 
             if (transformData) {
@@ -61,6 +65,37 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
             const hasMoney = columns.some(c => c.type === 'money');
             if (hasDate && hasMoney && allViewTypes.indexOf('chart') === -1) {
                 allViewTypes.push('chart');
+            }
+
+            // Render filter dropdown if configured
+            if (serviceConfig.filterDropdown) {
+                const fd = serviceConfig.filterDropdown;
+                const filterDiv = document.createElement('div');
+                filterDiv.style.cssText = 'padding:8px 12px;display:flex;align-items:center;gap:8px;';
+                const label = document.createElement('label');
+                label.textContent = fd.label || 'Filter';
+                label.style.cssText = 'font-size:13px;font-weight:600;color:var(--layer8d-text-medium,#718096);';
+                const select = document.createElement('select');
+                select.className = 'mobile-form-input';
+                select.style.cssText = 'flex:1;max-width:200px;height:34px;font-size:13px;';
+                const options = fd.options || {};
+                for (const [value, text] of Object.entries(options)) {
+                    const opt = document.createElement('option');
+                    opt.value = value;
+                    opt.textContent = text;
+                    if (String(value) === String(fd.defaultValue)) opt.selected = true;
+                    select.appendChild(opt);
+                }
+                filterDiv.appendChild(label);
+                filterDiv.appendChild(select);
+                container.parentNode.insertBefore(filterDiv, container);
+
+                select.addEventListener('change', () => {
+                    const activeTable = window._Layer8MNavActiveTable;
+                    if (activeTable && activeTable.setBaseWhereClause) {
+                        activeTable.setBaseWhereClause(`${fd.field}=${select.value}`);
+                    }
+                });
             }
 
             // Create view via factory
@@ -108,7 +143,8 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                 }
             }
 
-            // Fallback to defaults
+            // No columns found — log error so missing registration is visible
+            console.error(`Layer8MNav: No column definitions found for model "${serviceConfig.model}". Register columns in a mobile module registry (e.g., MobileMonitoring.getColumns).`);
             return [
                 { key: serviceConfig.idField, label: 'ID', sortKey: serviceConfig.idField },
                 { key: 'name', label: 'Name', sortKey: 'name' },

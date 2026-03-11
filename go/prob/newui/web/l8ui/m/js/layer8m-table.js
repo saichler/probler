@@ -73,8 +73,12 @@ limitations under the License.
 
             this.render();
 
-            if (this.config.serverSide && this.config.endpoint && this.config.modelName) {
-                this.fetchData(1);
+            if (this.config.serverSide) {
+                if (!this.config.endpoint || !this.config.modelName) {
+                    console.error(`Layer8MTable: Server-side table created without ${!this.config.endpoint ? 'endpoint' : 'modelName'}. Table will not load data.`);
+                } else {
+                    this.fetchData(1);
+                }
             }
         }
 

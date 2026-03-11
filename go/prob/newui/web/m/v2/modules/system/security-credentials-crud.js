@@ -130,20 +130,12 @@
         });
     }
 
-    // Open Edit Credentials modal
-    async function openEdit(service, credId) {
+    // Open Edit Credentials modal — item passed directly from table's loaded data
+    function openEdit(service, item) {
         currentService = service;
         currentIsEdit = true;
 
-        var cred = null;
-        try {
-            var query = encodeURIComponent(JSON.stringify({ text: 'select * from L8Credentials where id=' + credId }));
-            var data = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint(service.endpoint) + '?body=' + query);
-            cred = (data && data.list && data.list.length > 0) ? data.list[0] : null;
-        } catch (e) {
-            Layer8MUtils.showError('Failed to load credentials');
-            return;
-        }
+        var cred = item;
         if (!cred) { Layer8MUtils.showError('Credentials not found'); return; }
 
         tempCredItems = credsMapToArray(cred.creds);
@@ -159,18 +151,12 @@
         });
     }
 
-    // Show credentials details (read-only)
-    async function showDetails(service, item) {
+    // Show credentials details (read-only) — item passed directly from table's loaded data
+    function showDetails(service, item) {
         currentService = service;
         currentIsEdit = true;
 
-        var cred = null;
-        try {
-            var query = encodeURIComponent(JSON.stringify({ text: 'select * from L8Credentials where id=' + item.id }));
-            var data = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint(service.endpoint) + '?body=' + query);
-            cred = (data && data.list && data.list.length > 0) ? data.list[0] : null;
-        } catch (e) { /* fallback */ }
-        if (!cred) cred = item;
+        var cred = item;
 
         tempCredItems = credsMapToArray(cred.creds);
 
@@ -178,16 +164,9 @@
             title: 'Credentials Details',
             content: generateCredentialsFormHtml(cred.id, cred.name),
             size: 'large',
-            showFooter: true,
-            saveButtonText: 'Edit',
-            showCancelButton: true,
-            cancelButtonText: 'Close',
+            showFooter: false,
             onShow: function(popup) {
                 popup.body.querySelectorAll('input, select, textarea, button[data-action]').forEach(function(el) { el.disabled = true; });
-            },
-            onSave: function() {
-                Layer8MPopup.close();
-                openEdit(service, item.id);
             }
         });
     }

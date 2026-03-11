@@ -17,7 +17,7 @@
                 // Row click → 4-tab detail modal (Overview, Network, Resources, Services)
                 // Special: "Memory & CPU" pprof button (5s countdown, downloads .dat files)
                 'health': [
-                    { key: 'services-health', label: 'Service Health', icon: 'health', endpoint: '/0/Health', model: 'L8Health', idField: 'serviceId', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showHealthDetail === 'function') showHealthDetail(item); } }
+                    { key: 'services-health', label: 'Service Health', icon: 'health', endpoint: '/0/Health', model: 'L8Health', idField: 'service', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showHealthDetail === 'function') showHealthDetail(item); } }
                 ],
                 // Security — EDITABLE tables with full CRUD
                 // Desktop (l8security.js): Layer8DTable with CREATE/EDIT/DELETE
@@ -26,19 +26,19 @@
                     { key: 'users', label: 'Users', icon: 'security', endpoint: '/73/users', model: 'L8User', idField: 'userId', supportedViews: ['table'],
                         onRowClick: function(item) { if (typeof MobileSecurityUsersCRUD !== 'undefined') MobileSecurityUsersCRUD.showDetails({ endpoint: '/73/users', label: 'Users', model: 'L8User', idField: 'userId' }, item); },
                         onAdd: function() { if (typeof MobileSecurityUsersCRUD !== 'undefined') MobileSecurityUsersCRUD.openAdd({ endpoint: '/73/users', label: 'Users', model: 'L8User', idField: 'userId' }); },
-                        onEdit: function(id, item) { if (typeof MobileSecurityUsersCRUD !== 'undefined') MobileSecurityUsersCRUD.openEdit({ endpoint: '/73/users', label: 'Users', model: 'L8User', idField: 'userId' }, id); },
+                        onEdit: function(id, item) { if (typeof MobileSecurityUsersCRUD !== 'undefined') MobileSecurityUsersCRUD.openEdit({ endpoint: '/73/users', label: 'Users', model: 'L8User', idField: 'userId' }, item); },
                         onDelete: function(id) { if (typeof MobileSecurityUsersCRUD !== 'undefined') MobileSecurityUsersCRUD.confirmDelete({ endpoint: '/73/users', label: 'Users', model: 'L8User', idField: 'userId' }, id); }
                     },
                     { key: 'roles', label: 'Roles', icon: 'security', endpoint: '/74/roles', model: 'L8Role', idField: 'roleId', supportedViews: ['table'],
                         onRowClick: function(item) { if (typeof MobileSecurityRolesCRUD !== 'undefined') MobileSecurityRolesCRUD.showDetails({ endpoint: '/74/roles', label: 'Roles', model: 'L8Role', idField: 'roleId' }, item); },
                         onAdd: function() { if (typeof MobileSecurityRolesCRUD !== 'undefined') MobileSecurityRolesCRUD.openAdd({ endpoint: '/74/roles', label: 'Roles', model: 'L8Role', idField: 'roleId' }); },
-                        onEdit: function(id, item) { if (typeof MobileSecurityRolesCRUD !== 'undefined') MobileSecurityRolesCRUD.openEdit({ endpoint: '/74/roles', label: 'Roles', model: 'L8Role', idField: 'roleId' }, id); },
+                        onEdit: function(id, item) { if (typeof MobileSecurityRolesCRUD !== 'undefined') MobileSecurityRolesCRUD.openEdit({ endpoint: '/74/roles', label: 'Roles', model: 'L8Role', idField: 'roleId' }, item); },
                         onDelete: function(id) { if (typeof MobileSecurityRolesCRUD !== 'undefined') MobileSecurityRolesCRUD.confirmDelete({ endpoint: '/74/roles', label: 'Roles', model: 'L8Role', idField: 'roleId' }, id); }
                     },
                     { key: 'credentials', label: 'Credentials', icon: 'security', endpoint: '/75/Creds', model: 'L8Credentials', idField: 'id', supportedViews: ['table'],
                         onRowClick: function(item) { if (typeof MobileSecurityCredentialsCRUD !== 'undefined') MobileSecurityCredentialsCRUD.showDetails({ endpoint: '/75/Creds', label: 'Credentials', model: 'L8Credentials', idField: 'id' }, item); },
                         onAdd: function() { if (typeof MobileSecurityCredentialsCRUD !== 'undefined') MobileSecurityCredentialsCRUD.openAdd({ endpoint: '/75/Creds', label: 'Credentials', model: 'L8Credentials', idField: 'id' }); },
-                        onEdit: function(id, item) { if (typeof MobileSecurityCredentialsCRUD !== 'undefined') MobileSecurityCredentialsCRUD.openEdit({ endpoint: '/75/Creds', label: 'Credentials', model: 'L8Credentials', idField: 'id' }, id); },
+                        onEdit: function(id, item) { if (typeof MobileSecurityCredentialsCRUD !== 'undefined') MobileSecurityCredentialsCRUD.openEdit({ endpoint: '/75/Creds', label: 'Credentials', model: 'L8Credentials', idField: 'id' }, item); },
                         onDelete: function(id) { if (typeof MobileSecurityCredentialsCRUD !== 'undefined') MobileSecurityCredentialsCRUD.confirmDelete({ endpoint: '/75/Creds', label: 'Credentials', model: 'L8Credentials', idField: 'id' }, id); }
                     }
                 ],

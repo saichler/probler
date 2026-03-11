@@ -167,6 +167,22 @@ limitations under the License.
         },
 
         /**
+         * PATCH request with authentication
+         */
+        async patch(url, data) {
+            const response = await this.makeAuthenticatedRequest(url, {
+                method: 'PATCH',
+                body: JSON.stringify(data)
+            });
+            if (!response) return null;
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(sanitizeServerError(errorText) || `Request failed: ${response.status}`);
+            }
+            return response.json();
+        },
+
+        /**
          * DELETE request with authentication
          */
         async delete(url, data = null) {

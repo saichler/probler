@@ -24,7 +24,7 @@
     };
 
     MobileSystem.primaryKeys = {
-        L8Health: 'serviceId'
+        L8Health: 'service'
     };
 
     // Store raw data for detail popup

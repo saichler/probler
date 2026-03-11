@@ -154,20 +154,14 @@
         });
     }
 
-    async function openEdit(service, targetId) {
+    async function openEdit(service, item) {
         currentService = service;
         currentIsEdit = true;
         await MobileTargetsHosts.fetchCredentials();
 
-        var target = null;
-        try {
-            var query = encodeURIComponent(JSON.stringify({ text: 'select * from L8PTarget where targetId=' + targetId }));
-            var data = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint(service.endpoint) + '?body=' + query);
-            target = (data && data.list && data.list.length > 0) ? data.list[0] : null;
-        } catch (e) {
-            Layer8MUtils.showError('Failed to load target');
-            return;
-        }
+        // Use item directly from table's loaded data — no server re-fetch needed
+        // (matches desktop targets.js pattern: editTarget uses targets[targetId] from local cache)
+        var target = item;
         if (!target) { Layer8MUtils.showError('Target not found'); return; }
 
         tempHosts = hostsMapToArray(target.hosts);

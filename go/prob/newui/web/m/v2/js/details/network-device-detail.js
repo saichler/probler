@@ -128,7 +128,7 @@
     }
 
     function buildEquipmentTab(device) {
-        var info = device.raw.equipmentinfo || {};
+        var info = (device.raw || device).equipmentinfo || {};
         var html = '<div class="detail-section">' +
             '<div class="detail-section-title">Hardware</div>' +
             row('Vendor', info.vendor) +
@@ -314,13 +314,18 @@
         }
         container.style.height = '200px';
         if (typeof Layer8DChart !== 'undefined') {
-            new Layer8DChart(containerId, chartData, {
-                chartType: 'line',
-                categoryField: 'label',
-                valueField: 'value',
-                title: title,
-                aggregation: 'avg'
+            var chart = new Layer8DChart({
+                containerId: containerId,
+                viewConfig: {
+                    chartType: 'line',
+                    title: title,
+                    categoryField: 'label',
+                    valueField: 'value',
+                    aggregation: 'avg'
+                }
             });
+            chart.init();
+            chart.setData(chartData, chartData.length);
         }
     }
 
@@ -422,24 +427,33 @@
     }
 
     window.showNetworkDeviceDetail = function(device) {
-        var raw = device.raw;
+        // Mobile table passes raw protobuf data (no transform).
+        // Raw NetworkDevice has: id, equipmentinfo, physicals, logicals.
+        // Desktop transforms flatten equipmentinfo fields to top level.
+        var raw = device.raw || device;
         var info = raw.equipmentinfo || {};
-        device.interfaces = info.interfaceCount || 0;
+
+        // Populate display fields from equipmentinfo (matching desktop transformDeviceData)
+        device.name = device.name || info.sysName || device.id || '';
         device.sysName = info.sysName || '';
+        device.interfaces = info.interfaceCount || 0;
         device.lastSeen = new Date().toISOString();
         device.latitude = info.latitude;
         device.longitude = info.longitude;
+        device.location = device.location || info.location || '';
+        device.uptime = device.uptime || D.formatUptime(info.uptime) || '';
 
         // Resolve enum integers to display strings
         var STATUS_LABELS = { 0: 'unknown', 1: 'online', 2: 'offline', 3: 'warning', 4: 'critical', 5: 'maintenance', 6: 'partial' };
         var STATUS_CLASSES = { 'online': 'status-active', 'offline': 'status-inactive', 'warning': 'status-pending', 'critical': 'status-terminated', 'maintenance': 'status-inactive', 'partial': 'status-pending', 'unknown': 'status-offline' };
         var TYPE_LABELS = { 0: 'Unknown', 1: 'Router', 2: 'Switch', 3: 'Firewall', 4: 'Server', 5: 'Access Point', 6: 'Server' };
         var TYPE_ICONS = { 0: '', 1: '\uD83C\uDF10', 2: '\uD83D\uDD00', 3: '\uD83D\uDEE1\uFE0F', 4: '\uD83D\uDDA5\uFE0F', 5: '\uD83D\uDCF6', 6: '\uD83D\uDDA5\uFE0F' };
-        var statusLabel = STATUS_LABELS[device.status] || 'unknown';
+        var statusRaw = device.status || info.deviceStatus || 0;
+        var statusLabel = (typeof statusRaw === 'string' && isNaN(statusRaw)) ? statusRaw : (STATUS_LABELS[statusRaw] || 'unknown');
         var statusClass = STATUS_CLASSES[statusLabel] || 'status-offline';
         device.status = statusLabel;
-        device.ip = device.ipAddress || '';
-        var typeVal = device.deviceType || 0;
+        device.ip = device.ipAddress || info.ipAddress || '';
+        var typeVal = device.deviceType || info.deviceType || 0;
         device.type = { name: TYPE_LABELS[typeVal] || 'Unknown', icon: TYPE_ICONS[typeVal] || '' };
 
         var tabs = [
@@ -473,10 +487,20 @@
         }
 
         var needsDeferred = hasPhysicals || hasPerf;
-        D.showTabbedPopup(device.name, tabs, needsDeferred ? function() {
-            if (hasPhysicals) initPhysicalTree(raw);
-            if (hasPerf) initPerformanceCharts(raw);
-        } : null);
+        var rendered = {};
+        D.showTabbedPopup(
+            device.name,
+            tabs,
+            needsDeferred ? function() {
+                if (hasPhysicals) initPhysicalTree(raw);
+            } : null,
+            hasPerf ? function(tabId) {
+                if (tabId === 'performance' && !rendered.performance) {
+                    rendered.performance = true;
+                    initPerformanceCharts(raw);
+                }
+            } : null
+        );
     };
 
 })();

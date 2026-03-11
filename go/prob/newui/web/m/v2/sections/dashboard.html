@@ -107,14 +107,15 @@ function initMobileDashboard() {
     Layer8MNav.showHome();
 }
 
-async function loadDashboardStats() {
+async function loadDashboardStats(idPrefix) {
+    var prefix = idPrefix || '';
     const kpis = [
-        { id: 'stat-devices', endpoint: '/0/NCache', query: 'select * from NetworkDevice limit 1 page 0' },
-        { id: 'stat-gpus', endpoint: '/0/NCache', query: 'select * from GpuDevice limit 1 page 0' },
-        { id: 'stat-hosts', endpoint: '/0/NCache', query: 'select * from Hypervisor limit 1 page 0' },
-        { id: 'stat-k8s', endpoint: '/0/NCache', query: 'select * from K8sPod limit 1 page 0' },
-        { id: 'stat-alarms', endpoint: '/20/Alarm', query: 'select * from Alarm limit 1 page 0' },
-        { id: 'stat-critical', endpoint: '/20/Alarm', query: 'select * from Alarm where severity=4 limit 1 page 0' }
+        { id: prefix + 'stat-devices', endpoint: '/0/NCache', query: 'select * from NetworkDevice limit 1 page 0' },
+        { id: prefix + 'stat-gpus', endpoint: '/0/NCache', query: 'select * from GpuDevice limit 1 page 0' },
+        { id: prefix + 'stat-hosts', endpoint: '/0/NCache', query: 'select * from Hypervisor limit 1 page 0' },
+        { id: prefix + 'stat-k8s', endpoint: '/0/NCache', query: 'select * from K8sPod limit 1 page 0' },
+        { id: prefix + 'stat-alarms', endpoint: '/20/Alarm', query: 'select * from Alarm limit 1 page 0' },
+        { id: prefix + 'stat-critical', endpoint: '/20/Alarm', query: 'select * from Alarm where severity=4 limit 1 page 0' }
     ];
     await Promise.all(kpis.map(kpi => loadKPI(kpi)));
 }
