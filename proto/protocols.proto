@@ -1,0 +1,500 @@
+/*
+ * © 2025 Sharon Aicler (saichler@gmail.com)
+ *
+ * Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package types;
+
+option java_multiple_files = true;
+option java_outer_classname = "ProtocolTypes";
+option java_package = "com.inventory.types";
+option go_package = "./types";
+
+message TrafficEngineeringInfo {
+  bool te_enabled = 1;
+  uint64 max_reservable_bandwidth = 2;
+  repeated uint64 unreserved_bandwidth = 3;
+  repeated TeTunnel te_tunnels = 4;
+  RsvpInfo rsvp_info = 5;
+}
+
+message TeTunnel {
+  string tunnel_id = 1;
+  string name = 2;
+  string destination = 3;
+  string source = 4;
+  TunnelStatus status = 5;
+  uint32 setup_priority = 6;
+  uint32 hold_priority = 7;
+  uint64 bandwidth = 8;
+  repeated string explicit_path = 9;
+  TunnelType tunnel_type = 10;
+  repeated TeLsp lsps = 11;
+  TeMetrics metrics = 12;
+  repeated SrPolicy sr_policies = 13;
+}
+
+message TeLsp {
+  string lsp_id = 1;
+  LspStatus status = 2;
+  repeated string path_hops = 3;
+  uint64 bandwidth = 4;
+  TeMetrics metrics = 5;
+}
+
+message RsvpInfo {
+  bool rsvp_enabled = 1;
+  uint32 hello_interval = 2;
+  uint32 hello_missed = 3;
+  repeated RsvpSession sessions = 4;
+  repeated RsvpReservation reservations = 5;
+}
+
+message RsvpSession {
+  string session_id = 1;
+  string destination = 2;
+  uint32 tunnel_id = 3;
+  uint32 extended_tunnel_id = 4;
+  SessionStatus status = 5;
+}
+
+message RsvpReservation {
+  string reservation_id = 1;
+  string session_id = 2;
+  uint64 bandwidth = 3;
+  uint32 setup_priority = 4;
+  uint32 hold_priority = 5;
+  ReservationStatus status = 6;
+}
+
+message TeMetrics {
+  uint64 packets_sent = 1;
+  uint64 bytes_sent = 2;
+  uint64 packets_received = 3;
+  uint64 bytes_received = 4;
+  uint64 setup_time = 5;
+  uint64 last_flap_time = 6;
+  uint32 flap_count = 7;
+}
+
+enum TunnelStatus {
+  TUNNEL_UNKNOWN = 0;
+  TUNNEL_UP = 1;
+  TUNNEL_DOWN = 2;
+  TUNNEL_ADMIN_DOWN = 3;
+}
+enum TunnelType {
+  TUNNEL_TYPE_UNKNOWN = 0;
+  TUNNEL_TYPE_P2P = 1;
+  TUNNEL_TYPE_P2MP = 2;
+  TUNNEL_TYPE_MP2MP = 3;
+}
+enum LspStatus {
+  LSP_UNKNOWN = 0;
+  LSP_ACTIVE = 1;
+  LSP_INACTIVE = 2;
+  LSP_FAILED = 3;
+}
+enum SessionStatus {
+  SESSION_UNKNOWN = 0;
+  SESSION_ACTIVE = 1;
+  SESSION_INACTIVE = 2;
+  SESSION_FAILED = 3;
+}
+enum ReservationStatus {
+  RESERVATION_UNKNOWN = 0;
+  RESERVATION_ACTIVE = 1;
+  RESERVATION_INACTIVE = 2;
+  RESERVATION_FAILED = 3;
+}
+
+message QosInfo {
+  repeated QosPolicy policies = 1;
+  repeated ClassMap class_maps = 2;
+  repeated PolicyMap policy_maps = 3;
+}
+
+message QosPolicy {
+  string name = 1;
+  string direction = 2;
+  repeated QosClass classes = 3;
+  QosPolicyStats stats = 4;
+}
+
+message ClassMap {
+  string name = 1;
+  string match_type = 2;
+  repeated string match_criteria = 3;
+}
+
+message PolicyMap {
+  string name = 1;
+  repeated PolicyClass policy_classes = 2;
+}
+
+message PolicyClass {
+  string class_name = 1;
+  repeated QosAction actions = 2;
+}
+
+message QosAction {
+  ActionType action_type = 1;
+  string action_value = 2;
+}
+
+message QosClass {
+  string class_name = 1;
+  uint64 offered_rate = 2;
+  uint64 drop_rate = 3;
+  uint64 match_packets = 4;
+  uint64 match_bytes = 5;
+}
+
+message QosPolicyStats {
+  uint64 total_packets = 1;
+  uint64 total_bytes = 2;
+  uint64 total_drops = 3;
+  repeated QosClass class_stats = 4;
+}
+
+enum ActionType {
+  ACTION_UNKNOWN = 0;
+  ACTION_SET_DSCP = 1;
+  ACTION_SET_PRECEDENCE = 2;
+  ACTION_POLICE = 3;
+  ACTION_SHAPE = 4;
+  ACTION_BANDWIDTH = 5;
+  ACTION_PRIORITY = 6;
+  ACTION_QUEUE_LIMIT = 7;
+  ACTION_DROP = 8;
+}
+
+message BgpInfo {
+  bool bgp_enabled = 1;
+  uint32 as_number = 2;
+  string router_id = 3;
+  repeated BgpPeer peers = 4;
+  repeated BgpRoute routes = 5;
+  BgpStats statistics = 6;
+}
+
+message BgpPeer {
+  string peer_id = 1;
+  string peer_ip = 2;
+  uint32 peer_as = 3;
+  BgpPeerState state = 4;
+  uint32 uptime = 5;
+  uint32 routes_received = 6;
+  uint32 routes_sent = 7;
+  BgpPeerType peer_type = 8;
+}
+
+message BgpRoute {
+  string prefix = 1;
+  uint32 prefix_length = 2;
+  string next_hop = 3;
+  uint32 local_preference = 4;
+  uint32 med = 5;
+  repeated uint32 as_path = 6;
+  repeated string communities = 7;
+  BgpOrigin origin = 8;
+  bool best_path = 9;
+}
+
+message BgpStats {
+  uint32 total_routes = 1;
+  uint32 active_routes = 2;
+  uint32 total_peers = 3;
+  uint32 established_peers = 4;
+  uint64 updates_sent = 5;
+  uint64 updates_received = 6;
+}
+
+enum BgpPeerState {
+  BGP_PEER_UNKNOWN = 0;
+  BGP_PEER_IDLE = 1;
+  BGP_PEER_CONNECT = 2;
+  BGP_PEER_ACTIVE = 3;
+  BGP_PEER_OPENSENT = 4;
+  BGP_PEER_OPENCONFIRM = 5;
+  BGP_PEER_ESTABLISHED = 6;
+}
+enum BgpPeerType {
+  BGP_PEER_TYPE_UNKNOWN = 0;
+  BGP_PEER_TYPE_INTERNAL = 1;
+  BGP_PEER_TYPE_EXTERNAL = 2;
+}
+
+enum BgpOrigin {
+  BGP_ORIGIN_UNKNOWN = 0;
+  BGP_ORIGIN_IGP = 1;
+  BGP_ORIGIN_EGP = 2;
+  BGP_ORIGIN_INCOMPLETE = 3;
+}
+
+message OspfInfo {
+  bool ospf_enabled = 1;
+  string router_id = 2;
+  uint32 process_id = 3;
+  string area_id = 4;
+  OspfAreaType area_type = 5;
+  OspfNetworkType network_type = 6;
+  uint32 cost = 7;
+  uint32 hello_interval = 8;
+  uint32 dead_interval = 9;
+  uint32 retransmit_interval = 10;
+  uint32 priority = 11;
+  repeated OspfNeighbor neighbors = 12;
+  repeated OspfLsa lsas = 13;
+  OspfStats statistics = 14;
+}
+
+message OspfNeighbor {
+  string neighbor_id = 1;
+  string neighbor_ip = 2;
+  OspfNeighborState state = 3;
+  uint32 priority = 4;
+  uint32 dead_timer = 5;
+  uint32 uptime = 6;
+  string designated_router = 7;
+  string backup_designated_router = 8;
+}
+
+message OspfLsa {
+  OspfLsaType lsa_type = 1;
+  string link_state_id = 2;
+  string advertising_router = 3;
+  uint32 sequence_number = 4;
+  uint32 age = 5;
+  uint32 checksum = 6;
+}
+
+message OspfStats {
+  uint32 total_neighbors = 1;
+  uint32 full_neighbors = 2;
+  uint32 total_lsas = 3;
+  uint32 spf_runs = 4;
+  uint64 hello_sent = 5;
+  uint64 hello_received = 6;
+  uint64 lsa_sent = 7;
+  uint64 lsa_received = 8;
+}
+
+enum OspfNeighborState {
+  OSPF_NEIGHBOR_UNKNOWN = 0;
+  OSPF_NEIGHBOR_DOWN = 1;
+  OSPF_NEIGHBOR_ATTEMPT = 2;
+  OSPF_NEIGHBOR_INIT = 3;
+  OSPF_NEIGHBOR_TWO_WAY = 4;
+  OSPF_NEIGHBOR_EXSTART = 5;
+  OSPF_NEIGHBOR_EXCHANGE = 6;
+  OSPF_NEIGHBOR_LOADING = 7;
+  OSPF_NEIGHBOR_FULL = 8;
+}
+
+enum OspfAreaType {
+  OSPF_AREA_TYPE_UNKNOWN = 0;
+  OSPF_AREA_TYPE_BACKBONE = 1;
+  OSPF_AREA_TYPE_NORMAL = 2;
+  OSPF_AREA_TYPE_STUB = 3;
+  OSPF_AREA_TYPE_NSSA = 4;
+  OSPF_AREA_TYPE_TOTALLY_STUBBY = 5;
+}
+
+enum OspfNetworkType {
+  OSPF_NETWORK_TYPE_UNKNOWN = 0;
+  OSPF_NETWORK_TYPE_BROADCAST = 1;
+  OSPF_NETWORK_TYPE_POINT_TO_POINT = 2;
+  OSPF_NETWORK_TYPE_NBMA = 3;
+  OSPF_NETWORK_TYPE_POINT_TO_MULTIPOINT = 4;
+  OSPF_NETWORK_TYPE_VIRTUAL_LINK = 5;
+}
+
+enum OspfLsaType {
+  OSPF_LSA_TYPE_UNKNOWN = 0;
+  OSPF_LSA_TYPE_ROUTER = 1;
+  OSPF_LSA_TYPE_NETWORK = 2;
+  OSPF_LSA_TYPE_SUMMARY_NETWORK = 3;
+  OSPF_LSA_TYPE_SUMMARY_ASBR = 4;
+  OSPF_LSA_TYPE_EXTERNAL = 5;
+  OSPF_LSA_TYPE_NSSA_EXTERNAL = 7;
+}
+
+message MplsInfo {
+  bool mpls_enabled = 1;
+  repeated MplsLabel labels = 2;
+  repeated MplsFec fecs = 3;
+  repeated LdpSession ldp_sessions = 4;
+  MplsForwardingTable forwarding_table = 5;
+}
+
+message MplsLabel {
+  uint32 label = 1;
+  MplsLabelType label_type = 2;
+  string fec = 3;
+  string next_hop = 4;
+  string outgoing_interface = 5;
+  uint32 incoming_label = 6;
+  uint32 outgoing_label = 7;
+}
+
+message MplsFec {
+  string fec_id = 1;
+  string prefix = 2;
+  uint32 prefix_length = 3;
+  repeated MplsLabel labels = 4;
+}
+
+message LdpSession {
+  string session_id = 1;
+  string peer_ip = 2;
+  LdpSessionState state = 3;
+  uint32 uptime = 4;
+  uint32 labels_advertised = 5;
+  uint32 labels_received = 6;
+}
+
+message MplsForwardingTable {
+  repeated MplsLabel entries = 1;
+  uint32 total_entries = 2;
+  uint32 active_entries = 3;
+}
+
+enum MplsLabelType {
+  MPLS_LABEL_UNKNOWN = 0;
+  MPLS_LABEL_STATIC = 1;
+  MPLS_LABEL_DYNAMIC = 2;
+  MPLS_LABEL_LDP = 3;
+  MPLS_LABEL_RSVP = 4;
+  MPLS_LABEL_SR = 5;
+}
+
+enum LdpSessionState {
+  LDP_SESSION_UNKNOWN = 0;
+  LDP_SESSION_NONEXISTENT = 1;
+  LDP_SESSION_INITIALIZED = 2;
+  LDP_SESSION_OPENREC = 3;
+  LDP_SESSION_OPENSENT = 4;
+  LDP_SESSION_OPERATIONAL = 5;
+}
+
+message SrPolicy {
+  string policy_id = 1;
+  string name = 2;
+  string endpoint = 3;
+  uint32 color = 4;
+  SrPolicyStatus status = 5;
+  repeated SrPath paths = 6;
+  SrPolicyMetrics metrics = 7;
+  uint32 preference = 8;
+  string binding_sid = 9;
+}
+
+message SrPath {
+  string path_id = 1;
+  SrPathStatus status = 2;
+  uint32 weight = 3;
+  repeated SrSegment segments = 4;
+  SrPathMetrics metrics = 5;
+  bool is_valid = 6;
+}
+
+message SrSegment {
+  SrSegmentType segment_type = 1;
+  uint32 sid = 2;
+  string node_id = 3;
+  string interface_id = 4;
+}
+
+message SrPolicyMetrics {
+  uint64 packets_steered = 1;
+  uint64 bytes_steered = 2;
+  uint64 packets_dropped = 3;
+  uint32 path_switches = 4;
+}
+
+message SrPathMetrics {
+  uint64 packets_forwarded = 1;
+  uint64 bytes_forwarded = 2;
+  uint32 utilization_percent = 3;
+}
+enum SrPolicyStatus {
+  SR_POLICY_UNKNOWN = 0;
+  SR_POLICY_UP = 1;
+  SR_POLICY_DOWN = 2;
+  SR_POLICY_ADMIN_DOWN = 3;
+}
+enum SrPathStatus {
+  SR_PATH_UNKNOWN = 0;
+  SR_PATH_ACTIVE = 1;
+  SR_PATH_INACTIVE = 2;
+  SR_PATH_INVALID = 3;
+}
+enum SrSegmentType {
+  SR_SEGMENT_UNKNOWN = 0;
+  SR_SEGMENT_NODE = 1;
+  SR_SEGMENT_ADJACENCY = 2;
+  SR_SEGMENT_BINDING = 3;
+}
+
+message VrfInstance {
+  string vrf_name = 1;
+  string route_distinguisher = 2;
+  repeated string route_targets_import = 3;
+  repeated string route_targets_export = 4;
+  string description = 5;
+  VrfStatus status = 6;
+  repeated string interface_ids = 7;
+  BgpInfo bgp_info = 8;
+  OspfInfo ospf_info = 9;
+  repeated VrfRoute routing_table = 10;
+  VrfStats statistics = 11;
+}
+
+message VrfRoute {
+  string prefix = 1;
+  uint32 prefix_length = 2;
+  string next_hop = 3;
+  VrfRouteProtocol protocol = 4;
+  uint32 metric = 5;
+  uint32 preference = 6;
+  bool active = 7;
+  uint32 age = 8;
+  string outgoing_interface = 9;
+}
+
+message VrfStats {
+  uint32 total_routes = 1;
+  uint32 active_routes = 2;
+  uint32 total_interfaces = 3;
+  uint64 packets_forwarded = 4;
+  uint64 bytes_forwarded = 5;
+}
+enum VrfStatus {
+  VRF_STATUS_UNKNOWN = 0;
+  VRF_STATUS_ACTIVE = 1;
+  VRF_STATUS_INACTIVE = 2;
+  VRF_STATUS_ADMIN_DOWN = 3;
+}
+enum VrfRouteProtocol {
+  VRF_ROUTE_PROTOCOL_UNKNOWN = 0;
+  VRF_ROUTE_PROTOCOL_CONNECTED = 1;
+  VRF_ROUTE_PROTOCOL_STATIC = 2;
+  VRF_ROUTE_PROTOCOL_BGP = 3;
+  VRF_ROUTE_PROTOCOL_OSPF = 4;
+  VRF_ROUTE_PROTOCOL_ISIS = 5;
+  VRF_ROUTE_PROTOCOL_RIP = 6;
+  VRF_ROUTE_PROTOCOL_LOCAL = 7;
+}

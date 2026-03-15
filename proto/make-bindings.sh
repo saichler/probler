@@ -5,7 +5,9 @@ wget https://raw.githubusercontent.com/saichler/l8types/refs/heads/main/proto/ap
 
 docker run --user "$(id -u):$(id -g)" -e PROTO=k8s.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
 docker run --user "$(id -u):$(id -g)" -e PROTO=kubernetes.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
+docker run --user "$(id -u):$(id -g)" -e PROTO=protocols.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
 docker run --user "$(id -u):$(id -g)" -e PROTO=inventory.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
+docker run --user "$(id -u):$(id -g)" -e PROTO=gpu.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
 
 rm api.proto
 

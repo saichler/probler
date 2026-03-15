@@ -1,0 +1,170 @@
+/*
+ * © 2025 Sharon Aicler (saichler@gmail.com)
+ *
+ * Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package types;
+
+option java_multiple_files = true;
+option java_outer_classname = "GpuTypes";
+option java_package = "com.inventory.types";
+option go_package = "./types";
+import "api.proto";
+import "inventory.proto";
+
+// ==========================================
+// GPU Device Model (NVIDIA DGX/HGX Servers)
+// ==========================================
+
+message GpuDeviceList {
+  repeated GpuDevice list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+
+message GpuDevice {
+  string id = 1;
+  GpuDeviceInfo device_info = 2;
+  GpuDeviceSystem system = 3;
+  repeated Gpu gpus = 4;
+  GpuTopology topology = 5;
+  GpuDeviceHealth health = 6;
+}
+
+message GpuDeviceInfo {
+  string hostname = 1;
+  string vendor = 2;
+  string model = 3;
+  string serial_number = 4;
+  string ip_address = 5;
+  string location = 6;
+  double latitude = 7;
+  double longitude = 8;
+  string os_version = 9;
+  string kernel_version = 10;
+  string driver_version = 11;
+  string cuda_version = 12;
+  string dcgm_version = 13;
+  DeviceStatus device_status = 14;
+  string last_seen = 15;
+  string uptime = 16;
+  uint32 gpu_count = 17;
+}
+
+message GpuDeviceSystem {
+  string cpu_model = 1;
+  uint32 cpu_sockets = 2;
+  uint32 cpu_cores_total = 3;
+  repeated l8api.L8TimeSeriesPoint cpu_utilization_percent = 4;
+  uint64 memory_total_bytes = 5;
+  repeated l8api.L8TimeSeriesPoint memory_used_bytes = 6;
+  repeated l8api.L8TimeSeriesPoint memory_free_bytes = 7;
+  string storage_description = 8;
+  uint64 storage_total_bytes = 9;
+  repeated l8api.L8TimeSeriesPoint storage_used_bytes = 10;
+  repeated GpuNetworkInterface network_interfaces = 11;
+  repeated PowerSupply power_supplies = 12;
+  repeated Fan fans = 13;
+}
+
+message GpuNetworkInterface {
+  string name = 1;
+  string interface_type = 2;
+  uint64 speed_bps = 3;
+  string status = 4;
+  string mac_address = 5;
+  string ip_address = 6;
+  repeated l8api.L8TimeSeriesPoint bytes_in = 7;
+  repeated l8api.L8TimeSeriesPoint bytes_out = 8;
+}
+
+message Gpu {
+  uint32 gpu_index = 1;
+  string device_uuid = 2;
+  string device_name = 3;
+  string pci_bus_id = 4;
+  string serial_number = 5;
+  string compute_capability = 6;
+  bool persistence_mode = 7;
+  uint32 numa_node = 8;
+  uint64 vram_total_mib = 9;
+  repeated l8api.L8TimeSeriesPoint vram_used_mib = 10;
+  repeated l8api.L8TimeSeriesPoint gpu_utilization_percent = 11;
+  repeated l8api.L8TimeSeriesPoint memory_utilization_percent = 12;
+  repeated l8api.L8TimeSeriesPoint encoder_utilization_percent = 13;
+  repeated l8api.L8TimeSeriesPoint decoder_utilization_percent = 14;
+  repeated l8api.L8TimeSeriesPoint temperature_celsius = 15;
+  repeated l8api.L8TimeSeriesPoint memory_temperature_celsius = 16;
+  uint32 shutdown_temperature = 17;
+  uint32 slowdown_temperature = 18;
+  uint32 power_limit_watts = 19;
+  repeated l8api.L8TimeSeriesPoint power_draw_watts = 20;
+  repeated l8api.L8TimeSeriesPoint fan_speed_percent = 21;
+  uint32 sm_clock_base_mhz = 22;
+  uint32 mem_clock_base_mhz = 23;
+  repeated l8api.L8TimeSeriesPoint sm_clock_mhz = 24;
+  repeated l8api.L8TimeSeriesPoint mem_clock_mhz = 25;
+  uint64 ecc_corrected_count = 26;
+  uint64 ecc_uncorrected_count = 27;
+  GpuComponentHealth health = 28;
+  repeated GpuProcess processes = 29;
+}
+
+message GpuProcess {
+  uint32 pid = 1;
+  string name = 2;
+  uint64 used_memory_mib = 3;
+  string type = 4;
+}
+
+message GpuTopology {
+  uint32 nvlink_version = 1;
+  uint32 nvswitch_count = 2;
+  repeated GpuLink gpu_links = 3;
+}
+
+message GpuLink {
+  uint32 gpu_src = 1;
+  uint32 gpu_dst = 2;
+  string link_type = 3;
+  uint32 nvlink_count = 4;
+  string status = 5;
+}
+
+message GpuDeviceHealth {
+  GpuHealthStatus overall_status = 1;
+  repeated GpuHealthCheck checks = 2;
+}
+
+message GpuHealthCheck {
+  string check_name = 1;
+  GpuHealthStatus status = 2;
+  string detail = 3;
+}
+
+message GpuComponentHealth {
+  GpuHealthStatus pcie_status = 1;
+  GpuHealthStatus memory_status = 2;
+  GpuHealthStatus thermal_status = 3;
+  GpuHealthStatus power_status = 4;
+  GpuHealthStatus nvlink_status = 5;
+  GpuHealthStatus inforom_status = 6;
+}
+
+enum GpuHealthStatus {
+  GPU_HEALTH_UNKNOWN = 0;
+  GPU_HEALTH_HEALTHY = 1;
+  GPU_HEALTH_WARNING = 2;
+  GPU_HEALTH_CRITICAL = 3;
+}
