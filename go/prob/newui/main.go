@@ -79,6 +79,7 @@ func createVnic(vnet uint32) ifs.IVNic {
 
 	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types.NetworkDevice{}, "Id")
 	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types2.K8SCluster{}, "Name")
+	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types2.GpuDevice{}, "Id")
 
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Resources().SysConfig().KeepAliveIntervalSeconds = 60
@@ -105,6 +106,9 @@ func createVnic(vnet uint32) ifs.IVNic {
 
 	nic.Resources().Registry().Register(&l8topo.L8Topology{})
 	nic.Resources().Registry().Register(&l8topo.L8TopologyQuery{})
+
+	nic.Resources().Registry().Register(&types2.GpuDevice{})
+	nic.Resources().Registry().Register(&types2.GpuDeviceList{})
 
 	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&l8topo.L8TopologyMetadata{}, "ServiceName", "ServiceArea")
 	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&l8tpollaris.L8PTarget{}, "TargetId")

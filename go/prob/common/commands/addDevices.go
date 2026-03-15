@@ -35,7 +35,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 
 	if cmd == "all" || cmd == "gpus" {
 		for i := 1; i <= 3; i++ {
-			device := creates.CreateDevice("20.20.30."+strconv.Itoa(i), common.GPU_Links_ID, "sim")
+			device := creates.CreateGPU("20.20.30."+strconv.Itoa(i), common.GPU_Links_ID, "sim")
 			deviceList.List = append(deviceList.List, device)
 		}
 	}
