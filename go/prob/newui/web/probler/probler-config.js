@@ -9,7 +9,7 @@ Probler.modules = {
         icon: '📊',
         services: [
             { key: 'network', label: 'Network Devices', icon: '🌐', endpoint: '/0/NCache', model: 'NetworkDevice' },
-            { key: 'gpus', label: 'GPUs', icon: '🖧', model: null },
+            { key: 'gpus', label: 'GPUs', icon: '🖧', endpoint: '/2/GCache', model: 'GpuDevice' },
             { key: 'hosts', label: 'Hosts & VMs', icon: '🖥️', model: null },
             { key: 'kubernetes', label: 'Kubernetes', icon: '☸️', endpoint: '/1/KCache', model: 'K8sCluster' }
         ]

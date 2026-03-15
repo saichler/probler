@@ -56,6 +56,11 @@ cd ../inv_k8s/
 go build -o k8s_demo
 mv ./k8s_demo ../../demo/.
 
+echo "Building GPU"
+cd ../inv_gpu/
+go build -o gpu_demo
+mv ./gpu_demo ../../demo/.
+
 echo "Building Log Agent"
 cd ../log-agent/
 go build -o logagent_demo

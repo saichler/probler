@@ -10,6 +10,8 @@ cd ../inv_box
 ./build.sh
 cd ../inv_k8s
 ./build.sh
+cd ../inv_gpu
+./build.sh
 cd ../newui
 ./build.sh
 cd ../log-vnet

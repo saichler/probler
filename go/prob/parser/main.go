@@ -60,5 +60,8 @@ func main() {
 	//Activate Kubernetes parser
 	service.Activate(common2.K8s_Links_ID, &types3.K8SCluster{}, false, nic, "Name")
 
+	//Activate GPU parser
+	service.Activate(common2.GPU_Links_ID, &types3.GpuDevice{}, false, nic, "Id")
+
 	common2.WaitForSignal(resources)
 }

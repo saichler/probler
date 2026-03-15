@@ -1,34 +1,81 @@
-// Initialize GPU Section
+// GPU Devices - Direct Integration (no iframe)
+// Enums: ProblerGpus.enums (probler/gpus/gpus-enums.js)
 // Columns: ProblerGpus.columns (probler/gpus/gpus-columns.js)
+
+// Global table instance
+let gpuDevicesTable = null;
+
+// Transform JSON GPU device data to table format
+function transformGpuDeviceData(device) {
+    const info = device.deviceInfo || {};
+
+    return {
+        id: device.id,
+        hostname: info.hostname || device.id,
+        ipAddress: info.ipAddress || '',
+        model: info.model || '',
+        vendor: info.vendor || '',
+        serialNumber: info.serialNumber || '',
+        location: info.location || '',
+        gpuCount: info.gpuCount || 0,
+        osVersion: info.osVersion || '',
+        kernelVersion: info.kernelVersion || '',
+        driverVersion: info.driverVersion || '',
+        cudaVersion: info.cudaVersion || '',
+        dcgmVersion: info.dcgmVersion || '',
+        status: ProblerGpus.enums.mapDeviceStatus(info.deviceStatus),
+        lastSeen: info.lastSeen || '',
+        uptime: info.uptime || '',
+        gpus: device.gpus || [],
+        system: device.system || {},
+        health: device.health || {},
+        topology: device.topology || {}
+    };
+}
+
+// Update hero subtitle with device stats
+function updateGpuHeroStats(counts) {
+    if (!counts) return;
+    const heroSubtitle = document.querySelector('.gpu-hero .hero-subtitle');
+    if (heroSubtitle) {
+        const totalDevices = counts.Total || 0;
+        const onlineDevices = counts.Online || 0;
+        const uptime = totalDevices > 0 ? ((onlineDevices / totalDevices) * 100).toFixed(2) : 0;
+        heroSubtitle.textContent = `Real-time monitoring \u2022 ${onlineDevices} Active GPU Servers \u2022 ${uptime}% Uptime`;
+    }
+}
+
+// Initialize GPU Devices table
 function initializeGPUs() {
     const container = document.getElementById('gpu-table');
-
-    if (!container) {
-        return;
-    }
+    if (!container) return;
 
     // Initialize parallax effect for GPU hero section
     initializeGPUParallax();
 
-    const gpuData = [];
+    const endpoint = Layer8DConfig.resolveEndpoint('/2/GCache');
 
-    try {
-        // Create the GPU table
-        const gpuTable = new Layer8DTable({
-            containerId: 'gpu-table',
-            columns: ProblerGpus.columns.GPU,
-            data: gpuData,
-            pageSize: 15,
-            sortable: true,
-            filterable: true,
-            statusColumn: 'status',
-            onRowClick: (rowData) => {
-                showGPUDetailModal(rowData);
+    gpuDevicesTable = new Layer8DTable({
+        containerId: 'gpu-table',
+        endpoint: endpoint,
+        modelName: 'GpuDevice',
+        columns: ProblerGpus.columns.GpuDevice,
+        pageSize: 15,
+        pageSizeOptions: [15, 25, 50],
+        sortable: true,
+        filterable: true,
+        serverSide: true,
+        transformData: transformGpuDeviceData,
+        onDataLoaded: (data, items, totalCount) => {
+            if (data.metadata?.keyCount?.counts) {
+                updateGpuHeroStats(data.metadata.keyCount.counts);
             }
-        });
-        gpuTable.init();
-    } catch (error) {
-    }
+        },
+        onRowClick: (rowData) => {
+            showGPUDetailModal(rowData);
+        }
+    });
+    gpuDevicesTable.init();
 }
 
 // Initialize GPU Parallax Effect
@@ -40,29 +87,24 @@ function initializeGPUParallax() {
     const performanceBars = document.querySelector('.performance-bars');
     const dataParticles = document.querySelectorAll('.data-particle');
 
-    // Parallax on scroll
     window.addEventListener('scroll', () => {
         const scrolled = window.pageYOffset;
         const heroTop = gpuHero.offsetTop;
         const heroHeight = gpuHero.offsetHeight;
 
-        // Only apply parallax when hero is in view
         if (scrolled >= heroTop - window.innerHeight && scrolled <= heroTop + heroHeight) {
             const relativeScroll = scrolled - heroTop;
 
-            // Move GPU cards at different speeds for depth effect
             gpuCards.forEach((card, index) => {
                 const speed = parseFloat(card.getAttribute('data-speed')) || 1;
                 const yOffset = relativeScroll * speed * 0.3;
                 card.style.transform = `translateY(${yOffset}px)`;
             });
 
-            // Move performance bars
             if (performanceBars) {
                 performanceBars.style.transform = `translateY(${relativeScroll * 0.5}px)`;
             }
 
-            // Float data particles
             dataParticles.forEach((particle, index) => {
                 const offset = relativeScroll * (0.2 + index * 0.1);
                 particle.style.transform = `translateY(${-offset}px)`;
@@ -70,7 +112,6 @@ function initializeGPUParallax() {
         }
     });
 
-    // Mouse move parallax effect
     gpuHero.addEventListener('mousemove', (e) => {
         const rect = gpuHero.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width;
@@ -86,7 +127,6 @@ function initializeGPUParallax() {
         });
     });
 
-    // Reset on mouse leave
     gpuHero.addEventListener('mouseleave', () => {
         gpuCards.forEach((card) => {
             card.style.transform = 'translate(0, 0)';

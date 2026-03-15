@@ -18,6 +18,7 @@ if [ -z "$1" ]; then
   nohup ./parser_demo > parser_demo.log 2>&1 &
   nohup ./box_demo > box_demo.log 2>&1 &
   nohup ./k8s_demo > k8s_demo.log 2>&1 &
+  nohup ./gpu_demo > gpu_demo.log 2>&1 &
   nohup ./topology_demo > topology_demo.log 2>&1 &
   nohup ./logagent_demo > logagent_demo.log 2>&1 &
   #../run-orm.sh

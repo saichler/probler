@@ -34,6 +34,14 @@ const (
 	K8s_Persist_Service_Area = byte(1)
 	K8s_Parser_Service_Name  = "KPars"
 	K8s_Parser_Service_Area  = byte(1)
+
+	GPU_Links_ID             = "GPU"
+	GPU_Cache_Service_Name   = "GCache"
+	GPU_Cache_Service_Area   = byte(2)
+	GPU_Persist_Service_Name = "GPersist"
+	GPU_Persist_Service_Area = byte(2)
+	GPU_Parser_Service_Name  = "GPars"
+	GPU_Parser_Service_Area  = byte(2)
 )
 
 type Links struct{}
@@ -48,6 +56,8 @@ func (this *Links) Parser(linkid string) (string, byte) {
 		return NetDev_Parser_Service_Name, NetDev_Parser_Service_Area
 	case K8s_Links_ID:
 		return K8s_Parser_Service_Name, K8s_Parser_Service_Area
+	case GPU_Links_ID:
+		return GPU_Parser_Service_Name, GPU_Parser_Service_Area
 	}
 	return "", 0
 }
@@ -58,6 +68,8 @@ func (this *Links) Cache(linkid string) (string, byte) {
 		return NetDev_Cache_Service_Name, NetDev_Cache_Service_Area
 	case K8s_Links_ID:
 		return K8s_Cache_Service_Name, K8s_Cache_Service_Area
+	case GPU_Links_ID:
+		return GPU_Cache_Service_Name, GPU_Cache_Service_Area
 	}
 	return "", 0
 }
@@ -68,6 +80,8 @@ func (this *Links) Persist(linkid string) (string, byte) {
 		return NetDev_Persist_Service_Name, NetDev_Persist_Service_Area
 	case K8s_Links_ID:
 		return K8s_Persist_Service_Name, K8s_Persist_Service_Area
+	case GPU_Links_ID:
+		return GPU_Persist_Service_Name, GPU_Persist_Service_Area
 	}
 	return "", 0
 }

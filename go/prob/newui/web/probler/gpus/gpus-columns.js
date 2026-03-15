@@ -1,14 +1,22 @@
-// Probler GPU Column Definitions
+// Probler GPU Device Column Definitions
 window.ProblerGpus = window.ProblerGpus || {};
 ProblerGpus.columns = {};
 
-ProblerGpus.columns.GPU = [
-    { key: 'name', label: 'GPU Name' },
-    { key: 'model', label: 'Model' },
-    { key: 'hostName', label: 'Host' },
-    { key: 'status', label: 'Status' },
-    { key: 'utilization', label: 'GPU %', formatter: function(value) { return value + '%'; } },
-    { key: 'memoryUsed', label: 'Memory', formatter: function(value, row) { return value + 'GB / ' + row.memoryTotal + 'GB'; } },
-    { key: 'temperature', label: 'Temp', formatter: function(value) { return value + '\u00B0C'; } },
-    { key: 'powerDraw', label: 'Power', formatter: function(value, row) { return value + 'W / ' + row.powerLimit + 'W'; } }
+ProblerGpus.columns.GpuDevice = [
+    { key: 'hostname', label: 'Hostname', filterKey: 'deviceInfo.hostname', sortKey: 'deviceInfo.hostname' },
+    { key: 'ipAddress', label: 'IP Address', filterKey: 'deviceInfo.ipAddress', sortKey: 'deviceInfo.ipAddress' },
+    { key: 'model', label: 'Model', filterKey: 'deviceInfo.model', sortKey: 'deviceInfo.model' },
+    { key: 'gpuCount', label: 'GPUs', filterKey: 'deviceInfo.gpuCount', sortKey: 'deviceInfo.gpuCount' },
+    { key: 'driverVersion', label: 'Driver', filterKey: 'deviceInfo.driverVersion', sortKey: 'deviceInfo.driverVersion' },
+    { key: 'cudaVersion', label: 'CUDA', filterKey: 'deviceInfo.cudaVersion', sortKey: 'deviceInfo.cudaVersion' },
+    {
+        key: 'status', label: 'Status',
+        filterKey: 'deviceInfo.deviceStatus', sortKey: 'deviceInfo.deviceStatus',
+        enumValues: ProblerGpus.enums.DEVICE_STATUS,
+        render: function(item) {
+            var status = item.status || 'unknown';
+            var cssClass = ProblerGpus.enums.DEVICE_STATUS_CLASSES[status] || 'status-offline';
+            return '<span class="status-badge ' + cssClass + '">' + Layer8DUtils.escapeHtml(status) + '</span>';
+        }
+    }
 ];
