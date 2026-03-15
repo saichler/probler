@@ -17,7 +17,6 @@ package main
 
 import (
 	"github.com/saichler/l8bus/go/overlay/vnic"
-	"github.com/saichler/l8collector/go/collector/common"
 	"github.com/saichler/l8collector/go/collector/service"
 	"github.com/saichler/l8pollaris/go/pollaris"
 	"github.com/saichler/l8types/go/ifs"
@@ -25,7 +24,7 @@ import (
 )
 
 func main() {
-	common.SmoothFirstCollection = true
+	//common.SmoothFirstCollection = true
 	res := common2.CreateResources("collector")
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(res, nil)

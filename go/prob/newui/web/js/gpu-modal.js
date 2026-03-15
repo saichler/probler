@@ -1,338 +1,149 @@
-// GPU Detail Modal Module
+// GPU Device Detail Modal - Direct Layer8DPopup integration
 
-// Show GPU detail modal
-function showGPUDetailModal(gpu) {
-    const modal = document.getElementById('gpu-detail-modal');
-    const content = document.getElementById('gpu-detail-content');
-    const modalTitle = modal.querySelector('.modal-title');
+// Strip extra embedded quotes from protobuf string values
+function gpuStripQuotes(str) {
+    if (!str) return '';
+    return str.replace(/^"+|"+$/g, '');
+}
 
-    // Determine status class and performance levels
-    const statusClass = `status-${gpu.status}`;
-    const utilizationClass = gpu.utilization < 50 ? 'low' : gpu.utilization < 80 ? 'medium' : 'high';
-    const memoryPercent = Math.round((gpu.memoryUsed / gpu.memoryTotal) * 100);
-    const memClass = memoryPercent < 50 ? 'low' : memoryPercent < 80 ? 'medium' : 'high';
-    const tempClass = gpu.temperature < 70 ? 'low' : gpu.temperature < 85 ? 'medium' : 'high';
-    const powerPercent = Math.round((gpu.powerDraw / gpu.powerLimit) * 100);
-    const powerClass = powerPercent < 50 ? 'low' : powerPercent < 80 ? 'medium' : 'high';
+// Get the latest value from a time-series array (L8TimeSeriesPoint)
+function gpuLatestValue(timeSeries) {
+    if (!timeSeries || !Array.isArray(timeSeries) || timeSeries.length === 0) return null;
+    var last = timeSeries[timeSeries.length - 1];
+    return last ? (last.value !== undefined ? last.value : null) : null;
+}
 
-    // Update modal title with GPU name and status
-    modalTitle.innerHTML = `
-        <span>GPU Details - ${gpu.name}</span>
-        <span class="modal-status-badge ${statusClass}">${gpu.status.toUpperCase()}</span>
-    `;
+// Format MiB to human-readable
+function formatMiB(mib) {
+    if (!mib && mib !== 0) return '';
+    if (mib >= 1024) return (mib / 1024).toFixed(1) + ' GiB';
+    return mib + ' MiB';
+}
 
-    // Build processes list HTML
-    let processesHtml = '';
-    if (gpu.processes && gpu.processes.length > 0) {
-        processesHtml = '<div class="processes-list">';
-        gpu.processes.forEach(proc => {
-            processesHtml += `
-                <div class="process-item">
-                    <span class="process-pid">PID: ${proc.pid}</span>
-                    <span class="process-name">${proc.name}</span>
-                    <span class="process-memory">${(proc.memoryUsage / 1024).toFixed(2)} GB</span>
-                </div>
-            `;
-        });
-        processesHtml += '</div>';
-    } else {
-        processesHtml = '<p style="color: #718096; text-align: center; padding: 20px;">No active processes</p>';
-    }
+// Show GPU device detail modal
+function showGPUDetailModal(device) {
+    var statusClass = 'status-' + (device.status || 'unknown');
+    var esc = Layer8DUtils.escapeHtml;
 
-    content.innerHTML = `
-        <!-- Modal Tabs -->
-        <div class="modal-tabs">
-            <div class="modal-tab active" data-tab="overview">Overview</div>
-            <div class="modal-tab" data-tab="hardware">Hardware</div>
-            <div class="modal-tab" data-tab="performance">Performance</div>
-            <div class="modal-tab" data-tab="processes">Processes</div>
-        </div>
+    var titleHtml = '<div class="probler-popup-title-wrapper">' +
+        '<h3 class="probler-popup-title">GPU Server - ' + esc(device.hostname || device.id) + '</h3>' +
+        '<span class="probler-popup-status-badge ' + statusClass + '">' +
+        (device.status ? device.status.toUpperCase() : 'UNKNOWN') + '</span>' +
+        '</div>';
 
-        <!-- Tab Content -->
-        <div class="modal-tab-content">
-            <!-- Overview Tab -->
-            <div class="tab-pane active" data-pane="overview">
-                <div class="device-detail-grid">
-                    <div class="detail-section">
-                        <div class="detail-section-title">GPU Information</div>
-                        <div class="detail-row">
-                            <span class="detail-label">GPU Name</span>
-                            <span class="detail-value">${gpu.name}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Model</span>
-                            <span class="detail-value">${gpu.model}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Vendor</span>
-                            <span class="detail-value">${gpu.vendor}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Architecture</span>
-                            <span class="detail-value">${gpu.architecture}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Status</span>
-                            <span class="detail-value ${statusClass}">${gpu.status.toUpperCase()}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Bus ID</span>
-                            <span class="detail-value">${gpu.busId}</span>
-                        </div>
-                    </div>
+    var content = buildGpuDeviceContent(device, esc);
 
-                    <div class="detail-section">
-                        <div class="detail-section-title">Host & Location</div>
-                        <div class="detail-row">
-                            <span class="detail-label">Host Name</span>
-                            <span class="detail-value">${gpu.hostName}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Serial Number</span>
-                            <span class="detail-value">${gpu.serialNumber}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Last Seen</span>
-                            <span class="detail-value">${gpu.lastSeen}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Compute Mode</span>
-                            <span class="detail-value">${gpu.computeMode}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">ECC Enabled</span>
-                            <span class="detail-value">${gpu.eccEnabled ? 'Yes' : 'No'}</span>
-                        </div>
-                    </div>
-                </div>
+    Layer8DPopup.show({
+        titleHtml: titleHtml,
+        content: content,
+        size: 'xlarge',
+        showFooter: false,
+        id: 'gpu-device-detail-' + device.id
+    });
+}
 
-                <!-- Quick Metrics -->
-                <div class="gpu-quick-metrics">
-                    <div class="metric-card">
-                        <div class="metric-label">GPU Utilization</div>
-                        <div class="metric-value ${utilizationClass}">${gpu.utilization}%</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Memory Usage</div>
-                        <div class="metric-value ${memClass}">${gpu.memoryUsed}GB / ${gpu.memoryTotal}GB</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Temperature</div>
-                        <div class="metric-value ${tempClass}">${gpu.temperature}°C</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Power Draw</div>
-                        <div class="metric-value ${powerClass}">${gpu.powerDraw}W / ${gpu.powerLimit}W</div>
-                    </div>
-                </div>
-            </div>
+// Build the full popup content with tabs
+function buildGpuDeviceContent(device, esc) {
+    var gpus = device.gpus || [];
+    var hasGpus = gpus.length > 0;
 
-            <!-- Hardware Tab -->
-            <div class="tab-pane" data-pane="hardware">
-                <div class="device-detail-grid">
-                    <div class="detail-section">
-                        <div class="detail-section-title">Core Specifications</div>
-                        <div class="detail-row">
-                            <span class="detail-label">CUDA Cores</span>
-                            <span class="detail-value">${gpu.cudaCores.toLocaleString()}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Tensor Cores</span>
-                            <span class="detail-value">${gpu.tensorCores}</span>
-                        </div>
-                        ${gpu.rtCores > 0 ? `
-                        <div class="detail-row">
-                            <span class="detail-label">RT Cores</span>
-                            <span class="detail-value">${gpu.rtCores}</span>
-                        </div>
-                        ` : ''}
-                        <div class="detail-row">
-                            <span class="detail-label">Clock Speed</span>
-                            <span class="detail-value">${gpu.clockSpeed} MHz (Max: ${gpu.clockSpeedMax} MHz)</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Architecture</span>
-                            <span class="detail-value">${gpu.architecture}</span>
-                        </div>
-                    </div>
+    return '<div class="probler-popup-tabs">' +
+        '<div class="probler-popup-tab active" data-tab="overview">Overview</div>' +
+        (hasGpus ? '<div class="probler-popup-tab" data-tab="gpus">GPUs (' + gpus.length + ')</div>' : '') +
+        '<div class="probler-popup-tab" data-tab="software">Software</div>' +
+    '</div>' +
+    '<div class="probler-popup-tab-content">' +
+        buildGpuOverviewTab(device, esc) +
+        (hasGpus ? buildGpuListTab(device, esc) : '') +
+        buildGpuSoftwareTab(device, esc) +
+    '</div>';
+}
 
-                    <div class="detail-section">
-                        <div class="detail-section-title">Memory & Interface</div>
-                        <div class="detail-row">
-                            <span class="detail-label">Total Memory</span>
-                            <span class="detail-value">${gpu.memoryTotal} GB ${gpu.vramType}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Memory Type</span>
-                            <span class="detail-value">${gpu.vramType}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">PCIe Generation</span>
-                            <span class="detail-value">Gen ${gpu.pcieGen}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">PCIe Lanes</span>
-                            <span class="detail-value">x${gpu.pcieLanes}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Bus ID</span>
-                            <span class="detail-value">${gpu.busId}</span>
-                        </div>
-                    </div>
+// Build Overview tab
+function buildGpuOverviewTab(device, esc) {
+    var sys = device.system || {};
+    return '<div class="probler-popup-tab-pane active" data-pane="overview">' +
+        '<div class="detail-grid">' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Server Information</div>' +
+                buildDetailRow('Hostname', esc(device.hostname || '')) +
+                buildDetailRow('IP Address', esc(device.ipAddress || device.id || '')) +
+                buildDetailRow('Vendor', esc(device.vendor || '')) +
+                buildDetailRow('Serial Number', esc(device.serialNumber || '')) +
+                buildDetailRow('Location', esc(device.location || '')) +
+                buildDetailRow('Status', '<span class="status-' + (device.status || 'unknown') + '">' +
+                    (device.status ? device.status.toUpperCase() : 'UNKNOWN') + '</span>') +
+            '</div>' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">GPU Summary</div>' +
+                buildDetailRow('GPU Count', device.gpuCount || 0) +
+                buildDetailRow('GPU Model', esc(device.gpuModel || '')) +
+                (sys.cpuSockets ? buildDetailRow('CPU Sockets', sys.cpuSockets) : '') +
+                (sys.cpuCoresTotal ? buildDetailRow('CPU Cores', sys.cpuCoresTotal) : '') +
+                buildDetailRow('Uptime', esc(device.uptime || '')) +
+                buildDetailRow('Last Seen', esc(device.lastSeen || '')) +
+            '</div>' +
+        '</div>' +
+    '</div>';
+}
 
-                    <div class="detail-section">
-                        <div class="detail-section-title">Firmware & Drivers</div>
-                        <div class="detail-row">
-                            <span class="detail-label">Driver Version</span>
-                            <span class="detail-value">${gpu.driverVersion}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">CUDA Version</span>
-                            <span class="detail-value">${gpu.cudaVersion}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">VBIOS Version</span>
-                            <span class="detail-value">${gpu.vbios}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Serial Number</span>
-                            <span class="detail-value">${gpu.serialNumber}</span>
-                        </div>
-                    </div>
+// Build GPU list tab with per-GPU details
+function buildGpuListTab(device, esc) {
+    var gpus = device.gpus || [];
+    var html = '<div class="probler-popup-tab-pane" data-pane="gpus">' +
+        '<div style="overflow-x: auto;">' +
+        '<table class="layer8d-tree-grid-table" style="width: 100%; font-size: 12px;">' +
+        '<thead><tr>' +
+            '<th>#</th>' +
+            '<th>Device Name</th>' +
+            '<th>UUID</th>' +
+            '<th>PCI Bus ID</th>' +
+            '<th>Serial Number</th>' +
+            '<th>VRAM Total</th>' +
+            '<th>Power Limit</th>' +
+            '<th>Compute Cap.</th>' +
+        '</tr></thead><tbody>';
 
-                    <div class="detail-section">
-                        <div class="detail-section-title">Configuration</div>
-                        <div class="detail-row">
-                            <span class="detail-label">Compute Mode</span>
-                            <span class="detail-value">${gpu.computeMode}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">ECC Support</span>
-                            <span class="detail-value">${gpu.eccEnabled ? 'Enabled' : 'Disabled'}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Power Limit</span>
-                            <span class="detail-value">${gpu.powerLimit}W</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Fan Speed</span>
-                            <span class="detail-value">${gpu.fanSpeed}%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Performance Tab -->
-            <div class="tab-pane" data-pane="performance">
-                <div class="detail-section detail-full-width">
-                    <div class="detail-section-title">Performance Metrics</div>
-
-                    <div class="detail-row">
-                        <span class="detail-label">GPU Utilization</span>
-                        <span class="detail-value">${gpu.utilization}%</span>
-                    </div>
-                    <div class="performance-bar">
-                        <div class="performance-bar-fill ${utilizationClass}" style="width: ${gpu.utilization}%"></div>
-                    </div>
-
-                    <div class="detail-row" style="margin-top: 15px;">
-                        <span class="detail-label">Memory Usage</span>
-                        <span class="detail-value">${gpu.memoryUsed} GB / ${gpu.memoryTotal} GB (${memoryPercent}%)</span>
-                    </div>
-                    <div class="performance-bar">
-                        <div class="performance-bar-fill ${memClass}" style="width: ${memoryPercent}%"></div>
-                    </div>
-
-                    <div class="detail-row" style="margin-top: 15px;">
-                        <span class="detail-label">Temperature</span>
-                        <span class="detail-value">${gpu.temperature}°C</span>
-                    </div>
-                    <div class="performance-bar">
-                        <div class="performance-bar-fill ${tempClass}" style="width: ${Math.min(gpu.temperature, 100)}%"></div>
-                    </div>
-
-                    <div class="detail-row" style="margin-top: 15px;">
-                        <span class="detail-label">Power Draw</span>
-                        <span class="detail-value">${gpu.powerDraw}W / ${gpu.powerLimit}W (${powerPercent}%)</span>
-                    </div>
-                    <div class="performance-bar">
-                        <div class="performance-bar-fill ${powerClass}" style="width: ${powerPercent}%"></div>
-                    </div>
-
-                    <div class="detail-row" style="margin-top: 15px;">
-                        <span class="detail-label">Clock Speed</span>
-                        <span class="detail-value">${gpu.clockSpeed} MHz / ${gpu.clockSpeedMax} MHz</span>
-                    </div>
-                    <div class="performance-bar">
-                        <div class="performance-bar-fill low" style="width: ${(gpu.clockSpeed / gpu.clockSpeedMax) * 100}%"></div>
-                    </div>
-
-                    <div class="detail-row" style="margin-top: 15px;">
-                        <span class="detail-label">Fan Speed</span>
-                        <span class="detail-value">${gpu.fanSpeed}%</span>
-                    </div>
-                    <div class="performance-bar">
-                        <div class="performance-bar-fill low" style="width: ${gpu.fanSpeed}%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Processes Tab -->
-            <div class="tab-pane" data-pane="processes">
-                <div class="detail-section detail-full-width">
-                    <div class="detail-section-title">Active Processes (${gpu.processes.length})</div>
-                    ${processesHtml}
-                </div>
-            </div>
-        </div>
-    `;
-
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-
-    // Setup tab switching
-    const tabs = content.querySelectorAll('.modal-tab');
-    const panes = content.querySelectorAll('.tab-pane');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const targetTab = tab.dataset.tab;
-
-            // Remove active class from all tabs and panes
-            tabs.forEach(t => t.classList.remove('active'));
-            panes.forEach(p => p.classList.remove('active'));
-
-            // Add active class to clicked tab and corresponding pane
-            tab.classList.add('active');
-            const targetPane = content.querySelector(`.tab-pane[data-pane="${targetTab}"]`);
-            if (targetPane) {
-                targetPane.classList.add('active');
-            }
-        });
+    gpus.forEach(function(gpu, index) {
+        html += '<tr>' +
+            '<td>' + (gpu.gpuIndex !== undefined ? gpu.gpuIndex : index) + '</td>' +
+            '<td style="font-weight: 500;">' + esc(gpuStripQuotes(gpu.deviceName)) + '</td>' +
+            '<td style="font-family: monospace; font-size: 11px;">' + esc(gpuStripQuotes(gpu.deviceUuid)) + '</td>' +
+            '<td style="font-family: monospace;">' + esc(gpuStripQuotes(gpu.pciBusId)) + '</td>' +
+            '<td>' + esc(gpuStripQuotes(gpu.serialNumber)) + '</td>' +
+            '<td>' + formatMiB(gpu.vramTotalMib) + '</td>' +
+            '<td>' + (gpu.powerLimitWatts ? gpu.powerLimitWatts + 'W' : '') + '</td>' +
+            '<td>' + esc(gpu.computeCapability || '') + '</td>' +
+        '</tr>';
     });
 
-    // Close modal on overlay click
-    modal.onclick = (e) => {
-        if (e.target === modal) {
-            closeGPUDetailModal();
-        }
-    };
-
-    // Close modal on Escape key
-    document.addEventListener('keydown', handleGPUEscapeKey);
+    html += '</tbody></table></div></div>';
+    return html;
 }
 
-// Close GPU detail modal
-function closeGPUDetailModal() {
-    const modal = document.getElementById('gpu-detail-modal');
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-    document.removeEventListener('keydown', handleGPUEscapeKey);
+// Build Software tab
+function buildGpuSoftwareTab(device, esc) {
+    return '<div class="probler-popup-tab-pane" data-pane="software">' +
+        '<div class="detail-grid">' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Driver & CUDA</div>' +
+                buildDetailRow('Driver Version', esc(device.driverVersion || '')) +
+                buildDetailRow('CUDA Version', esc(device.cudaVersion || '')) +
+                buildDetailRow('DCGM Version', esc(device.dcgmVersion || '')) +
+            '</div>' +
+            '<div class="detail-section">' +
+                '<div class="detail-section-title">Operating System</div>' +
+                buildDetailRow('OS Version', esc(device.osVersion || '')) +
+                buildDetailRow('Kernel Version', esc(device.kernelVersion || '')) +
+            '</div>' +
+        '</div>' +
+    '</div>';
 }
 
-// Handle Escape key to close modal
-function handleGPUEscapeKey(e) {
-    if (e.key === 'Escape') {
-        closeGPUDetailModal();
-    }
+// Helper to build a detail row
+function buildDetailRow(label, value) {
+    return '<div class="detail-row">' +
+        '<span class="detail-label">' + label + '</span>' +
+        '<span class="detail-value">' + (value || '') + '</span>' +
+    '</div>';
 }

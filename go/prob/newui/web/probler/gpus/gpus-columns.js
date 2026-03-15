@@ -3,12 +3,13 @@ window.ProblerGpus = window.ProblerGpus || {};
 ProblerGpus.columns = {};
 
 ProblerGpus.columns.GpuDevice = [
+    { key: 'ipAddress', label: 'IP Address', filterKey: 'id', sortKey: 'id' },
     { key: 'hostname', label: 'Hostname', filterKey: 'deviceInfo.hostname', sortKey: 'deviceInfo.hostname' },
-    { key: 'ipAddress', label: 'IP Address', filterKey: 'deviceInfo.ipAddress', sortKey: 'deviceInfo.ipAddress' },
-    { key: 'model', label: 'Model', filterKey: 'deviceInfo.model', sortKey: 'deviceInfo.model' },
+    { key: 'gpuModel', label: 'GPU Model' },
     { key: 'gpuCount', label: 'GPUs', filterKey: 'deviceInfo.gpuCount', sortKey: 'deviceInfo.gpuCount' },
     { key: 'driverVersion', label: 'Driver', filterKey: 'deviceInfo.driverVersion', sortKey: 'deviceInfo.driverVersion' },
     { key: 'cudaVersion', label: 'CUDA', filterKey: 'deviceInfo.cudaVersion', sortKey: 'deviceInfo.cudaVersion' },
+    { key: 'dcgmVersion', label: 'DCGM', filterKey: 'deviceInfo.dcgmVersion', sortKey: 'deviceInfo.dcgmVersion' },
     {
         key: 'status', label: 'Status',
         filterKey: 'deviceInfo.deviceStatus', sortKey: 'deviceInfo.deviceStatus',

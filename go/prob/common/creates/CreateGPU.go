@@ -51,5 +51,14 @@ func CreateGPU(ip, linksId, crId string) *l8tpollaris.L8PTarget {
 
 	host.Configs[int32(snmpConfig.Protocol)] = snmpConfig
 
+	restConfig := &l8tpollaris.L8PHostProtocol{}
+	restConfig.Protocol = l8tpollaris.L8PProtocol_L8PRESTCONF
+	restConfig.Port = 8443
+	restConfig.Addr = ip
+	restConfig.CredId = crId
+	restConfig.Timeout = 60
+
+	host.Configs[int32(restConfig.Protocol)] = restConfig
+
 	return device
 }

@@ -5,28 +5,36 @@
 // Global table instance
 let gpuDevicesTable = null;
 
+// Strip extra embedded quotes from protobuf string values (e.g. "\"value\"" -> "value")
+function stripQuotes(str) {
+    if (!str) return '';
+    return str.replace(/^"+|"+$/g, '');
+}
+
 // Transform JSON GPU device data to table format
 function transformGpuDeviceData(device) {
     const info = device.deviceInfo || {};
+    const gpus = device.gpus || [];
+    const firstGpu = gpus[0] || {};
 
     return {
         id: device.id,
+        ipAddress: info.ipAddress || device.id,
         hostname: info.hostname || device.id,
-        ipAddress: info.ipAddress || '',
-        model: info.model || '',
-        vendor: info.vendor || '',
-        serialNumber: info.serialNumber || '',
-        location: info.location || '',
-        gpuCount: info.gpuCount || 0,
-        osVersion: info.osVersion || '',
-        kernelVersion: info.kernelVersion || '',
+        gpuModel: stripQuotes(firstGpu.deviceName) || info.model || '',
+        gpuCount: info.gpuCount || gpus.length || 0,
         driverVersion: info.driverVersion || '',
         cudaVersion: info.cudaVersion || '',
         dcgmVersion: info.dcgmVersion || '',
         status: ProblerGpus.enums.mapDeviceStatus(info.deviceStatus),
         lastSeen: info.lastSeen || '',
         uptime: info.uptime || '',
-        gpus: device.gpus || [],
+        vendor: info.vendor || '',
+        serialNumber: info.serialNumber || '',
+        location: info.location || '',
+        osVersion: info.osVersion || '',
+        kernelVersion: info.kernelVersion || '',
+        gpus: gpus,
         system: device.system || {},
         health: device.health || {},
         topology: device.topology || {}
