@@ -34,7 +34,7 @@ func main() {
 
 	//Add the inventory model and mark the Id field as key
 	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&types2.GpuDevice{}, "Id")
-
+	
 	//Activate the box inventory service with the primary key & sample model instance
 	inventory.Activate(common2.GPU_Links_ID, &types2.GpuDevice{}, &types2.GpuDeviceList{}, nic, "Id")
 

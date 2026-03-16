@@ -37,7 +37,7 @@ message GpuDevice {
   string id = 1;
   GpuDeviceInfo device_info = 2;
   GpuDeviceSystem system = 3;
-  repeated Gpu gpus = 4;
+  map<string, Gpu> gpus = 4;
   GpuTopology topology = 5;
   GpuDeviceHealth health = 6;
 }
