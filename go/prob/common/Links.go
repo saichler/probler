@@ -26,6 +26,7 @@ const (
 	NetDev_Persist_Service_Area = byte(0)
 	NetDev_Parser_Service_Name  = "NPars"
 	NetDev_Parser_Service_Area  = byte(0)
+	NetDev_Model_Name           = "netowrkdevice"
 
 	K8s_Links_ID             = "K8s"
 	K8s_Cache_Service_Name   = "KCache"
@@ -34,6 +35,7 @@ const (
 	K8s_Persist_Service_Area = byte(1)
 	K8s_Parser_Service_Name  = "KPars"
 	K8s_Parser_Service_Area  = byte(1)
+	K8s_Model_Name           = "k8scluster"
 
 	GPU_Links_ID             = "GPU"
 	GPU_Cache_Service_Name   = "GCache"
@@ -42,6 +44,7 @@ const (
 	GPU_Persist_Service_Area = byte(2)
 	GPU_Parser_Service_Name  = "GPars"
 	GPU_Parser_Service_Area  = byte(2)
+	GPU_Model_Name           = "gpudevice"
 )
 
 type Links struct{}
@@ -84,4 +87,16 @@ func (this *Links) Persist(linkid string) (string, byte) {
 		return GPU_Persist_Service_Name, GPU_Persist_Service_Area
 	}
 	return "", 0
+}
+
+func (this *Links) Model(linkid string) string {
+	switch linkid {
+	case NetworkDevice_Links_ID:
+		return NetDev_Model_Name
+	case K8s_Links_ID:
+		return K8s_Model_Name
+	case GPU_Links_ID:
+		return GPU_Model_Name
+	}
+	return ""
 }
