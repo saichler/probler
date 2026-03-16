@@ -58,7 +58,7 @@ func CreateGPU(ip, linksId, crId string) *l8tpollaris.L8PTarget {
 	restConfig.CredId = crId
 	restConfig.Timeout = 60
 	restConfig.Ainfo = &l8tpollaris.AuthInfo{
-		NeedAuth:      true,
+		NeedAuth:      false,
 		AuthBody:      "AuthUser",
 		AuthUserField: "User",
 		AuthPassField: "Pass",
