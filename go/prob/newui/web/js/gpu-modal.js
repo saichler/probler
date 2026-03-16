@@ -44,7 +44,7 @@ function showGPUDetailModal(device) {
 
 // Build the full popup content with tabs
 function buildGpuDeviceContent(device, esc) {
-    var gpus = device.gpus || [];
+    var gpus = Array.isArray(device.gpus) ? device.gpus : Object.values(device.gpus || {});
     var hasGpus = gpus.length > 0;
 
     return '<div class="probler-popup-tabs">' +
@@ -89,7 +89,7 @@ function buildGpuOverviewTab(device, esc) {
 
 // Build GPU list tab with per-GPU details
 function buildGpuListTab(device, esc) {
-    var gpus = device.gpus || [];
+    var gpus = Array.isArray(device.gpus) ? device.gpus : Object.values(device.gpus || {});
     var html = '<div class="probler-popup-tab-pane" data-pane="gpus">' +
         '<div style="overflow-x: auto;">' +
         '<table class="layer8d-tree-grid-table" style="width: 100%; font-size: 12px;">' +

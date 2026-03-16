@@ -18,6 +18,7 @@ package main
 import (
 	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/l8inventory/go/inv/service"
+	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
 	types2 "github.com/saichler/probler/go/types"
@@ -34,9 +35,27 @@ func main() {
 
 	//Add the inventory model and mark the Id field as key
 	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&types2.GpuDevice{}, "Id")
-	
+
 	//Activate the box inventory service with the primary key & sample model instance
 	inventory.Activate(common2.GPU_Links_ID, &types2.GpuDevice{}, &types2.GpuDeviceList{}, nic, "Id")
 
+	s, a := targets.Links.Cache(common2.GPU_Links_ID)
+	invCenter := inventory.Inventory(res, s, a)
+	invCenter.AddMetadata("Online", Online)
+
 	common2.WaitForSignal(nic.Resources())
+}
+
+func Online(any interface{}) (bool, string) {
+	if any == nil {
+		return false, ""
+	}
+	nd := any.(*types2.GpuDevice)
+	if nd.DeviceInfo == nil {
+		return false, ""
+	}
+	if nd.DeviceInfo.DeviceStatus == types2.DeviceStatus_DEVICE_STATUS_ONLINE {
+		return true, ""
+	}
+	return false, ""
 }

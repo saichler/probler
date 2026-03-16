@@ -14,15 +14,16 @@ function stripQuotes(str) {
 // Transform JSON GPU device data to table format
 function transformGpuDeviceData(device) {
     const info = device.deviceInfo || {};
-    const gpus = device.gpus || [];
-    const firstGpu = gpus[0] || {};
+    const gpusMap = device.gpus || {};
+    const gpusList = Object.values(gpusMap);
+    const firstGpu = gpusList[0] || {};
 
     return {
         id: device.id,
         ipAddress: info.ipAddress || device.id,
         hostname: info.hostname || device.id,
         gpuModel: stripQuotes(firstGpu.deviceName) || info.model || '',
-        gpuCount: info.gpuCount || gpus.length || 0,
+        gpuCount: info.gpuCount || gpusList.length || 0,
         driverVersion: info.driverVersion || '',
         cudaVersion: info.cudaVersion || '',
         dcgmVersion: info.dcgmVersion || '',
@@ -34,7 +35,7 @@ function transformGpuDeviceData(device) {
         location: info.location || '',
         osVersion: info.osVersion || '',
         kernelVersion: info.kernelVersion || '',
-        gpus: gpus,
+        gpus: gpusList,
         system: device.system || {},
         health: device.health || {},
         topology: device.topology || {}

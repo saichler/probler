@@ -160,6 +160,66 @@ async function updateK8sCard() {
     }
 }
 
+async function fetchGpuStats() {
+    try {
+        const endpoint = Layer8DConfig.resolveEndpoint('/2/GCache');
+        const url = endpoint +
+            '?body=' + encodeURIComponent(JSON.stringify({
+                text: 'select * from GpuDevice where Id=* limit 1 page 0'
+            }));
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: getAuthHeaders()
+        });
+
+        if (!response || !response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+        return data.metadata?.keyCount?.counts || null;
+    } catch (error) {
+        console.error('Error fetching GPU stats:', error);
+        return null;
+    }
+}
+
+async function updateGpuCard() {
+    var card = document.getElementById('dashboard-card-gpus');
+    if (!card) return;
+
+    var cardValue = card.querySelector('.metric-card-value');
+    var cardDetails = card.querySelector('.metric-card-details');
+
+    var stats = await fetchGpuStats();
+    if (stats) {
+        var totalDevices = stats.Total || 0;
+        var onlineDevices = stats.Online || 0;
+        var offlineDevices = totalDevices - onlineDevices;
+
+        if (cardValue) {
+            cardValue.textContent = totalDevices.toLocaleString();
+        }
+        if (cardDetails) {
+            cardDetails.innerHTML =
+                '<span class="metric-status">' +
+                    '<span class="status-indicator status-operational"></span>' +
+                    '<span>' + onlineDevices.toLocaleString() + ' Online</span>' +
+                '</span>' +
+                '<span class="metric-status">' +
+                    '<span class="status-indicator status-offline"></span>' +
+                    '<span>' + offlineDevices.toLocaleString() + ' Offline</span>' +
+                '</span>';
+        }
+    } else {
+        if (cardValue) cardValue.textContent = '--';
+        if (cardDetails) {
+            cardDetails.innerHTML = '<span class="metric-status unavailable">Data unavailable</span>';
+        }
+    }
+}
+
 function initializeDashboardCardNavigation() {
     document.querySelectorAll('.dashboard-section .metric-card[data-section]').forEach(function(card) {
         card.style.cursor = 'pointer';
@@ -174,6 +234,6 @@ function initializeDashboardCardNavigation() {
 
 async function initializeDashboard() {
     initializeDashboardCardNavigation();
-    await Promise.all([updateNetworkDevicesCard(), updateK8sCard()]);
+    await Promise.all([updateNetworkDevicesCard(), updateK8sCard(), updateGpuCard()]);
     initializeAlarmsTable();
 }

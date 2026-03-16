@@ -52,7 +52,7 @@ func CreateGPU(ip, linksId, crId string) *l8tpollaris.L8PTarget {
 	host.Configs[int32(snmpConfig.Protocol)] = snmpConfig
 
 	restConfig := &l8tpollaris.L8PHostProtocol{}
-	restConfig.Protocol = l8tpollaris.L8PProtocol_L8PRESTCONF
+	restConfig.Protocol = l8tpollaris.L8PProtocol_L8PRESTAPI
 	restConfig.Port = 8443
 	restConfig.Addr = ip
 	restConfig.CredId = crId

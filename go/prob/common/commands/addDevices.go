@@ -40,6 +40,34 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		}
 	}
 
+	if cmd == "all" || cmd == "5Kgpus" {
+		ip := 1
+		sub := 10
+		for i := 1; i <= 5000; i++ {
+			device := creates.CreateGPU("20.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.GPU_Links_ID, "sim")
+			deviceList.List = append(deviceList.List, device)
+			ip++
+			if ip > 254 {
+				sub++
+				ip = 0
+			}
+		}
+	}
+
+	if cmd == "all" || cmd == "1Kgpus" {
+		ip := 1
+		sub := 10
+		for i := 1; i <= 1000; i++ {
+			device := creates.CreateGPU("20.20."+strconv.Itoa(sub)+"."+strconv.Itoa(ip), common.GPU_Links_ID, "sim")
+			deviceList.List = append(deviceList.List, device)
+			ip++
+			if ip > 254 {
+				sub++
+				ip = 0
+			}
+		}
+	}
+
 	if cmd == "all" || cmd == "cluster" {
 		cluster := creates.CreateCluster("lab")
 		deviceList.List = append(deviceList.List, cluster)
