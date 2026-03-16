@@ -26,7 +26,7 @@ const (
 	NetDev_Persist_Service_Area = byte(0)
 	NetDev_Parser_Service_Name  = "NPars"
 	NetDev_Parser_Service_Area  = byte(0)
-	NetDev_Model_Name           = "netowrkdevice"
+	NetDev_Model_Name           = "networkdevice"
 
 	K8s_Links_ID             = "K8s"
 	K8s_Cache_Service_Name   = "KCache"
