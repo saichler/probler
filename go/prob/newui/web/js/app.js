@@ -10,13 +10,58 @@ function getAuthHeaders() {
     return headers;
 }
 
+// Show error modal before logout so the user can see what went wrong
+function showErrorAndLogout(reason, details) {
+    // Prevent multiple modals
+    if (document.getElementById('error-before-logout-overlay')) return;
+
+    var overlay = document.createElement('div');
+    overlay.id = 'error-before-logout-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:100000;display:flex;align-items:center;justify-content:center;';
+
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:#1a1a2e;color:#e0e0e0;border-radius:12px;padding:32px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);font-family:system-ui,sans-serif;';
+
+    var title = document.createElement('h2');
+    title.style.cssText = 'margin:0 0 16px 0;color:#ff6b6b;font-size:20px;';
+    title.textContent = 'Error — Session Ending';
+
+    var reasonEl = document.createElement('div');
+    reasonEl.style.cssText = 'margin-bottom:16px;font-size:15px;line-height:1.5;';
+    reasonEl.textContent = reason || 'An unexpected error occurred.';
+
+    modal.appendChild(title);
+    modal.appendChild(reasonEl);
+
+    if (details) {
+        var detailsEl = document.createElement('pre');
+        detailsEl.style.cssText = 'background:#111;color:#ccc;padding:12px;border-radius:8px;font-size:12px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;margin-bottom:16px;';
+        detailsEl.textContent = details;
+        modal.appendChild(detailsEl);
+    }
+
+    var btn = document.createElement('button');
+    btn.style.cssText = 'background:#ff6b6b;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;cursor:pointer;';
+    btn.textContent = 'OK — Go to Login';
+    btn.onclick = function() {
+        sessionStorage.removeItem('bearerToken');
+        localStorage.removeItem('bearerToken');
+        localStorage.removeItem('rememberedUser');
+        window.location.href = 'l8ui/login/index.html';
+    };
+    modal.appendChild(btn);
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+}
+
 // Utility function for making authenticated API calls
 async function makeAuthenticatedRequest(url, options = {}) {
     const bearerToken = sessionStorage.getItem('bearerToken');
 
     if (!bearerToken) {
         console.error('No bearer token found');
-        window.location.href = 'l8ui/login/index.html';
+        showErrorAndLogout('No authentication token found.', 'bearerToken is missing from sessionStorage.');
         return;
     }
 
@@ -33,10 +78,14 @@ async function makeAuthenticatedRequest(url, options = {}) {
             headers: headers
         });
 
-        // If unauthorized, redirect to login
+        // If unauthorized, show error before redirecting to login
         if (response.status === 401) {
-            sessionStorage.removeItem('bearerToken');
-            window.location.href = 'l8ui/login/index.html';
+            var bodyText = '';
+            try { bodyText = await response.text(); } catch(e) {}
+            showErrorAndLogout(
+                'Session expired or unauthorized (HTTP 401).',
+                'URL: ' + url + '\nStatus: 401\nResponse: ' + bodyText
+            );
             return;
         }
 
@@ -48,7 +97,11 @@ async function makeAuthenticatedRequest(url, options = {}) {
 }
 
 // Logout function
-function logout() {
+function logout(reason) {
+    if (reason) {
+        showErrorAndLogout(reason);
+        return;
+    }
     // Clear bearer token from sessionStorage and localStorage
     sessionStorage.removeItem('bearerToken');
     localStorage.removeItem('bearerToken');
@@ -57,6 +110,28 @@ function logout() {
     // Redirect to login page
     window.location.href = 'l8ui/login/index.html';
 }
+
+// Global error handlers to catch uncaught errors and show them before they cause silent failures
+window.onerror = function(message, source, lineno, colno, error) {
+    console.error('Uncaught error:', message, source, lineno, colno, error);
+    showErrorAndLogout(
+        'Uncaught JavaScript error',
+        'Message: ' + message + '\nSource: ' + source + ':' + lineno + ':' + colno +
+        (error && error.stack ? '\n\nStack:\n' + error.stack : '')
+    );
+    return true;
+};
+
+window.onunhandledrejection = function(event) {
+    var reason = event.reason;
+    console.error('Unhandled promise rejection:', reason);
+    showErrorAndLogout(
+        'Unhandled promise rejection',
+        reason instanceof Error
+            ? 'Message: ' + reason.message + '\n\nStack:\n' + reason.stack
+            : String(reason)
+    );
+};
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async function() {

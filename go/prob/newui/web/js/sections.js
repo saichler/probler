@@ -128,9 +128,5 @@ function loadSection(sectionName) {
         });
 }
 
-// Logout function
-function logout() {
-    sessionStorage.removeItem('isLoggedIn');
-    sessionStorage.removeItem('username');
-    window.location.href = 'l8ui/login/index.html';
-}
+// Logout function (delegates to app.js logout which shows error modal if reason provided)
+// Kept for backward compatibility — app.js defines the primary logout()

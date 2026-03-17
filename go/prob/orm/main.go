@@ -21,6 +21,7 @@ import (
 	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/probler/go/prob/common"
+	"os"
 	"os/exec"
 	"time"
 )
@@ -33,7 +34,9 @@ func main() {
 	nic.WaitForConnection()
 
 	//Start postgres
-	startDb(nic)
+	if len(os.Args) <= 1 {
+		startDb(nic)
+	}
 
 	//Activate targets
 	targets.Activate(common.DB_CREDS, common.DB_TARGETS_NAME, nic)
