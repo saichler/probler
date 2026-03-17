@@ -49,7 +49,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 			ip++
 			if ip > 254 {
 				sub++
-				ip = 0
+				ip = 1
 			}
 		}
 	}
@@ -63,7 +63,7 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 			ip++
 			if ip > 254 {
 				sub++
-				ip = 0
+				ip = 1
 			}
 		}
 	}

@@ -7,6 +7,8 @@ kubectl apply -f collector.yaml
 sleep 2
 kubectl apply -f box.yaml
 sleep 2
+kubectl apply -f gpu.yaml
+sleep 2
 kubectl apply -f k8s.yaml
 sleep 2
 kubectl apply -f orm.yaml

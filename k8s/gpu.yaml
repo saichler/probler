@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: probler-gpu
+  labels:
+    name: probler-gpu
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet 
+metadata:
+  namespace: probler-gpu
+  name: probler-gpu
+  labels:
+    app: probler-gpu
+spec:
+  #serviceName: probler-box
+  #replicas: 3
+  selector:
+    matchLabels:
+      app: probler-gpu
+  template:
+    metadata:
+      labels:
+        app: probler-gpu
+    spec:
+      containers:
+        - name: probler-gpu
+          image: saichler/probler-inv-gpu:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate
