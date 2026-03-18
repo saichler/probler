@@ -11,28 +11,105 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: probler-parser
-  name: probler-parser
+  name: probler-parser-large
   labels:
     app: probler-parser
 spec:
-  replicas: 12
+  replicas: 6
   selector:
     matchLabels:
       app: probler-parser
+      size: large
   template:
     metadata:
       labels:
         app: probler-parser
+        size: large
     spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app: probler-parser
-                topologyKey: kubernetes.io/hostname
+      nodeSelector:
+        probler-size: large
+      containers:
+        - name: probler-parser
+          image: saichler/probler-parser:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: probler-parser
+  name: probler-parser-medium
+  labels:
+    app: probler-parser
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: probler-parser
+      size: medium
+  template:
+    metadata:
+      labels:
+        app: probler-parser
+        size: medium
+    spec:
+      nodeSelector:
+        probler-size: medium
+      containers:
+        - name: probler-parser
+          image: saichler/probler-parser:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: probler-parser
+  name: probler-parser-small
+  labels:
+    app: probler-parser
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: probler-parser
+      size: small
+  template:
+    metadata:
+      labels:
+        app: probler-parser
+        size: small
+    spec:
+      nodeSelector:
+        probler-size: small
       containers:
         - name: probler-parser
           image: saichler/probler-parser:latest

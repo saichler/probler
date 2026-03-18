@@ -11,28 +11,105 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: probler-collector
-  name: probler-collector
+  name: probler-collector-large
   labels:
     app: probler-collector
 spec:
-  replicas: 12
+  replicas: 6
   selector:
     matchLabels:
       app: probler-collector
+      size: large
   template:
     metadata:
       labels:
         app: probler-collector
+        size: large
     spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app: probler-collector
-                topologyKey: kubernetes.io/hostname
+      nodeSelector:
+        probler-size: large
+      containers:
+        - name: probler-collector
+          image: saichler/probler-collector:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: probler-collector
+  name: probler-collector-medium
+  labels:
+    app: probler-collector
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: probler-collector
+      size: medium
+  template:
+    metadata:
+      labels:
+        app: probler-collector
+        size: medium
+    spec:
+      nodeSelector:
+        probler-size: medium
+      containers:
+        - name: probler-collector
+          image: saichler/probler-collector:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: probler-collector
+  name: probler-collector-small
+  labels:
+    app: probler-collector
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: probler-collector
+      size: small
+  template:
+    metadata:
+      labels:
+        app: probler-collector
+        size: small
+    spec:
+      nodeSelector:
+        probler-size: small
       containers:
         - name: probler-collector
           image: saichler/probler-collector:latest
