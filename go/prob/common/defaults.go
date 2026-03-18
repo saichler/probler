@@ -45,7 +45,7 @@ func init() {
 
 func CreateResources(alias string) ifs.IResources {
 	logsDir := "/data/logs/probler"
-	logger.SetLogToFile(logsDir, alias)
+	//logger.SetLogToFile(logsDir, alias)
 	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
 	log.SetLogLevel(ifs.Info_Level)
 	res := resources.NewResources(log)
