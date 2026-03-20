@@ -1,60 +1,85 @@
-# Probler - Network Automation & Monitoring Platform
+# Probler - Datacenter Management System
 
-[![Go Version](https://img.shields.io/badge/Go-1.23.8-blue.svg)](https://golang.org/)
+[![Go Version](https://img.shields.io/badge/Go-1.26.1-blue.svg)](https://golang.org/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-green.svg)](https://kubernetes.io/)
 
-A comprehensive microservices-based network automation and monitoring platform that implements a "data as a service" approach with the core philosophy: **Poll → Parse → Model → Cache → Persist**.
+A microservices-based datacenter management platform built on the Layer8 framework. Probler provides network device monitoring, GPU inventory, Kubernetes cluster management, hypervisor/VM tracking, alarm correlation, and topology visualization through a unified web interface.
 
-## 🎯 Vision
+Core data pipeline: **Poll -> Parse -> Model -> Cache -> Persist**.
 
-Probler addresses the fundamental pain points of building scalable, maintainable microservices architectures by providing:
-
-- **Model-agnostic services** that adapt to any data structure
-- **Seamless service-to-service communication** through virtual networking
-- **Built-in security, health monitoring, and service discovery**
-- **Horizontal and vertical scaling capabilities**
-- **Platform-agnostic deployment** (bare metal, Docker, Kubernetes)
-
-## 🏗️ Architecture Overview
-
-### Core Components
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│    Collector    │───▶│     Parser      │───▶│   Inventory     │
-│  (Data Polling) │    │ (Model-Agnostic)│    │ (Device State)  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│      VNet       │◀───│      ORM        │───▶│   PostgreSQL    │
-│ (Web Interface) │    │ (Persistence)   │    │   (Database)    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
+## Architecture
 
 ### Microservices
 
-| Service | Purpose | Scaling |
-|---------|---------|---------|
-| **Collector** | Network device polling & data collection | Horizontal |
-| **Parser** | Model-agnostic data parsing & transformation | Horizontal |
-| **Inventory Box** | Network device inventory management | Vertical |
-| **Inventory K8s** | Kubernetes cluster inventory | Vertical |
-| **ORM** | Object-relational mapping & persistence | Vertical |
-| **VNet** | Virtual network overlay & web interface | Vertical |
-| **TE App** | Traffic Engineering & SR policies management | Vertical |
-| **Security** | Authentication & authorization | Vertical |
+| Service | Directory | Purpose |
+|---------|-----------|---------|
+| **Collector** | `go/prob/collector/` | SNMP-based network device polling and data collection |
+| **Parser** | `go/prob/parser/` | Model-agnostic data parsing and transformation |
+| **Inventory Box** | `go/prob/inv_box/` | Network device inventory management |
+| **Inventory GPU** | `go/prob/inv_gpu/` | GPU device inventory and monitoring |
+| **Inventory K8s** | `go/prob/inv_k8s/` | Kubernetes cluster inventory |
+| **ORM** | `go/prob/orm/` | PostgreSQL persistence layer |
+| **Alarms** | `go/prob/alarms/` | Alarm management and correlation |
+| **Topology** | `go/prob/topology/` | Network topology discovery |
+| **VNet** | `go/prob/vnet/` | Virtual network overlay (L8Bus, port 26000) |
+| **Web UI** | `go/prob/newui/` | Web interface server (HTTPS, port 2443) |
+| **Log Agent** | `go/prob/log-agent/` | Log collection agent |
+| **Log VNet** | `go/prob/log-vnet/` | Log aggregation virtual network (port 27000) |
+| **Maintenance** | `go/prob/maint/` | Maintenance page |
+| **Prctl** | `go/prob/prctl/` | Protocol control CLI tool |
 
-## 🚀 Quick Start
+```
+┌─────────────┐    ┌─────────────┐    ┌──────────────┐
+│  Collector   │───>│   Parser    │───>│  Inv Box/GPU │
+│ (SNMP Poll)  │    │ (Transform) │    │ (Inventory)  │
+└─────────────┘    └─────────────┘    └──────────────┘
+       │                  │                   │
+       └──────────────────┼───────────────────┘
+                          v
+┌─────────────┐    ┌─────────────┐    ┌──────────────┐
+│    VNet     │<───│     ORM     │───>│  PostgreSQL   │
+│ (L8Bus Mesh)│    │ (Persist)   │    │  (Database)   │
+└─────────────┘    └─────────────┘    └──────────────┘
+       │
+       v
+┌─────────────┐    ┌─────────────┐    ┌──────────────┐
+│   Web UI    │    │   Alarms    │    │  Topology    │
+│ (port 2443) │    │ (Correlate) │    │ (Discovery)  │
+└─────────────┘    └─────────────┘    └──────────────┘
+```
+
+All services communicate over the Layer8 virtual network (L8Bus) on port 26000. Log aggregation uses a separate overlay on port 27000.
+
+## Web Interface
+
+The web UI is a single-page application built on the L8UI component library with both desktop and mobile layouts.
+
+### Sections
+
+- **Dashboard** - Real-time device statistics, health metrics, alarm monitoring
+- **Network Devices** - Network device inventory with SNMP-based monitoring, hardware and performance metrics, multi-tab detail modals (Basic Info, Hardware, Performance, Physical, Routing)
+- **GPUs** - GPU device inventory and monitoring with detail modals
+- **Hosts** - Hypervisor and VM management with tabbed detail views
+- **Kubernetes** - K8s cluster overview including pods, nodes, deployments, services, namespaces, and other resource types
+- **Alarms** - Alarm aggregation and correlation
+- **Topologies** - Interactive network topology visualization
+- **System** - Security, health monitoring, and module management (L8UI SYS module)
+
+### Authentication
+
+- Default credentials: `admin / admin`
+- Two-factor authentication support
+- Session timeout (configurable, default 30 minutes)
+
+## Quick Start
 
 ### Prerequisites
 
-- Go 1.23.8+
-- Docker & Docker Compose
+- Go 1.26.1+
+- Docker
+- PostgreSQL
 - Kubernetes cluster (for production deployment)
-- PostgreSQL database
 
 ### Local Development
 
@@ -63,268 +88,131 @@ Probler addresses the fundamental pain points of building scalable, maintainable
 git clone https://github.com/saichler/probler.git
 cd probler
 
-# Build all services
-cd go && ./build-images.sh
+# Build all demo binaries
+cd go && ./build-demo.sh
 
-# Start with Docker Compose (development)
-docker-compose up -d
+# Run demo locally
+./run-demo.sh
 
 # Access the web interface
-open https://localhost:443/probler/
+# https://localhost:2443
 ```
 
 ### Kubernetes Deployment
 
 ```bash
-# Deploy all services to Kubernetes
-cd k8s && ./apply-all.sh
+# Deploy all services
+cd k8s && ./deploy.sh
 
 # Verify deployment
 kubectl get pods -n probler
 
-# Access via ingress or port-forward
-kubectl port-forward svc/vnet 8080:443 -n probler
+# Undeploy
+./un-deploy.sh
 ```
 
-## 🌐 Web Interface
+### Docker Images
 
-### Network Operations Center (NOC) Dashboard
+```bash
+# Build all Docker images
+cd go && ./build-all-images.sh
+```
 
-The web interface provides comprehensive network monitoring and management:
-
-#### 📊 **Dashboard**
-- Real-time device statistics and health metrics
-- Critical alarm monitoring
-- Network performance overview
-- Interactive stat cards with filtering
-
-#### 🗺️ **Network Topology** 
-- Interactive world map with device visualization
-- Click-able network links with detailed properties
-- Geographic device positioning with precise coordinates using world-cities database
-- Real-time link status and bandwidth utilization
-- Enhanced topology rendering with improved stability and performance
-- Zoom, pan, and link toggle controls with optimized responsiveness
-
-#### 🖥️ **Device Management**
-- Comprehensive device inventory
-- Detailed hardware and performance metrics
-- Multi-tab device details (Basic Info, Hardware, Performance, Physical)
-- SNMP-based monitoring and status tracking
-
-#### 🚨 **Alarm & Fault Management**
-- Real-time alarm aggregation and correlation
-- Severity-based filtering and prioritization
-- Historical alarm tracking and trends
-
-#### 🔧 **Additional Applications**
-- **Bandwidth Monitor**: Real-time traffic analysis
-- **Config Manager**: Device configuration management
-- **Traffic Engineering**: Advanced MPLS & SR policy management
-  - Interactive global network topology visualization
-  - Segment Routing (SR) policy configuration and monitoring
-  - BGP session management and analytics
-  - MPLS label distribution and switching statistics
-  - Real-time traffic engineering metrics and performance
-- **Security Center**: Network security monitoring
-- **Reports**: Comprehensive analytics and reporting
-- **Automation Hub**: Workflow automation platform
-
-### Authentication
-
-- **Default Credentials**: `admin / admin`
-- **Role-based access control**
-- **Session management with timeout**
-
-### 🔄 Traffic Engineering & MPLS
-
-The **TE App** provides advanced traffic engineering capabilities for MPLS and Segment Routing (SR) networks:
-
-#### **Network Topology Visualization**
-- **Global Map Integration**: Interactive world map with precise device positioning
-- **Multi-AS Support**: Visualization of complex multi-AS networks
-- **Real-time Status**: Live device and link status monitoring
-- **Zoom & Pan**: Full interactive controls for detailed network exploration
-
-#### **Segment Routing (SR) Policies**
-- **SR Policy Management**: Create, monitor, and modify SR policies
-- **Path Visualization**: Interactive path highlighting on network topology
-- **Traffic Metrics**: Real-time traffic steering and performance statistics
-- **Preference & Color**: Full SR policy preference and color management
-- **Multi-path Support**: Support for primary, backup, and load-balanced paths
-
-#### **BGP Session Analytics**
-- **Session Monitoring**: Comprehensive iBGP and eBGP session tracking
-- **Route Analytics**: Detailed route advertisement and reception metrics
-- **Peer Relationship Mapping**: Visual representation of BGP peer relationships
-- **Internet Exchange Integration**: IXP session monitoring and route analysis
-
-#### **MPLS Label Management**
-- **Label Database**: Complete MPLS forwarding information base (FIB)
-- **SR Node Labels**: Segment routing node SID management (16000-23999 range)
-- **SR Adjacency Labels**: Adjacency SID tracking (24000-31999 range)
-- **Service Labels**: L3VPN, L2VPN, and 6PE service label management
-- **RSVP-TE Support**: Traditional RSVP-TE tunnel label management
-
-## 🏷️ Technology Stack
-
-### Backend
-- **Go 1.23.8** - Primary backend language
-- **Layer8 Framework** - Custom networking and service communication
-- **gRPC/Protocol Buffers** - Service communication
-- **PostgreSQL** - Data persistence
-- **SNMP (gosnmp)** - Network device polling
-- **REST APIs** - Traffic engineering data endpoints
-
-### Frontend
-- **Vanilla JavaScript** - No framework dependencies
-- **CSS3 with CSS Grid & Flexbox** - Modern responsive design
-- **SVG Graphics** - Interactive network topology
-- **WebSocket** - Real-time data updates
-- **Traffic Engineering Visualization** - Advanced MPLS/SR policy rendering
-
-### Infrastructure
-- **Docker** - Containerization
-- **Kubernetes** - Container orchestration
-- **StatefulSets** - For stateful services
-- **DaemonSets** - For network overlay
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 probler/
-├── go/                          # Go microservices
-│   ├── prob/
-│   │   ├── collector/          # Data collection service
-│   │   ├── parser/             # Data parsing service
-│   │   ├── inv_box/            # Network inventory
-│   │   ├── inv_k8s/            # K8s inventory
-│   │   ├── orm/                # ORM service
-│   │   ├── vnet/               # Virtual network & web UI  
-│   │   ├── topology/           # Enhanced network topology service with world-cities integration
-│   │   ├── te_app/             # Traffic Engineering application
-│   │   ├── security/           # Security service
-│   │   └── prctl/              # CLI control tool
-│   ├── go.mod                  # Go module definition
-│   └── build-images.sh         # Docker build script
-├── k8s/                        # Kubernetes manifests
-│   ├── apply-all.sh           # Deployment script
-│   ├── delete-all.sh          # Cleanup script
-│   ├── te_app.yaml            # Traffic Engineering service
-│   └── *.yaml                 # Service configurations
-├── proto/                      # Protocol buffer definitions
-├── builder/                    # Docker build configurations
-├── coordinate_calculator.py    # Device geographic positioning utility  
-├── coordinate_validator.py     # Position validation & verification using world-cities database
-├── deploy-script.sh            # Automated deployment script
-└── README.md                  # This file
+├── go/                              # Go backend
+│   ├── go.mod                       # Module (Go 1.26.1)
+│   ├── prob/                        # Service packages
+│   │   ├── alarms/                  # Alarm management
+│   │   ├── collector/               # SNMP data collection
+│   │   ├── common/                  # Shared constants & utilities
+│   │   ├── inv_box/                 # Network device inventory
+│   │   ├── inv_gpu/                 # GPU inventory
+│   │   ├── inv_k8s/                 # Kubernetes inventory
+│   │   ├── log-agent/               # Log collection
+│   │   ├── log-vnet/                # Log aggregation
+│   │   ├── maint/                   # Maintenance page
+│   │   ├── newui/                   # Web UI server
+│   │   │   └── web/                 # UI source (HTML/CSS/JS)
+│   │   │       ├── app.html         # Desktop app shell
+│   │   │       ├── sections/        # Section HTML (16 sections)
+│   │   │       ├── css/             # Stylesheets
+│   │   │       ├── js/              # Core JavaScript
+│   │   │       ├── probler/         # Module configs & column/enum defs
+│   │   │       ├── kubernetes/      # K8s-specific UI components
+│   │   │       ├── l8ui/            # L8UI shared component library
+│   │   │       └── m/               # Mobile UI
+│   │   ├── orm/                     # PostgreSQL persistence
+│   │   ├── parser/                  # Data transformation
+│   │   ├── prctl/                   # CLI control tool
+│   │   ├── topology/                # Network topology
+│   │   └── vnet/                    # Virtual network overlay
+│   ├── types/                       # Generated protobuf Go types
+│   ├── serializers/                 # Custom serializers
+│   ├── tests/                       # Tests & mock data
+│   ├── build-demo.sh                # Build all demo binaries
+│   ├── run-demo.sh                  # Run demo locally
+│   └── build-all-images.sh          # Build Docker images
+├── proto/                           # Protocol buffer definitions
+│   ├── inventory.proto              # NetworkDevice, EquipmentInfo, Physical, Logical
+│   ├── gpu.proto                    # GPU device types
+│   ├── k8s.proto                    # K8sReadyState, K8sRestartsState
+│   ├── kubernetes.proto             # Extended K8s resource types
+│   ├── protocols.proto              # TE tunnels, SR policies, MPLS
+│   └── make-bindings.sh             # Regenerate .pb.go files
+├── k8s/                             # Kubernetes manifests
+│   ├── deploy.sh                    # Deploy all services
+│   ├── un-deploy.sh                 # Remove all services
+│   └── *.yaml                       # Per-service manifests (14 services)
+├── postgres/                        # PostgreSQL setup
+├── docs/                            # Documentation
+├── plans/                           # Implementation plans
+└── LICENSE                          # Apache 2.0
 ```
 
-## 🔧 Configuration
+## Technology Stack
 
-### Environment Variables
+### Backend
+- **Go 1.26.1** - All microservices
+- **Layer8 Framework** - Service mesh, virtual networking, ORM, introspection
+- **Protocol Buffers** - Data model definitions and serialization
+- **PostgreSQL** - Persistence (databases: `problerdb`, `probleralarms`)
+- **SNMP** - Network device polling
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `POSTGRES_HOST` | Database host | `localhost` |
-| `POSTGRES_PORT` | Database port | `5432` |
-| `POSTGRES_DB` | Database name | `probler` |
-| `VNET_PORT` | Web interface port | `443` |
-| `LOG_LEVEL` | Logging level | `INFO` |
+### Frontend
+- **L8UI** - Shared component library (tables, forms, popups, charts, dashboards, SYS module)
+- **Vanilla JavaScript** - No framework dependencies
+- **CSS3** - Responsive design with dark/light theme support
+- **Desktop + Mobile** - Dual-layout web interface
 
-### Service Configuration
+### Infrastructure
+- **Docker** - Containerized services
+- **Kubernetes** - StatefulSets, DaemonSets, per-service namespaces
+- **L8Bus** - Virtual network overlay for inter-service communication
 
-Services are configured through:
-- **Environment variables** in Kubernetes ConfigMaps
-- **Command-line flags** for local development
-- **Default configurations** in `/go/prob/common/defaults.go`
+## Configuration
 
-## 🔍 Monitoring & Observability
+Service constants are defined in `go/prob/common/defaults.go`:
 
-### Health Checks
-- **Service health endpoints** on all services
-- **Kubernetes readiness and liveness probes**
-- **Automatic leader election** for stateful services
-- **Configurable timeout settings** for improved reliability
+| Constant | Value | Description |
+|----------|-------|-------------|
+| `PROBLER_VNET` | `26000` | Virtual network port |
+| `LOGS_VNET` | `27000` | Log aggregation port |
+| `PREFIX` | `/probler/` | API prefix |
+| `DB_TARGETS_NAME` | `problerdb` | Main database |
+| `DB_ALARMS_NAME` | `probleralarms` | Alarms database |
 
-### Logging
-- **Structured logging** with configurable levels
-- **Enhanced startup logging** with detailed initialization info
-- **Centralized log aggregation** via Kubernetes
-- **Request tracing** across service boundaries
+The web UI reads `login.json` for API endpoints and app configuration.
 
-### Metrics
-- **Performance metrics** exposed via web interface
-- **Device health monitoring** with SNMP polling
-- **Network topology health** and link status
-
-## 🚀 Scaling & Performance
-
-### Horizontal Scaling
-- **Collectors**: Scale based on device count and polling frequency
-- **Parsers**: Scale based on data processing volume
-- **Stateless services** can be replicated as needed
-
-### Vertical Scaling
-- **Inventory services**: Scale by service areas and sharding
-- **Database connections**: Configurable connection pooling
-- **Memory optimization** through delta updates and caching
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes
+4. Push and open a Pull Request
 
-### Development Guidelines
+## License
 
-- **Go code** follows standard Go conventions
-- **Tests** should accompany all new features
-- **Documentation** should be updated for API changes
-- **Commit messages** should be descriptive and clear
-
-## 📝 License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support & Documentation
-
-### Getting Help
-- **Issues**: Report bugs and request features via GitHub Issues
-- **Documentation**: Check the `/docs` directory for detailed guides
-- **Code Examples**: See `/examples` for integration samples
-
-### API Documentation
-- **REST API**: Available at `https://<host>/api/docs`
-- **gRPC Services**: Protocol buffer definitions in `/proto`
-- **Web Interface**: Built-in help and tooltips
-
-## 🎯 Use Cases
-
-### Network Operations Centers (NOCs)
-- **Real-time monitoring** of network infrastructure
-- **Fault management** and alarm correlation
-- **Performance tracking** and capacity planning
-- **Traffic engineering** and path optimization
-
-### Service Provider Networks
-- **MPLS VPN Service Management**: Complete L3VPN and L2VPN lifecycle management
-- **Segment Routing Deployment**: Modern SR policy configuration and monitoring
-- **BGP Route Engineering**: Advanced route policy management and optimization
-- **Network Planning**: Capacity planning and traffic forecasting tools
-
-### Cloud Infrastructure Management
-- **Kubernetes cluster monitoring**
-- **Service discovery** and health tracking
-- **Automated scaling** based on metrics
-
-### DevOps & Site Reliability Engineering
-- **Infrastructure as Code** with model-agnostic services
-- **Automated remediation** through workflow engine
-- **Compliance monitoring** and reporting
-
----
-
-**Probler** - Making microservices painless, one service at a time.
+Apache License 2.0 - see [LICENSE](LICENSE).
