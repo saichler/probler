@@ -11,10 +11,11 @@ function showHypervisorDetailModal(hypervisor) {
     const memClass = hypervisor.memoryUsage < 60 ? 'low' : hypervisor.memoryUsage < 85 ? 'medium' : 'high';
     const storagePercent = Math.round((hypervisor.storageUsed / hypervisor.storageTotal) * 100);
     const storageClass = storagePercent < 60 ? 'low' : storagePercent < 85 ? 'medium' : 'high';
+    const statusText = hypervisor.status || 'Unknown';
 
     modalTitle.innerHTML = `
-        <span>Hypervisor Details - ${hypervisor.name}</span>
-        <span class="modal-status-badge ${statusClass}">${hypervisor.status.toUpperCase()}</span>
+        <span>${hypervisor.name}</span>
+        <span class="modal-status-badge ${statusClass}">${statusText}</span>
     `;
 
     content.innerHTML = `
@@ -32,7 +33,7 @@ function showHypervisorDetailModal(hypervisor) {
             <div class="tab-pane active" data-pane="overview">
                 <div class="device-detail-grid">
                     <div class="detail-section">
-                        <div class="detail-section-title">Host Information</div>
+                        <div class="detail-section-title">Overview</div>
                         <div class="detail-row">
                             <span class="detail-label">Host Name</span>
                             <span class="detail-value">${hypervisor.name}</span>
@@ -55,12 +56,12 @@ function showHypervisorDetailModal(hypervisor) {
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Status</span>
-                            <span class="detail-value ${statusClass}">${hypervisor.status.toUpperCase()}</span>
+                            <span class="detail-value ${statusClass}">${statusText}</span>
                         </div>
                     </div>
 
                     <div class="detail-section">
-                        <div class="detail-section-title">Cluster & Location</div>
+                        <div class="detail-section-title">Cluster and location</div>
                         <div class="detail-row">
                             <span class="detail-label">Datacenter</span>
                             <span class="detail-value">${hypervisor.datacenter}</span>
@@ -89,7 +90,7 @@ function showHypervisorDetailModal(hypervisor) {
             <div class="tab-pane" data-pane="hardware">
                 <div class="device-detail-grid">
                     <div class="detail-section">
-                        <div class="detail-section-title">Physical Hardware</div>
+                        <div class="detail-section-title">Hardware</div>
                         <div class="detail-row">
                             <span class="detail-label">Manufacturer</span>
                             <span class="detail-value">${hypervisor.manufacturer}</span>
@@ -105,7 +106,7 @@ function showHypervisorDetailModal(hypervisor) {
                     </div>
 
                     <div class="detail-section">
-                        <div class="detail-section-title">CPU Specifications</div>
+                        <div class="detail-section-title">CPU</div>
                         <div class="detail-row">
                             <span class="detail-label">CPU Model</span>
                             <span class="detail-value">${hypervisor.cpuModel}</span>
@@ -153,7 +154,7 @@ function showHypervisorDetailModal(hypervisor) {
             <!-- Resources Tab -->
             <div class="tab-pane" data-pane="resources">
                 <div class="detail-section detail-full-width">
-                    <div class="detail-section-title">Resource Utilization</div>
+                    <div class="detail-section-title">Resource utilization</div>
 
                     <div class="detail-row">
                         <span class="detail-label">CPU Usage</span>
@@ -198,7 +199,7 @@ function showHypervisorDetailModal(hypervisor) {
             <!-- VMs Tab -->
             <div class="tab-pane" data-pane="vms">
                 <div class="detail-section detail-full-width">
-                    <div class="detail-section-title">Virtual Machine Summary</div>
+                    <div class="detail-section-title">Virtual machines</div>
                     <div class="detail-row">
                         <span class="detail-label">Total VMs</span>
                         <span class="detail-value">${hypervisor.vmCount}</span>

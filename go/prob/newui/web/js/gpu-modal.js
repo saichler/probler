@@ -23,12 +23,13 @@ function formatMiB(mib) {
 // Show GPU device detail modal
 function showGPUDetailModal(device) {
     var statusClass = 'status-' + (device.status || 'unknown');
+    var statusText = device.status || 'Unknown';
     var esc = Layer8DUtils.escapeHtml;
 
     var titleHtml = '<div class="probler-popup-title-wrapper">' +
-        '<h3 class="probler-popup-title">GPU Server - ' + esc(device.hostname || device.id) + '</h3>' +
+        '<h3 class="probler-popup-title">' + esc(device.hostname || device.id) + '</h3>' +
         '<span class="probler-popup-status-badge ' + statusClass + '">' +
-        (device.status ? device.status.toUpperCase() : 'UNKNOWN') + '</span>' +
+        esc(statusText) + '</span>' +
         '</div>';
 
     var content = buildGpuDeviceContent(device, esc);
@@ -62,20 +63,21 @@ function buildGpuDeviceContent(device, esc) {
 // Build Overview tab
 function buildGpuOverviewTab(device, esc) {
     var sys = device.system || {};
+    var statusText = device.status || 'Unknown';
     return '<div class="probler-popup-tab-pane active" data-pane="overview">' +
         '<div class="detail-grid">' +
             '<div class="detail-section">' +
-                '<div class="detail-section-title">Server Information</div>' +
+                '<div class="detail-section-title">Server</div>' +
                 buildDetailRow('Hostname', esc(device.hostname || '')) +
                 buildDetailRow('IP Address', esc(device.ipAddress || device.id || '')) +
                 buildDetailRow('Vendor', esc(device.vendor || '')) +
                 buildDetailRow('Serial Number', esc(device.serialNumber || '')) +
                 buildDetailRow('Location', esc(device.location || '')) +
                 buildDetailRow('Status', '<span class="status-' + (device.status || 'unknown') + '">' +
-                    (device.status ? device.status.toUpperCase() : 'UNKNOWN') + '</span>') +
+                    esc(statusText) + '</span>') +
             '</div>' +
             '<div class="detail-section">' +
-                '<div class="detail-section-title">GPU Summary</div>' +
+                '<div class="detail-section-title">GPU summary</div>' +
                 buildDetailRow('GPU Count', device.gpuCount || 0) +
                 buildDetailRow('GPU Model', esc(device.gpuModel || '')) +
                 (sys.cpuSockets ? buildDetailRow('CPU Sockets', sys.cpuSockets) : '') +
@@ -127,7 +129,7 @@ function buildGpuListTab(device, esc) {
             '<td>' + (gpuUtil !== null ? gpuUtil.toFixed(1) + '%' : '') + '</td>' +
             '<td>' + (temp !== null ? temp.toFixed(0) + '\u00B0C' : '') + '</td>' +
             '<td>' + (power !== null ? power.toFixed(0) + 'W' : '') + '</td>' +
-            '<td><span class="status-' + healthStatus + '">' + healthStatus.toUpperCase() + '</span></td>' +
+            '<td><span class="status-' + healthStatus + '">' + esc(healthStatus) + '</span></td>' +
         '</tr>';
     });
 
@@ -145,10 +147,10 @@ function showGpuDetailPopup(gpuIndex) {
 
     var healthStatus = gpu.health ? ProblerGpus.enums.mapHealthStatus(gpu.health.thermalStatus) : 'unknown';
     var titleHtml = '<div class="probler-popup-title-wrapper">' +
-        '<h3 class="probler-popup-title">GPU #' + (gpu.gpuIndex !== undefined ? gpu.gpuIndex : gpuIndex) +
-        ' - ' + esc(gpuName) + '</h3>' +
+        '<h3 class="probler-popup-title">GPU ' + (gpu.gpuIndex !== undefined ? gpu.gpuIndex : gpuIndex) +
+        ' · ' + esc(gpuName) + '</h3>' +
         '<span class="probler-popup-status-badge status-' + healthStatus + '">' +
-        healthStatus.toUpperCase() + '</span></div>';
+        esc(healthStatus) + '</span></div>';
 
     var content = buildSingleGpuContent(gpu, esc);
 
@@ -202,7 +204,7 @@ function buildGpuInfoPane(gpu, esc) {
                 buildDetailRow('VRAM Total', formatMiB(gpu.vramTotalMib)) +
             '</div>' +
             '<div class="detail-section">' +
-                '<div class="detail-section-title">Component Health</div>' +
+                '<div class="detail-section-title">Health</div>' +
                 buildHealthRow('PCIe', mapH(health.pcieStatus)) +
                 buildHealthRow('Memory', mapH(health.memoryStatus)) +
                 buildHealthRow('Thermal', mapH(health.thermalStatus)) +
@@ -228,7 +230,7 @@ function buildHealthRow(label, status) {
     return '<div class="detail-row">' +
         '<span class="detail-label">' + label + '</span>' +
         '<span class="detail-value"><span class="status-' + status + '">' +
-        status.toUpperCase() + '</span></span></div>';
+        status + '</span></span></div>';
 }
 
 // Utilization pane - GPU/Memory/Encoder/Decoder utilization charts

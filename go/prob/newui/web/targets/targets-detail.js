@@ -7,9 +7,9 @@ function showTargetDetailsModal(target) {
     var statusClass = stateIsUp ? 'status-online' : 'status-offline';
 
     var titleHtml = '<div class="probler-popup-title-wrapper">' +
-        '<h3 class="probler-popup-title">Target Details - ' + escapeHtml(target.targetId) + '</h3>' +
+        '<h3 class="probler-popup-title">' + escapeHtml(target.targetId) + '</h3>' +
         '<span class="probler-popup-status-badge ' + statusClass + '">' +
-        escapeHtml(stateLabel.toUpperCase()) + '</span>' +
+        escapeHtml(stateLabel) + '</span>' +
         '</div>';
 
     var contentHtml = generateTargetDetailContent(target);
@@ -91,7 +91,7 @@ function generateTargetDetailContent(target) {
             '<div class="probler-popup-tab-pane active" data-pane="overview">' +
                 '<div class="detail-grid">' +
                     '<div class="detail-section">' +
-                        '<div class="detail-section-title">Target Information</div>' +
+                        '<div class="detail-section-title">Overview</div>' +
                         '<div class="detail-row">' +
                             '<span class="detail-label">Target ID</span>' +
                             '<span class="detail-value">' + escapeHtml(target.targetId) + '</span>' +
@@ -103,7 +103,7 @@ function generateTargetDetailContent(target) {
                         '<div class="detail-row">' +
                             '<span class="detail-label">State</span>' +
                             '<span class="detail-value ' + statusClass + '">' +
-                                escapeHtml(stateLabel.toUpperCase()) +
+                                escapeHtml(stateLabel) +
                             '</span>' +
                         '</div>' +
                     '</div>' +

@@ -5,13 +5,14 @@ function showVMDetailModal(vm) {
     const modalTitle = modal.querySelector('.modal-title');
 
     const statusClass = `status-${vm.status === 'running' ? 'operational' : (vm.status === 'stopped' ? 'offline' : (vm.status === 'suspended' ? 'warning' : 'critical'))}`;
+    const statusText = vm.status || 'Unknown';
     const cpuClass = vm.cpuUsage < 60 ? 'low' : vm.cpuUsage < 85 ? 'medium' : 'high';
     const memClass = vm.memoryUsage < 60 ? 'low' : vm.memoryUsage < 85 ? 'medium' : 'high';
     const diskClass = vm.diskUsage < 60 ? 'low' : vm.diskUsage < 85 ? 'medium' : 'high';
 
     modalTitle.innerHTML = `
-        <span>VM Details - ${vm.name}</span>
-        <span class="modal-status-badge ${statusClass}">${vm.status.toUpperCase()}</span>
+        <span>${vm.name}</span>
+        <span class="modal-status-badge ${statusClass}">${statusText}</span>
     `;
 
     content.innerHTML = `
@@ -29,7 +30,7 @@ function showVMDetailModal(vm) {
             <div class="tab-pane active" data-pane="overview">
                 <div class="device-detail-grid">
                     <div class="detail-section">
-                        <div class="detail-section-title">VM Information</div>
+                        <div class="detail-section-title">Overview</div>
                         <div class="detail-row">
                             <span class="detail-label">VM Name</span>
                             <span class="detail-value">${vm.name}</span>
@@ -44,7 +45,7 @@ function showVMDetailModal(vm) {
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Status</span>
-                            <span class="detail-value ${statusClass}">${vm.status.toUpperCase()}</span>
+                            <span class="detail-value ${statusClass}">${statusText}</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">Purpose</span>
@@ -57,7 +58,7 @@ function showVMDetailModal(vm) {
                     </div>
 
                     <div class="detail-section">
-                        <div class="detail-section-title">Host & Runtime</div>
+                        <div class="detail-section-title">Host and runtime</div>
                         <div class="detail-row">
                             <span class="detail-label">Hypervisor</span>
                             <span class="detail-value">${vm.hypervisor}</span>
@@ -93,7 +94,7 @@ function showVMDetailModal(vm) {
             <div class="tab-pane" data-pane="resources">
                 <div class="device-detail-grid">
                     <div class="detail-section">
-                        <div class="detail-section-title">Allocated Resources</div>
+                        <div class="detail-section-title">Allocated resources</div>
                         <div class="detail-row">
                             <span class="detail-label">vCPU Cores</span>
                             <span class="detail-value">${vm.cpuCores}</span>
@@ -110,7 +111,7 @@ function showVMDetailModal(vm) {
                 </div>
 
                 <div class="detail-section detail-full-width" style="margin-top: 20px;">
-                    <div class="detail-section-title">Resource Utilization</div>
+                    <div class="detail-section-title">Resource utilization</div>
 
                     <div class="detail-row">
                         <span class="detail-label">CPU Usage</span>
@@ -147,7 +148,7 @@ function showVMDetailModal(vm) {
             <div class="tab-pane" data-pane="network">
                 <div class="device-detail-grid">
                     <div class="detail-section">
-                        <div class="detail-section-title">Network Configuration</div>
+                        <div class="detail-section-title">Network</div>
                         <div class="detail-row">
                             <span class="detail-label">IP Address</span>
                             <span class="detail-value">${vm.ipAddress}</span>
@@ -172,7 +173,7 @@ function showVMDetailModal(vm) {
             <div class="tab-pane" data-pane="backup">
                 <div class="device-detail-grid">
                     <div class="detail-section">
-                        <div class="detail-section-title">Backup Information</div>
+                        <div class="detail-section-title">Backup</div>
                         <div class="detail-row">
                             <span class="detail-label">Backup Status</span>
                             <span class="detail-value">${vm.backupStatus}</span>

@@ -14,14 +14,15 @@ function formatMfgDate(hex) {
 // Show device detail modal
 function showDeviceDetailModal(device) {
     const statusClass = 'status-' + device.status;
+    const statusText = device.status || 'Unknown';
 
     const esc = Layer8DUtils.escapeHtml;
 
     // Build custom title HTML with status badge
     const titleHtml = '<div class="probler-popup-title-wrapper">' +
-        '<h3 class="probler-popup-title">Device Details - ' + esc(device.name) + '</h3>' +
+        '<h3 class="probler-popup-title">' + esc(device.name) + '</h3>' +
         '<span class="probler-popup-status-badge ' + statusClass + '">' +
-        (device.status ? device.status.toUpperCase() : '') + '</span>' +
+        esc(statusText) + '</span>' +
         '</div>';
 
     // Build the popup content with tabs
@@ -104,10 +105,11 @@ function buildDeviceContent(device, statusClass, esc) {
 
 // Build Overview tab content
 function buildOverviewTab(device, statusClass, esc) {
+    var statusText = device.status || 'Unknown';
     return '<div class="probler-popup-tab-pane active" data-pane="overview">' +
         '<div class="detail-grid">' +
             '<div class="detail-section">' +
-                '<div class="detail-section-title">Device Information</div>' +
+                '<div class="detail-section-title">Overview</div>' +
                 '<div class="detail-row">' +
                     '<span class="detail-label">Device Name</span>' +
                     '<span class="detail-value">' + esc(device.name || '') + '</span>' +
@@ -127,7 +129,7 @@ function buildOverviewTab(device, statusClass, esc) {
                 '<div class="detail-row">' +
                     '<span class="detail-label">Status</span>' +
                     '<span class="detail-value ' + statusClass + '">' +
-                    (device.status ? device.status.toUpperCase() : '') + '</span>' +
+                    esc(statusText) + '</span>' +
                 '</div>' +
                 '<div class="detail-row">' +
                     '<span class="detail-label">Last Seen</span>' +
@@ -135,7 +137,7 @@ function buildOverviewTab(device, statusClass, esc) {
                 '</div>' +
             '</div>' +
             '<div class="detail-section">' +
-                '<div class="detail-section-title">Location & Network</div>' +
+                '<div class="detail-section-title">Location and network</div>' +
                 '<div class="detail-row">' +
                     '<span class="detail-label">Location</span>' +
                     '<span class="detail-value">' + esc(device.location || '') + '</span>' +
@@ -165,7 +167,7 @@ function buildEquipmentTab(device, esc) {
     return '<div class="probler-popup-tab-pane" data-pane="equipment">' +
         '<div class="detail-grid">' +
             '<div class="detail-section">' +
-                '<div class="detail-section-title">Hardware Information</div>' +
+                '<div class="detail-section-title">Hardware</div>' +
                 '<div class="detail-row">' +
                     '<span class="detail-label">Vendor</span>' +
                     '<span class="detail-value">' + esc(device.vendor || '') + '</span>' +
@@ -192,7 +194,7 @@ function buildEquipmentTab(device, esc) {
                 '</div>' +
             '</div>' +
             '<div class="detail-section">' +
-                '<div class="detail-section-title">Software & Configuration</div>' +
+                '<div class="detail-section-title">Software and configuration</div>' +
                 '<div class="detail-row">' +
                     '<span class="detail-label">Software</span>' +
                     '<span class="detail-value">' + esc(device.software || '') + '</span>' +
@@ -237,7 +239,7 @@ function buildEntityMibSection(device, esc) {
     }
     return '<div class="detail-grid" style="margin-top: 12px;">' +
         '<div class="detail-section">' +
-            '<div class="detail-section-title">Asset Information</div>' +
+            '<div class="detail-section-title">Asset</div>' +
             '<div class="detail-row">' +
                 '<span class="detail-label">Manufacturer</span>' +
                 '<span class="detail-value">' + esc(device.manufacturerName || '') + '</span>' +
@@ -256,7 +258,7 @@ function buildEntityMibSection(device, esc) {
             '</div>' +
         '</div>' +
         '<div class="detail-section">' +
-            '<div class="detail-section-title">Entity MIB Details</div>' +
+            '<div class="detail-section-title">Entity MIB</div>' +
             '<div class="detail-row">' +
                 '<span class="detail-label">Vendor Type OID</span>' +
                 '<span class="detail-value">' + esc(device.vendorTypeOid || '') + '</span>' +
@@ -402,5 +404,4 @@ function buildInterfacesTab(device, esc) {
     html += '</tbody></table></div></div>';
     return html;
 }
-
 
