@@ -1,0 +1,270 @@
+/* Layer 8 — Hero Illustrations */
+
+.hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero-title-row .mono {
+  font-size: 20px;
+  margin-bottom: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.hero-illustration {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-illustration svg {
+  width: 200px;
+  height: 60px;
+}
+
+/* ── Home: Traveling Dots on Network Lines ── */
+@keyframes travel-right {
+  0%   { transform: translateX(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(160px); opacity: 0; }
+}
+@keyframes travel-right-slow {
+  0%   { transform: translateX(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(160px); opacity: 0; }
+}
+@keyframes node-pulse {
+  0%, 100% { r: 3; }
+  50%      { r: 5; }
+}
+.illus-travel-1 { animation: travel-right 3s ease-in-out 0s infinite; }
+.illus-travel-2 { animation: travel-right 3s ease-in-out 1s infinite; }
+.illus-travel-3 { animation: travel-right-slow 4s ease-in-out 0.5s infinite; }
+.illus-node-pulse { animation: node-pulse 2s ease-in-out infinite; }
+
+/* ── Products: Horizontal Stacking Blocks ── */
+@keyframes stack-right {
+  0%, 10%   { transform: translateX(-10px); opacity: 0; }
+  22%, 72%  { transform: translateX(0); opacity: 1; }
+  100%      { transform: translateX(8px); opacity: 0; }
+}
+.illus-block-1 { animation: stack-right 5s ease-in-out 0.1s infinite; }
+.illus-block-2 { animation: stack-right 5s ease-in-out 0.3s infinite; }
+.illus-block-3 { animation: stack-right 5s ease-in-out 0.5s infinite; }
+.illus-block-4 { animation: stack-right 5s ease-in-out 0.7s infinite; }
+.illus-block-5 { animation: stack-right 5s ease-in-out 0.9s infinite; }
+
+/* ── Services: Delivery Artifacts ── */
+@keyframes service-scope {
+  0%, 10%   { transform: translateX(-10px); opacity: 0; }
+  18%, 78%  { transform: translateX(0); opacity: 1; }
+  100%      { transform: translateX(0); opacity: 0.75; }
+}
+
+@keyframes service-arch {
+  0%, 20%   { transform: scale(0.92); opacity: 0; }
+  30%, 80%  { transform: scale(1); opacity: 1; }
+  100%      { transform: scale(1); opacity: 0.78; }
+}
+
+@keyframes service-drop {
+  0%, 34%   { transform: translateY(8px) scale(0.9); opacity: 0; }
+  46%       { transform: translateY(-2px) scale(1.04); opacity: 1; }
+  56%, 82%  { transform: translateY(0) scale(1); opacity: 1; }
+  100%      { transform: translateY(0) scale(1); opacity: 0.88; }
+}
+
+@keyframes service-expand {
+  0%, 52%   { transform: translateX(-8px); opacity: 0; }
+  64%, 84%  { transform: translateX(0); opacity: 1; }
+  100%      { transform: translateX(0); opacity: 0.82; }
+}
+
+.illus-service-scope {
+  animation: service-scope 5.6s ease-in-out infinite;
+}
+
+.illus-service-arch {
+  transform-origin: center;
+  animation: service-arch 5.6s ease-in-out infinite;
+}
+
+.illus-service-drop {
+  transform-origin: center;
+  animation: service-drop 5.6s ease-in-out infinite;
+}
+
+.illus-service-expand {
+  animation: service-expand 5.6s ease-in-out infinite;
+}
+
+/* ── Company: Chaos to Order ── */
+/* Dots start at chaos positions, move to center (AI), then to grid positions */
+/* Each dot: chaos pos → translate to center → jump to grid start → translate to grid */
+@keyframes c2o-1 {
+  0%, 10%  { transform: translate(0, 0);       opacity: 0.7; }
+  40%, 50% { transform: translate(76px, 22px);  opacity: 0; }
+  50.1%    { transform: translate(108px, 2px);  opacity: 0; }
+  70%, 100%{ transform: translate(108px, 2px);  opacity: 1; }
+}
+@keyframes c2o-2 {
+  0%, 10%  { transform: translate(0, 0);       opacity: 0.7; }
+  40%, 50% { transform: translate(58px, -18px); opacity: 0; }
+  50.1%    { transform: translate(115px, -38px);opacity: 0; }
+  70%, 100%{ transform: translate(115px, -38px);opacity: 1; }
+}
+@keyframes c2o-3 {
+  0%, 10%  { transform: translate(0, 0);       opacity: 0.7; }
+  40%, 50% { transform: translate(83px, 0px);   opacity: 0; }
+  50.1%    { transform: translate(165px, -20px);opacity: 0; }
+  70%, 100%{ transform: translate(165px, -20px);opacity: 1; }
+}
+@keyframes c2o-4 {
+  0%, 10%  { transform: translate(0, 0);       opacity: 0.7; }
+  40%, 50% { transform: translate(48px, 16px);  opacity: 0; }
+  50.1%    { transform: translate(80px, 16px);  opacity: 0; }
+  70%, 100%{ transform: translate(80px, 16px);  opacity: 1; }
+}
+@keyframes c2o-5 {
+  0%, 10%  { transform: translate(0, 0);       opacity: 0.7; }
+  40%, 50% { transform: translate(70px, -10px); opacity: 0; }
+  50.1%    { transform: translate(127px, -10px);opacity: 0; }
+  70%, 100%{ transform: translate(127px, -10px);opacity: 1; }
+}
+@keyframes c2o-6 {
+  0%, 10%  { transform: translate(0, 0);       opacity: 0.7; }
+  40%, 50% { transform: translate(38px, -22px); opacity: 0; }
+  50.1%    { transform: translate(120px, -22px);opacity: 0; }
+  70%, 100%{ transform: translate(120px, -22px);opacity: 1; }
+}
+@keyframes ai-pulse {
+  0%, 35%  { transform: scale(1); opacity: 0.3; }
+  45%, 55% { transform: scale(1.4); opacity: 1; }
+  65%, 100%{ transform: scale(1); opacity: 0.3; }
+}
+.illus-c2o-1 { animation: c2o-1 5s ease-in-out infinite; }
+.illus-c2o-2 { animation: c2o-2 5s ease-in-out 0.1s infinite; }
+.illus-c2o-3 { animation: c2o-3 5s ease-in-out 0.2s infinite; }
+.illus-c2o-4 { animation: c2o-4 5s ease-in-out 0.12s infinite; }
+.illus-c2o-5 { animation: c2o-5 5s ease-in-out 0.22s infinite; }
+.illus-c2o-6 { animation: c2o-6 5s ease-in-out 0.06s infinite; }
+.illus-ai-core { transform-origin: center; animation: ai-pulse 5s ease-in-out infinite; }
+
+/* ── Technology: Layer Bars Building ── */
+@keyframes layer-slide {
+  0%, 10%   { transform: scaleX(0); opacity: 0; }
+  22%, 72%  { transform: scaleX(1); opacity: 1; }
+  100%      { transform: scaleX(0); opacity: 0; }
+}
+.illus-layer-1 { animation: layer-slide 5s ease-in-out 0.1s infinite; }
+.illus-layer-2 { animation: layer-slide 5s ease-in-out 0.3s infinite; }
+.illus-layer-3 { animation: layer-slide 5s ease-in-out 0.5s infinite; }
+.illus-layer-4 { animation: layer-slide 5s ease-in-out 0.7s infinite; }
+.illus-layer-5 { animation: layer-slide 5s ease-in-out 0.9s infinite; }
+
+/* ── Contact: Horizontal Beacon ── */
+@keyframes beacon-pulse {
+  0%   { transform: scale(0); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
+}
+.illus-beacon-1 { transform-origin: center; animation: beacon-pulse 2.5s ease-out 0s infinite; }
+.illus-beacon-2 { transform-origin: center; animation: beacon-pulse 2.5s ease-out 0.8s infinite; }
+.illus-beacon-3 { transform-origin: center; animation: beacon-pulse 2.5s ease-out 1.6s infinite; }
+
+/* ── Problem: Warning Pulse ── */
+@keyframes warning-flash {
+  0%, 100% { opacity: 0.2; }
+  50%      { opacity: 1; }
+}
+.illus-warn-1 { animation: warning-flash 2s ease-in-out 0s infinite; }
+.illus-warn-2 { animation: warning-flash 2s ease-in-out 0.5s infinite; }
+.illus-warn-3 { animation: warning-flash 2s ease-in-out 1s infinite; }
+
+/* ── Shift: Arrow Transform ── */
+@keyframes shift-arrow {
+  0%   { transform: translateX(-8px); opacity: 0; }
+  30%  { transform: translateX(0); opacity: 1; }
+  70%  { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(8px); opacity: 0; }
+}
+.illus-shift { animation: shift-arrow 3s ease-in-out infinite; }
+
+/* ── Architecture: Cascade Down ── */
+@keyframes cascade {
+  0%, 10%   { transform: translateY(-6px); opacity: 0; }
+  22%, 72%  { transform: translateY(0); opacity: 1; }
+  100%      { transform: translateY(6px); opacity: 0; }
+}
+.illus-cas-1 { animation: cascade 5s ease-in-out 0.1s infinite; }
+.illus-cas-2 { animation: cascade 5s ease-in-out 0.3s infinite; }
+.illus-cas-3 { animation: cascade 5s ease-in-out 0.5s infinite; }
+.illus-cas-4 { animation: cascade 5s ease-in-out 0.7s infinite; }
+.illus-cas-5 { animation: cascade 5s ease-in-out 0.9s infinite; }
+
+/* ── Components: Spinning Gear ── */
+@keyframes gear-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes gear-counter {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+.illus-gear-cw  { transform-origin: center; animation: gear-spin 8s linear infinite; }
+.illus-gear-ccw { transform-origin: center; animation: gear-counter 8s linear infinite; }
+
+/* ── Component Detail: Generic Dot Flow ── */
+@keyframes dot-flow {
+  0%   { transform: translateX(0); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateX(140px); opacity: 0; }
+}
+.illus-dot-flow-1 { animation: dot-flow 3s ease-in-out 0s infinite; }
+.illus-dot-flow-2 { animation: dot-flow 3s ease-in-out 0.6s infinite; }
+.illus-dot-flow-3 { animation: dot-flow 3s ease-in-out 1.2s infinite; }
+
+/* ── Component Detail: Signal Wave ── */
+@keyframes wave-move {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-40px); }
+}
+.illus-wave { animation: wave-move 2s linear infinite; }
+
+/* ── Component Detail: Scan Line ── */
+@keyframes scan-line {
+  0%   { transform: translateX(0); }
+  50%  { transform: translateX(160px); }
+  100% { transform: translateX(0); }
+}
+.illus-scan { animation: scan-line 4s ease-in-out infinite; }
+
+/* ── Component Detail: Blink Cursor ── */
+@keyframes blink {
+  0%, 49%  { opacity: 1; }
+  50%, 100%{ opacity: 0; }
+}
+.illus-blink { animation: blink 1s steps(1) infinite; }
+
+/* ── Component Detail: Data Stream ── */
+@keyframes stream-up {
+  0%   { transform: translateY(8px); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(-8px); opacity: 0; }
+}
+.illus-stream-1 { animation: stream-up 2s ease-in-out 0s infinite; }
+.illus-stream-2 { animation: stream-up 2s ease-in-out 0.4s infinite; }
+.illus-stream-3 { animation: stream-up 2s ease-in-out 0.8s infinite; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .hero-illustration svg {
+    width: 120px;
+    height: 36px;
+  }
+}

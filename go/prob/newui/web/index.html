@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Probler - Data Center Infrastructure Management (DCIM) Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <!-- Mobile Device Detection - Redirect to mobile version -->
     <script>
     (function() {
@@ -26,135 +29,64 @@
 <body>
     <header>
         <nav>
-            <div class="logo" style="display: flex; flex-direction: column; align-items: flex-start;">
-                <div style="display: flex; align-items: center;">
-                    <img src="logo.gif" alt="Probler Logo" style="height: 40px; width: auto; margin-right: 10px; vertical-align: middle;" class="float-animation">
-                    <span class="gradient-text">Probler</span>
+            <div class="logo">
+                <div class="logo-mark">
+                    <img src="logo.gif" alt="Probler Logo" class="logo-image">
+                    <span>Probler</span>
                 </div>
-                <div style="font-size: 0.6rem; color: #718096; margin-top: -5px; font-weight: normal;">Powered by <img src="Layer8Logo.gif" alt="Layer 8 Logo" style="height: 20px; width: 20px; vertical-align: middle; margin-left: 5px;"></div>
+                <div class="logo-subtitle">Built on Layer 8</div>
             </div>
             <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
                 <li><a href="#architecture">Architecture</a></li>
-                <li><a href="#getting-started">Get Started</a></li>
+                <li><a href="#features">Coverage</a></li>
+                <li><a href="#getting-started">Start</a></li>
                 <li><a href="#docs">Docs</a></li>
-                <li><a href="https://github.com/saichler/probler" target="_blank">View on GitHub</a></li>
-                <li><a href="#" onclick="openAboutModal()">About</a></li>
-                <li><a href="#" onclick="openDeveloperModal()" class="about-emphasized">Developer</a></li>
+                <li><a href="https://github.com/saichler/probler" target="_blank">GitHub</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#" onclick="openDeveloperModal()">Developer</a></li>
             </ul>
             <div class="nav-buttons">
                 <iframe src="https://github.com/sponsors/saichler/button" title="Sponsor saichler" height="32" width="114" style="border: 0; border-radius: 6px; vertical-align: middle; margin-right: 10px;"></iframe>
                 <a href="https://www.probler.dev:9094/web.html" target="_blank" class="demo-button">Simulators</a>
                 <a href="#" onclick="showDemoCredentials(); return false;" class="demo-button">Demo</a>
-                <a href="#getting-started" class="cta-button">Try Now</a>
+                <a href="#getting-started" class="cta-button">Run Locally</a>
             </div>
         </nav>
     </header>
 
     <main>
         <section class="hero">
-            <!-- Parallax Background Shapes -->
-            <div class="parallax-shapes">
-                <svg class="floating-shape" style="top: 10%; left: 10%; width: 100px; height: 100px;" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" fill="#0ea5e9"/>
-                </svg>
-                <svg class="floating-shape" style="top: 60%; right: 15%; width: 150px; height: 150px;" viewBox="0 0 100 100">
-                    <rect x="20" y="20" width="60" height="60" fill="#06b6d4" transform="rotate(45 50 50)"/>
-                </svg>
-                <svg class="floating-shape" style="bottom: 20%; left: 20%; width: 80px; height: 80px;" viewBox="0 0 100 100">
-                    <polygon points="50,10 90,90 10,90" fill="#0284c7"/>
-                </svg>
-            </div>
-
-            <div class="container parallax-content">
+            <div class="container hero-layout">
                 <div id="demoBanner" class="demo-banner">
                     <div class="demo-banner-content">
-                        <span class="demo-banner-pulse"></span>
-                        <span class="demo-banner-text">Live Demo Available</span>
+                        <span class="demo-banner-text">Live demo available</span>
                         <a href="#" onclick="showDemoCredentials(); return false;" class="demo-banner-link">Try it now &rarr;</a>
                     </div>
                     <button class="demo-banner-close" onclick="dismissDemoBanner()" title="Dismiss">&times;</button>
                 </div>
-                <h1 style="margin-top: 10px;">Data Center Infrastructure Management Platform</h1>
-                <p>A comprehensive DCIM solution built on microservices architecture, managing network, power, environmental, and capacity infrastructure with the core philosophy: <strong>Poll → Parse → Model → Cache → Persist</strong></p>
-
-                <!-- Animated Network Illustration -->
-                <div style="margin: 3rem 0;">
-                    <svg width="600" height="300" viewBox="0 0 600 300" style="max-width: 100%; height: auto;">
-                        <defs>
-                            <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#0284c7;stop-opacity:1" />
-                            </linearGradient>
-                            <filter id="glow">
-                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                                <feMerge>
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        <!-- Network Connections -->
-                        <line x1="100" y1="100" x2="300" y2="50" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
-                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
-                        </line>
-                        <line x1="300" y1="50" x2="500" y2="100" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
-                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
-                        </line>
-                        <line x1="100" y1="100" x2="200" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
-                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
-                        </line>
-                        <line x1="500" y1="100" x2="400" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
-                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
-                        </line>
-                        <line x1="200" y1="200" x2="400" y2="200" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
-                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
-                        </line>
-                        <line x1="300" y1="50" x2="300" y2="150" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="5,5">
-                            <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/>
-                        </line>
-                        <!-- Network Nodes -->
-                        <g filter="url(#glow)">
-                            <circle cx="300" cy="150" r="25" fill="url(#nodeGradient)" opacity="0.9">
-                                <animate attributeName="r" from="25" to="30" dur="2s" repeatCount="indefinite" begin="0s" values="25;30;25" />
-                            </circle>
-                            <text x="300" y="155" text-anchor="middle" fill="white" font-size="20">⚙️</text>
-                            <circle cx="100" cy="100" r="20" fill="rgba(255,255,255,0.9)">
-                                <animate attributeName="opacity" from="0.9" to="0.5" dur="3s" repeatCount="indefinite" />
-                            </circle>
-                            <text x="100" y="105" text-anchor="middle" fill="#0ea5e9" font-size="18">🔀</text>
-                            <circle cx="500" cy="100" r="20" fill="rgba(255,255,255,0.9)">
-                                <animate attributeName="opacity" from="0.5" to="0.9" dur="3s" repeatCount="indefinite" />
-                            </circle>
-                            <text x="500" y="105" text-anchor="middle" fill="#0ea5e9" font-size="18">🔀</text>
-                            <circle cx="300" cy="50" r="20" fill="rgba(255,255,255,0.9)"/>
-                            <text x="300" y="55" text-anchor="middle" fill="#0ea5e9" font-size="18">🗄️</text>
-                            <circle cx="200" cy="200" r="18" fill="rgba(255,255,255,0.9)"/>
-                            <text x="200" y="205" text-anchor="middle" fill="#0ea5e9" font-size="16">📊</text>
-                            <circle cx="400" cy="200" r="18" fill="rgba(255,255,255,0.9)"/>
-                            <text x="400" y="205" text-anchor="middle" fill="#0ea5e9" font-size="16">📈</text>
-                        </g>
-                        <!-- Data Flow Particles -->
-                        <circle r="3" fill="#0ea5e9">
-                            <animateMotion dur="3s" repeatCount="indefinite">
-                                <mpath href="#path1"/>
-                            </animateMotion>
-                        </circle>
-                        <path id="path1" d="M 100 100 Q 200 75 300 50" fill="none"/>
-                        <circle r="3" fill="#06b6d4">
-                            <animateMotion dur="3s" repeatCount="indefinite" begin="1s">
-                                <mpath href="#path2"/>
-                            </animateMotion>
-                        </circle>
-                        <path id="path2" d="M 300 50 Q 400 75 500 100" fill="none"/>
-                    </svg>
+                <p class="hero-eyebrow">Probler / Layer 8 Product</p>
+                <h1>Infrastructure discovery, modeling, and operations in one system.</h1>
+                <p class="hero-summary">Probler is the Layer 8 infrastructure platform for polling, parsing, modeling, caching, and operating complex environments across network, Kubernetes, power, and facility domains.</p>
+                <p class="hero-secondary">Built for teams that need topology, inventory, health, automation, and operational visibility without stitching together a dozen weakly aligned tools.</p>
+                <div class="hero-proof">
+                    <div class="proof-item">
+                        <span class="proof-label">Runtime</span>
+                        <strong>Go services on Layer 8</strong>
+                    </div>
+                    <div class="proof-item">
+                        <span class="proof-label">Core flow</span>
+                        <strong>Poll → Parse → Model → Cache → Persist</strong>
+                    </div>
+                    <div class="proof-item">
+                        <span class="proof-label">Surface area</span>
+                        <strong>Network, K8s, power, environment, automation</strong>
+                    </div>
                 </div>
-
                 <div class="hero-buttons">
-                    <a href="#getting-started" class="btn-primary">🚀 Get Started</a>
-                    <a href="https://github.com/saichler/probler" class="btn-secondary">📖 View on GitHub</a>
+                    <a href="#getting-started" class="btn-primary">Run Locally</a>
+                    <a href="https://github.com/saichler/probler" class="btn-secondary">GitHub</a>
                 </div>
-                <div style="margin-top: 2rem;">
+                <div class="hero-badges">
                     <span class="badge">Go 1.23.8</span>
                     <span class="badge">Kubernetes Ready</span>
                     <span class="badge">Apache 2.0</span>
@@ -162,129 +94,19 @@
                     <span class="badge">Microservices</span>
                 </div>
             </div>
-
-            <!-- Scroll Indicator -->
-            <div class="scroll-indicator">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M7 10l5 5 5-5z"/>
-                    <path d="M7 6l5 5 5-5z" opacity="0.5"/>
-                </svg>
-            </div>
-        </section>
-
-        <section class="features" id="features">
-            <div class="section-header">
-                <h2>🎯 Why Choose Probler?</h2>
-                <p>Probler addresses the fundamental pain points of building scalable, maintainable microservices architectures for network operations.</p>
-            </div>
-            <div class="section-content">
-                <div class="container">
-                    <div class="features-grid">
-                        <div class="feature-card">
-                            <div class="feature-icon">🔄</div>
-                            <h3>Model-Agnostic Services</h3>
-                            <p>Services that adapt to any data structure without requiring code changes, making your infrastructure future-proof.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🌐</div>
-                            <h3>Virtual Networking</h3>
-                            <p>Seamless service-to-service communication through intelligent virtual network overlay with built-in service discovery.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🛡️</div>
-                            <h3>Built-in Security</h3>
-                            <p>Comprehensive security layer with authentication, authorization, and built-in monitoring for all network operations.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">📈</div>
-                            <h3>Horizontal Scaling</h3>
-                            <p>Scale collectors and parsers horizontally based on device count and data processing volume automatically.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🔧</div>
-                            <h3>Platform Agnostic</h3>
-                            <p>Deploy on bare metal, Docker, or Kubernetes with the same configuration and management interface.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">📊</div>
-                            <h3>Real-time Monitoring</h3>
-                            <p>Interactive NOC dashboard with enhanced topology visualization using world-cities database, improved stability, alarm management, and performance metrics.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🚀</div>
-                            <h3>Traffic Engineering</h3>
-                            <p>Advanced MPLS & SR policy management with interactive global network visualization and BGP analytics.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">💚</div>
-                            <h3>System Health</h3>
-                            <p>Comprehensive process monitoring with configurable timeouts, enhanced startup logging, and real-time performance metrics.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">⚡</div>
-                            <h3>Power & Energy Management</h3>
-                            <p>Monitor PDUs, UPS, and generators with PUE calculations, circuit capacity alerts, power capping, and energy cost modeling for optimized data center efficiency.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🌡️</div>
-                            <h3>Environmental Monitoring</h3>
-                            <p>Track temperature, humidity, airflow, and pressure sensors with heat-map visualizations and threshold alerts for optimal cooling management.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">📐</div>
-                            <h3>Capacity Planning</h3>
-                            <p>What-if engine for space, power, cooling, and network capacity with forecasting and headroom checks for strategic infrastructure planning.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🚨</div>
-                            <h3>Incident & Alerting</h3>
-                            <p>Advanced alerting with anomaly detection, event correlation, RCA capabilities, and integration with ticketing systems for rapid incident response.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🔄</div>
-                            <h3>Workflow Automation</h3>
-                            <p>DAG-based workflow engine for provisioning, maintenance, decommissioning with IPMI/Redfish actions and maintenance calendar integration.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🖥️</div>
-                            <h3>Remote Management</h3>
-                            <p>IPMI and Redfish integration for remote server control, power cycling, firmware management, and KVM access with RBAC guardrails.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🔒</div>
-                            <h3>RBAC & Compliance</h3>
-                            <p>Role-based access control, immutable audit logging, and compliance dashboards for ISO/SOC2 controls with per-object ACLs.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">☁️</div>
-                            <h3>Hybrid Cloud Integration</h3>
-                            <p>Unified visibility across on-premises, Kubernetes, AWS, Azure, and GCP with cost tracking and resource optimization insights.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">🌱</div>
-                            <h3>Sustainability & ESG</h3>
-                            <p>Carbon footprint tracking, CO₂ dashboards per site/rack, energy efficiency trends, and sustainability recommendations for ESG reporting.</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon">📝</div>
-                            <h3>Log Aggregation</h3>
-                            <p>Integrated L8LogFusion for distributed log collection and centralized browsing across all infrastructure components with real-time streaming.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <section class="architecture" id="architecture">
             <div class="section-header">
-                <h2>🏗️ Architecture Overview</h2>
-                <p>Comprehensive DCIM microservices architecture with network, power, environmental, and capacity management capabilities designed for enterprise scalability</p>
+                <p class="section-kicker">Architecture</p>
+                <h2>Layered services, explicit responsibilities, clear data flow.</h2>
+                <p>Probler is built as a set of focused services on top of Layer 8. Discovery, parsing, persistence, topology, and operator functions are separate by design and connected through explicit runtime behavior.</p>
             </div>
             <div class="section-content">
                 <div class="container">
                     <div class="arch-diagram">
-                        <h3 style="text-align: center; margin-bottom: 2rem; color: #333;">Microservices Architecture</h3>
-                        <div style="text-align: center; background: #f8f9ff; padding: 2rem; border-radius: 10px;">
+                        <h3 class="arch-title">Microservices Architecture</h3>
+                        <div class="arch-canvas">
                             <svg width="800" height="500" viewBox="0 0 800 500" style="max-width: 100%; height: auto;">
                                 <defs>
                                     <linearGradient id="boxGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -373,88 +195,221 @@
                                 <path id="flowPath2" d="M 450 90 L 550 90 L 625 130 L 625 200" fill="none"/>
                             </svg>
                         </div>
+                        <p class="arch-caption">Collection feeds parsing, parsing feeds inventory and persistence, and the operator-facing services sit on top of that explicit flow. The component section above is the detailed catalog.</p>
                     </div>
+                </div>
+            </div>
+        </section>
 
-                    <div class="services-grid">
-                        <div class="service-card clickable" onclick="openCollectorDemo()">
-                            <h4>🔍 Collector</h4>
-                            <p>Network device polling & data collection with horizontal scaling</p>
+        <section class="features" id="features">
+            <div class="section-header">
+                <p class="section-kicker">Components</p>
+                <h2>The building blocks.</h2>
+                <p>Probler is composed as focused services and operator modules. Each component has a single responsibility, and together they form the full operational surface.</p>
+            </div>
+            <div class="section-content">
+                <div class="container">
+                    <div class="components-section">
+                        <div class="category-header">
+                            <h3>Platform Runtime</h3>
                         </div>
-                        <div class="service-card clickable" onclick="openParserDemo()">
-                            <h4>⚙️ Parser</h4>
-                            <p>Model-agnostic data parsing & transformation with horizontal scaling</p>
+                        <div class="component-grid">
+                            <div class="component-card component-card-clickable" onclick="openModelAgnosticServicesDemo()">
+                                <div class="component-card-name">l8services</div>
+                                <div class="component-card-display">Model-Agnostic Services</div>
+                                <div class="component-card-desc">Services that adapt to any data structure without requiring code changes, making the platform resilient to changing infrastructure models.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Docs</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8services','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card component-card-clickable" onclick="openVNetDemo()">
+                                <div class="component-card-name">l8bus</div>
+                                <div class="component-card-display">Virtual Networking</div>
+                                <div class="component-card-desc">Service-to-service communication through a virtual network overlay with routing, health signaling, and built-in discovery.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Docs</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8bus','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card component-card-clickable" onclick="openORMDemo()">
+                                <div class="component-card-name">l8orm</div>
+                                <div class="component-card-display">ORM</div>
+                                <div class="component-card-desc">Object-relational mapping and persistence services used to move modeled infrastructure state into durable storage.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Docs</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8orm','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card component-card-clickable" onclick="openWebDemo()">
+                                <div class="component-card-name">l8web</div>
+                                <div class="component-card-display">Web Services</div>
+                                <div class="component-card-desc">Web-facing services and operator surfaces that expose the platform through Layer 8 runtime semantics.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Docs</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8web','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card component-card-clickable" onclick="openReflectDemo()">
+                                <div class="component-card-name">l8reflect</div>
+                                <div class="component-card-display">Agnostic via Reflection</div>
+                                <div class="component-card-desc">Dynamic type introspection and model adaptation via reflection so service behavior can stay generic while data models evolve.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Docs</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8reflect','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">l8security</div>
+                                <div class="component-card-display">Security</div>
+                                <div class="component-card-desc">Authentication, authorization, and role-aware access controls enforced close to the runtime instead of bolted onto feature code.</div>
+                            </div>
                         </div>
-                        <div class="service-card clickable" onclick="openInventoryBoxDemo()">
-                            <h4>📦 Inventory Box</h4>
-                            <p>Network device inventory management with vertical scaling</p>
+
+                        <div class="category-header">
+                            <h3>Data Pipeline</h3>
                         </div>
-                        <div class="service-card">
-                            <h4>☸️ Inventory K8s</h4>
-                            <p>Kubernetes cluster inventory with vertical scaling</p>
+                        <div class="component-grid">
+                            <div class="component-card component-card-clickable" onclick="openCollectorDemo()">
+                                <div class="component-card-name">l8collector</div>
+                                <div class="component-card-display">Collector</div>
+                                <div class="component-card-desc">Network device polling and multi-protocol data collection with horizontal scaling across large infrastructure footprints.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Docs</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8collector','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card component-card-clickable" onclick="openParserDemo()">
+                                <div class="component-card-name">l8parser</div>
+                                <div class="component-card-display">Parser</div>
+                                <div class="component-card-desc">Model-agnostic parsing and transformation for turning collected data into normalized runtime objects.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Docs</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8parser','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card component-card-clickable" onclick="openInventoryBoxDemo()">
+                                <div class="component-card-name">l8inventory</div>
+                                <div class="component-card-display">Inventory Box</div>
+                                <div class="component-card-desc">Network inventory management and distributed cache for discovered device state and modeled infrastructure relationships.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Docs</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8inventory','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">k8s inventory</div>
+                                <div class="component-card-display">Inventory K8s</div>
+                                <div class="component-card-desc">Kubernetes cluster inventory and modeled runtime state for pods, services, workloads, and namespaces.</div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">l8logfusion</div>
+                                <div class="component-card-display">Log Aggregation</div>
+                                <div class="component-card-desc">Distributed log collection and centralized browsing across infrastructure components with real-time streaming.</div>
+                            </div>
                         </div>
-                        <div class="service-card clickable" onclick="openORMDemo()">
-                            <h4>🗄️ ORM</h4>
-                            <p>Object-relational mapping & persistence with vertical scaling</p>
+
+                        <div class="category-header">
+                            <h3>Operations Apps</h3>
                         </div>
-                        <div class="service-card clickable" onclick="openVNetDemo()">
-                            <h4>🌐 VNet</h4>
-                            <p>Virtual network overlay & web interface with vertical scaling</p>
+                        <div class="component-grid">
+                            <div class="component-card component-card-clickable" onclick="openTopologyDemo()">
+                                <div class="component-card-name">l8topology</div>
+                                <div class="component-card-display">Topology</div>
+                                <div class="component-card-desc">Network topology service with world-cities integration for geographic positioning and interactive operator visualization.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Docs</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8topology','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">health</div>
+                                <div class="component-card-display">System Health</div>
+                                <div class="component-card-desc">Process monitoring, startup visibility, timeout tracking, and real-time performance metrics for platform operations.</div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">l8traffic</div>
+                                <div class="component-card-display">TE App</div>
+                                <div class="component-card-desc">Traffic engineering and SR policy management with global visualization and operator-facing analytics.</div>
+                            </div>
+                            <div class="component-card component-card-clickable" onclick="openGSQLDemo()">
+                                <div class="component-card-name">l8ql</div>
+                                <div class="component-card-display">GSQL</div>
+                                <div class="component-card-desc">Query interface for traversing and managing topology and modeled infrastructure relationships.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Docs</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8ql','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">l8alert</div>
+                                <div class="component-card-display">Incident & Alerting</div>
+                                <div class="component-card-desc">Anomaly detection, event correlation, RCA workflows, and ticketing-oriented incident response support.</div>
+                            </div>
+                            <div class="component-card component-card-clickable" onclick="openOpenSimulatorDemo()">
+                                <div class="component-card-name">l8opensim</div>
+                                <div class="component-card-display">Open Simulator</div>
+                                <div class="component-card-desc">Simulation framework for modeling and testing complex environments before deployment or change rollout.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Demo</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8opensim','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card component-card-clickable" onclick="openTestAndAutomationDemo()">
+                                <div class="component-card-name">l8test</div>
+                                <div class="component-card-display">Test and Automation</div>
+                                <div class="component-card-desc">Testing and automation support for validation, reproducibility, and quality gates across distributed environments.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-primary">Docs</span>
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8test','_blank');">GitHub</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="service-card">
-                            <h4>🚀 TE App</h4>
-                            <p>Traffic Engineering & SR policies management with vertical scaling</p>
+
+                        <div class="category-header">
+                            <h3>Infrastructure Controls</h3>
                         </div>
-                        <div class="service-card clickable" onclick="openTopologyDemo()">
-                            <h4>🗺️ Topology</h4>
-                            <p>Enhanced network topology service with world-cities integration for precise geographic positioning</p>
-                        </div>
-                        <div class="service-card">
-                            <h4>🛡️ Security</h4>
-                            <p>Authentication & authorization with vertical scaling</p>
-                        </div>
-                        <div class="service-card clickable" onclick="openModelAgnosticServicesDemo()">
-                            <h4>🤖 Model-Agnostic Services</h4>
-                            <p>Universal services that adapt to any data structure with dynamic modeling</p>
-                        </div>
-                        <div class="service-card clickable" onclick="openWebDemo()">
-                            <h4>🌐 Web Services</h4>
-                            <p>Web-based interfaces and services with modern UI components</p>
-                        </div>
-                        <div class="service-card clickable" onclick="openGSQLDemo()">
-                            <h4>📊 GSQL</h4>
-                            <p>Graph SQL interface for querying and managing network topology data</p>
-                        </div>
-                        <div class="service-card clickable" onclick="openReflectDemo()">
-                            <h4>🔍 Agnostic via Reflection</h4>
-                            <p>Dynamic type introspection and model adaptation using Go reflection capabilities</p>
-                        </div>
-                        <div class="service-card clickable" onclick="openOpenSimulatorDemo()">
-                            <h4>🎮 Open Simulator</h4>
-                            <p>Advanced simulation framework for modeling and testing complex system behaviors</p>
-                        </div>
-                        <div class="service-card clickable" onclick="openTestAndAutomationDemo()">
-                            <h4>🧪 Test and Automation</h4>
-                            <p>Comprehensive testing and automation framework for validation and quality assurance</p>
-                        </div>
-                        <div class="service-card">
-                            <h4>⚡ L8Power</h4>
-                            <p>Power & energy management service for PDUs, UPS, generators with PUE calculations and circuit capacity monitoring</p>
-                        </div>
-                        <div class="service-card">
-                            <h4>🌡️ L8Env</h4>
-                            <p>Environmental monitoring service tracking temperature, humidity, airflow sensors with heat-map visualization</p>
-                        </div>
-                        <div class="service-card">
-                            <h4>🚨 L8Alert</h4>
-                            <p>Intelligent alerting and incident management with anomaly detection, RCA, and ticketing integration</p>
-                        </div>
-                        <div class="service-card">
-                            <h4>🔄 L8Workflow</h4>
-                            <p>DAG-based workflow automation engine for provisioning, maintenance, and IPMI/Redfish orchestration</p>
-                        </div>
-                        <div class="service-card">
-                            <h4>📝 L8LogFusion</h4>
-                            <p>Distributed log aggregation and centralized browsing system for all infrastructure components</p>
+                        <div class="component-grid">
+                            <div class="component-card">
+                                <div class="component-card-name">l8power</div>
+                                <div class="component-card-display">Power & Energy Management</div>
+                                <div class="component-card-desc">Monitor PDUs, UPS units, and generators with PUE calculations, circuit alerts, power capping, and energy cost modeling.</div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">l8env</div>
+                                <div class="component-card-display">Environmental Monitoring</div>
+                                <div class="component-card-desc">Track temperature, humidity, airflow, and pressure sensors with heat maps and threshold-driven alerts.</div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">capacity</div>
+                                <div class="component-card-display">Capacity Planning</div>
+                                <div class="component-card-desc">What-if planning for space, power, cooling, and network headroom to support operational and strategic decisions.</div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">workflow</div>
+                                <div class="component-card-display">Workflow Automation</div>
+                                <div class="component-card-desc">DAG-based automation for provisioning, maintenance, decommissioning, and coordinated Redfish or IPMI actions.</div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">remote mgmt</div>
+                                <div class="component-card-display">Remote Management</div>
+                                <div class="component-card-desc">Power cycling, firmware operations, and remote control through IPMI and Redfish with operational guardrails.</div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">rbac</div>
+                                <div class="component-card-display">RBAC & Compliance</div>
+                                <div class="component-card-desc">Per-object ACLs, immutable audit logging, and compliance-oriented dashboards for governed operations.</div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">hybrid</div>
+                                <div class="component-card-display">Hybrid Cloud Integration</div>
+                                <div class="component-card-desc">Unified visibility across on-premises infrastructure, Kubernetes, and major cloud environments with cost awareness.</div>
+                            </div>
+                            <div class="component-card">
+                                <div class="component-card-name">esg</div>
+                                <div class="component-card-display">Sustainability & ESG</div>
+                                <div class="component-card-desc">Carbon and efficiency tracking per site and rack with trend reporting for sustainability operations.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -463,6 +418,7 @@
 
         <section class="stats">
             <div class="container">
+                <p class="section-kicker">Evidence</p>
                 <div class="stats-grid">
                     <div class="stat-item">
                         <h3>20+</h3>
@@ -485,9 +441,10 @@
         </section>
 
         <section class="getting-started" id="getting-started">
-            <div class="section-header" style="background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);">
-                <h2>🚀 Quick Start</h2>
-                <p>Get Probler up and running in minutes with our simple deployment process</p>
+            <div class="section-header">
+                <p class="section-kicker">Start</p>
+                <h2>From repository to working environment with a short path.</h2>
+                <p>The setup is explicit: clone, build, deploy, and open the NOC surface. No marketing maze, just the steps.</p>
             </div>
             <div class="section-content">
                 <div class="container">
@@ -551,7 +508,8 @@ open https://localhost:443/probler/
 
         <section class="features" id="docs">
             <div class="container">
-                <h2 class="section-title">📚 Documentation & Resources</h2>
+                <p class="section-kicker">Docs</p>
+                <h2 class="section-title">Documentation and operator resources.</h2>
                 <div class="features-grid">
                     <div class="feature-card">
                         <div class="feature-icon">📋</div>
@@ -596,8 +554,8 @@ open https://localhost:443/probler/
             <div class="footer-content">
                 <div class="footer-section">
                     <h3><img src="logo.gif" alt="Probler" style="height: 30px; width: auto; vertical-align: middle; margin-right: 8px;">Probler</h3>
-                    <p>Making microservices painless, one service at a time.</p>
-                    <p>Data Center Infrastructure Management Platform</p>
+                    <p>Infrastructure management and observability built on Layer 8.</p>
+                    <p>Discovery, topology, health, automation, and operator tooling in one platform.</p>
                 </div>
                 <div class="footer-section">
                     <h3>Quick Links</h3>
@@ -627,7 +585,7 @@ open https://localhost:443/probler/
                 </div>
             </div>
             <div class="footer-bottom">
-                <p style="margin-bottom: 0.5rem;"><a href="m/index.html" style="color: #a08873; text-decoration: none;">📱 View Mobile Version</a></p>
+                <p style="margin-bottom: 0.5rem;"><a href="m/index.html" style="color: inherit; text-decoration: none;">View Mobile Version</a></p>
                 <p>&copy; 2024-2025 Probler. Licensed under Apache License 2.0. Open source network automation platform.</p>
             </div>
         </div>

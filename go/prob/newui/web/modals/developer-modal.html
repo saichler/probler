@@ -1,10 +1,13 @@
 <div id="developerModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>About the Developer</h2>
+    <div class="modal-content developer-modal-content">
+        <div class="modal-header developer-modal-header">
+            <div>
+                <p class="developer-kicker">Leadership</p>
+                <h2>Founder and Platform Architect</h2>
+            </div>
             <span class="close" onclick="closeDeveloperModal()">&times;</span>
         </div>
-        <div class="modal-body">
+        <div class="modal-body developer-modal-body">
             <div class="developer-content">
                 <div class="developer-intro">
                     <div class="developer-avatar">
@@ -12,26 +15,29 @@
                     </div>
                     <div class="developer-info">
                         <h3>Sharon Aicler</h3>
-                        <p class="developer-title">saichler@gmail.com</p>
+                        <div class="developer-role">Founder / Platform Architect</div>
+                        <p class="developer-title">20+ years building distributed systems across infrastructure, networking, security, and cloud platforms.</p>
+                        <p class="developer-contact"><a href="mailto:saichler@gmail.com">saichler@gmail.com</a></p>
                     </div>
                 </div>
                 <div id="developer-markdown-content" class="markdown-content">
                     <p>Loading...</p>
                 </div>
                 <div class="contact-section">
-                    <h3>Connect & Collaborate</h3>
+                    <p class="developer-kicker">Links</p>
+                    <h3>Projects and contact</h3>
                     <div class="contact-links">
                         <a href="https://github.com/saichler" class="contact-link" target="_blank">
-                            <span class="contact-icon">📚</span>
-                            <span>GitHub Portfolio</span>
+                            <span class="contact-label">GitHub</span>
+                            <span>saichler</span>
                         </a>
                         <a href="https://github.com/saichler/probler" class="contact-link" target="_blank">
-                            <img src="logo.gif" alt="Probler" class="contact-icon" style="height: 35px; width: auto; vertical-align: middle;">
-                            <span>Probler Project</span>
+                            <span class="contact-label">Probler</span>
+                            <span>Project repository</span>
                         </a>
                         <a href="https://github.com/saichler/probler/issues" class="contact-link" target="_blank">
-                            <span class="contact-icon">💬</span>
-                            <span>Discussions & Issues</span>
+                            <span class="contact-label">Issues</span>
+                            <span>Discussions and bugs</span>
                         </a>
                     </div>
                 </div>

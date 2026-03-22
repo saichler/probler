@@ -253,70 +253,12 @@ const observer = new IntersectionObserver((entries) => {
     });
 });
 
-document.querySelectorAll('.feature-card, .service-card, .step-card').forEach(el => {
+document.querySelectorAll('.component-card, .step-card, .category-header').forEach(el => {
     observer.observe(el);
 });
 
-// Add interactive hover effects
-document.querySelectorAll('.feature-card, .service-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-10px) scale(1.02)';
-    });
-    card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0) scale(1)';
-    });
-});
-
-// Parallax Scrolling Effect
-let ticking = false;
-function updateParallax() {
-    const scrolled = window.pageYOffset;
-    const parallaxElements = document.querySelectorAll('.parallax-content');
-    const shapes = document.querySelectorAll('.floating-shape');
-    const heroSection = document.querySelector('.hero');
-    const sectionHeaders = document.querySelectorAll('.section-header');
-
-    if (heroSection) {
-        heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
-    }
-
-    parallaxElements.forEach(el => {
-        const speed = el.dataset.speed || 0.8;
-        const yPos = -(scrolled * speed);
-        el.style.transform = `translateY(${yPos * 0.1}px)`;
-    });
-
-    shapes.forEach((shape, index) => {
-        const speed = 0.5 + (index * 0.1);
-        const yPos = -(scrolled * speed);
-        const rotation = scrolled * 0.2;
-        shape.style.transform = `translateY(${yPos}px) rotate(${rotation}deg)`;
-    });
-
-    sectionHeaders.forEach(header => {
-        const rect = header.getBoundingClientRect();
-        const speed = 0.3;
-        if (rect.top <= window.innerHeight && rect.bottom >= 0) {
-            const yPos = (rect.top - window.innerHeight / 2) * speed;
-            header.style.backgroundPosition = `center ${yPos}px`;
-        }
-    });
-
-    ticking = false;
-}
-
-function requestTick() {
-    if (!ticking) {
-        window.requestAnimationFrame(updateParallax);
-        ticking = true;
-    }
-}
-
-window.addEventListener('scroll', requestTick);
-updateParallax();
-
-// Smooth reveal animation for elements
-const revealElements = document.querySelectorAll('.section-header h2, .section-header p');
+// Simple reveal animation for elements
+const revealElements = document.querySelectorAll('.section-header h2, .section-header p, .hero h1, .hero p');
 const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -327,13 +269,8 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 
 revealElements.forEach(el => {
-    el.style.transform = 'translateY(50px)';
+    el.style.transform = 'translateY(24px)';
     el.style.opacity = '0';
-    el.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     revealObserver.observe(el);
-});
-
-// Add parallax data attributes
-document.querySelectorAll('.parallax-content').forEach((el, index) => {
-    el.setAttribute('data-speed', 0.5 + (index * 0.2));
 });

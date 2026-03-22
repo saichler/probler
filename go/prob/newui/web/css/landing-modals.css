@@ -18,12 +18,12 @@
     background-color: white;
     margin: 2% auto;
     padding: 0;
-    border-radius: 20px;
+    border-radius: 0;
     width: 90%;
     max-width: 1200px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
     animation: modalSlideIn 0.3s ease-out;
 }
 
@@ -32,18 +32,20 @@
     justify-content: space-between;
     align-items: center;
     padding: 2rem;
-    background: linear-gradient(135deg, #0f2027 0%, #203a43 100%);
-    color: white;
-    border-radius: 20px 20px 0 0;
+    background: #f9f9f7;
+    color: #111111;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .modal-header h2 {
     margin: 0;
-    font-size: 2rem;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
 }
 
 .close {
-    color: white;
+    color: #999;
     float: right;
     font-size: 2.5rem;
     font-weight: bold;
@@ -53,30 +55,45 @@
 
 .close:hover,
 .close:focus {
-    color: #0ea5e9;
+    color: #111;
 }
 
 .modal-body {
     padding: 2rem;
-    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-    border-radius: 0 0 20px 20px;
+    background: #f9f9f7;
 }
 
 /* Developer Modal Specific Styles */
 .developer-content {
-    max-width: 1000px;
+    max-width: 960px;
     margin: 0 auto;
+}
+
+.developer-kicker {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #999;
+    margin-bottom: 0.75rem;
+}
+
+.developer-modal-header {
+    align-items: flex-start;
+}
+
+.developer-modal-body {
+    padding-top: 2.25rem;
 }
 
 .developer-intro {
     display: flex;
     align-items: center;
-    gap: 3rem;
-    margin-bottom: 4rem;
+    gap: 2rem;
+    margin-bottom: 2rem;
     background: white;
-    padding: 3rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    border: 1px solid #e5e5e5;
 }
 
 .developer-avatar {
@@ -96,40 +113,35 @@
 }
 
 .developer-gif {
-    width: 140px;
-    height: 140px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3),
-                0 0 0 8px rgba(102, 126, 234, 0.1);
-    transition: all 0.3s ease;
-    animation: gentle-glow 3s ease-in-out infinite;
-}
-
-.developer-gif:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4),
-                0 0 0 12px rgba(102, 126, 234, 0.15);
+    border: 1px solid #e5e5e5;
 }
 
 .developer-info h3 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    color: #333;
+    font-size: 2rem;
+    margin-bottom: 0.35rem;
+    color: #111;
+}
+
+.developer-role {
+    font-size: 0.95rem;
+    color: #999;
+    margin-bottom: 0.9rem;
 }
 
 .developer-title {
-    font-size: 1.3rem;
-    color: #0ea5e9;
-    font-weight: 600;
-    margin-bottom: 1rem;
+    font-size: 1.05rem;
+    color: #555;
+    font-weight: 500;
+    margin-bottom: 0.9rem;
 }
 
-.developer-description {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: #666;
+.developer-contact a {
+    color: #0070f3;
+    text-decoration: none;
 }
 
 /* Expertise Grid */
@@ -285,76 +297,79 @@
 /* Contact Section */
 .contact-section {
     background: white;
-    padding: 3rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    padding: 2rem;
+    border: 1px solid #e5e5e5;
 }
 
 .contact-section h3 {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    color: #333;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #111;
 }
 
 .contact-links {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: #e5e5e5;
+    border: 1px solid #e5e5e5;
 }
 
 .contact-link {
     display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 25px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    background: #fff;
+    color: #111;
+    padding: 1.25rem 1.4rem;
     text-decoration: none;
-    font-weight: 600;
-    transition: transform 0.3s, box-shadow 0.3s;
+    font-weight: 500;
+    transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .contact-link:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
+    transform: translateY(-2px);
+    background: #f0f0ee;
+    box-shadow: none;
 }
 
-.contact-icon {
-    font-size: 1.2rem;
+.contact-label {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #999;
 }
 
 /* Markdown Content Styles */
 .markdown-content {
     background: white;
-    padding: 3rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 2.25rem 2rem;
+    border: 1px solid #e5e5e5;
     margin-bottom: 2rem;
-    color: #333;
+    color: #111;
     line-height: 1.8;
 }
 
 .markdown-content h1 {
-    font-size: 1.8rem;
-    color: #0ea5e9;
-    margin: 2rem 0 1rem 0;
+    font-size: 1.6rem;
+    color: #111;
+    margin: 1.75rem 0 1rem 0;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid rgba(14, 165, 233, 0.2);
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .markdown-content h2 {
     font-size: 1.5rem;
-    color: #0ea5e9;
+    color: #111;
     margin: 2rem 0 1rem 0;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid rgba(14, 165, 233, 0.2);
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .markdown-content p {
-    font-size: 1.1rem;
+    font-size: 1.02rem;
     margin-bottom: 1rem;
     color: #555;
 }
@@ -369,20 +384,20 @@
 }
 
 .markdown-content a {
-    color: #0ea5e9;
+    color: #0070f3;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
 }
 
 .markdown-content a:hover {
-    color: #0284c7;
+    color: #111;
     text-decoration: underline;
 }
 
 .markdown-content hr {
     border: none;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.3), transparent);
+    background: #e5e5e5;
     margin: 2rem 0;
 }
