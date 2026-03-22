@@ -46,7 +46,7 @@ function hasRoutingData(device) {
 function buildBgpSection(bgp, esc) {
     if (!bgp || !bgp.bgpEnabled) return '';
     var html = '<div class="detail-section detail-full-width" style="margin-top: 12px;">' +
-        '<div class="detail-section-title">BGP &mdash; AS ' + (bgp.asNumber || '') + '</div>';
+        '<div class="detail-section-title">BGP · AS ' + (bgp.asNumber || '') + '</div>';
     if (!bgp.peers || bgp.peers.length === 0) {
         html += '<p style="color: var(--layer8d-text-muted); padding: 8px;">No BGP peers</p>';
         return html + '</div>';
@@ -77,7 +77,7 @@ function buildBgpSection(bgp, esc) {
 function buildOspfSection(ospf, esc) {
     if (!ospf || !ospf.ospfEnabled) return '';
     var html = '<div class="detail-section detail-full-width" style="margin-top: 12px;">' +
-        '<div class="detail-section-title">OSPF &mdash; Router ID ' + esc(ospf.routerId || '') + '</div>' +
+        '<div class="detail-section-title">OSPF · Router ID ' + esc(ospf.routerId || '') + '</div>' +
         '<div class="detail-grid">' +
             '<div class="detail-section">' +
                 '<div class="detail-row">' +
@@ -137,7 +137,7 @@ function buildRoutingTab(device, esc) {
         var statusClass = vrf.status === 1 ? 'status-online' : vrf.status === 2 ? 'status-offline' : '';
         html += '<div class="detail-grid">' +
             '<div class="detail-section">' +
-                '<div class="detail-section-title">VRF: ' + esc(vrf.vrfName || '') + '</div>' +
+                '<div class="detail-section-title">VRF · ' + esc(vrf.vrfName || '') + '</div>' +
                 '<div class="detail-row">' +
                     '<span class="detail-label">Status</span>' +
                     '<span class="detail-value ' + statusClass + '">' + statusText + '</span>' +

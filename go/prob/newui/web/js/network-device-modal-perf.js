@@ -83,7 +83,7 @@ function buildPerformanceTab(device) {
         html += '<div class="perf-sub-pane active" data-perf-pane="summary">' +
             '<div class="detail-grid">' +
                 '<div class="detail-section">' +
-                    '<div class="detail-section-title">Summary</div>' +
+                    '<div class="detail-section-title">Performance summary</div>' +
                     '<div class="detail-row">' +
                         '<span class="detail-label">Uptime</span>' +
                         '<span class="detail-value">' + esc(perf.uptime || '-') + '</span>' +

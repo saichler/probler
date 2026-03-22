@@ -337,13 +337,13 @@ function buildGpuSoftwareTab(device, esc) {
     return '<div class="probler-popup-tab-pane" data-pane="software">' +
         '<div class="detail-grid">' +
             '<div class="detail-section">' +
-                '<div class="detail-section-title">Driver & CUDA</div>' +
+                '<div class="detail-section-title">Driver and CUDA</div>' +
                 buildDetailRow('Driver Version', esc(device.driverVersion || '')) +
                 buildDetailRow('CUDA Version', esc(device.cudaVersion || '')) +
                 buildDetailRow('DCGM Version', esc(device.dcgmVersion || '')) +
             '</div>' +
             '<div class="detail-section">' +
-                '<div class="detail-section-title">Operating System</div>' +
+                '<div class="detail-section-title">Operating system</div>' +
                 buildDetailRow('OS Version', esc(device.osVersion || '')) +
                 buildDetailRow('Kernel Version', esc(device.kernelVersion || '')) +
             '</div>' +
