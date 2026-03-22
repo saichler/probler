@@ -7,7 +7,26 @@
 
 /* Compact hero header */
 .k8s-section .l8-header-frame {
-    height: 60px;
+    height: 96px;
+    min-height: 96px;
+}
+
+.k8s-section .l8-header-title {
+    padding: 20px 24px;
+}
+
+.k8s-section .l8-title {
+    font-size: 28px;
+    line-height: 1.1;
+    text-transform: none;
+    text-shadow: none;
+}
+
+.k8s-section .l8-subtitle {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    margin-top: 4px;
 }
 
 /* Flex constraint chain: section-content → k8s-content → nav-bar + main-content → table
