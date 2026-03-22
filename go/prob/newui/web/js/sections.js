@@ -17,6 +17,33 @@ const sections = {
     system: 'sections/sys.html'
 };
 
+function normalizeSectionVisuals(contentArea) {
+    const headerRoots = contentArea.querySelectorAll('.l8-header-frame, .system-header-frame, .hcm-header-frame');
+
+    headerRoots.forEach(root => {
+        root.classList.remove('parallax-container');
+        root.querySelectorAll('.parallax-layer').forEach(layer => {
+            layer.classList.remove('parallax-layer');
+            layer.style.transform = '';
+            layer.removeAttribute('data-speed');
+        });
+
+        root.querySelectorAll('animate, animateTransform, animateMotion').forEach(node => node.remove());
+
+        root.querySelectorAll('.network-link, .data-particle, .rack-server, .rack-critical').forEach(node => {
+            node.style.animation = 'none';
+        });
+
+        root.querySelectorAll('[stroke-dasharray]').forEach(node => {
+            node.setAttribute('stroke-dasharray', 'none');
+        });
+
+        root.querySelectorAll('[style*="animation-delay"]').forEach(node => {
+            node.style.animationDelay = '';
+        });
+    });
+}
+
 // Load section content dynamically
 function loadSection(sectionName) {
     const contentArea = document.getElementById('content-area');
@@ -42,6 +69,7 @@ function loadSection(sectionName) {
         .then(html => {
             setTimeout(() => {
                 contentArea.innerHTML = html;
+                normalizeSectionVisuals(contentArea);
 
                 // Handle section generator placeholder pattern
                 const placeholder = contentArea.querySelector('[id$="-section-placeholder"]');
@@ -71,13 +99,7 @@ function loadSection(sectionName) {
                         if (typeof initializeDashboard === 'function') {
                             initializeDashboard();
                         }
-                        if (typeof initializeParallax === 'function') {
-                            initializeParallax();
-                        }
                     } else if (sectionName === 'network') {
-                        if (typeof initializeParallax === 'function') {
-                            initializeParallax();
-                        }
                         if (typeof initializeNetworkDevices === 'function') {
                             initializeNetworkDevices();
                         }
@@ -96,17 +118,6 @@ function loadSection(sectionName) {
                     } else if (sectionName === 'system') {
                         if (typeof initializeL8Sys === 'function') {
                             initializeL8Sys();
-                        }
-                        if (typeof initializeParallax === 'function') {
-                            initializeParallax();
-                        }
-                    } else if (sectionName === 'inventory') {
-                        if (typeof initializeParallax === 'function') {
-                            initializeParallax();
-                        }
-                    } else if (sectionName === 'topologies') {
-                        if (typeof initializeParallax === 'function') {
-                            initializeParallax();
                         }
                     } else if (sectionName === 'alarms') {
                         if (typeof initializeAlm === 'function') {

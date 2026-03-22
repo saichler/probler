@@ -9,10 +9,10 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(4px);
+    background: rgba(15, 23, 42, 0.35);
+    backdrop-filter: blur(2px);
     z-index: 1000;
-    animation: modal-fade-in 0.3s ease-out;
+    animation: modal-fade-in 0.2s ease-out;
 }
 
 .modal-overlay.active {
@@ -30,8 +30,8 @@
 .modal-container {
     background: white;
     border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(14, 165, 233, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
     max-width: 1200px;
     width: 100%;
     min-height: 500px;
@@ -39,7 +39,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    animation: modal-slide-up 0.3s ease-out;
+    animation: modal-slide-up 0.2s ease-out;
 }
 
 @keyframes modal-slide-up {
@@ -57,18 +57,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 30px;
+    padding: 18px 24px;
     border-bottom: 1px solid #e2e8f0;
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    border-radius: 20px 20px 0 0;
+    background: #ffffff;
+    border-radius: 12px 12px 0 0;
 }
 
 .modal-title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    color: white;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
+    color: #0f172a;
+    text-transform: none;
+    letter-spacing: -0.01em;
     font-family: 'Figtree', sans-serif;
     margin: 0;
     display: flex;
@@ -80,39 +80,39 @@
 .modal-status-badge {
     display: inline-block;
     padding: 6px 12px;
-    border-radius: 2px;
+    border-radius: 999px;
     font-size: 11px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
     text-align: center;
     min-width: 80px;
 }
 
 .modal-status-badge.status-online {
-    background: rgba(0, 200, 83, 0.2);
-    color: var(--status-operational);
-    border: 1px solid var(--status-operational);
-    box-shadow: 0 0 8px rgba(0, 200, 83, 0.3);
+    background: rgba(22, 163, 74, 0.1);
+    color: #15803d;
+    border: 1px solid rgba(22, 163, 74, 0.2);
+    box-shadow: none;
 }
 
 .modal-status-badge.status-warning {
-    background: rgba(255, 193, 7, 0.2);
-    color: var(--status-warning);
-    border: 1px solid var(--status-warning);
-    box-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+    background: rgba(217, 119, 6, 0.1);
+    color: #b45309;
+    border: 1px solid rgba(217, 119, 6, 0.2);
+    box-shadow: none;
 }
 
 .modal-status-badge.status-offline {
-    background: rgba(117, 117, 117, 0.2);
-    color: var(--status-offline);
-    border: 1px solid var(--status-offline);
+    background: rgba(100, 116, 139, 0.1);
+    color: #64748b;
+    border: 1px solid rgba(100, 116, 139, 0.2);
 }
 
 .modal-close {
     background: transparent;
     border: none;
-    color: white;
+    color: #64748b;
     font-size: 32px;
     cursor: pointer;
     padding: 0;
@@ -126,8 +126,8 @@
 }
 
 .modal-close:hover {
-    color: rgba(255, 255, 255, 0.8);
-    transform: scale(1.1);
+    color: #0f172a;
+    transform: none;
 }
 
 .modal-body {
@@ -141,17 +141,18 @@
 /* Modal Tabs */
 .modal-tabs {
     display: flex;
-    background: #f7fafc;
+    background: #ffffff;
     border-bottom: 1px solid #e2e8f0;
+    padding: 0 16px;
 }
 
 .modal-tab {
-    padding: 15px 25px;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #4a5568;
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #64748b;
     cursor: pointer;
     border-bottom: 3px solid transparent;
     transition: all 0.2s ease;
@@ -167,12 +168,12 @@
     background: white;
     color: #0ea5e9;
     border-bottom-color: #0ea5e9;
-    box-shadow: inset 0 -3px 0 #0ea5e9;
+    box-shadow: none;
 }
 
 .modal-tab-content {
-    padding: 30px;
-    min-height: 400px;
+    padding: 24px;
+    min-height: 360px;
 }
 
 /* Hide all .modal-tab-content direct children of .modal-body by default (Kubernetes style) */
@@ -196,14 +197,15 @@
     width: 100%;
     border-collapse: collapse;
     background: white;
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+    border: 1px solid #e2e8f0;
 }
 
 .detail-table thead {
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    color: white;
+    background: #f8fafc;
+    color: #0f172a;
 }
 
 .detail-table thead th {
@@ -211,8 +213,8 @@
     text-align: left;
     font-weight: 600;
     font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-transform: none;
+    letter-spacing: 0;
 }
 
 .detail-table tbody tr {
@@ -247,7 +249,7 @@
 .detail-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 20px 24px;
+    gap: 16px 20px;
     margin-bottom: 24px;
 }
 
@@ -287,7 +289,7 @@
 }
 
 .modal-tab-content .detail-section h3 {
-    color: #0ea5e9;
+    color: #0f172a;
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 16px;
@@ -313,29 +315,30 @@
 }
 
 .detail-section {
-    background: #f7fafc;
+    background: #ffffff;
     border: 1px solid #e2e8f0;
-    padding: 20px;
-    border-left: 3px solid #0ea5e9;
-    border-radius: 8px;
+    padding: 18px;
+    border-left: 1px solid #e2e8f0;
+    border-radius: 10px;
 }
 
 .detail-section-title {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
-    color: #0ea5e9;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
+    color: #0f172a;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
     border-bottom: 1px solid #e2e8f0;
 }
 
 .detail-row {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
+    padding: 10px 0;
     border-bottom: 1px solid #e2e8f0;
+    gap: 12px;
 }
 
 .detail-row:last-child {
@@ -343,17 +346,17 @@
 }
 
 .detail-label {
-    font-size: 11px;
-    color: #718096;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 700;
+    font-size: 12px;
+    color: #64748b;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
 }
 
 .detail-value {
-    font-size: 11px;
-    color: #2d3748;
-    font-family: 'Roboto Mono', monospace;
+    font-size: 13px;
+    color: #0f172a;
+    font-family: 'Figtree', sans-serif;
     font-weight: 600;
     text-align: right;
 }
@@ -383,10 +386,10 @@
 }
 
 .perf-sub-tab {
-    padding: 10px 20px;
-    font-size: 12px;
+    padding: 10px 16px;
+    font-size: 13px;
     font-weight: 600;
-    color: #4a5568;
+    color: #64748b;
     cursor: pointer;
     border-bottom: 2px solid transparent;
     margin-bottom: -2px;

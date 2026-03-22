@@ -10,6 +10,13 @@ function getAuthHeaders() {
     return headers;
 }
 
+function clearAuthAndRedirectToLogin() {
+    sessionStorage.removeItem('bearerToken');
+    localStorage.removeItem('bearerToken');
+    localStorage.removeItem('rememberedUser');
+    window.location.href = 'l8ui/login/index.html';
+}
+
 // Show error modal before logout so the user can see what went wrong
 function showErrorAndLogout(reason, details) {
     // Prevent multiple modals
@@ -17,17 +24,17 @@ function showErrorAndLogout(reason, details) {
 
     var overlay = document.createElement('div');
     overlay.id = 'error-before-logout-overlay';
-    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:100000;display:flex;align-items:center;justify-content:center;';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.35);backdrop-filter:blur(2px);z-index:100000;display:flex;align-items:center;justify-content:center;padding:24px;';
 
     var modal = document.createElement('div');
-    modal.style.cssText = 'background:#1a1a2e;color:#e0e0e0;border-radius:12px;padding:32px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);font-family:system-ui,sans-serif;';
+    modal.style.cssText = 'background:#ffffff;color:#334155;border:1px solid #e2e8f0;border-radius:12px;padding:24px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 18px 40px rgba(15,23,42,0.16);font-family:Figtree,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;';
 
     var title = document.createElement('h2');
-    title.style.cssText = 'margin:0 0 16px 0;color:#ff6b6b;font-size:20px;';
-    title.textContent = 'Error — Session Ending';
+    title.style.cssText = 'margin:0 0 12px 0;color:#0f172a;font-size:22px;font-weight:700;letter-spacing:-0.01em;';
+    title.textContent = 'Session ended';
 
     var reasonEl = document.createElement('div');
-    reasonEl.style.cssText = 'margin-bottom:16px;font-size:15px;line-height:1.5;';
+    reasonEl.style.cssText = 'margin-bottom:16px;font-size:14px;line-height:1.6;color:#475569;';
     reasonEl.textContent = reason || 'An unexpected error occurred.';
 
     modal.appendChild(title);
@@ -35,20 +42,15 @@ function showErrorAndLogout(reason, details) {
 
     if (details) {
         var detailsEl = document.createElement('pre');
-        detailsEl.style.cssText = 'background:#111;color:#ccc;padding:12px;border-radius:8px;font-size:12px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;margin-bottom:16px;';
+        detailsEl.style.cssText = 'background:#f8fafc;color:#475569;padding:12px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;margin-bottom:16px;';
         detailsEl.textContent = details;
         modal.appendChild(detailsEl);
     }
 
     var btn = document.createElement('button');
-    btn.style.cssText = 'background:#ff6b6b;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;cursor:pointer;';
-    btn.textContent = 'OK — Go to Login';
-    btn.onclick = function() {
-        sessionStorage.removeItem('bearerToken');
-        localStorage.removeItem('bearerToken');
-        localStorage.removeItem('rememberedUser');
-        window.location.href = 'l8ui/login/index.html';
-    };
+    btn.style.cssText = 'background:#0f172a;color:#ffffff;border:1px solid #0f172a;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;';
+    btn.textContent = 'Go to Login';
+    btn.onclick = clearAuthAndRedirectToLogin;
     modal.appendChild(btn);
 
     overlay.appendChild(modal);
@@ -102,13 +104,7 @@ function logout(reason) {
         showErrorAndLogout(reason);
         return;
     }
-    // Clear bearer token from sessionStorage and localStorage
-    sessionStorage.removeItem('bearerToken');
-    localStorage.removeItem('bearerToken');
-    localStorage.removeItem('rememberedUser');
-
-    // Redirect to login page
-    window.location.href = 'l8ui/login/index.html';
+    clearAuthAndRedirectToLogin();
 }
 
 // Global error handlers to catch uncaught errors and show them before they cause silent failures
@@ -175,28 +171,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             loadSection(section);
         });
     });
-
-    // Parallax scroll effect for main content
-    const mainContent = document.querySelector('.main-content');
-    if (mainContent) {
-        mainContent.addEventListener('scroll', function() {
-            const scrollPosition = this.scrollTop;
-
-            // Parallax for dashboard hero
-            const dashboardHero = this.querySelector('.dashboard-hero .hero-illustration');
-            if (dashboardHero) {
-                const parallaxOffset = scrollPosition * 0.3;
-                dashboardHero.style.transform = `translateY(${parallaxOffset}px)`;
-            }
-
-            // Parallax for network hero
-            const networkHero = this.querySelector('.network-hero .hero-illustration');
-            if (networkHero) {
-                const parallaxOffset = scrollPosition * 0.3;
-                networkHero.style.transform = `translateY(${parallaxOffset}px)`;
-            }
-        });
-    }
 
     // Add smooth scroll behavior
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
