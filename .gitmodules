@@ -1,3 +1,6 @@
 [submodule "go/prob/newui/web/l8ui"]
 	path = go/prob/newui/web/l8ui
 	url = https://github.com/saichler/l8ui.git
+[submodule "go/prob/newui/web/l8-site-base"]
+	path = go/prob/newui/web/l8-site-base
+	url = https://github.com/saichler/l8-site-base.git
