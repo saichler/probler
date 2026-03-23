@@ -28,7 +28,7 @@
             ],
             services: {
                 'gpu-devices': [
-                    { key: 'gpus', label: 'GPU Devices', icon: 'gpus', endpoint: '/0/NCache', model: 'GpuDevice', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showGpuDetail === 'function') showGpuDetail(item); } }
+                    { key: 'gpus', label: 'GPU Devices', icon: 'gpus', endpoint: '/2/GCache', model: 'GpuDevice', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showGpuDetail === 'function') showGpuDetail(item); } }
                 ]
             }
         },

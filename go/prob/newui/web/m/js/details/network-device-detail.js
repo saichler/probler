@@ -296,38 +296,8 @@
         return results;
     }
 
-    function formatTimestamp(stamp) {
-        var d = new Date(stamp * 1000);
-        return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
-    }
-
-    function renderTimeSeriesChart(containerId, series, title, valueTransform) {
-        var container = document.getElementById(containerId);
-        if (!container || !series || series.length === 0) return;
-        var chartData = [];
-        for (var i = 0; i < series.length; i++) {
-            var pt = series[i];
-            chartData.push({
-                label: formatTimestamp(pt.stamp),
-                value: valueTransform ? valueTransform(pt.value) : pt.value
-            });
-        }
-        container.style.height = '200px';
-        if (typeof Layer8DChart !== 'undefined') {
-            var chart = new Layer8DChart({
-                containerId: containerId,
-                viewConfig: {
-                    chartType: 'line',
-                    title: title,
-                    categoryField: 'label',
-                    valueField: 'value',
-                    aggregation: 'avg'
-                }
-            });
-            chart.init();
-            chart.setData(chartData, chartData.length);
-        }
-    }
+    // Use shared chart helpers from detail-helpers.js
+    var renderTimeSeriesChart = ProblerDetail.renderTimeSeriesChart;
 
     function buildPerformanceTab(raw, device) {
         var perf = findPerformanceData(raw);

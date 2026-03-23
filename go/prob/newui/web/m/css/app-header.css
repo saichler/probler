@@ -23,7 +23,9 @@ limitations under the License.
     right: 0;
     height: calc(var(--header-height) + var(--sat));
     padding-top: var(--sat);
-    background: var(--bg-primary);
+    background: rgba(252, 251, 248, 0.96);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border-light);
     display: flex;
     align-items: center;
@@ -79,7 +81,7 @@ limitations under the License.
 .header-logo-text {
     font-size: var(--font-size-lg);
     font-weight: 700;
-    color: var(--layer8d-primary);
+    color: var(--text-primary);
 }
 
 .header-actions {

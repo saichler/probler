@@ -1,32 +1,32 @@
-/* Detail popup shared styles */
+/* Detail popup shared styles — aligned with desktop warm neutrals */
 
 .detail-section { margin-bottom: 20px; }
 .detail-section:last-child { margin-bottom: 0; }
 .detail-section-title {
     font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
-    color: var(--layer8d-text-muted, #718096); margin-bottom: 12px; padding-bottom: 8px;
-    border-bottom: 1px solid var(--layer8d-border, #e2e8f0);
+    color: var(--text-muted, #64748b); margin-bottom: 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light, #ddd7ce);
 }
 .detail-row {
     display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 10px 0; border-bottom: 1px solid var(--layer8d-border, #e2e8f0);
+    padding: 10px 0; border-bottom: 1px solid var(--border-light, #ddd7ce);
 }
 .detail-row:last-child { border-bottom: none; }
-.detail-label { font-size: 0.85rem; color: var(--layer8d-text-muted, #718096); flex-shrink: 0; }
+.detail-label { font-size: 0.85rem; color: var(--text-muted, #64748b); flex-shrink: 0; }
 .detail-value {
-    font-size: 0.85rem; color: var(--layer8d-text-dark, #1a202c); font-weight: 500;
+    font-size: 0.85rem; color: var(--text-primary, #0f172a); font-weight: 500;
     text-align: right; word-break: break-word; margin-left: 16px;
 }
 
 /* Performance bars */
 .perf-bar {
-    width: 100%; height: 6px; background: var(--layer8d-border, #e2e8f0);
+    width: 100%; height: 6px; background: var(--border-light, #ddd7ce);
     border-radius: 3px; overflow: hidden; margin: 4px 0 8px;
 }
 .perf-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
-.perf-bar-fill.low { background: var(--layer8d-success, #22c55e); }
-.perf-bar-fill.medium { background: var(--layer8d-warning, #f59e0b); }
-.perf-bar-fill.high { background: var(--layer8d-error, #ef4444); }
+.perf-bar-fill.low { background: var(--status-active, #00c853); }
+.perf-bar-fill.medium { background: var(--status-pending, #ffc107); }
+.perf-bar-fill.high { background: var(--status-terminated, #ff3d00); }
 
 /* Network detail tables */
 .net-detail-table {
@@ -34,16 +34,16 @@
 }
 .net-detail-table th {
     text-align: left; padding: 6px 8px; font-weight: 600;
-    border-bottom: 2px solid var(--layer8d-border, #e2e8f0);
-    color: var(--layer8d-text-medium, #4a5568);
+    border-bottom: 2px solid var(--border-light, #ddd7ce);
+    color: var(--text-secondary, #475569);
 }
 .net-detail-table td {
-    padding: 6px 8px; border-bottom: 1px solid var(--layer8d-border, #e2e8f0);
+    padding: 6px 8px; border-bottom: 1px solid var(--border-light, #ddd7ce);
 }
 .net-detail-table .mono { font-family: monospace; font-size: 0.75rem; }
 .net-detail-table .num { text-align: right; }
 .net-detail-table .iface-name { font-weight: 500; }
 
 /* Status indicators in tables */
-.status-up { color: var(--layer8d-success, #22c55e); font-weight: 600; }
-.status-down { color: var(--layer8d-error, #ef4444); font-weight: 600; }
+.status-up { color: var(--status-active, #00c853); font-weight: 600; }
+.status-down { color: var(--status-terminated, #ff3d00); font-weight: 600; }

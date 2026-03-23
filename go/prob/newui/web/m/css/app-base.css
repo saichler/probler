@@ -58,40 +58,41 @@ limitations under the License.
     --sal: env(safe-area-inset-left, 0px);
     --sar: env(safe-area-inset-right, 0px);
 
-    /* Probler Theme Colors */
+    /* Probler Theme Colors — aligned with desktop */
     --layer8d-primary: #0ea5e9;
     --layer8d-primary-dark: #0284c7;
     --layer8d-primary-light: #38bdf8;
     --layer8d-secondary: #06b6d4;
 
-    /* Text Colors */
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --text-muted: #94a3b8;
+    /* Text Colors — aligned with desktop warm neutrals */
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
     --text-light: #ffffff;
 
-    /* Background Colors */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --bg-tertiary: #f1f5f9;
-    --bg-elevated: #ffffff;
+    /* Background Colors — warm neutrals from desktop */
+    --bg-primary: #fcfbf8;
+    --bg-secondary: #f7f6f2;
+    --bg-tertiary: #f1eee8;
+    --bg-elevated: #fdfcf9;
     --bg-card: #ffffff;
 
-    /* Border Colors */
-    --border-light: #e2e8f0;
-    --border-default: #cbd5e1;
+    /* Border Colors — warm tones from desktop */
+    --border-light: #ddd7ce;
+    --border-default: #c8c0b4;
     --border-emphasis: #94a3b8;
 
-    /* Status Colors */
-    --status-active: #22c55e;
+    /* Status Colors — aligned with desktop */
+    --status-active: #00c853;
     --status-active-bg: #dcfce7;
-    --status-pending: #f59e0b;
+    --status-pending: #ffc107;
     --status-pending-bg: #fef3c7;
-    --status-inactive: #64748b;
+    --status-inactive: #757575;
     --status-inactive-bg: #f1f5f9;
-    --status-terminated: #ef4444;
+    --status-terminated: #ff3d00;
     --status-terminated-bg: #fee2e2;
-    --status-info: #3b82f6;
+    --status-info: #2196f3;
     --status-info-bg: #dbeafe;
 
     /* Spacing (8px baseline) */

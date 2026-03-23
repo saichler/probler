@@ -21,6 +21,13 @@
             '<span class="detail-value"' + style + '>' + v + '</span></div>';
     };
 
+    /** Row with raw HTML value (not escaped) — use for badges, status indicators */
+    ProblerDetail.rowHtml = function(label, htmlValue) {
+        return '<div class="detail-row">' +
+            '<span class="detail-label">' + label + '</span>' +
+            '<span class="detail-value">' + (htmlValue || '--') + '</span></div>';
+    };
+
     ProblerDetail.perfBar = function(label, pct, unit) {
         var color = pct > 80 ? 'var(--layer8d-error, #e53e3e)' :
                     pct > 60 ? 'var(--layer8d-warning, #dd6b20)' :
@@ -74,6 +81,61 @@
     ProblerDetail.capitalize = function(str) {
         if (!str) return '';
         return str.charAt(0).toUpperCase() + str.slice(1);
+    };
+
+    /** Strip extra embedded quotes from protobuf string values */
+    ProblerDetail.stripQuotes = function(str) {
+        if (!str) return '';
+        return str.replace(/^"+|"+$/g, '');
+    };
+
+    /** Get latest value from a L8TimeSeriesPoint array */
+    ProblerDetail.latestValue = function(timeSeries) {
+        if (!timeSeries || !Array.isArray(timeSeries) || timeSeries.length === 0) return null;
+        var last = timeSeries[timeSeries.length - 1];
+        return last ? (last.value !== undefined ? last.value : null) : null;
+    };
+
+    /** Format MiB to human-readable */
+    ProblerDetail.formatMiB = function(mib) {
+        if (!mib && mib !== 0) return '';
+        if (mib >= 1024) return (mib / 1024).toFixed(1) + ' GiB';
+        return mib + ' MiB';
+    };
+
+    /** Format timestamp for chart labels */
+    ProblerDetail.formatChartTimestamp = function(stamp) {
+        var d = new Date(stamp * 1000);
+        return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+    };
+
+    /** Render a time-series chart into a container using Layer8DChart line chart */
+    ProblerDetail.renderTimeSeriesChart = function(containerId, series, title, valueTransform) {
+        var container = document.getElementById(containerId);
+        if (!container || !series || series.length === 0) return;
+        var chartData = [];
+        for (var i = 0; i < series.length; i++) {
+            var pt = series[i];
+            chartData.push({
+                label: ProblerDetail.formatChartTimestamp(pt.stamp),
+                value: valueTransform ? valueTransform(pt.value) : pt.value
+            });
+        }
+        container.style.height = '200px';
+        if (typeof Layer8DChart !== 'undefined') {
+            var chart = new Layer8DChart({
+                containerId: containerId,
+                viewConfig: {
+                    chartType: 'line',
+                    title: title,
+                    categoryField: 'label',
+                    valueField: 'value',
+                    aggregation: 'avg'
+                }
+            });
+            chart.init();
+            chart.setData(chartData, chartData.length);
+        }
     };
 
     /**

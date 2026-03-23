@@ -72,7 +72,7 @@ limitations under the License.
 .sidebar-logo-text {
     font-size: var(--font-size-xl);
     font-weight: 700;
-    color: var(--layer8d-primary);
+    color: var(--text-primary);
 }
 
 .sidebar-nav {
@@ -114,6 +114,8 @@ limitations under the License.
 .sidebar-item.active {
     background: rgba(14, 165, 233, 0.1);
     color: var(--layer8d-primary);
+    border-left: 3px solid var(--layer8d-primary);
+    padding-left: calc(var(--spacing-md) - 3px);
 }
 
 .sidebar-item-icon {

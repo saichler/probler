@@ -1,4 +1,32 @@
 <div class="section-container" id="dashboard-section">
+    <!-- Hero Banner -->
+    <div class="dashboard-hero">
+        <div class="dashboard-hero-content">
+            <div class="dashboard-hero-title">Datacenter Dashboard</div>
+            <div class="dashboard-hero-subtitle">Infrastructure overview and operational metrics</div>
+        </div>
+        <svg class="dashboard-hero-svg" width="120" height="60" viewBox="0 0 120 60" fill="none">
+            <rect x="10" y="5" width="30" height="50" rx="3" fill="rgba(14,165,233,0.15)" stroke="rgba(14,165,233,0.3)" stroke-width="1"/>
+            <rect x="14" y="10" width="6" height="3" rx="1" fill="rgba(14,165,233,0.4)"/>
+            <rect x="14" y="16" width="6" height="3" rx="1" fill="rgba(0,200,83,0.5)"/>
+            <rect x="14" y="22" width="6" height="3" rx="1" fill="rgba(0,200,83,0.5)"/>
+            <rect x="14" y="28" width="6" height="3" rx="1" fill="rgba(255,193,7,0.5)"/>
+            <rect x="45" y="5" width="30" height="50" rx="3" fill="rgba(14,165,233,0.15)" stroke="rgba(14,165,233,0.3)" stroke-width="1"/>
+            <rect x="49" y="10" width="6" height="3" rx="1" fill="rgba(0,200,83,0.5)"/>
+            <rect x="49" y="16" width="6" height="3" rx="1" fill="rgba(0,200,83,0.5)"/>
+            <rect x="49" y="22" width="6" height="3" rx="1" fill="rgba(0,200,83,0.5)"/>
+            <rect x="49" y="28" width="6" height="3" rx="1" fill="rgba(14,165,233,0.4)"/>
+            <rect x="80" y="5" width="30" height="50" rx="3" fill="rgba(14,165,233,0.15)" stroke="rgba(14,165,233,0.3)" stroke-width="1"/>
+            <rect x="84" y="10" width="6" height="3" rx="1" fill="rgba(0,200,83,0.5)"/>
+            <rect x="84" y="16" width="6" height="3" rx="1" fill="rgba(255,61,0,0.5)"/>
+            <rect x="84" y="22" width="6" height="3" rx="1" fill="rgba(0,200,83,0.5)"/>
+            <rect x="84" y="28" width="6" height="3" rx="1" fill="rgba(0,200,83,0.5)"/>
+            <!-- Connection lines -->
+            <path d="M40 30 L45 30" stroke="rgba(14,165,233,0.3)" stroke-width="1" stroke-dasharray="2,2"/>
+            <path d="M75 30 L80 30" stroke="rgba(14,165,233,0.3)" stroke-width="1" stroke-dasharray="2,2"/>
+        </svg>
+    </div>
+
     <!-- Dashboard Stats -->
     <div id="nav-stats" class="nav-stats-grid">
         <!-- Network Devices -->
@@ -53,7 +81,7 @@
         </div>
         <!-- K8s -->
         <div class="nav-stat-card">
-            <div class="nav-stat-icon">
+            <div class="nav-stat-icon info">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
                     <path d="M2 17l10 5 10-5"></path>
@@ -80,7 +108,7 @@
         </div>
         <!-- Critical -->
         <div class="nav-stat-card">
-            <div class="nav-stat-icon" style="color: var(--status-terminated)">
+            <div class="nav-stat-icon danger">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                     <line x1="12" y1="9" x2="12" y2="13"></line>
@@ -93,17 +121,108 @@
             </div>
         </div>
     </div>
+
+    <!-- Top Critical Alarms -->
+    <div class="dashboard-alarms-section" id="dashboard-alarms">
+        <div class="dashboard-alarms-header">Top Critical Alarms</div>
+        <div id="critical-alarms-list" class="dashboard-alarms-list">
+            <div class="dashboard-alarms-empty">No critical alarms</div>
+        </div>
+    </div>
+
     <!-- Dynamic Navigation Content (Layer8MNav renders here) -->
     <div id="nav-content"></div>
 </div>
 
 <style>
-    #nav-stats { margin-bottom: var(--spacing-lg); }
+    /* Dashboard hero banner */
+    .dashboard-hero {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 16px;
+        background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%);
+        border-bottom: 1px solid var(--border-light);
+    }
+    .dashboard-hero-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+    .dashboard-hero-subtitle {
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+    .dashboard-hero-svg {
+        flex-shrink: 0;
+        opacity: 0.7;
+    }
+
+    /* Dashboard stats margin */
+    #nav-stats { margin-bottom: 0; }
+
+    /* Critical alarms section */
+    .dashboard-alarms-section {
+        margin: 0 16px 16px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+    }
+    .dashboard-alarms-header {
+        padding: 12px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--border-light);
+    }
+    .dashboard-alarms-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .dashboard-alarms-empty {
+        padding: 20px 16px;
+        text-align: center;
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+    .dashboard-alarm-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border-light);
+        font-size: 13px;
+    }
+    .dashboard-alarm-row:last-child { border-bottom: none; }
+    .dashboard-alarm-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--status-terminated);
+        flex-shrink: 0;
+    }
+    .dashboard-alarm-name {
+        flex: 1;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .dashboard-alarm-time {
+        color: var(--text-muted);
+        font-size: 11px;
+        flex-shrink: 0;
+    }
 </style>
 
 <script>
 function initMobileDashboard() {
     loadDashboardStats();
+    loadCriticalAlarms();
     Layer8MNav.showHome();
 }
 
@@ -111,7 +230,7 @@ async function loadDashboardStats(idPrefix) {
     var prefix = idPrefix || '';
     const kpis = [
         { id: prefix + 'stat-devices', endpoint: '/0/NCache', query: 'select * from NetworkDevice limit 1 page 0' },
-        { id: prefix + 'stat-gpus', endpoint: '/0/NCache', query: 'select * from GpuDevice limit 1 page 0' },
+        { id: prefix + 'stat-gpus', endpoint: '/2/GCache', query: 'select * from GpuDevice limit 1 page 0' },
         { id: prefix + 'stat-hosts', endpoint: '/0/NCache', query: 'select * from Hypervisor limit 1 page 0' },
         { id: prefix + 'stat-k8s', endpoint: '/0/NCache', query: 'select * from K8sPod limit 1 page 0' },
         { id: prefix + 'stat-alarms', endpoint: '/20/Alarm', query: 'select * from Alarm limit 1 page 0' },
@@ -135,6 +254,31 @@ async function loadKPI(kpi) {
     } catch (error) {
         const element = document.getElementById(kpi.id);
         if (element) element.textContent = '0';
+    }
+}
+
+async function loadCriticalAlarms() {
+    try {
+        const query = 'select * from Alarm where severity=4 limit 5 page 0';
+        const body = encodeURIComponent(JSON.stringify({ text: query }));
+        const response = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint('/20/Alarm') + '?body=' + body);
+        const container = document.getElementById('critical-alarms-list');
+        if (!container) return;
+        if (response && response.list && response.list.length > 0) {
+            container.innerHTML = response.list.map(function(alarm) {
+                var name = alarm.name || alarm.definitionId || 'Unknown';
+                var time = alarm.firstOccurrence ? new Date(alarm.firstOccurrence * 1000).toLocaleTimeString() : '';
+                return '<div class="dashboard-alarm-row">' +
+                    '<div class="dashboard-alarm-dot"></div>' +
+                    '<div class="dashboard-alarm-name">' + name + '</div>' +
+                    '<div class="dashboard-alarm-time">' + time + '</div>' +
+                '</div>';
+            }).join('');
+        } else {
+            container.innerHTML = '<div class="dashboard-alarms-empty">No critical alarms</div>';
+        }
+    } catch (e) {
+        // Leave default empty state
     }
 }
 </script>

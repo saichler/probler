@@ -2,305 +2,1066 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0a0a0a">
-    <title>Probler - Datacenter Management</title>
+    <meta name="theme-color" content="#f9f9f7">
+    <title>Probler - Data Center Infrastructure Management (DCIM) Platform</title>
     <link rel="icon" href="../l8ui/images/logo.gif">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --color-bg: #f9f9f7;
+            --color-bg-alt: #f0f0ee;
+            --color-surface: #ffffff;
+            --color-text: #111111;
+            --color-text-secondary: #5f5f5f;
+            --color-text-muted: #8d8d8d;
+            --color-border: #e5e5e5;
+            --color-accent: #0070f3;
+            --color-accent-soft: rgba(0, 112, 243, 0.08);
+            --color-code-bg: #111111;
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            --content-padding: 20px;
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+        }
+
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f9f9f7;
-            color: #111;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        html {
+            scroll-behavior: smooth;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Header */
+        body {
+            font-family: var(--font-primary);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        a { color: var(--color-accent); text-decoration: none; }
+        a:hover { color: var(--color-text); }
+
+        /* ── Header ── */
         .landing-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 20px;
-            background: #fff;
-            border-bottom: 1px solid #e5e5e5;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            padding: calc(12px + var(--sat)) var(--content-padding) 12px;
+            background: rgba(249, 249, 247, 0.96);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--color-border);
         }
         .landing-logo {
             display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .landing-logo img {
-            width: 32px;
-            height: 32px;
-        }
-        .landing-logo span {
-            font-size: 20px;
-            font-weight: 700;
-            color: #111;
-        }
-        .landing-login-btn {
-            padding: 8px 20px;
-            background: #0070f3;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Hero */
-        .landing-hero {
-            padding: 40px 20px 32px;
-            text-align: center;
-        }
-        .landing-eyebrow {
-            font-size: 12px;
-            font-weight: 600;
-            color: #5f5f5f;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 16px;
-        }
-        .landing-hero h1 {
-            font-size: 26px;
-            font-weight: 700;
-            line-height: 1.3;
-            color: #111;
-            margin-bottom: 16px;
-        }
-        .landing-hero p {
-            font-size: 15px;
-            line-height: 1.6;
-            color: #5f5f5f;
-            margin-bottom: 24px;
-        }
-        .landing-buttons {
-            display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 2px;
         }
-        .btn-primary {
-            display: block;
-            padding: 14px 24px;
-            background: #0070f3;
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            text-align: center;
-            cursor: pointer;
-        }
-        .btn-secondary {
-            display: block;
-            padding: 14px 24px;
-            background: #fff;
-            color: #111;
-            border: 1px solid #e5e5e5;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        /* Badges */
-        .landing-badges {
+        .landing-logo-mark {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            align-items: center;
             gap: 8px;
         }
+        .landing-logo img { width: 30px; height: 30px; }
+        .landing-logo-mark span { font-size: 18px; font-weight: 700; color: var(--color-text); }
+        .landing-logo-sub {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .header-buttons { display: flex; gap: 8px; align-items: center; }
+        .header-nav-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            background: var(--color-surface);
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--color-text);
+        }
+        .landing-login-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            padding: 0 16px;
+            background: var(--color-text);
+            color: var(--color-bg);
+            border: 1px solid var(--color-text);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* ── Mobile Nav Drawer ── */
+        .nav-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(2px);
+        }
+        .nav-overlay.open { display: block; }
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 201;
+            width: 280px;
+            max-width: 85vw;
+            background: var(--color-surface);
+            border-left: 1px solid var(--color-border);
+            transform: translateX(100%);
+            transition: transform 0.25s ease;
+            overflow-y: auto;
+            padding: calc(16px + var(--sat)) 20px 24px;
+        }
+        .nav-drawer.open { transform: translateX(0); }
+        .nav-drawer-close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            background: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--color-text);
+            margin-bottom: 16px;
+        }
+        .nav-drawer a {
+            display: block;
+            padding: 12px 0;
+            color: var(--color-text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .nav-drawer a:last-child { border-bottom: none; }
+        .nav-drawer-buttons {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .nav-drawer-buttons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 44px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            background: var(--color-surface);
+            color: var(--color-text);
+            font-weight: 500;
+            font-size: 14px;
+            padding: 0;
+        }
+        .nav-drawer-buttons .btn-cta {
+            background: var(--color-text);
+            border-color: var(--color-text);
+            color: var(--color-bg);
+        }
+
+        /* ── Demo Banner ── */
+        .demo-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--color-border);
+            border-radius: 999px;
+            background: var(--color-surface);
+            margin-bottom: 16px;
+        }
+        .demo-banner-content { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .demo-banner-text { color: var(--color-text-secondary); font-size: 13px; font-weight: 500; }
+        .demo-banner-link { font-size: 13px; font-weight: 600; }
+        .demo-banner-close { border: 0; background: transparent; color: var(--color-text-muted); font-size: 18px; cursor: pointer; padding: 4px; }
+        .demo-banner.hidden { display: none; }
+
+        /* ── Hero ── */
+        .hero {
+            padding: 32px var(--content-padding) 28px;
+            border-bottom: 1px solid var(--color-border);
+        }
+        .hero-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+        .hero h1 {
+            font-size: clamp(1.75rem, 7vw, 2.5rem);
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 14px;
+        }
+        .hero-summary {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--color-text-secondary);
+            margin-bottom: 10px;
+        }
+        .hero-secondary {
+            font-size: 14px;
+            line-height: 1.65;
+            color: var(--color-text-secondary);
+            margin-bottom: 20px;
+        }
+        .hero-proof {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .proof-item {
+            padding: 14px 16px;
+            border: 1px solid var(--color-border);
+            background: var(--color-surface);
+        }
+        .proof-label {
+            display: block;
+            margin-bottom: 4px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .proof-item strong {
+            display: block;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--color-text);
+        }
+        .hero-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn-primary, .btn-secondary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 20px;
+            border: 1px solid var(--color-text);
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 15px;
+        }
+        .btn-primary { background: var(--color-text); color: var(--color-bg); }
+        .btn-secondary { background: transparent; color: var(--color-text); }
+        .hero-badges { display: flex; flex-wrap: wrap; gap: 6px; }
         .badge {
-            padding: 4px 12px;
-            background: rgba(0, 112, 243, 0.08);
-            color: #0070f3;
-            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border: 1px solid var(--color-border);
+            border-radius: 999px;
+            background: var(--color-surface);
+            color: var(--color-text-secondary);
             font-size: 12px;
             font-weight: 500;
         }
 
-        /* Proof items */
-        .landing-proof {
-            padding: 0 20px 32px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .proof-item {
-            background: #fff;
-            border: 1px solid #e5e5e5;
-            border-radius: 10px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .proof-label {
+        /* ── Section shared ── */
+        .section-kicker {
+            font-family: var(--font-mono);
             font-size: 11px;
-            font-weight: 600;
-            color: #8d8d8d;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.08em;
+            color: var(--color-text-muted);
+            margin-bottom: 10px;
         }
-        .proof-value {
+        .section-alt { background: var(--color-bg-alt); }
+        .section-white { background: var(--color-surface); }
+
+        section.content-section {
+            padding: 40px var(--content-padding);
+        }
+        section.content-section h2 {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
+        }
+        section.content-section > p {
             font-size: 14px;
-            font-weight: 600;
-            color: #111;
+            color: var(--color-text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
         }
 
-        /* Components section */
-        .landing-section {
-            padding: 32px 20px;
-            border-top: 1px solid #e5e5e5;
+        /* ── Architecture ── */
+        .arch-diagram {
+            padding: 16px;
+            border: 1px solid var(--color-border);
+            background: var(--color-surface);
         }
-        .landing-section h2 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .landing-section .section-desc {
+        .arch-title {
             font-size: 14px;
-            color: #5f5f5f;
-            margin-bottom: 20px;
-            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 12px;
         }
-        .component-list {
+        .arch-canvas {
+            padding: 8px;
+            background: #fbfbfa;
+            border: 1px solid var(--color-border);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .arch-canvas svg { display: block; min-width: 320px; }
+        .arch-caption {
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ── Components ── */
+        .category-header {
+            margin-top: 24px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--color-border);
+        }
+        .category-header:first-child { margin-top: 0; }
+        .category-header h3 {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-muted);
+        }
+        .component-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1px;
+            background: var(--color-border);
+            border: 1px solid var(--color-border);
+        }
+        .component-card {
+            background: var(--color-bg);
+            padding: 16px;
+        }
+        .component-card-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+        .component-card-display { font-size: 12px; color: var(--color-text-muted); margin-bottom: 6px; }
+        .component-card-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 8px; }
+        .component-card-links { display: flex; gap: 12px; }
+        .component-card-primary, .component-card-github {
+            font-size: 12px;
+            color: var(--color-text-muted);
+            cursor: pointer;
+        }
+
+        /* ── Stats ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--color-border);
+            border: 1px solid var(--color-border);
+        }
+        .stat-item {
+            background: var(--color-surface);
+            padding: 16px;
+        }
+        .stat-item h3 { font-size: 1.75rem; font-weight: 700; margin-bottom: 2px; }
+        .stat-item p { font-size: 13px; color: var(--color-text-secondary); }
+
+        /* ── Getting Started ── */
+        .steps-list { display: flex; flex-direction: column; gap: 12px; }
+        .step-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            padding: 16px;
+        }
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            margin-bottom: 10px;
+            background: var(--color-text);
+            color: var(--color-bg);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .step-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+        .step-card > p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; }
+        .code-block {
+            background: var(--color-code-bg);
+            color: #f3f4f6;
+            padding: 14px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.7;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 10px;
+            white-space: pre;
+        }
+        .command { color: #93c5fd; }
+        .comment { color: #94a3b8; }
+        .prereqs {
+            margin-top: 24px;
+            text-align: center;
+        }
+        .prereqs h3 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+        .prereqs-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+
+        /* ── Docs ── */
+        .docs-grid {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-        .component-item {
-            background: #fff;
-            border: 1px solid #e5e5e5;
-            border-radius: 10px;
-            padding: 14px 16px;
+        .doc-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            padding: 16px;
         }
-        .component-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: #0070f3;
-            margin-bottom: 4px;
-        }
-        .component-desc {
-            font-size: 13px;
-            color: #5f5f5f;
-            line-height: 1.4;
-        }
+        .doc-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+        .doc-card p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; }
 
-        /* Footer */
+        /* ── Footer ── */
         .landing-footer {
             margin-top: auto;
-            padding: 24px 20px;
+            padding: 32px var(--content-padding) calc(24px + var(--sab));
+            border-top: 1px solid var(--color-border);
+            background: var(--color-bg);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+        .footer-section h3 { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+        .footer-section a {
+            display: block;
+            color: var(--color-text-secondary);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .footer-section p {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+            margin-bottom: 6px;
+        }
+        .footer-bottom {
+            border-top: 1px solid var(--color-border);
+            padding-top: 16px;
             text-align: center;
-            border-top: 1px solid #e5e5e5;
-            background: #fff;
         }
-        .landing-footer p {
-            font-size: 12px;
-            color: #8d8d8d;
+        .footer-bottom p { font-size: 11px; color: var(--color-text-muted); line-height: 1.6; }
+        .footer-bottom a { color: var(--color-text-secondary); }
+
+        /* ── Modal ── */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            overflow: auto;
         }
-        .landing-footer a {
-            color: #0070f3;
-            text-decoration: none;
+        .modal-content {
+            background: var(--color-surface);
+            margin: 5% auto;
+            width: 92%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid var(--color-border);
         }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: var(--color-bg);
+            border-bottom: 1px solid var(--color-border);
+        }
+        .modal-header h2 { font-size: 18px; font-weight: 600; }
+        .modal-close {
+            border: none;
+            background: none;
+            font-size: 24px;
+            color: var(--color-text-muted);
+            cursor: pointer;
+            padding: 4px;
+        }
+        .modal-body { padding: 20px; }
+        .modal-body p { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 12px; }
+        .modal-body .code-block { margin-bottom: 16px; }
+        .modal-body .btn-primary { margin-top: 8px; }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header class="landing-header">
         <div class="landing-logo">
-            <img src="../l8ui/images/logo.gif" alt="Probler">
-            <span>Probler</span>
+            <div class="landing-logo-mark">
+                <img src="../l8ui/images/logo.gif" alt="Probler">
+                <span>Probler</span>
+            </div>
+            <span class="landing-logo-sub">Built on Layer 8</span>
         </div>
-        <a href="app.html" class="landing-login-btn">Login</a>
+        <div class="header-buttons">
+            <button class="header-nav-toggle" onclick="openNav()" aria-label="Menu">&#9776;</button>
+            <a href="app.html" class="landing-login-btn">Login</a>
+        </div>
     </header>
 
-    <!-- Hero -->
-    <section class="landing-hero">
-        <p class="landing-eyebrow">Probler / Layer 8 Product</p>
-        <h1>Infrastructure discovery, modeling, and operations in one system.</h1>
-        <p>Probler is the Layer 8 infrastructure platform for polling, parsing, modeling, caching, and operating complex environments across network, Kubernetes, power, and facility domains.</p>
-        <div class="landing-buttons">
-            <a href="app.html" class="btn-primary">Open Dashboard</a>
-            <a href="https://github.com/saichler/probler" target="_blank" class="btn-secondary">GitHub</a>
+    <!-- Nav Drawer -->
+    <div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
+    <nav class="nav-drawer" id="navDrawer">
+        <button class="nav-drawer-close" onclick="closeNav()">&times;</button>
+        <a href="#architecture" onclick="closeNav()">Architecture</a>
+        <a href="#features" onclick="closeNav()">Coverage</a>
+        <a href="#getting-started" onclick="closeNav()">Start</a>
+        <a href="#docs" onclick="closeNav()">Docs</a>
+        <a href="https://github.com/saichler/probler" target="_blank" onclick="closeNav()">GitHub</a>
+        <div class="nav-drawer-buttons">
+            <a href="https://www.probler.dev:9094/web.html" target="_blank">Simulators</a>
+            <a href="#" onclick="showDemoCredentials(); closeNav(); return false;">Demo</a>
+            <a href="#getting-started" class="btn-cta" onclick="closeNav()">Run Locally</a>
         </div>
-        <div class="landing-badges">
-            <span class="badge">Go 1.25</span>
-            <span class="badge">Kubernetes Ready</span>
-            <span class="badge">Apache 2.0</span>
-            <span class="badge">DCIM</span>
-            <span class="badge">Microservices</span>
-        </div>
-    </section>
+    </nav>
 
-    <!-- Proof -->
-    <section class="landing-proof">
-        <div class="proof-item">
-            <span class="proof-label">Runtime</span>
-            <span class="proof-value">Go services on Layer 8</span>
-        </div>
-        <div class="proof-item">
-            <span class="proof-label">Core flow</span>
-            <span class="proof-value">Poll &rarr; Parse &rarr; Model &rarr; Cache &rarr; Persist</span>
-        </div>
-        <div class="proof-item">
-            <span class="proof-label">Surface area</span>
-            <span class="proof-value">Network, K8s, power, environment, automation</span>
-        </div>
-    </section>
+    <main>
+        <!-- Hero -->
+        <section class="hero">
+            <div id="demoBanner" class="demo-banner">
+                <div class="demo-banner-content">
+                    <span class="demo-banner-text">Live demo available</span>
+                    <a href="#" onclick="showDemoCredentials(); return false;" class="demo-banner-link">Try it now &rarr;</a>
+                </div>
+                <button class="demo-banner-close" onclick="dismissDemoBanner()" title="Dismiss">&times;</button>
+            </div>
+            <p class="hero-eyebrow">Probler / Layer 8 Product</p>
+            <h1>Infrastructure discovery, modeling, and operations in one system.</h1>
+            <p class="hero-summary">Probler is the Layer 8 infrastructure platform for polling, parsing, modeling, caching, and operating complex environments across network, Kubernetes, power, and facility domains.</p>
+            <p class="hero-secondary">Built for teams that need topology, inventory, health, automation, and operational visibility without stitching together a dozen weakly aligned tools.</p>
+            <div class="hero-proof">
+                <div class="proof-item">
+                    <span class="proof-label">Runtime</span>
+                    <strong>Go services on Layer 8</strong>
+                </div>
+                <div class="proof-item">
+                    <span class="proof-label">Core flow</span>
+                    <strong>Poll &rarr; Parse &rarr; Model &rarr; Cache &rarr; Persist</strong>
+                </div>
+                <div class="proof-item">
+                    <span class="proof-label">Surface area</span>
+                    <strong>Network, K8s, power, environment, automation</strong>
+                </div>
+            </div>
+            <div class="hero-buttons">
+                <a href="#getting-started" class="btn-primary">Run Locally</a>
+                <a href="https://github.com/saichler/probler" target="_blank" class="btn-secondary">GitHub</a>
+            </div>
+            <div class="hero-badges">
+                <span class="badge">Go 1.23.8</span>
+                <span class="badge">Kubernetes Ready</span>
+                <span class="badge">Apache 2.0</span>
+                <span class="badge">DCIM Solution</span>
+                <span class="badge">Microservices</span>
+            </div>
+        </section>
 
-    <!-- Components -->
-    <section class="landing-section">
-        <h2>Platform Components</h2>
-        <p class="section-desc">Focused services with single responsibilities, connected through explicit runtime behavior.</p>
-        <div class="component-list">
-            <div class="component-item">
-                <div class="component-name">l8services</div>
-                <div class="component-desc">Model-agnostic services that adapt to any data structure without code changes.</div>
+        <!-- Architecture -->
+        <section class="content-section section-alt" id="architecture">
+            <p class="section-kicker">Architecture</p>
+            <h2>Layered services, explicit responsibilities, clear data flow.</h2>
+            <p>Probler is built as a set of focused services on top of Layer 8. Discovery, parsing, persistence, topology, and operator functions are separate by design.</p>
+            <div class="arch-diagram">
+                <h3 class="arch-title">Microservices Architecture</h3>
+                <div class="arch-canvas">
+                    <svg width="360" height="280" viewBox="0 0 360 280" style="width:100%;height:auto;">
+                        <defs>
+                            <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0ea5e9"/>
+                                <stop offset="100%" style="stop-color:#0284c7"/>
+                            </linearGradient>
+                            <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#06b6d4"/>
+                                <stop offset="100%" style="stop-color:#0891b2"/>
+                            </linearGradient>
+                            <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                                <polygon points="0 0, 8 3, 0 6" fill="#0ea5e9"/>
+                            </marker>
+                        </defs>
+                        <!-- Top layer -->
+                        <rect x="10" y="15" width="100" height="50" rx="6" fill="url(#g1)"/>
+                        <text x="60" y="38" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">Collector</text>
+                        <text x="60" y="52" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="9">Data Polling</text>
+                        <rect x="130" y="15" width="100" height="50" rx="6" fill="url(#g1)"/>
+                        <text x="180" y="38" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">Parser</text>
+                        <text x="180" y="52" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="9">Model-Agnostic</text>
+                        <rect x="250" y="15" width="100" height="50" rx="6" fill="url(#g1)"/>
+                        <text x="300" y="38" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">Inventory</text>
+                        <text x="300" y="52" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="9">Device State</text>
+                        <!-- Arrows top -->
+                        <path d="M110 40 L130 40" stroke="#0ea5e9" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+                        <path d="M230 40 L250 40" stroke="#0ea5e9" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+                        <!-- Middle layer -->
+                        <rect x="10" y="100" width="100" height="50" rx="6" fill="url(#g2)"/>
+                        <text x="60" y="123" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">VNet</text>
+                        <text x="60" y="137" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="9">Web Interface</text>
+                        <rect x="130" y="100" width="100" height="50" rx="6" fill="url(#g2)"/>
+                        <text x="180" y="123" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">ORM</text>
+                        <text x="180" y="137" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="9">Persistence</text>
+                        <rect x="250" y="100" width="100" height="50" rx="6" fill="url(#g2)"/>
+                        <text x="300" y="123" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">PostgreSQL</text>
+                        <text x="300" y="137" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="9">Database</text>
+                        <!-- Vertical connections -->
+                        <path d="M60 65 L60 100" stroke="#06b6d4" stroke-width="1.5" fill="none" stroke-dasharray="4,4"/>
+                        <path d="M180 65 L180 100" stroke="#06b6d4" stroke-width="1.5" fill="none" stroke-dasharray="4,4"/>
+                        <path d="M300 65 L300 100" stroke="#06b6d4" stroke-width="1.5" fill="none" stroke-dasharray="4,4"/>
+                        <path d="M110 125 L130 125" stroke="#06b6d4" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+                        <path d="M230 125 L250 125" stroke="#06b6d4" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+                        <!-- Bottom layer -->
+                        <rect x="10" y="190" width="78" height="50" rx="6" fill="#64748b"/>
+                        <text x="49" y="213" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">TE App</text>
+                        <text x="49" y="227" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="8">Traffic Eng.</text>
+                        <rect x="98" y="190" width="78" height="50" rx="6" fill="#64748b"/>
+                        <text x="137" y="213" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">Topology</text>
+                        <text x="137" y="227" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="8">World Cities</text>
+                        <rect x="186" y="190" width="78" height="50" rx="6" fill="#64748b"/>
+                        <text x="225" y="213" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">Security</text>
+                        <text x="225" y="227" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="8">Auth &amp; Authz</text>
+                        <rect x="274" y="190" width="78" height="50" rx="6" fill="#64748b"/>
+                        <text x="313" y="213" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">Logging</text>
+                        <text x="313" y="227" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="8">Enhanced</text>
+                        <!-- Vertical to bottom -->
+                        <path d="M60 150 L49 190" stroke="#64748b" stroke-width="1.5" fill="none" stroke-dasharray="4,4"/>
+                        <path d="M180 150 L137 190" stroke="#64748b" stroke-width="1.5" fill="none" stroke-dasharray="4,4"/>
+                        <path d="M180 150 L225 190" stroke="#64748b" stroke-width="1.5" fill="none" stroke-dasharray="4,4"/>
+                        <path d="M300 150 L313 190" stroke="#64748b" stroke-width="1.5" fill="none" stroke-dasharray="4,4"/>
+                        <!-- Data flow particle -->
+                        <circle r="3" fill="#0ea5e9">
+                            <animateMotion dur="3s" repeatCount="indefinite">
+                                <mpath href="#fp1"/>
+                            </animateMotion>
+                        </circle>
+                        <path id="fp1" d="M110 40 L130 40 L180 65 L180 100" fill="none"/>
+                        <circle r="3" fill="#06b6d4">
+                            <animateMotion dur="3s" begin="1s" repeatCount="indefinite">
+                                <mpath href="#fp2"/>
+                            </animateMotion>
+                        </circle>
+                        <path id="fp2" d="M230 40 L250 40 L300 65 L300 100" fill="none"/>
+                    </svg>
+                </div>
+                <p class="arch-caption">Collection feeds parsing, parsing feeds inventory and persistence, and the operator-facing services sit on top of that explicit flow.</p>
             </div>
-            <div class="component-item">
-                <div class="component-name">l8bus</div>
-                <div class="component-desc">Virtual network overlay with routing, health signaling, and built-in discovery.</div>
+        </section>
+
+        <!-- Components -->
+        <section class="content-section section-white" id="features">
+            <p class="section-kicker">Components</p>
+            <h2>The building blocks.</h2>
+            <p>Focused services and operator modules. Each component has a single responsibility, and together they form the full operational surface.</p>
+
+            <div class="category-header"><h3>Platform Runtime</h3></div>
+            <div class="component-grid">
+                <div class="component-card" onclick="window.open('../docs/l8services.html','_blank')">
+                    <div class="component-card-name">l8services</div>
+                    <div class="component-card-display">Model-Agnostic Services</div>
+                    <div class="component-card-desc">Services that adapt to any data structure without requiring code changes.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Docs</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8services','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card" onclick="window.open('../docs/l8bus.html','_blank')">
+                    <div class="component-card-name">l8bus</div>
+                    <div class="component-card-display">Virtual Networking</div>
+                    <div class="component-card-desc">Service-to-service communication through a virtual network overlay with routing and discovery.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Docs</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8bus','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card" onclick="window.open('../docs/l8orm.html','_blank')">
+                    <div class="component-card-name">l8orm</div>
+                    <div class="component-card-display">ORM</div>
+                    <div class="component-card-desc">Object-relational mapping for durable storage of modeled infrastructure state.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Docs</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8orm','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card" onclick="window.open('../docs/l8web.html','_blank')">
+                    <div class="component-card-name">l8web</div>
+                    <div class="component-card-display">Web Services</div>
+                    <div class="component-card-desc">Web-facing services that expose the platform through Layer 8 runtime semantics.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Docs</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8web','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card" onclick="window.open('../docs/l8reflect.html','_blank')">
+                    <div class="component-card-name">l8reflect</div>
+                    <div class="component-card-display">Agnostic via Reflection</div>
+                    <div class="component-card-desc">Dynamic type introspection so service behavior stays generic while data models evolve.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Docs</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8reflect','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">l8security</div>
+                    <div class="component-card-display">Security</div>
+                    <div class="component-card-desc">Authentication, authorization, and role-aware access controls enforced close to the runtime.</div>
+                </div>
             </div>
-            <div class="component-item">
-                <div class="component-name">l8collector</div>
-                <div class="component-desc">Multi-protocol data collection with horizontal scaling across large infrastructure.</div>
+
+            <div class="category-header"><h3>Data Pipeline</h3></div>
+            <div class="component-grid">
+                <div class="component-card" onclick="window.open('../docs/l8collector.html','_blank')">
+                    <div class="component-card-name">l8collector</div>
+                    <div class="component-card-display">Collector</div>
+                    <div class="component-card-desc">Multi-protocol data collection with horizontal scaling across large infrastructure.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Docs</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8collector','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card" onclick="window.open('../docs/l8parser.html','_blank')">
+                    <div class="component-card-name">l8parser</div>
+                    <div class="component-card-display">Parser</div>
+                    <div class="component-card-desc">Model-agnostic parsing for turning collected data into normalized runtime objects.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Docs</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8parser','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card" onclick="window.open('../docs/l8inventory.html','_blank')">
+                    <div class="component-card-name">l8inventory</div>
+                    <div class="component-card-display">Inventory Box</div>
+                    <div class="component-card-desc">Distributed cache for discovered device state and modeled infrastructure relationships.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Docs</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8inventory','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">k8s inventory</div>
+                    <div class="component-card-display">Inventory K8s</div>
+                    <div class="component-card-desc">Kubernetes cluster inventory and modeled runtime state for pods, services, and workloads.</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">l8logfusion</div>
+                    <div class="component-card-display">Log Aggregation</div>
+                    <div class="component-card-desc">Distributed log collection and centralized browsing with real-time streaming.</div>
+                </div>
             </div>
-            <div class="component-item">
-                <div class="component-name">l8parser</div>
-                <div class="component-desc">Model-agnostic parsing and transformation for normalized runtime objects.</div>
+
+            <div class="category-header"><h3>Operations Apps</h3></div>
+            <div class="component-grid">
+                <div class="component-card" onclick="window.open('../docs/l8topology.html','_blank')">
+                    <div class="component-card-name">l8topology</div>
+                    <div class="component-card-display">Topology</div>
+                    <div class="component-card-desc">Network topology with world-cities integration for geographic positioning.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Docs</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8topology','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">health</div>
+                    <div class="component-card-display">System Health</div>
+                    <div class="component-card-desc">Process monitoring, timeout tracking, and real-time performance metrics.</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">l8traffic</div>
+                    <div class="component-card-display">TE App</div>
+                    <div class="component-card-desc">Traffic engineering and SR policy management with global visualization.</div>
+                </div>
+                <div class="component-card" onclick="window.open('../docs/l8ql.html','_blank')">
+                    <div class="component-card-name">l8ql</div>
+                    <div class="component-card-display">GSQL</div>
+                    <div class="component-card-desc">Query interface for traversing modeled infrastructure relationships.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Docs</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8ql','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">l8alert</div>
+                    <div class="component-card-display">Incident &amp; Alerting</div>
+                    <div class="component-card-desc">Anomaly detection, event correlation, and ticketing-oriented incident response.</div>
+                </div>
+                <div class="component-card" onclick="window.open('https://www.probler.dev:9094/web.html','_blank')">
+                    <div class="component-card-name">l8opensim</div>
+                    <div class="component-card-display">Open Simulator</div>
+                    <div class="component-card-desc">Simulation framework for modeling and testing complex environments.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Demo</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8opensim','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card" onclick="window.open('../docs/l8test.html','_blank')">
+                    <div class="component-card-name">l8test</div>
+                    <div class="component-card-display">Test and Automation</div>
+                    <div class="component-card-desc">Testing and automation for validation and quality gates across distributed environments.</div>
+                    <div class="component-card-links"><span class="component-card-primary">Docs</span> <span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8test','_blank')">GitHub</span></div>
+                </div>
             </div>
-            <div class="component-item">
-                <div class="component-name">l8orm</div>
-                <div class="component-desc">Object-relational mapping for durable storage of modeled infrastructure state.</div>
+
+            <div class="category-header"><h3>Infrastructure Controls</h3></div>
+            <div class="component-grid">
+                <div class="component-card">
+                    <div class="component-card-name">l8power</div>
+                    <div class="component-card-display">Power &amp; Energy Management</div>
+                    <div class="component-card-desc">Monitor PDUs, UPS units, and generators with PUE calculations and energy cost modeling.</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">l8env</div>
+                    <div class="component-card-display">Environmental Monitoring</div>
+                    <div class="component-card-desc">Track temperature, humidity, airflow, and pressure sensors with threshold-driven alerts.</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">capacity</div>
+                    <div class="component-card-display">Capacity Planning</div>
+                    <div class="component-card-desc">What-if planning for space, power, cooling, and network headroom.</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">workflow</div>
+                    <div class="component-card-display">Workflow Automation</div>
+                    <div class="component-card-desc">DAG-based automation for provisioning, maintenance, and coordinated actions.</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">remote mgmt</div>
+                    <div class="component-card-display">Remote Management</div>
+                    <div class="component-card-desc">Power cycling, firmware operations through IPMI and Redfish with guardrails.</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">rbac</div>
+                    <div class="component-card-display">RBAC &amp; Compliance</div>
+                    <div class="component-card-desc">Per-object ACLs, immutable audit logging, and compliance dashboards.</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">hybrid</div>
+                    <div class="component-card-display">Hybrid Cloud Integration</div>
+                    <div class="component-card-desc">Unified visibility across on-premises, Kubernetes, and major cloud environments.</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-card-name">esg</div>
+                    <div class="component-card-display">Sustainability &amp; ESG</div>
+                    <div class="component-card-desc">Carbon and efficiency tracking per site and rack with trend reporting.</div>
+                </div>
             </div>
-            <div class="component-item">
-                <div class="component-name">l8topology</div>
-                <div class="component-desc">Network topology with geographic positioning and interactive visualization.</div>
+        </section>
+
+        <!-- Stats -->
+        <section class="content-section section-alt">
+            <p class="section-kicker">Evidence</p>
+            <div class="stats-grid">
+                <div class="stat-item"><h3>20+</h3><p>Microservices</p></div>
+                <div class="stat-item"><h3>100%</h3><p>Go Language</p></div>
+                <div class="stat-item"><h3>K8s</h3><p>Ready</p></div>
+                <div class="stat-item"><h3>&infin;</h3><p>Scalable</p></div>
+            </div>
+        </section>
+
+        <!-- Getting Started -->
+        <section class="content-section section-white" id="getting-started">
+            <p class="section-kicker">Start</p>
+            <h2>From repository to working environment with a short path.</h2>
+            <p>The setup is explicit: clone, build, deploy, and open the NOC surface. No marketing maze, just the steps.</p>
+            <div class="steps-list">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Clone Repository</h3>
+                    <p>Get the latest version of Probler from GitHub</p>
+                    <div class="code-block"><span class="comment"># Clone the repository</span>
+<span class="command">git clone</span> https://github.com/saichler/probler.git
+<span class="command">cd</span> probler</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Build Services</h3>
+                    <p>Build all microservices using the provided script</p>
+                    <div class="code-block"><span class="comment"># Build all services</span>
+<span class="command">cd</span> go && ./build-images.sh</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Deploy Platform</h3>
+                    <p>Choose your deployment method</p>
+                    <div class="code-block"><span class="comment"># Docker Compose (Development)</span>
+<span class="command">docker-compose up -d</span>
+
+<span class="comment"># Kubernetes (Production)</span>
+<span class="command">cd</span> k8s && ./apply-all.sh</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Access Dashboard</h3>
+                    <p>Open the Network Operations Center</p>
+                    <div class="code-block"><span class="comment"># Local access</span>
+open https://localhost:443/probler/
+
+<span class="comment"># Default credentials: admin / admin</span></div>
+                </div>
+            </div>
+            <div class="prereqs">
+                <h3>Prerequisites</h3>
+                <div class="prereqs-badges">
+                    <span class="badge">Go 1.23.8+</span>
+                    <span class="badge">Docker &amp; Docker Compose</span>
+                    <span class="badge">Kubernetes cluster</span>
+                    <span class="badge">PostgreSQL database</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Docs -->
+        <section class="content-section section-alt" id="docs">
+            <p class="section-kicker">Docs</p>
+            <h2>Documentation and operator resources.</h2>
+            <div class="docs-grid">
+                <div class="doc-card">
+                    <h3>API Documentation</h3>
+                    <p>Comprehensive REST API and gRPC service documentation with examples and protocol buffer definitions.</p>
+                </div>
+                <div class="doc-card">
+                    <h3>Network Operations Center</h3>
+                    <p>Interactive dashboard with topology visualization, device management, alarm correlation, and real-time monitoring.</p>
+                </div>
+                <div class="doc-card">
+                    <h3>Configuration Guide</h3>
+                    <p>Detailed configuration options for all services, environment variables, and deployment scenarios.</p>
+                </div>
+                <div class="doc-card">
+                    <h3>Contributing</h3>
+                    <p>Development guidelines, testing procedures, and contribution workflow for the open-source community.</p>
+                </div>
+                <div class="doc-card">
+                    <h3>Use Cases</h3>
+                    <p>Real-world scenarios: Network Operations Centers, Service Provider Networks, Cloud Infrastructure, DevOps &amp; SRE.</p>
+                </div>
+                <div class="doc-card">
+                    <h3>Support</h3>
+                    <p>GitHub Issues for bug reports, feature requests, community support, and troubleshooting guides.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo Modal -->
+        <div class="modal" id="demoModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Demo Access</h2>
+                    <button class="modal-close" onclick="closeDemoModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>The live demo is hosted at <strong>probler.dev</strong> and showcases the full Probler DCIM platform.</p>
+                    <div class="code-block">Username: admin
+Password: admin</div>
+                    <p>The demo resets periodically. Data you create may be removed.</p>
+                    <a href="#" onclick="proceedToDemo(); return false;" class="btn-primary" style="display:flex;text-align:center;">Open Demo</a>
+                </div>
             </div>
         </div>
-    </section>
+    </main>
 
     <!-- Footer -->
     <footer class="landing-footer">
-        <p>Built on <a href="https://github.com/saichler" target="_blank">Layer 8</a> &middot; <a href="../index.html" onclick="localStorage.setItem('preferDesktop','true');">Desktop Version</a></p>
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#features">Features</a>
+                <a href="#architecture">Architecture</a>
+                <a href="#getting-started">Getting Started</a>
+                <a href="https://github.com/saichler/probler" target="_blank">GitHub Repository</a>
+            </div>
+            <div class="footer-section">
+                <h3>Technology</h3>
+                <a href="#">Go 1.23.8</a>
+                <a href="#">Kubernetes</a>
+                <a href="#">PostgreSQL</a>
+                <a href="#">gRPC &amp; REST APIs</a>
+            </div>
+            <div class="footer-section">
+                <h3>Use Cases</h3>
+                <a href="#">Network Operations Centers</a>
+                <a href="#">Service Provider Networks</a>
+                <a href="#">Cloud Infrastructure</a>
+                <a href="#">DevOps &amp; SRE</a>
+            </div>
+            <div class="footer-section">
+                <h3>Probler</h3>
+                <p>Infrastructure management and observability built on Layer 8.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p><a href="../index.html" onclick="localStorage.setItem('preferDesktop','true');">Desktop Version</a></p>
+            <p>&copy; 2024-2025 Probler. Licensed under Apache License 2.0.</p>
+        </div>
     </footer>
+
+    <script>
+    // Nav drawer
+    function openNav() {
+        document.getElementById('navOverlay').classList.add('open');
+        document.getElementById('navDrawer').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeNav() {
+        document.getElementById('navOverlay').classList.remove('open');
+        document.getElementById('navDrawer').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // Demo modal
+    function showDemoCredentials() {
+        document.getElementById('demoModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+    function closeDemoModal() {
+        document.getElementById('demoModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    function proceedToDemo() {
+        sessionStorage.removeItem('bearerToken');
+        localStorage.removeItem('bearerToken');
+        sessionStorage.removeItem('currentUser');
+        window.open('../l8ui/login/index.html', '_blank');
+        closeDemoModal();
+    }
+
+    // Demo banner
+    function dismissDemoBanner() {
+        var banner = document.getElementById('demoBanner');
+        if (banner) { banner.classList.add('hidden'); sessionStorage.setItem('demoBannerDismissed', 'true'); }
+    }
+    (function() {
+        if (sessionStorage.getItem('demoBannerDismissed') === 'true') {
+            var b = document.getElementById('demoBanner');
+            if (b) b.classList.add('hidden');
+        }
+    })();
+
+    // Close modal on overlay click or Escape
+    window.addEventListener('click', function(e) { if (e.target.classList.contains('modal')) { e.target.style.display = 'none'; document.body.style.overflow = ''; } });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDemoModal(); });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+        a.addEventListener('click', function(e) {
+            var href = this.getAttribute('href');
+            if (href && href.length > 1) {
+                e.preventDefault();
+                var target = document.querySelector(href);
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+    </script>
 </body>
 </html>
