@@ -17,6 +17,7 @@ package main
 
 import (
 	"github.com/saichler/l8alarms/go/alm/ui"
+	"github.com/saichler/l8events/go/types/l8events"
 	"github.com/saichler/l8services/go/services/csvexport"
 	"strconv"
 
@@ -115,6 +116,9 @@ func createVnic(vnet uint32) ifs.IVNic {
 
 	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadataList{})
 	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadata{})
+
+	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types.NetworkDevice{}, "EventId")
+	nic.Resources().Registry().Register(&l8events.EventRecordList{})
 
 	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&l8logf.L8File{}, "Path", "Name")
 	return nic

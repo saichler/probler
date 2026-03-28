@@ -20,5 +20,7 @@ cd ../log-agent
 ./build.sh
 cd ../orm
 ./build.sh
+cd ../alarms
+./build.sh
 cd ../topology
 ./build.sh
