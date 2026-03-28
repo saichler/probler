@@ -16,6 +16,7 @@
 package common
 
 import (
+	"fmt"
 	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8services/go/services/manager"
@@ -54,6 +55,7 @@ func CreateResources(alias string) ifs.IResources {
 
 	sec, err := sec.LoadSecurityProvider(res)
 	if err != nil {
+		fmt.Println("Failed to load security provider", err)
 		//time.Sleep(time.Second * 10)
 		//panic(err.Error())
 	}
