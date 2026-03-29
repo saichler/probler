@@ -44,7 +44,7 @@ func main() {
 
 	//Activate Events
 	services.ActivateEvents(common.DB_CREDS, common.DB_TARGETS_NAME, nic)
-	
+
 	//targets.Activate("admin", "admin", nic)
 	common.WaitForSignal(res)
 }

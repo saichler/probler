@@ -117,7 +117,7 @@ func createVnic(vnet uint32) ifs.IVNic {
 	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadataList{})
 	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadata{})
 
-	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types.NetworkDevice{}, "EventId")
+	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&l8events.EventRecord{}, "EventId")
 	nic.Resources().Registry().Register(&l8events.EventRecordList{})
 
 	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&l8logf.L8File{}, "Path", "Name")
