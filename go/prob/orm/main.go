@@ -18,6 +18,7 @@ package main
 import (
 	"fmt"
 	"github.com/saichler/l8bus/go/overlay/vnic"
+	"github.com/saichler/l8events/go/services"
 	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/probler/go/prob/common"
@@ -40,6 +41,10 @@ func main() {
 
 	//Activate targets
 	targets.Activate(common.DB_CREDS, common.DB_TARGETS_NAME, nic)
+
+	//Activate Events
+	services.ActivateEvents(common.DB_CREDS, common.DB_TARGETS_NAME, nic)
+	
 	//targets.Activate("admin", "admin", nic)
 	common.WaitForSignal(res)
 }
