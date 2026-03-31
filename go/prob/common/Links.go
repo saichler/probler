@@ -19,6 +19,9 @@ const (
 	Collector_Service_Name = "Coll"
 	Collector_Service_Area = byte(0)
 
+	AdControl_Service_Name = "AdCon"
+	AdControl_Service_Area = byte(1)
+
 	NetworkDevice_Links_ID      = "NetDev"
 	NetDev_Cache_Service_Name   = "NCache"
 	NetDev_Cache_Service_Area   = byte(0)
@@ -53,7 +56,7 @@ type Links struct{}
 
 func (this *Links) Collector(linkid string) (string, byte) {
 	if linkid == K8sC_Links_ID {
-		return Collector_Service_Name, byte(1)
+		return AdControl_Service_Name, AdControl_Service_Area
 	}
 	return Collector_Service_Name, Collector_Service_Area
 }
