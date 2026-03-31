@@ -45,11 +45,16 @@ const (
 	GPU_Parser_Service_Name  = "GPars"
 	GPU_Parser_Service_Area  = byte(2)
 	GPU_Model_Name           = "gpudevice"
+
+	K8sC_Links_ID = "K8sC"
 )
 
 type Links struct{}
 
 func (this *Links) Collector(linkid string) (string, byte) {
+	if linkid == K8sC_Links_ID {
+		return Collector_Service_Name, byte(1)
+	}
 	return Collector_Service_Name, Collector_Service_Area
 }
 
@@ -58,6 +63,8 @@ func (this *Links) Parser(linkid string) (string, byte) {
 	case NetworkDevice_Links_ID:
 		return NetDev_Parser_Service_Name, NetDev_Parser_Service_Area
 	case K8s_Links_ID:
+		return K8s_Parser_Service_Name, K8s_Parser_Service_Area
+	case K8sC_Links_ID:
 		return K8s_Parser_Service_Name, K8s_Parser_Service_Area
 	case GPU_Links_ID:
 		return GPU_Parser_Service_Name, GPU_Parser_Service_Area
@@ -71,6 +78,8 @@ func (this *Links) Cache(linkid string) (string, byte) {
 		return NetDev_Cache_Service_Name, NetDev_Cache_Service_Area
 	case K8s_Links_ID:
 		return K8s_Cache_Service_Name, K8s_Cache_Service_Area
+	case K8sC_Links_ID:
+		return K8s_Cache_Service_Name, K8s_Cache_Service_Area
 	case GPU_Links_ID:
 		return GPU_Cache_Service_Name, GPU_Cache_Service_Area
 	}
@@ -83,6 +92,8 @@ func (this *Links) Persist(linkid string) (string, byte) {
 		return NetDev_Persist_Service_Name, NetDev_Persist_Service_Area
 	case K8s_Links_ID:
 		return K8s_Persist_Service_Name, K8s_Persist_Service_Area
+	case K8sC_Links_ID:
+		return K8s_Persist_Service_Name, K8s_Persist_Service_Area
 	case GPU_Links_ID:
 		return GPU_Persist_Service_Name, GPU_Persist_Service_Area
 	}
@@ -94,6 +105,8 @@ func (this *Links) Model(linkid string) string {
 	case NetworkDevice_Links_ID:
 		return NetDev_Model_Name
 	case K8s_Links_ID:
+		return K8s_Model_Name
+	case K8sC_Links_ID:
 		return K8s_Model_Name
 	case GPU_Links_ID:
 		return GPU_Model_Name
