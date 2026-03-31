@@ -73,6 +73,11 @@ func AddDevices(cmd string, rc *client.RestClient, resources common2.IResources)
 		deviceList.List = append(deviceList.List, cluster)
 	}
 
+	if cmd == "all" || cmd == "cluster2" {
+		cluster := creates.CreateCluster2("lab2")
+		deviceList.List = append(deviceList.List, cluster)
+	}
+
 	if cmd == "all" || cmd == "base" {
 		for i := 1; i <= 19; i++ {
 			device := creates.CreateDevice("10.20.30."+strconv.Itoa(i), common.NetworkDevice_Links_ID, "sim")
