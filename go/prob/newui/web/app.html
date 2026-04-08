@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="confirm/confirm.css">
 
     <!-- L8UI Theme & Layout -->
+    <link rel="stylesheet" href="l8ui/shared/layer8d-theme-tokens.css">
     <link rel="stylesheet" href="l8ui/shared/layer8d-theme.css">
     <link rel="stylesheet" href="l8ui/shared/layer8d-animations.css">
     <link rel="stylesheet" href="l8ui/shared/layer8d-scrollbar.css">
@@ -120,6 +121,12 @@
                     <span>Powered by</span>
                     <img src="images/Layer8Logo.gif" alt="Layer 8 Ecosystem" class="layer8-header-logo">
                     <span class="layer8-header-text">Layer 8 Ecosystem</span>
+                </div>
+                <div class="layer8d-theme-picker">
+                    <button class="layer8d-theme-btn" onclick="Layer8DThemeSwitcher.toggleDropdown()" aria-label="Choose theme">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 0 0 0 20V2z"/></svg>
+                    </button>
+                    <div class="layer8d-theme-menu"></div>
                 </div>
                 <div class="user-menu">
                     <span class="username">Admin</span>
@@ -385,5 +392,9 @@
     <script src="js/parallax.js"></script>
     <script src="confirm/confirm.js"></script>
     <script src="js/app.js"></script>
+
+    <!-- Theme Switcher -->
+    <script src="l8ui/shared/layer8d-theme-switcher.js"></script>
+    <script>Layer8DThemeSwitcher.init();</script>
 </body>
 </html>

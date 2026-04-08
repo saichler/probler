@@ -8,6 +8,10 @@
     <title>Probler - Datacenter Management</title>
     <link rel="icon" href="../l8ui/images/logo.gif">
 
+    <!-- L8UI Theme -->
+    <link rel="stylesheet" href="../l8ui/shared/layer8d-theme-tokens.css">
+    <link rel="stylesheet" href="../l8ui/shared/layer8d-theme.css">
+
     <!-- CSS -->
     <link rel="stylesheet" href="css/app-base.css">
     <link rel="stylesheet" href="css/app-header.css">
@@ -55,6 +59,12 @@
                 <span class="header-logo-text">Probler</span>
             </div>
             <div class="header-actions">
+                <div class="layer8d-theme-picker">
+                    <button class="layer8d-theme-btn header-action-btn" onclick="Layer8DThemeSwitcher.toggleDropdown()" aria-label="Choose theme" title="Choose theme">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 0 0 0 20V2z"/></svg>
+                    </button>
+                    <div class="layer8d-theme-menu"></div>
+                </div>
                 <button class="header-action-btn" id="refresh-btn" title="Refresh">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="23 4 23 10 17 10"></polyline>
@@ -363,5 +373,9 @@
     <script src="nav-configs/probler-nav-config.js"></script>
     <!-- App Core (must be last) -->
     <script src="js/app-core.js"></script>
+
+    <!-- Theme Switcher -->
+    <script src="../l8ui/shared/layer8d-theme-switcher.js"></script>
+    <script>Layer8DThemeSwitcher.init();</script>
 </body>
 </html>

@@ -15,7 +15,7 @@
 }
 
 .modal-content {
-    background-color: white;
+    background-color: var(--layer8d-bg-white);
     margin: 2% auto;
     padding: 0;
     border-radius: 0;
@@ -32,9 +32,9 @@
     justify-content: space-between;
     align-items: center;
     padding: 2rem;
-    background: #f9f9f7;
-    color: #111111;
-    border-bottom: 1px solid #e5e5e5;
+    background: var(--layer8d-bg-light);
+    color: var(--layer8d-text-dark);
+    border-bottom: 1px solid var(--layer8d-border);
 }
 
 .modal-header h2 {
@@ -45,7 +45,7 @@
 }
 
 .close {
-    color: #999;
+    color: var(--layer8d-text-muted);
     float: right;
     font-size: 2.5rem;
     font-weight: bold;
@@ -55,12 +55,12 @@
 
 .close:hover,
 .close:focus {
-    color: #111;
+    color: var(--layer8d-text-dark);
 }
 
 .modal-body {
     padding: 2rem;
-    background: #f9f9f7;
+    background: var(--layer8d-bg-light);
 }
 
 /* Developer Modal Specific Styles */
@@ -74,7 +74,7 @@
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #999;
+    color: var(--layer8d-text-muted);
     margin-bottom: 0.75rem;
 }
 
@@ -91,9 +91,9 @@
     align-items: center;
     gap: 2rem;
     margin-bottom: 2rem;
-    background: white;
+    background: var(--layer8d-bg-white);
     padding: 2rem;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--layer8d-border);
 }
 
 .developer-avatar {
@@ -103,7 +103,7 @@
 .avatar-placeholder {
     width: 120px;
     height: 120px;
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    background: linear-gradient(135deg, var(--layer8d-primary) 0%, var(--layer8d-primary-dark) 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -117,30 +117,30 @@
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--layer8d-border);
 }
 
 .developer-info h3 {
     font-size: 2rem;
     margin-bottom: 0.35rem;
-    color: #111;
+    color: var(--layer8d-text-dark);
 }
 
 .developer-role {
     font-size: 0.95rem;
-    color: #999;
+    color: var(--layer8d-text-muted);
     margin-bottom: 0.9rem;
 }
 
 .developer-title {
     font-size: 1.05rem;
-    color: #555;
+    color: var(--layer8d-text-medium);
     font-weight: 500;
     margin-bottom: 0.9rem;
 }
 
 .developer-contact a {
-    color: #0070f3;
+    color: var(--layer8d-primary);
     text-decoration: none;
 }
 
@@ -153,7 +153,7 @@
 }
 
 .expertise-card {
-    background: white;
+    background: var(--layer8d-bg-white);
     padding: 2rem;
     border-radius: 15px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -173,7 +173,7 @@
 .expertise-card h4 {
     font-size: 1.3rem;
     margin-bottom: 1rem;
-    color: #333;
+    color: var(--layer8d-text-dark);
 }
 
 .expertise-card ul {
@@ -183,8 +183,8 @@
 
 .expertise-card li {
     padding: 0.3rem 0;
-    color: #666;
-    border-left: 3px solid #0ea5e9;
+    color: var(--layer8d-text-medium);
+    border-left: 3px solid var(--layer8d-primary);
     padding-left: 1rem;
     margin-bottom: 0.5rem;
 }
@@ -198,7 +198,7 @@
     font-size: 2rem;
     text-align: center;
     margin-bottom: 2rem;
-    color: #333;
+    color: var(--layer8d-text-dark);
 }
 
 .projects-grid {
@@ -208,7 +208,7 @@
 }
 
 .project-card {
-    background: white;
+    background: var(--layer8d-bg-white);
     padding: 2rem;
     border-radius: 15px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -224,11 +224,11 @@
 .project-card h4 {
     font-size: 1.4rem;
     margin-bottom: 1rem;
-    color: #333;
+    color: var(--layer8d-text-dark);
 }
 
 .project-card p {
-    color: #666;
+    color: var(--layer8d-text-medium);
     line-height: 1.6;
     margin-bottom: 1.5rem;
 }
@@ -240,8 +240,8 @@
 }
 
 .tech-tag {
-    background: rgba(14, 165, 233, 0.1);
-    color: #0ea5e9;
+    background: color-mix(in srgb, var(--layer8d-primary) 10%, transparent);
+    color: var(--layer8d-primary);
     padding: 0.3rem 0.8rem;
     border-radius: 15px;
     font-size: 0.8rem;
@@ -250,7 +250,7 @@
 
 /* Philosophy Section */
 .philosophy-section {
-    background: white;
+    background: var(--layer8d-bg-white);
     padding: 3rem;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -261,7 +261,7 @@
     font-size: 2rem;
     text-align: center;
     margin-bottom: 2rem;
-    color: #333;
+    color: var(--layer8d-text-dark);
 }
 
 .philosophy-content {
@@ -275,7 +275,7 @@
     gap: 1.5rem;
     padding: 1.5rem;
     border-radius: 10px;
-    background: #f8f9ff;
+    background: var(--layer8d-bg-light);
 }
 
 .philosophy-icon {
@@ -286,33 +286,33 @@
 .philosophy-item h4 {
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
-    color: #333;
+    color: var(--layer8d-text-dark);
 }
 
 .philosophy-item p {
-    color: #666;
+    color: var(--layer8d-text-medium);
     line-height: 1.6;
 }
 
 /* Contact Section */
 .contact-section {
-    background: white;
+    background: var(--layer8d-bg-white);
     padding: 2rem;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--layer8d-border);
 }
 
 .contact-section h3 {
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
-    color: #111;
+    color: var(--layer8d-text-dark);
 }
 
 .contact-links {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1px;
-    background: #e5e5e5;
-    border: 1px solid #e5e5e5;
+    background: var(--layer8d-border);
+    border: 1px solid var(--layer8d-border);
 }
 
 .contact-link {
@@ -320,8 +320,8 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.35rem;
-    background: #fff;
-    color: #111;
+    background: var(--layer8d-bg-white);
+    color: var(--layer8d-text-dark);
     padding: 1.25rem 1.4rem;
     text-decoration: none;
     font-weight: 500;
@@ -330,7 +330,7 @@
 
 .contact-link:hover {
     transform: translateY(-2px);
-    background: #f0f0ee;
+    background: var(--layer8d-bg-light);
     box-shadow: none;
 }
 
@@ -339,43 +339,43 @@
     font-size: 0.76rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #999;
+    color: var(--layer8d-text-muted);
 }
 
 /* Markdown Content Styles */
 .markdown-content {
-    background: white;
+    background: var(--layer8d-bg-white);
     padding: 2.25rem 2rem;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--layer8d-border);
     margin-bottom: 2rem;
-    color: #111;
+    color: var(--layer8d-text-dark);
     line-height: 1.8;
 }
 
 .markdown-content h1 {
     font-size: 1.6rem;
-    color: #111;
+    color: var(--layer8d-text-dark);
     margin: 1.75rem 0 1rem 0;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid var(--layer8d-border);
 }
 
 .markdown-content h2 {
     font-size: 1.5rem;
-    color: #111;
+    color: var(--layer8d-text-dark);
     margin: 2rem 0 1rem 0;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid var(--layer8d-border);
 }
 
 .markdown-content p {
     font-size: 1.02rem;
     margin-bottom: 1rem;
-    color: #555;
+    color: var(--layer8d-text-medium);
 }
 
 .markdown-content strong {
-    color: #333;
+    color: var(--layer8d-text-dark);
     font-weight: 600;
 }
 
@@ -384,20 +384,20 @@
 }
 
 .markdown-content a {
-    color: #0070f3;
+    color: var(--layer8d-primary);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
 }
 
 .markdown-content a:hover {
-    color: #111;
+    color: var(--layer8d-text-dark);
     text-decoration: underline;
 }
 
 .markdown-content hr {
     border: none;
     height: 1px;
-    background: #e5e5e5;
+    background: var(--layer8d-border);
     margin: 2rem 0;
 }

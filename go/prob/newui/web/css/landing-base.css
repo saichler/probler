@@ -1,19 +1,19 @@
 /* Landing Page - Base Styles */
 
 :root {
-    --color-bg: #f9f9f7;
-    --color-bg-alt: #f0f0ee;
-    --color-surface: #ffffff;
-    --color-text: #111111;
-    --color-text-secondary: #5f5f5f;
-    --color-text-muted: #8d8d8d;
-    --color-border: #e5e5e5;
-    --color-accent: #0070f3;
+    --color-bg: var(--layer8d-bg-white);
+    --color-bg-alt: var(--layer8d-bg-light);
+    --color-surface: var(--layer8d-bg-white);
+    --color-text: var(--layer8d-text-dark);
+    --color-text-secondary: var(--layer8d-text-medium);
+    --color-text-muted: var(--layer8d-text-muted);
+    --color-border: var(--layer8d-border);
+    --color-accent: var(--layer8d-primary);
     --color-accent-soft: rgba(0, 112, 243, 0.08);
-    --color-code-bg: #111111;
+    --color-code-bg: var(--layer8d-text-dark);
 
-    --font-primary: 'Inter', 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    --font-primary: var(--layer8d-font-family);
+    --font-mono: var(--layer8d-font-mono);
 
     --max-width: 1100px;
     --content-padding: 24px;
@@ -100,7 +100,7 @@ a:hover {
 
 .code-block {
     background: var(--color-code-bg);
-    color: #f3f4f6;
+    color: var(--layer8d-bg-input);
     padding: 1.5rem;
     border-radius: 10px;
     font-family: var(--font-mono);
@@ -111,9 +111,9 @@ a:hover {
 }
 
 .command {
-    color: #93c5fd;
+    color: var(--layer8d-primary-light);
 }
 
 .comment {
-    color: #94a3b8;
+    color: var(--layer8d-text-light);
 }

@@ -86,7 +86,7 @@ main section {
 .feature-card:hover,
 .step-card:hover {
     transform: translateY(-2px);
-    border-color: #c9c9c9;
+    border-color: var(--layer8d-border);
     box-shadow: none;
 }
 
@@ -232,7 +232,7 @@ main section {
 
 .arch-canvas {
     padding: 1.5rem;
-    background: #fbfbfa;
+    background: var(--layer8d-bg-light);
     border: 1px solid var(--color-border);
 }
 

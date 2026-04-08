@@ -49,8 +49,8 @@
 }
 
 .gpu-quick-metrics .metric-card {
-    background: linear-gradient(135deg, #f7fafc 0%, #ffffff 100%);
-    border: 1px solid #e2e8f0;
+    background: linear-gradient(135deg, var(--layer8d-bg-light) 0%, var(--layer8d-bg-white) 100%);
+    border: 1px solid var(--layer8d-border);
     border-radius: 12px;
     padding: 20px;
     text-align: center;
@@ -64,7 +64,7 @@
 
 .gpu-quick-metrics .metric-label {
     font-size: 11px;
-    color: #718096;
+    color: var(--layer8d-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.8px;
     font-weight: 600;
@@ -79,19 +79,19 @@
 }
 
 .gpu-quick-metrics .metric-value.low {
-    color: #00c853;
+    color: var(--layer8d-success);
 }
 
 .gpu-quick-metrics .metric-value.medium {
-    color: #ffc107;
+    color: var(--layer8d-warning);
 }
 
 .gpu-quick-metrics .metric-value.high {
-    color: #ff3d00;
+    color: var(--layer8d-error);
 }
 
 .processes-list {
-    background: #f7fafc;
+    background: var(--layer8d-bg-light);
     border-radius: 8px;
     padding: 15px;
     max-height: 400px;
@@ -104,15 +104,15 @@
     gap: 15px;
     padding: 12px 15px;
     background: white;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--layer8d-border);
     border-radius: 8px;
     margin-bottom: 10px;
     transition: all 0.2s ease;
 }
 
 .process-item:hover {
-    border-color: #0ea5e9;
-    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
+    border-color: var(--layer8d-primary);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--layer8d-primary) 10%, transparent);
 }
 
 .process-item:last-child {
@@ -121,20 +121,20 @@
 
 .process-pid {
     font-size: 11px;
-    color: #718096;
+    color: var(--layer8d-text-muted);
     font-weight: 600;
     font-family: 'Roboto Mono', monospace;
 }
 
 .process-name {
     font-size: 13px;
-    color: #2d3748;
+    color: var(--layer8d-text-dark);
     font-weight: 600;
 }
 
 .process-memory {
     font-size: 12px;
-    color: #0ea5e9;
+    color: var(--layer8d-primary);
     font-weight: 700;
     text-align: right;
     font-family: 'Roboto Mono', monospace;

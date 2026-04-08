@@ -9,7 +9,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(15, 23, 42, 0.35);
+    background: color-mix(in srgb, var(--layer8d-text-dark) 35%, transparent);
     backdrop-filter: blur(2px);
     z-index: 1000;
     animation: modal-fade-in 0.2s ease-out;
@@ -28,10 +28,10 @@
 }
 
 .modal-container {
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--layer8d-bg-white);
+    border: 1px solid var(--layer8d-border);
     border-radius: 12px;
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+    box-shadow: 0 18px 40px color-mix(in srgb, var(--layer8d-text-dark) 16%, transparent);
     max-width: 1200px;
     width: 100%;
     min-height: 500px;
@@ -58,15 +58,15 @@
     justify-content: space-between;
     align-items: center;
     padding: 18px 24px;
-    border-bottom: 1px solid #e2e8f0;
-    background: #ffffff;
+    border-bottom: 1px solid var(--layer8d-border);
+    background: var(--layer8d-bg-white);
     border-radius: 12px 12px 0 0;
 }
 
 .modal-title {
     font-size: 18px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--layer8d-text-dark);
     text-transform: none;
     letter-spacing: -0.01em;
     font-family: 'Figtree', sans-serif;
@@ -90,29 +90,29 @@
 }
 
 .modal-status-badge.status-online {
-    background: rgba(22, 163, 74, 0.1);
-    color: #15803d;
-    border: 1px solid rgba(22, 163, 74, 0.2);
+    background: color-mix(in srgb, var(--layer8d-success) 10%, transparent);
+    color: var(--layer8d-green-text);
+    border: 1px solid color-mix(in srgb, var(--layer8d-success) 20%, transparent);
     box-shadow: none;
 }
 
 .modal-status-badge.status-warning {
-    background: rgba(217, 119, 6, 0.1);
-    color: #b45309;
-    border: 1px solid rgba(217, 119, 6, 0.2);
+    background: color-mix(in srgb, var(--layer8d-warning) 10%, transparent);
+    color: var(--layer8d-orange-text);
+    border: 1px solid color-mix(in srgb, var(--layer8d-warning) 20%, transparent);
     box-shadow: none;
 }
 
 .modal-status-badge.status-offline {
-    background: rgba(100, 116, 139, 0.1);
-    color: #64748b;
-    border: 1px solid rgba(100, 116, 139, 0.2);
+    background: color-mix(in srgb, var(--layer8d-text-muted) 10%, transparent);
+    color: var(--layer8d-text-muted);
+    border: 1px solid color-mix(in srgb, var(--layer8d-text-muted) 20%, transparent);
 }
 
 .modal-close {
     background: transparent;
     border: none;
-    color: #64748b;
+    color: var(--layer8d-text-muted);
     font-size: 32px;
     cursor: pointer;
     padding: 0;
@@ -126,7 +126,7 @@
 }
 
 .modal-close:hover {
-    color: #0f172a;
+    color: var(--layer8d-text-dark);
     transform: none;
 }
 
@@ -135,14 +135,14 @@
     overflow-y: auto;
     flex: 1;
     min-height: 0;
-    color: #2d3748;
+    color: var(--layer8d-text-dark);
 }
 
 /* Modal Tabs */
 .modal-tabs {
     display: flex;
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
+    background: var(--layer8d-bg-white);
+    border-bottom: 1px solid var(--layer8d-border);
     padding: 0 16px;
 }
 
@@ -152,7 +152,7 @@
     font-weight: 600;
     text-transform: none;
     letter-spacing: 0;
-    color: #64748b;
+    color: var(--layer8d-text-muted);
     cursor: pointer;
     border-bottom: 3px solid transparent;
     transition: all 0.2s ease;
@@ -160,14 +160,14 @@
 }
 
 .modal-tab:hover {
-    background: rgba(14, 165, 233, 0.05);
-    color: #0ea5e9;
+    background: color-mix(in srgb, var(--layer8d-primary) 5%, transparent);
+    color: var(--layer8d-primary);
 }
 
 .modal-tab.active {
-    background: white;
-    color: #0ea5e9;
-    border-bottom-color: #0ea5e9;
+    background: var(--layer8d-bg-white);
+    color: var(--layer8d-primary);
+    border-bottom-color: var(--layer8d-primary);
     box-shadow: none;
 }
 
@@ -196,16 +196,16 @@
 .detail-table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background: var(--layer8d-bg-white);
     border-radius: 10px;
     overflow: hidden;
     box-shadow: none;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--layer8d-border);
 }
 
 .detail-table thead {
-    background: #f8fafc;
-    color: #0f172a;
+    background: var(--layer8d-bg-light);
+    color: var(--layer8d-text-dark);
 }
 
 .detail-table thead th {
@@ -218,12 +218,12 @@
 }
 
 .detail-table tbody tr {
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--layer8d-border);
     transition: background-color 0.2s;
 }
 
 .detail-table tbody tr:hover {
-    background-color: #f9fafb;
+    background-color: var(--layer8d-bg-light);
 }
 
 .detail-table tbody tr:last-child {
@@ -233,16 +233,16 @@
 .detail-table tbody td {
     padding: 12px 16px;
     font-size: 14px;
-    color: #374151;
+    color: var(--layer8d-text-medium);
 }
 
 .detail-table tbody td code {
-    background: #f3f4f6;
+    background: var(--layer8d-bg-input);
     padding: 2px 6px;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
     font-size: 13px;
-    color: #0ea5e9;
+    color: var(--layer8d-primary);
 }
 
 /* Detail Grid for Key-Value Pairs */
@@ -267,14 +267,14 @@
 .detail-label {
     font-size: 13px;
     font-weight: 600;
-    color: #6b7280;
+    color: var(--layer8d-text-muted);
     min-width: 140px;
     flex-shrink: 0;
 }
 
 .detail-value {
     font-size: 14px;
-    color: #1f2937;
+    color: var(--layer8d-text-dark);
     font-weight: 500;
     flex: 1;
 }
@@ -289,12 +289,12 @@
 }
 
 .modal-tab-content .detail-section h3 {
-    color: #0f172a;
+    color: var(--layer8d-text-dark);
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 16px;
     padding-bottom: 8px;
-    border-bottom: 2px solid #e5e7eb;
+    border-bottom: 2px solid var(--layer8d-border);
 }
 
 .tab-pane {
@@ -315,29 +315,29 @@
 }
 
 .detail-section {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--layer8d-bg-white);
+    border: 1px solid var(--layer8d-border);
     padding: 18px;
-    border-left: 1px solid #e2e8f0;
+    border-left: 1px solid var(--layer8d-border);
     border-radius: 10px;
 }
 
 .detail-section-title {
     font-size: 14px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--layer8d-text-dark);
     text-transform: none;
     letter-spacing: 0;
     margin-bottom: 14px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--layer8d-border);
 }
 
 .detail-row {
     display: flex;
     justify-content: space-between;
     padding: 10px 0;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--layer8d-border);
     gap: 12px;
 }
 
@@ -347,7 +347,7 @@
 
 .detail-label {
     font-size: 12px;
-    color: #64748b;
+    color: var(--layer8d-text-muted);
     text-transform: none;
     letter-spacing: 0;
     font-weight: 600;
@@ -355,7 +355,7 @@
 
 .detail-value {
     font-size: 13px;
-    color: #0f172a;
+    color: var(--layer8d-text-dark);
     font-family: 'Figtree', sans-serif;
     font-weight: 600;
     text-align: right;
@@ -381,7 +381,7 @@
 .perf-sub-tabs {
     display: flex;
     gap: 0;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--layer8d-border);
     margin-bottom: 20px;
 }
 
@@ -389,7 +389,7 @@
     padding: 10px 16px;
     font-size: 13px;
     font-weight: 600;
-    color: #64748b;
+    color: var(--layer8d-text-muted);
     cursor: pointer;
     border-bottom: 2px solid transparent;
     margin-bottom: -2px;
@@ -397,13 +397,13 @@
 }
 
 .perf-sub-tab:hover {
-    color: #0ea5e9;
-    background: rgba(14, 165, 233, 0.05);
+    color: var(--layer8d-primary);
+    background: color-mix(in srgb, var(--layer8d-primary) 5%, transparent);
 }
 
 .perf-sub-tab.active {
-    color: #0ea5e9;
-    border-bottom-color: #0ea5e9;
+    color: var(--layer8d-primary);
+    border-bottom-color: var(--layer8d-primary);
 }
 
 .perf-sub-pane {
@@ -418,7 +418,7 @@
 .performance-bar {
     width: 100%;
     height: 8px;
-    background: #e2e8f0;
+    background: var(--layer8d-border);
     border-radius: 4px;
     overflow: hidden;
     margin-top: 5px;
@@ -471,7 +471,7 @@
 
 .modal-body > p {
     padding: 20px 24px;
-    color: #475569;
+    color: var(--layer8d-text-medium);
     font-size: 14px;
     line-height: 1.6;
 }

@@ -51,28 +51,28 @@
 }
 
 .status-badge.status-operational {
-    background: rgba(0, 200, 83, 0.1);
-    color: #00c853;
+    background: color-mix(in srgb, var(--layer8d-success) 10%, transparent);
+    color: var(--layer8d-success);
 }
 
 .status-badge.status-warning {
-    background: rgba(255, 193, 7, 0.1);
-    color: #ffc107;
+    background: color-mix(in srgb, var(--layer8d-warning) 10%, transparent);
+    color: var(--layer8d-warning);
 }
 
 .status-badge.status-critical {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    background: color-mix(in srgb, var(--layer8d-error) 10%, transparent);
+    color: var(--layer8d-error);
 }
 
 .status-badge.status-offline {
-    background: rgba(117, 117, 117, 0.1);
-    color: #757575;
+    background: color-mix(in srgb, var(--layer8d-gray-text) 10%, transparent);
+    color: var(--layer8d-gray-text);
 }
 
 .status-badge.status-maintenance {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
+    background: color-mix(in srgb, var(--layer8d-info) 10%, transparent);
+    color: var(--layer8d-info);
 }
 
 /* ============================================ */
@@ -80,8 +80,8 @@
 /* ============================================ */
 
 .tree-view-container {
-    background: #f7fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--layer8d-bg-light);
+    border: 1px solid var(--layer8d-border);
     padding: 15px;
     font-family: 'Roboto Mono', monospace;
     font-size: 12px;
@@ -96,16 +96,16 @@
 }
 
 .tree-view-container::-webkit-scrollbar-track {
-    background: #f7fafc;
+    background: var(--layer8d-bg-light);
 }
 
 .tree-view-container::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
+    background: var(--layer8d-border);
     border-radius: 4px;
 }
 
 .tree-view-container::-webkit-scrollbar-thumb:hover {
-    background: #0ea5e9;
+    background: var(--layer8d-primary);
 }
 
 .tree-node {
@@ -124,11 +124,11 @@
 }
 
 .tree-node-header:hover {
-    background: rgba(14, 165, 233, 0.1);
+    background: color-mix(in srgb, var(--layer8d-primary) 10%, transparent);
 }
 
 .tree-expand-icon {
-    color: #0ea5e9;
+    color: var(--layer8d-primary);
     font-size: 10px;
     width: 12px;
     display: inline-flex;
@@ -149,19 +149,19 @@
 }
 
 .tree-key {
-    color: #0ea5e9;
+    color: var(--layer8d-primary);
     font-weight: 700;
 }
 
 .tree-type,
 .tree-count {
-    color: #718096;
+    color: var(--layer8d-text-muted);
     font-size: 11px;
     font-style: italic;
 }
 
 .tree-value {
-    color: #2d3748;
+    color: var(--layer8d-text-dark);
 }
 
 .tree-string {
@@ -178,7 +178,7 @@
 
 .tree-null,
 .tree-undefined {
-    color: #718096;
+    color: var(--layer8d-text-muted);
     font-style: italic;
 }
 
@@ -193,6 +193,6 @@
 }
 
 .tree-children {
-    border-left: 1px solid #e2e8f0;
+    border-left: 1px solid var(--layer8d-border);
     margin-left: 10px;
 }

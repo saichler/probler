@@ -92,8 +92,8 @@
 }
 
 .btn-primary:hover {
-    background: #2a2a2a;
-    border-color: #2a2a2a;
+    background: var(--layer8d-text-medium);
+    border-color: var(--layer8d-text-medium);
     color: var(--color-bg);
 }
 
