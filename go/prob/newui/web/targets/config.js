@@ -12,7 +12,7 @@ async function loadConfig() {
         }
         const config = await response.json();
         TARGETS_CONFIG = {
-            apiPrefix: config.api.prefix,
+            apiPrefix: config.app.apiPrefix,
             targetsPath: config.api.targetsPath || '/91/Targets',
             credsPath: config.api.credsPath || '/75/Creds'
         };

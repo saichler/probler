@@ -12,7 +12,7 @@ async function loadConfig() {
         }
         const config = await response.json();
         DASHBOARD_CONFIG = {
-            apiPrefix: config.api.prefix,
+            apiPrefix: config.app.apiPrefix,
             cachePath: config.api.devicesPath || '/0/NCache'
         };
         return true;
