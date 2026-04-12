@@ -20,7 +20,7 @@ async function loadConfig() {
         console.error('Error loading configuration:', error);
         // Fallback defaults
         DASHBOARD_CONFIG = {
-            apiPrefix: '/probler',
+            apiPrefix: '',
             cachePath: '/0/NCache'
         };
         return false;

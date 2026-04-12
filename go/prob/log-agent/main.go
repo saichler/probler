@@ -24,7 +24,6 @@ import (
 	"github.com/saichler/l8logfusion/go/types/l8logf"
 	"github.com/saichler/l8utils/go/utils/ipsegment"
 	"github.com/saichler/l8utils/go/utils/shared"
-	"github.com/saichler/probler/go/prob/common"
 )
 
 func main() {
@@ -47,8 +46,9 @@ func main() {
 		logfile = "*"
 	}
 
-	r := shared.ResourcesOf("logs", common.LOGS_VNET, 30, logpath)
+	r := shared.ResourcesOf("logs", 0, 30)
 	r.SysConfig().RemoteVnet = ip
+	r.SysConfig().VnetPort = r.Security().NewSystemConfig().LogConfig.VnetPort
 
 	nic := vnic.NewVirtualNetworkInterface(r, nil)
 	nic.Start()

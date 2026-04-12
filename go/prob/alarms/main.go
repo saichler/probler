@@ -24,18 +24,17 @@ func main() {
 	//Start postgres
 	startDb(nic)
 
-	services.ActivateAlmServices(common.DB_CREDS, common.DB_ALARMS_NAME, nic)
+	services.ActivateAlmServices(nic.Resources().SysConfig().TimeSeriesStoreConfig.Type, nic.Resources().SysConfig().TimeSeriesStoreConfig.Name, nic)
 	resources.Logger().Info("alm services activated!")
 	common.WaitForSignal(resources)
 }
 
 func startDb(nic ifs.IVNic) {
-	_, user, pass, port, err := nic.Resources().Security().Credential(common.DB_CREDS, common.DB_ALARMS_NAME, nic.Resources())
+	_, user, pass, port, err := nic.Resources().Security().Credential(nic.Resources().SysConfig().TimeSeriesStoreConfig.Type, nic.Resources().SysConfig().TimeSeriesStoreConfig.Name, nic.Resources())
 	if err != nil {
-		panic(common.DB_CREDS + " " + err.Error())
+		panic(nic.Resources().SysConfig().TimeSeriesStoreConfig.Type + " " + nic.Resources().SysConfig().TimeSeriesStoreConfig.Name + " " + err.Error())
 	}
-	fmt.Println("/start-postgres.sh", common.DB_ALARMS_NAME, user, pass, port)
-	cmd := exec.Command("nohup", "/start-postgres.sh", common.DB_ALARMS_NAME, user, pass, port)
+	cmd := exec.Command("nohup", "/start-postgres.sh", nic.Resources().SysConfig().TimeSeriesStoreConfig.Name, user, pass, port)
 	out, err := cmd.Output()
 	if err != nil {
 		panic(err)

@@ -40,22 +40,21 @@ func main() {
 	}
 
 	//Activate targets
-	targets.Activate(common.DB_CREDS, common.DB_TARGETS_NAME, nic)
+	targets.Activate(nic.Resources().SysConfig().DataStoreConfig.Type, nic.Resources().SysConfig().DataStoreConfig.Name, nic)
 
 	//Activate Events
-	services.ActivateEvents(common.DB_CREDS, common.DB_TARGETS_NAME, nic)
+	services.ActivateEvents(nic.Resources().SysConfig().DataStoreConfig.Type, nic.Resources().SysConfig().DataStoreConfig.Name, nic)
 
 	//targets.Activate("admin", "admin", nic)
 	common.WaitForSignal(res)
 }
 
 func startDb(nic ifs.IVNic) {
-	_, user, pass, port, err := nic.Resources().Security().Credential(common.DB_CREDS, common.DB_TARGETS_NAME, nic.Resources())
+	_, user, pass, port, err := nic.Resources().Security().Credential(nic.Resources().SysConfig().DataStoreConfig.Type, nic.Resources().SysConfig().DataStoreConfig.Name, nic.Resources())
 	if err != nil {
-		panic(common.DB_CREDS + " " + err.Error())
+		panic(nic.Resources().SysConfig().DataStoreConfig.Type + " " + nic.Resources().SysConfig().DataStoreConfig.Name + " " + err.Error())
 	}
-	fmt.Println("/start-postgres.sh", common.DB_TARGETS_NAME, user, pass, port)
-	cmd := exec.Command("nohup", "/start-postgres.sh", common.DB_TARGETS_NAME, user, pass, port)
+	cmd := exec.Command("nohup", "/start-postgres.sh", nic.Resources().SysConfig().DataStoreConfig.Name, user, pass, port)
 	out, err := cmd.Output()
 	if err != nil {
 		panic(err)

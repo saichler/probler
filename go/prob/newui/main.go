@@ -17,14 +17,12 @@ package main
 
 import (
 	"github.com/saichler/l8alarms/go/alm/ui"
-	"github.com/saichler/l8events/go/types/l8events"
-	"github.com/saichler/l8services/go/services/csvexport"
-	"strconv"
-
 	"github.com/saichler/l8bus/go/overlay/health"
 	"github.com/saichler/l8bus/go/overlay/vnic"
+	"github.com/saichler/l8events/go/types/l8events"
 	"github.com/saichler/l8logfusion/go/types/l8logf"
 	"github.com/saichler/l8pollaris/go/types/l8tpollaris"
+	"github.com/saichler/l8services/go/services/csvexport"
 	"github.com/saichler/l8topology/go/types/l8topo"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8api"
@@ -38,25 +36,28 @@ import (
 )
 
 func main() {
-	startWebServer(2443, "/data/probler")
+	startWebServer()
 }
 
-func startWebServer(port int, cert string) {
+func startWebServer() {
+
+	nic1 := createVnic(false)
+	csvexport.Activate(nic1)
+	nic2 := createVnic(true)
+
+	server.UpdateLoginJsonPrefix(nic1.Resources().SysConfig().WebConfig.EndPointPrefix)
+
 	serverConfig := &server.RestServerConfig{
 		Host:           ipsegment.MachineIP,
-		Port:           port,
+		Port:           int(nic1.Resources().SysConfig().WebConfig.WebPort),
 		Authentication: true,
-		CertName:       cert,
-		Prefix:         common.PREFIX,
+		CertName:       nic1.Resources().SysConfig().WebConfig.Cert,
+		Prefix:         nic1.Resources().SysConfig().WebConfig.EndPointPrefix,
 	}
 	svr, err := server.NewRestServer(serverConfig)
 	if err != nil {
 		panic(err)
 	}
-
-	nic1 := createVnic(common.PROBLER_VNET)
-	csvexport.Activate(nic1)
-	nic2 := createVnic(common.LOGS_VNET)
 
 	hs, ok := nic1.Resources().Services().ServiceHandler(health.ServiceName, 0)
 	if ok {
@@ -74,13 +75,16 @@ func startWebServer(port int, cert string) {
 	svr.Start()
 }
 
-func createVnic(vnet uint32) ifs.IVNic {
-	resources := common.CreateResources("web-" + strconv.Itoa(int(vnet)))
-	resources.SysConfig().VnetPort = vnet
+func createVnic(logsVnet bool) ifs.IVNic {
+	resources := common.CreateResources("web")
 
 	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types.NetworkDevice{}, "Id")
 	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types2.K8SCluster{}, "Name")
 	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types2.GpuDevice{}, "Id")
+
+	if logsVnet {
+		resources.SysConfig().VnetPort = resources.Security().NewSystemConfig().LogConfig.VnetPort
+	}
 
 	nic := vnic.NewVirtualNetworkInterface(resources, nil)
 	nic.Resources().SysConfig().KeepAliveIntervalSeconds = 60

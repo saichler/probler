@@ -21,7 +21,7 @@ async function loadConfig() {
         console.error('Error loading configuration:', error);
         // Fallback defaults
         TARGETS_CONFIG = {
-            apiPrefix: '/probler',
+            apiPrefix: '',
             targetsPath: '/91/Targets',
             credsPath: '/75/Creds'
         };

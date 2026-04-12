@@ -22,15 +22,16 @@ import (
 	"github.com/saichler/l8services/go/services/manager"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/sec"
-	"github.com/saichler/l8types/go/types/l8sysconfig"
 	"github.com/saichler/l8utils/go/utils/logger"
 	"github.com/saichler/l8utils/go/utils/registry"
 	"github.com/saichler/l8utils/go/utils/resources"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 )
 
+/*
 const (
 	PROBLER_VNET    = 26000
 	LOGS_VNET       = 27000
@@ -38,15 +39,14 @@ const (
 	DB_CREDS        = "postgres"
 	DB_TARGETS_NAME = "problerdb"
 	DB_ALARMS_NAME  = "probleralarms"
-)
+)*/
 
 func init() {
 	targets.Links = &Links{}
 }
 
 func CreateResources(alias string) ifs.IResources {
-	logsDir := "/data/logs/probler"
-	logger.SetLogToFile(logsDir, alias)
+
 	log := logger.NewLoggerImpl(&logger.FmtLogMethod{})
 	log.SetLogLevel(ifs.Info_Level)
 	res := resources.NewResources(log)
@@ -56,20 +56,16 @@ func CreateResources(alias string) ifs.IResources {
 	sec, err := sec.LoadSecurityProvider(res)
 	if err != nil {
 		fmt.Println("Failed to load security provider", err)
-		//time.Sleep(time.Second * 10)
-		//panic(err.Error())
+	} else {
+		res.Set(sec)
 	}
-	res.Set(sec)
 
-	conf := &l8sysconfig.L8SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
-		RxQueueSize:              resources.DEFAULT_QUEUE_SIZE,
-		TxQueueSize:              resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:               alias,
-		VnetPort:                 uint32(PROBLER_VNET),
-		KeepAliveIntervalSeconds: 30,
-		LogsDirectory:            logsDir,
+	if res.SysConfig().LogConfig != nil && res.SysConfig().LogConfig.LogDirectory != "" {
+		logger.SetLogToFile(res.SysConfig().LogConfig.LogDirectory, alias)
 	}
-	res.Set(conf)
+
+	res.SysConfig().LocalAlias = alias + "-" + strconv.Itoa(int(res.SysConfig().VnetPort))
+	res.SysConfig().KeepAliveIntervalSeconds = 30
 
 	res.Set(introspecting.NewIntrospect(res.Registry()))
 	res.Set(manager.NewServices(res))

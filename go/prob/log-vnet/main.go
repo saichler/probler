@@ -24,7 +24,7 @@ import (
 func main() {
 	logsDbDirectory := "/data/logsdb/probler"
 	resources := common.CreateResources("log-vnet")
-	resources.SysConfig().VnetPort = common.LOGS_VNET
+	resources.SysConfig().VnetPort = resources.SysConfig().LogConfig.VnetPort
 	net := vnet.NewVNet(resources, true)
 	net.Start()
 	logserver.ActivateLogService(logsDbDirectory, net.VnetVnic())

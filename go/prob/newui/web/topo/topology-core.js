@@ -6,7 +6,7 @@ class TopologyBrowser {
         this.selectedTopologyName = null;
         this.mapWidth = 0;
         this.mapHeight = 0;
-        this.apiBaseUrl = '/probler';
+        this.apiBaseUrl = '';
 
         // Link Direction Enum
         this.LinkDirection = {
@@ -79,9 +79,22 @@ class TopologyBrowser {
         return headers;
     }
 
-    init() {
+    async init() {
+        await this.loadConfig();
         this.setupEventListeners();
         this.loadTopologyList();
+    }
+
+    async loadConfig() {
+        try {
+            const response = await fetch('../login.json');
+            if (response.ok) {
+                const config = await response.json();
+                this.apiBaseUrl = (config.app && config.app.apiPrefix) || (config.api && config.api.prefix) || '';
+            }
+        } catch (error) {
+            console.error('TopologyBrowser: Failed to load login.json:', error);
+        }
     }
 
     setupEventListeners() {
