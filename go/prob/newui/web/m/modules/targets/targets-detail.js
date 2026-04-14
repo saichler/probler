@@ -77,6 +77,7 @@
             title: 'Target Details',
             content: content,
             size: 'large',
+            position: 'bottom',
             showFooter: false
         });
     }

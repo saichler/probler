@@ -16,14 +16,14 @@
             ...col.col('cluster', 'Cluster'),
             ...col.status('status', 'Status', enums.HYPERVISOR_STATUS_VALUES, render.hypervisorStatus),
             ...col.custom('cpuUsage', 'CPU %', (item) => (item.cpuUsage || 0) + '%'),
-            ...col.custom('memoryUsage', 'Mem %', (item) => (item.memoryUsage || 0) + '%'),
+            ...col.custom('memoryUsage', 'Memory %', (item) => (item.memoryUsage || 0) + '%'),
             ...col.custom('vmCount', 'VMs', (item) => (item.vmRunning || 0) + '/' + (item.vmCount || 0)),
             ...col.col('datacenter', 'Datacenter')
         ],
 
         VirtualMachine: [
             ...col.col('name', 'VM Name'),
-            ...col.col('os', 'OS'),
+            ...col.col('os', 'Operating System'),
             ...col.col('hypervisor', 'Host'),
             ...col.status('status', 'Status', enums.VM_STATUS_VALUES, render.vmStatus),
             ...col.custom('cpuUsage', 'CPU %', (item) => (item.cpuUsage || 0) + '%'),

@@ -10,14 +10,22 @@
     var col = window.Layer8ColumnFactory;
     var f = window.Layer8FormFactory;
 
+    var ACCOUNT_STATUS = { 0: 'Unspecified', 1: 'Active', 2: 'Inactive', 3: 'Locked', 4: 'Suspended', 5: 'Pending Activation' };
+    var ACCOUNT_STATUS_CLASSES = { 1: 'status-active', 2: 'status-terminated', 3: 'status-terminated', 4: 'status-pending', 5: 'status-pending' };
+    var accountStatusRenderer = Layer8MRenderers.createStatusRenderer(ACCOUNT_STATUS, ACCOUNT_STATUS_CLASSES);
+
     // ── User columns ────────────────────────────────────────────────
     MobileSystem.columns.L8User = [
         ...col.col('userId', 'User ID'),
         ...col.col('fullName', 'Full Name'),
+        ...col.col('email', 'Email'),
+        ...col.custom('accountStatus', 'Status', function(item) { return accountStatusRenderer(item.accountStatus); }),
         ...col.custom('roles', 'Assigned Roles', function(item) {
             var roleIds = Object.keys(item.roles || {}).filter(function(r) { return item.roles[r]; });
             return roleIds.length > 0 ? roleIds.join(', ') : '-';
-        })
+        }),
+        ...col.col('portal', 'Portal'),
+        ...col.date('lastLogin', 'Last Login')
     ];
 
     // ── Role columns ────────────────────────────────────────────────

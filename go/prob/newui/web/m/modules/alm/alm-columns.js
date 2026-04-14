@@ -17,7 +17,7 @@
             ...col.status('severity', 'Severity', null, render.severity),
             ...col.status('state', 'State', null, render.state),
             ...col.col('nodeName', 'Node'),
-            ...col.date('firstOccurrence', 'First Occurrence'),
+            ...col.datetime('firstOccurrence', 'First Occurrence'),
             ...col.col('occurrenceCount', 'Count'),
             ...col.boolean('isRootCause', 'Root Cause'),
             ...col.col('symptomCount', 'Symptoms')
@@ -49,7 +49,7 @@
             ...col.col('nodeName', 'Node Name'),
             ...col.col('message', 'Message'),
             ...col.col('category', 'Category'),
-            ...col.date('occurredAt', 'Occurred At')
+            ...col.datetime('occurredAt', 'Occurred At')
         ],
 
         // ── Correlation ─────────────────────────────────────────────
@@ -100,7 +100,9 @@
             ...col.status('severity', 'Severity', null, render.severity),
             ...col.status('state', 'State', null, render.state),
             ...col.col('nodeName', 'Node'),
-            ...col.date('firstOccurrence', 'First Occurrence')
+            ...col.datetime('firstOccurrence', 'First Occurrence'),
+            ...col.datetime('archivedAt', 'Archived At'),
+            ...col.col('archivedBy', 'Archived By')
         ],
 
         ArchivedEvent: [
@@ -109,7 +111,9 @@
             ...col.status('severity', 'Severity', null, render.severity),
             ...col.col('nodeName', 'Node Name'),
             ...col.col('message', 'Message'),
-            ...col.date('occurredAt', 'Occurred At')
+            ...col.datetime('occurredAt', 'Occurred At'),
+            ...col.datetime('archivedAt', 'Archived At'),
+            ...col.col('archivedBy', 'Archived By')
         ]
     };
 

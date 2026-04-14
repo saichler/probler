@@ -146,6 +146,7 @@
             var opts = {
                 title: title,
                 size: 'large',
+                position: 'bottom',
                 showFooter: false,
                 tabs: tabs
             };

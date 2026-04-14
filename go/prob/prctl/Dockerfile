@@ -8,6 +8,7 @@ RUN GOPROXY=direct GOPRIVATE=github.com go mod tidy
 RUN go build -o prctl
 
 FROM saichler/probler-security:latest AS final
+#FROM alpine
 COPY --from=build /home/src/github.com/saichler/build/prctl /home/run/prctl
 COPY lab.conf /home/run/lab.conf
 COPY add-devices /home/run/add-devices

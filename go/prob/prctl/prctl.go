@@ -31,6 +31,9 @@ import (
 )
 
 func main() {
+
+	resources := common.CreateResources("client")
+
 	var host string
 	var cmd1 string
 	var cmd2 string
@@ -54,9 +57,9 @@ func main() {
 	}
 	clientConfig := &client.RestClientConfig{
 		Host:          host,
-		Port:          2443,
+		Port:          int(resources.SysConfig().WebConfig.WebPort),
 		Https:         true,
-		Prefix:        common.PREFIX,
+		Prefix:        resources.SysConfig().WebConfig.EndPointPrefix,
 		TokenRequired: true,
 		AuthInfo: &client.RestAuthInfo{
 			IsAPIKey:   false,
@@ -70,7 +73,6 @@ func main() {
 		},
 	}
 
-	resources := common.CreateResources("client")
 	resources.Introspector().Inspect(&l8tpollaris.L8Pollaris{})
 	resources.Introspector().Inspect(&l8tpollaris.L8PTarget{})
 	resources.Introspector().Inspect(&l8tpollaris.L8PTargetList{})

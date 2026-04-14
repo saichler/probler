@@ -15,7 +15,7 @@
             ],
             services: {
                 'devices': [
-                    { key: 'network-devices', label: 'Network Devices', icon: 'network', endpoint: '/0/NCache', model: 'NetworkDevice', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showNetworkDeviceDetail === 'function') showNetworkDeviceDetail(item); } }
+                    { key: 'network-devices', label: 'Network Devices', icon: 'network', endpoint: '/0/NCache', model: 'NetworkDevice', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showNetworkDeviceDetail === 'function') showNetworkDeviceDetail(item); } }
                 ]
             }
         },
@@ -28,7 +28,7 @@
             ],
             services: {
                 'gpu-devices': [
-                    { key: 'gpus', label: 'GPU Devices', icon: 'gpus', endpoint: '/2/GCache', model: 'GpuDevice', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showGpuDetail === 'function') showGpuDetail(item); } }
+                    { key: 'gpus', label: 'GPU Devices', icon: 'gpus', endpoint: '/2/GCache', model: 'GpuDevice', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showGpuDetail === 'function') showGpuDetail(item); } }
                 ]
             }
         },
@@ -43,8 +43,8 @@
             ],
             services: {
                 'hosts-vms': [
-                    { key: 'hypervisors', label: 'Hypervisors', icon: 'hosts', endpoint: '/0/NCache', model: 'Hypervisor', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showHypervisorDetail === 'function') showHypervisorDetail(item); } },
-                    { key: 'vms', label: 'Virtual Machines', icon: 'hosts', endpoint: '/0/NCache', model: 'VirtualMachine', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showVmDetail === 'function') showVmDetail(item); } }
+                    { key: 'hypervisors', label: 'Hypervisors', icon: 'hosts', endpoint: '/0/NCache', model: 'Hypervisor', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showHypervisorDetail === 'function') showHypervisorDetail(item); } },
+                    { key: 'vms', label: 'Virtual Machines', icon: 'hosts', endpoint: '/0/NCache', model: 'VirtualMachine', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showVmDetail === 'function') showVmDetail(item); } }
                 ]
             }
         },
@@ -61,9 +61,9 @@
             ],
             services: {
                 'k8s-resources': [
-                    { key: 'pods', label: 'Pods', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sPod', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showK8sPodDetail === 'function') showK8sPodDetail(item); } },
-                    { key: 'nodes', label: 'Nodes', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sNode', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showK8sNodeDetail === 'function') showK8sNodeDetail(item); } },
-                    { key: 'deployments', label: 'Deployments', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sDeployment', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showK8sDeploymentDetail === 'function') showK8sDeploymentDetail(item); } },
+                    { key: 'pods', label: 'Pods', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sPod', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showK8sPodDetail === 'function') showK8sPodDetail(item); } },
+                    { key: 'nodes', label: 'Nodes', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sNode', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showK8sNodeDetail === 'function') showK8sNodeDetail(item); } },
+                    { key: 'deployments', label: 'Deployments', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sDeployment', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showK8sDeploymentDetail === 'function') showK8sDeploymentDetail(item); } },
                     { key: 'statefulsets', label: 'StatefulSets', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sStatefulSet', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showK8sStatefulSetDetail === 'function') showK8sStatefulSetDetail(item); } },
                     { key: 'daemonsets', label: 'DaemonSets', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sDaemonSet', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showK8sDaemonSetDetail === 'function') showK8sDaemonSetDetail(item); } },
                     { key: 'services', label: 'Services', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sService', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showK8sServiceDetail === 'function') showK8sServiceDetail(item); } },
