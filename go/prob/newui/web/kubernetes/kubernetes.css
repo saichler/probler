@@ -51,11 +51,11 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    background: white;
+    background: var(--layer8d-bg-card);
     border-radius: 12px 12px 0 0;
     padding: 0 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--layer8d-border);
     flex-shrink: 0;
 }
 
@@ -66,7 +66,7 @@
     gap: 8px;
     padding: 8px 0;
     flex-shrink: 0;
-    border-right: 1px solid #e2e8f0;
+    border-right: 1px solid var(--layer8d-border);
     padding-right: 12px;
 }
 
@@ -74,26 +74,26 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #10b981;
+    background: var(--layer8d-success);
     box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
     flex-shrink: 0;
 }
 
 #k8s-cluster-dropdown {
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--layer8d-border);
     border-radius: 6px;
     padding: 5px 10px;
     font-size: 13px;
     font-weight: 600;
-    color: #1e293b;
-    background: #f8fafc;
+    color: var(--layer8d-text-dark);
+    background: var(--layer8d-bg-light);
     cursor: pointer;
     min-width: 120px;
 }
 
 #k8s-cluster-dropdown:focus {
     outline: none;
-    border-color: #0ea5e9;
+    border-color: var(--layer8d-primary);
     box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
 }
 
@@ -121,7 +121,7 @@
     background: transparent;
     border: none;
     border-bottom: 3px solid transparent;
-    color: #64748b;
+    color: var(--layer8d-text-muted);
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
@@ -132,13 +132,13 @@
 }
 
 .k8s-resource-tab:hover {
-    color: #0ea5e9;
+    color: var(--layer8d-primary);
     background: rgba(14, 165, 233, 0.04);
 }
 
 .k8s-resource-tab.active {
-    color: #0ea5e9;
-    border-bottom-color: #0ea5e9;
+    color: var(--layer8d-primary);
+    border-bottom-color: var(--layer8d-primary);
     font-weight: 600;
 }
 
@@ -152,13 +152,13 @@
     border-radius: 9px;
     font-size: 10px;
     font-weight: 700;
-    background: #e2e8f0;
-    color: #64748b;
+    background: var(--layer8d-border);
+    color: var(--layer8d-text-muted);
 }
 
 .k8s-resource-tab.active .k8s-tab-count {
     background: rgba(14, 165, 233, 0.15);
-    color: #0ea5e9;
+    color: var(--layer8d-primary);
 }
 
 /* ============================================ */
@@ -168,7 +168,7 @@
 .k8s-main-content {
     flex: 1;
     min-height: 0;
-    background: white;
+    background: var(--layer8d-bg-card);
     border-radius: 0 0 12px 12px;
     padding: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -235,7 +235,7 @@
 }
 
 .k8s-section .modal-container {
-    background: white;
+    background: var(--layer8d-bg-card);
     border-radius: 12px;
     width: 90%;
     max-width: 1000px;
@@ -249,8 +249,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 24px;
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--layer8d-primary) 0%, var(--layer8d-primary-dark) 100%);
+    color: #ffffff;
 }
 
 .k8s-section .modal-title {
@@ -262,7 +262,7 @@
 .k8s-section .modal-close {
     background: none;
     border: none;
-    color: white;
+    color: #ffffff;
     font-size: 24px;
     cursor: pointer;
     padding: 0;
@@ -279,7 +279,7 @@
     padding: 24px;
     overflow-y: auto;
     max-height: calc(85vh - 70px);
-    color: #2d3748;
+    color: var(--layer8d-text-dark);
 }
 
 /* K8s Modal Tabs */
@@ -287,7 +287,7 @@
     display: flex;
     gap: 4px;
     margin-bottom: 24px;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--layer8d-border);
     flex-wrap: wrap;
 }
 
@@ -296,7 +296,7 @@
     background: transparent;
     border: none;
     border-bottom: 3px solid transparent;
-    color: #64748b;
+    color: var(--layer8d-text-muted);
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
@@ -306,12 +306,12 @@
 }
 
 .k8s-section .modal-tab:hover {
-    color: #0ea5e9;
+    color: var(--layer8d-primary);
 }
 
 .k8s-section .modal-tab.active {
-    color: #0ea5e9;
-    border-bottom-color: #0ea5e9;
+    color: var(--layer8d-primary);
+    border-bottom-color: var(--layer8d-primary);
     font-weight: 600;
 }
 
@@ -333,21 +333,21 @@
 
 .k8s-section .detail-section h3 {
     font-size: 1.1rem;
-    color: #1e293b;
+    color: var(--layer8d-text-dark);
     margin-bottom: 16px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--layer8d-border);
 }
 
 .k8s-section .detail-section h4 {
     font-size: 1rem;
-    color: #0ea5e9;
+    color: var(--layer8d-primary);
     margin-bottom: 12px;
 }
 
 .k8s-section .detail-section h5 {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--layer8d-text-medium);
     margin-top: 16px;
     margin-bottom: 8px;
 }
@@ -370,7 +370,7 @@
 
 .k8s-section .detail-label {
     font-size: 0.8rem;
-    color: #64748b;
+    color: var(--layer8d-text-muted);
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -378,13 +378,14 @@
 
 .k8s-section .detail-value {
     font-size: 0.95rem;
-    color: #1e293b;
+    color: var(--layer8d-text-dark);
 }
 
 .k8s-section .detail-value code {
     font-family: 'Monaco', 'Menlo', monospace;
     font-size: 0.85rem;
-    background: #f1f5f9;
+    background: var(--layer8d-bg-input);
+    color: var(--layer8d-text-dark);
     padding: 2px 6px;
     border-radius: 4px;
 }
@@ -400,26 +401,27 @@
 .k8s-section .detail-table td {
     padding: 10px 12px;
     text-align: left;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--layer8d-border);
 }
 
 .k8s-section .detail-table th {
-    background: #f8fafc;
+    background: var(--layer8d-bg-light);
     font-weight: 600;
-    color: #64748b;
+    color: var(--layer8d-text-muted);
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .k8s-section .detail-table td {
-    color: #1e293b;
+    color: var(--layer8d-text-dark);
 }
 
 .k8s-section .detail-table code {
     font-family: 'Monaco', 'Menlo', monospace;
     font-size: 0.85rem;
-    background: #f1f5f9;
+    background: var(--layer8d-bg-input);
+    color: var(--layer8d-text-dark);
     padding: 2px 6px;
     border-radius: 4px;
 }

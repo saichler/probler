@@ -60,18 +60,18 @@
 
 /* Metric Cards */
 .dashboard-section .metric-card {
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--layer8d-bg-card);
+    border: 1px solid var(--layer8d-border);
     border-radius: 0;
     padding: 20px;
     position: relative;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--layer8d-shadow-sm);
 }
 
 .dashboard-section .metric-card:hover {
-    border-color: #0ea5e9;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border-color: var(--layer8d-primary);
+    box-shadow: var(--layer8d-shadow-lg);
     transform: translateY(-8px);
 }
 
@@ -84,7 +84,7 @@
 
 .dashboard-section .metric-card-title {
     font-size: 10px;
-    color: #718096;
+    color: var(--layer8d-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.8px;
     font-weight: 700;
@@ -97,7 +97,7 @@
 
 .dashboard-section .metric-card-value {
     font-size: 28px;
-    color: #0ea5e9;
+    color: var(--layer8d-primary);
     font-weight: 900;
     font-family: 'Roboto Mono', monospace;
     margin-bottom: 8px;
@@ -107,7 +107,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 10px;
-    color: #4a5568;
+    color: var(--layer8d-text-medium);
     text-transform: uppercase;
     letter-spacing: 0.4px;
 }
@@ -145,7 +145,7 @@
 }
 
 .dashboard-section .metric-status.unavailable {
-    color: #a0aec0;
+    color: var(--layer8d-text-light);
     font-style: italic;
 }
 
@@ -153,7 +153,7 @@
 .dashboard-section .section-title {
     font-size: 18px;
     font-weight: 700;
-    color: #2d3748;
+    color: var(--layer8d-text-dark);
     margin: 0 0 15px 0;
     text-transform: uppercase;
     letter-spacing: 1px;

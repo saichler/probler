@@ -17,113 +17,61 @@ package main
 
 import (
 	"github.com/saichler/l8alarms/go/alm/ui"
-	"github.com/saichler/l8bus/go/overlay/health"
-	"github.com/saichler/l8bus/go/overlay/vnic"
+	common2 "github.com/saichler/l8common/go/common"
 	"github.com/saichler/l8events/go/types/l8events"
 	"github.com/saichler/l8logfusion/go/types/l8logf"
 	"github.com/saichler/l8pollaris/go/types/l8tpollaris"
-	"github.com/saichler/l8services/go/services/csvexport"
 	"github.com/saichler/l8topology/go/types/l8topo"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8api"
 	"github.com/saichler/l8types/go/types/l8health"
 	"github.com/saichler/l8types/go/types/l8web"
-	"github.com/saichler/l8utils/go/utils/ipsegment"
-	"github.com/saichler/l8web/go/web/server"
-	"github.com/saichler/probler/go/prob/common"
 	"github.com/saichler/probler/go/types"
 	types2 "github.com/saichler/probler/go/types"
 )
 
 func main() {
-	startWebServer()
-}
-
-func startWebServer() {
-
-	nic1 := createVnic(false)
-	csvexport.Activate(nic1)
-	nic2 := createVnic(true)
-
-	server.UpdateLoginJsonPrefix(nic1.Resources().SysConfig().WebConfig.EndPointPrefix)
-
-	serverConfig := &server.RestServerConfig{
-		Host:           ipsegment.MachineIP,
-		Port:           int(nic1.Resources().SysConfig().WebConfig.WebPort),
-		Authentication: true,
-		CertName:       nic1.Resources().SysConfig().WebConfig.Cert,
-		Prefix:         nic1.Resources().SysConfig().WebConfig.EndPointPrefix,
-	}
-	svr, err := server.NewRestServer(serverConfig)
-	if err != nil {
-		panic(err)
-	}
-
-	hs, ok := nic1.Resources().Services().ServiceHandler(health.ServiceName, 0)
-	if ok {
-		ws := hs.WebService()
-		svr.RegisterWebService(ws, nic1)
-	}
-
-	//Activate the webpoints service
-	sla := ifs.NewServiceLevelAgreement(&server.WebService{}, ifs.WebService, 0, false, nil)
-	sla.SetArgs(svr, nic2)
-	nic1.Resources().Services().Activate(sla, nic1)
-
-	nic1.Resources().Logger().Info("Web Server Started!")
-
+	svr := common2.CreateWebServer("web", RegisterTypes)
 	svr.Start()
 }
 
-func createVnic(logsVnet bool) ifs.IVNic {
-	resources := common.CreateResources("web")
+func RegisterTypes(res ifs.IResources) {
+	ui.RegisterAlmTypes(res)
 
-	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types.NetworkDevice{}, "Id")
-	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types2.K8SCluster{}, "Name")
-	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&types2.GpuDevice{}, "Id")
+	res.Introspector().Decorators().AddPrimaryKeyDecorator(&types.NetworkDevice{}, "Id")
+	res.Introspector().Decorators().AddPrimaryKeyDecorator(&types2.K8SCluster{}, "Name")
+	res.Introspector().Decorators().AddPrimaryKeyDecorator(&types2.GpuDevice{}, "Id")
 
-	if logsVnet {
-		resources.SysConfig().VnetPort = resources.Security().NewSystemConfig().LogConfig.VnetPort
-	}
+	res.Registry().Register(&l8tpollaris.L8Pollaris{})
+	res.Registry().Register(&l8tpollaris.L8PTarget{})
+	res.Registry().Register(&l8tpollaris.L8PTargetList{})
+	res.Registry().Register(&types.NetworkDevice{})
+	res.Registry().Register(&types.NetworkDeviceList{})
+	res.Registry().Register(&types2.K8SCluster{})
+	res.Registry().Register(&types2.K8SClusterList{})
+	res.Registry().Register(&l8api.L8Query{})
+	res.Registry().Register(&l8health.L8Top{})
+	res.Registry().Register(&l8web.L8Empty{})
+	res.Registry().Register(&l8tpollaris.CJob{})
+	res.Registry().Register(&l8health.L8Health{})
+	res.Registry().Register(&l8health.L8HealthList{})
+	res.Registry().Register(&l8logf.L8File{})
+	res.Registry().Register(&l8tpollaris.TargetAction{})
 
-	nic := vnic.NewVirtualNetworkInterface(resources, nil)
-	nic.Resources().SysConfig().KeepAliveIntervalSeconds = 60
-	nic.Start()
-	nic.WaitForConnection()
+	res.Registry().Register(&l8topo.L8Topology{})
+	res.Registry().Register(&l8topo.L8TopologyQuery{})
 
-	ui.RegisterAlmTypes(resources)
+	res.Registry().Register(&types2.GpuDevice{})
+	res.Registry().Register(&types2.GpuDeviceList{})
 
-	nic.Resources().Registry().Register(&l8tpollaris.L8Pollaris{})
-	nic.Resources().Registry().Register(&l8tpollaris.L8PTarget{})
-	nic.Resources().Registry().Register(&l8tpollaris.L8PTargetList{})
-	nic.Resources().Registry().Register(&types.NetworkDevice{})
-	nic.Resources().Registry().Register(&types.NetworkDeviceList{})
-	nic.Resources().Registry().Register(&types2.K8SCluster{})
-	nic.Resources().Registry().Register(&types2.K8SClusterList{})
-	nic.Resources().Registry().Register(&l8api.L8Query{})
-	nic.Resources().Registry().Register(&l8health.L8Top{})
-	nic.Resources().Registry().Register(&l8web.L8Empty{})
-	nic.Resources().Registry().Register(&l8tpollaris.CJob{})
-	nic.Resources().Registry().Register(&l8health.L8Health{})
-	nic.Resources().Registry().Register(&l8health.L8HealthList{})
-	nic.Resources().Registry().Register(&l8logf.L8File{})
-	nic.Resources().Registry().Register(&l8tpollaris.TargetAction{})
+	res.Introspector().Decorators().AddPrimaryKeyDecorator(&l8topo.L8TopologyMetadata{}, "ServiceName", "ServiceArea")
+	res.Introspector().Decorators().AddPrimaryKeyDecorator(&l8tpollaris.L8PTarget{}, "TargetId")
 
-	nic.Resources().Registry().Register(&l8topo.L8Topology{})
-	nic.Resources().Registry().Register(&l8topo.L8TopologyQuery{})
+	res.Registry().Register(&l8topo.L8TopologyMetadataList{})
+	res.Registry().Register(&l8topo.L8TopologyMetadata{})
 
-	nic.Resources().Registry().Register(&types2.GpuDevice{})
-	nic.Resources().Registry().Register(&types2.GpuDeviceList{})
+	res.Introspector().Decorators().AddPrimaryKeyDecorator(&l8events.EventRecord{}, "EventId")
+	res.Registry().Register(&l8events.EventRecordList{})
 
-	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&l8topo.L8TopologyMetadata{}, "ServiceName", "ServiceArea")
-	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&l8tpollaris.L8PTarget{}, "TargetId")
-
-	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadataList{})
-	nic.Resources().Registry().Register(&l8topo.L8TopologyMetadata{})
-
-	resources.Introspector().Decorators().AddPrimaryKeyDecorator(&l8events.EventRecord{}, "EventId")
-	nic.Resources().Registry().Register(&l8events.EventRecordList{})
-
-	nic.Resources().Introspector().Decorators().AddPrimaryKeyDecorator(&l8logf.L8File{}, "Path", "Name")
-	return nic
+	res.Introspector().Decorators().AddPrimaryKeyDecorator(&l8logf.L8File{}, "Path", "Name")
 }

@@ -1,34 +1,34 @@
 /* L8 Topology Browser - NOC Theme */
-/* Styled to match Probler datacenter operation management */
+/* Local vars remap to --layer8d-* tokens so theme switching propagates. */
 
 :root {
     /* Primary Colors - NOC Theme */
-    --primary-color: #0ea5e9;
-    --primary-dark: #0284c7;
+    --primary-color: var(--layer8d-primary, #0ea5e9);
+    --primary-dark: var(--layer8d-primary-dark, #0284c7);
     --primary-light: #38bdf8;
 
     /* Status Colors */
-    --status-up: #00c853;
-    --status-down: #ff3d00;
-    --status-partial: #ffc107;
+    --status-up: var(--layer8d-success, #00c853);
+    --status-down: var(--layer8d-error, #ff3d00);
+    --status-partial: var(--layer8d-warning, #ffc107);
     --status-invalid: #757575;
 
     /* Text Colors */
-    --text-primary: #2d3748;
-    --text-secondary: #718096;
-    --text-muted: #a0aec0;
+    --text-primary: var(--layer8d-text-dark, #2d3748);
+    --text-secondary: var(--layer8d-text-muted, #718096);
+    --text-muted: var(--layer8d-text-light, #a0aec0);
     --text-light: #ffffff;
 
     /* Background Colors */
     --bg-body: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-    --bg-header: rgba(255, 255, 255, 0.95);
-    --bg-panel: #ffffff;
-    --bg-card: #f7fafc;
+    --bg-header: var(--layer8d-bg-card, rgba(255, 255, 255, 0.95));
+    --bg-panel: var(--layer8d-bg-card, #ffffff);
+    --bg-card: var(--layer8d-bg-light, #f7fafc);
     --bg-content: #2d3748;
 
     /* Border Colors */
-    --border-light: #e2e8f0;
-    --border-hover: #0ea5e9;
+    --border-light: var(--layer8d-border, #e2e8f0);
+    --border-hover: var(--layer8d-primary, #0ea5e9);
 
     /* Shadows */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);

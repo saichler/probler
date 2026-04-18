@@ -92,7 +92,7 @@ h1 {
     font-size: 12px;
     min-width: 220px;
     cursor: pointer;
-    background: white;
+    background: var(--bg-panel);
     color: var(--text-primary);
     font-family: 'Roboto Mono', monospace;
     transition: all 0.3s ease;

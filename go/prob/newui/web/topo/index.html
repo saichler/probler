@@ -8,6 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Topologies View - Topology Visualization</title>
     <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="../l8ui/shared/layer8d-theme-tokens.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/header.css">
@@ -22,6 +23,26 @@
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="css/table.css">
     <link rel="stylesheet" href="css/scrollbar.css">
+    <script>
+        (function() {
+            function applyTheme(theme) {
+                if (theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                }
+            }
+            try {
+                var parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                applyTheme(parentTheme);
+            } catch (e) { /* cross-origin safety net */ }
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'probler-theme-change') {
+                    applyTheme(event.data.theme);
+                }
+            });
+        })();
+    </script>
 </head>
 <body>
     <div class="container">

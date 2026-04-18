@@ -4,8 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Targets Management</title>
+    <link rel="stylesheet" href="../l8ui/shared/layer8d-theme-tokens.css">
+    <link rel="stylesheet" href="../l8ui/shared/layer8d-theme.css">
     <link rel="stylesheet" href="../l8ui/edit_table/layer8d-table.css">
     <link rel="stylesheet" href="targets.css">
+    <script>
+        (function() {
+            function applyTheme(theme) {
+                if (theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                }
+            }
+            try {
+                var parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                applyTheme(parentTheme);
+            } catch (e) { /* cross-origin safety net */ }
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'probler-theme-change') {
+                    applyTheme(event.data.theme);
+                }
+            });
+        })();
+    </script>
 </head>
 <body>
     <div class="container">

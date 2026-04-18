@@ -190,6 +190,28 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     });
 
+    // Broadcast theme changes to all iframes so embedded sections (dashboard, targets, topo)
+    // pick up light/dark mode switches from the top-level theme switcher.
+    function broadcastTheme() {
+        var theme = document.documentElement.getAttribute('data-theme') || null;
+        var iframes = document.querySelectorAll('iframe');
+        iframes.forEach(function(iframe) {
+            try {
+                iframe.contentWindow.postMessage({ type: 'probler-theme-change', theme: theme }, '*');
+            } catch (e) { /* iframe not ready or cross-origin */ }
+        });
+    }
+    var themeObserver = new MutationObserver(broadcastTheme);
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    document.addEventListener('load', function(event) {
+        if (event.target && event.target.tagName === 'IFRAME') {
+            try {
+                var theme = document.documentElement.getAttribute('data-theme') || null;
+                event.target.contentWindow.postMessage({ type: 'probler-theme-change', theme: theme }, '*');
+            } catch (e) { /* ignore */ }
+        }
+    }, true);
+
     // Listen for modal open/close events from iframes
     window.addEventListener('message', function(event) {
         if (!event.data || !event.data.type) return;

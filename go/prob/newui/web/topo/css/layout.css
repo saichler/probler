@@ -13,7 +13,7 @@ main {
 
 .topology-view {
     flex: 1;
-    background: white;
+    background: var(--bg-panel);
     border-radius: 16px;
     box-shadow: var(--shadow-md);
     overflow: hidden;
@@ -29,7 +29,7 @@ main {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: white;
+    background: var(--bg-panel);
     padding: 8px 12px;
     border-radius: 8px;
     box-shadow: var(--shadow-md);
@@ -40,7 +40,7 @@ main {
     width: 32px;
     height: 32px;
     border: 1px solid var(--border-light);
-    background: white;
+    background: var(--bg-panel);
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
@@ -75,7 +75,7 @@ main {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: white;
+    background: var(--bg-panel);
     color: var(--text-primary);
     cursor: pointer;
     font-family: 'Roboto Mono', monospace;
@@ -108,7 +108,7 @@ main {
     width: 100%;
     height: 100%;
     position: relative;
-    background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+    background: var(--bg-panel);
     overflow: hidden;
     display: flex;
     justify-content: center;
