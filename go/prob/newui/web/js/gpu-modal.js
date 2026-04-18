@@ -22,16 +22,8 @@ function formatMiB(mib) {
 
 // Show GPU device detail modal
 function showGPUDetailModal(device) {
-    var statusClass = 'status-' + (device.status || 'unknown');
-    var statusText = device.status || 'Unknown';
     var esc = Layer8DUtils.escapeHtml;
-
-    var titleHtml = '<div class="probler-popup-title-wrapper">' +
-        '<h3 class="probler-popup-title">' + esc(device.hostname || device.id) + '</h3>' +
-        '<span class="probler-popup-status-badge ' + statusClass + '">' +
-        esc(statusText) + '</span>' +
-        '</div>';
-
+    var titleHtml = ProblerDom.popupTitle(device.hostname || device.id, device.status);
     var content = buildGpuDeviceContent(device, esc);
 
     Layer8DPopup.show({
@@ -146,11 +138,10 @@ function showGpuDetailPopup(gpuIndex) {
     var gpuName = gpuStripQuotes(gpu.deviceName) || 'GPU ' + gpuIndex;
 
     var healthStatus = gpu.health ? ProblerGpus.enums.mapHealthStatus(gpu.health.thermalStatus) : 'unknown';
-    var titleHtml = '<div class="probler-popup-title-wrapper">' +
-        '<h3 class="probler-popup-title">GPU ' + (gpu.gpuIndex !== undefined ? gpu.gpuIndex : gpuIndex) +
-        ' · ' + esc(gpuName) + '</h3>' +
-        '<span class="probler-popup-status-badge status-' + healthStatus + '">' +
-        esc(healthStatus) + '</span></div>';
+    var titleHtml = ProblerDom.popupTitle(
+        'GPU ' + (gpu.gpuIndex !== undefined ? gpu.gpuIndex : gpuIndex) + ' \u00B7 ' + gpuName,
+        healthStatus
+    );
 
     var content = buildSingleGpuContent(gpu, esc);
 
@@ -351,10 +342,5 @@ function buildGpuSoftwareTab(device, esc) {
     '</div>';
 }
 
-// Helper to build a detail row
-function buildDetailRow(label, value) {
-    return '<div class="detail-row">' +
-        '<span class="detail-label">' + label + '</span>' +
-        '<span class="detail-value">' + (value || '') + '</span>' +
-    '</div>';
-}
+// Delegate to shared helper
+var buildDetailRow = ProblerDom.detailRow;

@@ -5,16 +5,16 @@
 // Global storage for cluster data
 let k8sClustersData = {};
 
-// Resource definitions used by nav bar and content generation
+// Resource definitions used by nav bar, content generation, and table init
 const K8S_RESOURCES = [
-    { key: 'nodes', label: 'Nodes' },
-    { key: 'pods', label: 'Pods' },
-    { key: 'deployments', label: 'Deployments' },
-    { key: 'statefulsets', label: 'StatefulSets' },
-    { key: 'daemonsets', label: 'DaemonSets' },
-    { key: 'services', label: 'Services' },
-    { key: 'namespaces', label: 'Namespaces' },
-    { key: 'networkpolicies', label: 'NetPolicies' }
+    { key: 'nodes', label: 'Nodes', model: 'Node', showFn: 'showNodeDetailModal' },
+    { key: 'pods', label: 'Pods', model: 'Pod', showFn: 'showPodDetailModal' },
+    { key: 'deployments', label: 'Deployments', model: 'Deployment', showFn: 'showDeploymentDetailModal' },
+    { key: 'statefulsets', label: 'StatefulSets', model: 'StatefulSet', showFn: 'showStatefulSetDetailModal' },
+    { key: 'daemonsets', label: 'DaemonSets', model: 'DaemonSet', showFn: 'showDaemonSetDetailModal' },
+    { key: 'services', label: 'Services', model: 'Service', showFn: 'showServiceDetailModal' },
+    { key: 'namespaces', label: 'Namespaces', model: 'Namespace', showFn: 'showNamespaceDetailModal' },
+    { key: 'networkpolicies', label: 'NetPolicies', model: 'NetworkPolicy', showFn: 'showNetworkPolicyDetailModal' }
 ];
 
 // Fetch Kubernetes cluster data from API
@@ -46,139 +46,29 @@ function getResourceCount(clusterData, resourceKey) {
     return clusterData[resourceKey] ? Object.keys(clusterData[resourceKey]).length : 0;
 }
 
-// Initialize cluster tables with real data
+// Create a single resource table for a cluster
+function initResourceTable(clusterName, resource, data) {
+    var containerId = resource.key + '-' + clusterName + '-table';
+    if (!document.getElementById(containerId)) return;
+    var showFn = window[resource.showFn];
+    var table = new Layer8DTable({
+        containerId: containerId,
+        columns: ProblerK8s.columns[resource.model],
+        data: data,
+        pageSize: 10,
+        sortable: true,
+        filterable: true,
+        onRowClick: function(item) { showFn(item, clusterName); }
+    });
+    table.init();
+}
+
+// Initialize all resource tables for a cluster
 function initializeClusterTables(clusterName, clusterData) {
     k8sClustersData[clusterName] = clusterData;
-
-    const nodes = transformObjectToArray(clusterData.nodes);
-    const pods = transformObjectToArray(clusterData.pods);
-    const deployments = transformObjectToArray(clusterData.deployments);
-    const statefulsets = transformObjectToArray(clusterData.statefulsets);
-    const daemonsets = transformObjectToArray(clusterData.daemonsets);
-    const services = transformObjectToArray(clusterData.services);
-    const namespaces = transformObjectToArray(clusterData.namespaces);
-    const networkpolicies = transformObjectToArray(clusterData.networkpolicies);
-
-    initNodesTable(clusterName, nodes);
-    initPodsTable(clusterName, pods);
-    initDeploymentsTable(clusterName, deployments);
-    initStatefulSetsTable(clusterName, statefulsets);
-    initDaemonSetsTable(clusterName, daemonsets);
-    initServicesTable(clusterName, services);
-    initNamespacesTable(clusterName, namespaces);
-    initNetworkPoliciesTable(clusterName, networkpolicies);
-}
-
-function initNodesTable(clusterName, nodes) {
-    if (!document.getElementById(`nodes-${clusterName}-table`)) return;
-    const nodesTable = new Layer8DTable({
-        containerId: `nodes-${clusterName}-table`,
-        columns: ProblerK8s.columns.Node,
-        data: nodes,
-        pageSize: 10,
-        sortable: true,
-        filterable: true,
-        onRowClick: (node) => showNodeDetailModal(node, clusterName)
+    K8S_RESOURCES.forEach(function(resource) {
+        initResourceTable(clusterName, resource, transformObjectToArray(clusterData[resource.key]));
     });
-    nodesTable.init();
-}
-
-function initPodsTable(clusterName, pods) {
-    if (!document.getElementById(`pods-${clusterName}-table`)) return;
-    const podsTable = new Layer8DTable({
-        containerId: `pods-${clusterName}-table`,
-        columns: ProblerK8s.columns.Pod,
-        data: pods,
-        pageSize: 10,
-        sortable: true,
-        filterable: true,
-        onRowClick: (pod) => showPodDetailModal(pod, clusterName)
-    });
-    podsTable.init();
-}
-
-function initDeploymentsTable(clusterName, deployments) {
-    if (!document.getElementById(`deployments-${clusterName}-table`)) return;
-    const deploymentsTable = new Layer8DTable({
-        containerId: `deployments-${clusterName}-table`,
-        columns: ProblerK8s.columns.Deployment,
-        data: deployments,
-        pageSize: 10,
-        sortable: true,
-        filterable: true,
-        onRowClick: (deployment) => showDeploymentDetailModal(deployment, clusterName)
-    });
-    deploymentsTable.init();
-}
-
-function initStatefulSetsTable(clusterName, statefulsets) {
-    if (!document.getElementById(`statefulsets-${clusterName}-table`)) return;
-    const statefulsetsTable = new Layer8DTable({
-        containerId: `statefulsets-${clusterName}-table`,
-        columns: ProblerK8s.columns.StatefulSet,
-        data: statefulsets,
-        pageSize: 10,
-        sortable: true,
-        filterable: true,
-        onRowClick: (statefulset) => showStatefulSetDetailModal(statefulset, clusterName)
-    });
-    statefulsetsTable.init();
-}
-
-function initDaemonSetsTable(clusterName, daemonsets) {
-    if (!document.getElementById(`daemonsets-${clusterName}-table`)) return;
-    const daemonsetsTable = new Layer8DTable({
-        containerId: `daemonsets-${clusterName}-table`,
-        columns: ProblerK8s.columns.DaemonSet,
-        data: daemonsets,
-        pageSize: 10,
-        sortable: true,
-        filterable: true,
-        onRowClick: (daemonset) => showDaemonSetDetailModal(daemonset, clusterName)
-    });
-    daemonsetsTable.init();
-}
-
-function initServicesTable(clusterName, services) {
-    if (!document.getElementById(`services-${clusterName}-table`)) return;
-    const servicesTable = new Layer8DTable({
-        containerId: `services-${clusterName}-table`,
-        columns: ProblerK8s.columns.Service,
-        data: services,
-        pageSize: 10,
-        sortable: true,
-        filterable: true,
-        onRowClick: (service) => showServiceDetailModal(service, clusterName)
-    });
-    servicesTable.init();
-}
-
-function initNamespacesTable(clusterName, namespaces) {
-    if (!document.getElementById(`namespaces-${clusterName}-table`)) return;
-    const namespacesTable = new Layer8DTable({
-        containerId: `namespaces-${clusterName}-table`,
-        columns: ProblerK8s.columns.Namespace,
-        data: namespaces,
-        pageSize: 10,
-        sortable: true,
-        filterable: true,
-        onRowClick: (namespace) => showNamespaceDetailModal(namespace, clusterName)
-    });
-    namespacesTable.init();
-}
-
-function initNetworkPoliciesTable(clusterName, networkpolicies) {
-    if (!document.getElementById(`networkpolicies-${clusterName}-table`)) return;
-    const networkpoliciesTable = new Layer8DTable({
-        containerId: `networkpolicies-${clusterName}-table`,
-        columns: ProblerK8s.columns.NetworkPolicy,
-        data: networkpolicies,
-        pageSize: 10,
-        sortable: true,
-        filterable: true,
-        onRowClick: (policy) => showNetworkPolicyDetailModal(policy, clusterName)
-    });
-    networkpoliciesTable.init();
 }
 
 // Main Initialization Function

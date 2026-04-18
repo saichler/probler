@@ -14,18 +14,8 @@ function formatMfgDate(hex) {
 // Show device detail modal
 function showDeviceDetailModal(device) {
     const statusClass = 'status-' + device.status;
-    const statusText = device.status || 'Unknown';
-
     const esc = Layer8DUtils.escapeHtml;
-
-    // Build custom title HTML with status badge
-    const titleHtml = '<div class="probler-popup-title-wrapper">' +
-        '<h3 class="probler-popup-title">' + esc(device.name) + '</h3>' +
-        '<span class="probler-popup-status-badge ' + statusClass + '">' +
-        esc(statusText) + '</span>' +
-        '</div>';
-
-    // Build the popup content with tabs
+    const titleHtml = ProblerDom.popupTitle(device.name, device.status);
     const content = buildDeviceContent(device, statusClass, esc);
 
     // Show popup directly

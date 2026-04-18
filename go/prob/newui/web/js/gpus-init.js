@@ -44,14 +44,7 @@ function transformGpuDeviceData(device) {
 
 // Update hero subtitle with device stats
 function updateGpuHeroStats(counts) {
-    if (!counts) return;
-    const heroSubtitle = document.querySelector('.gpu-hero .hero-subtitle');
-    if (heroSubtitle) {
-        const totalDevices = counts.Total || 0;
-        const onlineDevices = counts.Online || 0;
-        const uptime = totalDevices > 0 ? ((onlineDevices / totalDevices) * 100).toFixed(2) : 0;
-        heroSubtitle.textContent = `Real-time monitoring \u2022 ${onlineDevices} Active GPU Servers \u2022 ${uptime}% Uptime`;
-    }
+    ProblerDom.updateHeroStats('.gpu-hero .hero-subtitle', counts, 'GPU Servers');
 }
 
 // Initialize GPU Devices table

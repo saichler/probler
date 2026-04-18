@@ -56,14 +56,7 @@ function transformDeviceData(device) {
 
 // Update hero subtitle with device stats
 function updateNetworkHeroStats(counts) {
-    if (!counts) return;
-    const heroSubtitle = document.querySelector('.network-hero .hero-subtitle');
-    if (heroSubtitle) {
-        const totalDevices = counts.Total || 0;
-        const onlineDevices = counts.Online || 0;
-        const uptime = totalDevices > 0 ? ((onlineDevices / totalDevices) * 100).toFixed(2) : 0;
-        heroSubtitle.textContent = `Real-time monitoring \u2022 ${onlineDevices} Active Devices \u2022 ${uptime}% Uptime`;
-    }
+    ProblerDom.updateHeroStats('.network-hero .hero-subtitle', counts, 'Devices');
 }
 
 // Initialize Network Devices table
