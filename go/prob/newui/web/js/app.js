@@ -147,6 +147,35 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load l8ui configuration (apiPrefix, dateFormat, etc.)
     await Layer8DConfig.load();
 
+    // Load per-type action permissions for the current user.
+    // Helper reads the bearer token inline — see Phase 0.3.
+    await ProblerPermissions.load();
+
+    // Register resolver and apply nav filtering when the filter is available
+    if (typeof Layer8DPermissionFilter !== 'undefined') {
+        // Map probler section keys to the L8UI namespaces whose services back them.
+        // Only L8UI-driven sections (those built with Layer8DModuleFactory) need mapping.
+        var nsMap = { 'system': 'L8Sys', 'alarms': 'Alm' };
+        Layer8DPermissionFilter.registerResolver(function(sectionKey, moduleKey, serviceKey) {
+            var ns = window[nsMap[sectionKey]];
+            if (!ns || !ns.modules || !ns.modules[moduleKey]) return null;
+            var svc = ns.modules[moduleKey].services.find(function(s) { return s.key === serviceKey; });
+            return svc ? svc.model : null;
+        });
+
+        var sidebarModels = {};
+        Object.keys(nsMap).forEach(function(section) {
+            var ns = window[nsMap[section]];
+            if (!ns || !ns.modules) return;
+            var models = [];
+            Object.values(ns.modules).forEach(function(mod) {
+                if (mod.services) mod.services.forEach(function(svc) { if (svc.model) models.push(svc.model); });
+            });
+            sidebarModels[section] = models;
+        });
+        Layer8DPermissionFilter.applyToSidebar(sidebarModels);
+    }
+
     // Set username in header from current session
     const username = sessionStorage.getItem('currentUser') || 'Admin';
     document.querySelector('.username').textContent = username;

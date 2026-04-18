@@ -13,6 +13,8 @@
         async init() {
             if (!Layer8MAuth.requireAuth()) return;
             await Layer8MConfig.load();
+            // Load per-type action permissions for the current user (same helper as desktop)
+            await ProblerPermissions.load();
             this.updateUserInfo();
             this.initSidebar();
 
