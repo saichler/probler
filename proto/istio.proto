@@ -1,0 +1,125 @@
+/*
+ * © 2025 Sharon Aicler (saichler@gmail.com)
+ *
+ * Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package types;
+
+option java_multiple_files = true;
+option java_outer_classname = "Types";
+option java_package = "com.k8s.types";
+option go_package = "./types";
+import "api.proto";
+
+// Istio Service Mesh (SA 18)
+message IstioVirtualService {
+  string namespace = 1;
+  string name = 2;
+  string gateways = 3;
+  string hosts = 4;
+  string age = 5;
+  string cluster_name = 100;
+  string key = 101;
+}
+message IstioVirtualServiceList {
+  repeated IstioVirtualService list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message IstioDestinationRule {
+  string namespace = 1;
+  string name = 2;
+  string host = 3;
+  string age = 4;
+  string cluster_name = 100;
+  string key = 101;
+}
+message IstioDestinationRuleList {
+  repeated IstioDestinationRule list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message IstioGateway {
+  string namespace = 1;
+  string name = 2;
+  string servers = 3;
+  string selector = 4;
+  string age = 5;
+  string cluster_name = 100;
+  string key = 101;
+}
+message IstioGatewayList {
+  repeated IstioGateway list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message IstioServiceEntry {
+  string namespace = 1;
+  string name = 2;
+  string hosts = 3;
+  string location = 4;
+  string resolution = 5;
+  string ports = 6;
+  string age = 7;
+  string cluster_name = 100;
+  string key = 101;
+}
+message IstioServiceEntryList {
+  repeated IstioServiceEntry list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message IstioPeerAuthentication {
+  string namespace = 1;
+  string name = 2;
+  string mode = 3;
+  string age = 4;
+  string cluster_name = 100;
+  string key = 101;
+}
+message IstioPeerAuthenticationList {
+  repeated IstioPeerAuthentication list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message IstioAuthorizationPolicy {
+  string namespace = 1;
+  string name = 2;
+  string action = 3;
+  string age = 4;
+  string cluster_name = 100;
+  string key = 101;
+}
+message IstioAuthorizationPolicyList {
+  repeated IstioAuthorizationPolicy list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message IstioSidecar {
+  string namespace = 1;
+  string name = 2;
+  string age = 3;
+  string cluster_name = 100;
+  string key = 101;
+}
+message IstioSidecarList {
+  repeated IstioSidecar list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message IstioEnvoyFilter {
+  string namespace = 1;
+  string name = 2;
+  string age = 3;
+  string cluster_name = 100;
+  string key = 101;
+}
+message IstioEnvoyFilterList {
+  repeated IstioEnvoyFilter list = 1;
+  l8api.L8MetaData metadata = 2;
+}

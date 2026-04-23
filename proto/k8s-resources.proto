@@ -1,0 +1,246 @@
+/*
+ * © 2025 Sharon Aicler (saichler@gmail.com)
+ *
+ * Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package types;
+
+option java_multiple_files = true;
+option java_outer_classname = "Types";
+option java_package = "com.k8s.types";
+option go_package = "./types";
+import "api.proto";
+
+enum K8SPvPhase {
+  K8S_PV_PHASE_UNSPECIFIED = 0;
+  K8S_PV_PHASE_AVAILABLE = 1;
+  K8S_PV_PHASE_BOUND = 2;
+  K8S_PV_PHASE_RELEASED = 3;
+  K8S_PV_PHASE_FAILED = 4;
+}
+
+// Storage (SA 12)
+message K8SPersistentVolume {
+  string name = 1;
+  string capacity = 2;
+  string access_modes = 3;
+  string reclaim_policy = 4;
+  K8SPvPhase status = 5;
+  string claim = 6;
+  string storage_class = 7;
+  string reason = 8;
+  string age = 9;
+  string volume_mode = 10;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SPersistentVolumeList {
+  repeated K8SPersistentVolume list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SPersistentVolumeClaim {
+  string namespace = 1;
+  string name = 2;
+  K8SPvPhase status = 3;
+  string volume = 4;
+  string capacity = 5;
+  string access_modes = 6;
+  string storage_class = 7;
+  string volume_mode = 8;
+  string age = 9;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SPersistentVolumeClaimList {
+  repeated K8SPersistentVolumeClaim list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SStorageClass {
+  string name = 1;
+  string provisioner = 2;
+  string reclaim_policy = 3;
+  string volume_binding_mode = 4;
+  bool allow_volume_expansion = 5;
+  string age = 6;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SStorageClassList {
+  repeated K8SStorageClass list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+
+// Configuration (SA 13)
+message K8SConfigMap {
+  string namespace = 1;
+  string name = 2;
+  int32 data_count = 3;
+  string age = 4;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SConfigMapList {
+  repeated K8SConfigMap list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SSecret {
+  string namespace = 1;
+  string name = 2;
+  string type = 3;
+  int32 data_count = 4;
+  string age = 5;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SSecretList {
+  repeated K8SSecret list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SResourceQuota {
+  string namespace = 1;
+  string name = 2;
+  string age = 3;
+  string request_cpu = 4;
+  string request_memory = 5;
+  string limit_cpu = 6;
+  string limit_memory = 7;
+  string used_request_cpu = 8;
+  string used_request_memory = 9;
+  string used_limit_cpu = 10;
+  string used_limit_memory = 11;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SResourceQuotaList {
+  repeated K8SResourceQuota list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SLimitRange {
+  string namespace = 1;
+  string name = 2;
+  string age = 3;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SLimitRangeList {
+  repeated K8SLimitRange list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SPodDisruptionBudget {
+  string namespace = 1;
+  string name = 2;
+  string min_available = 3;
+  string max_unavailable = 4;
+  int32 allowed_disruptions = 5;
+  string age = 6;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SPodDisruptionBudgetList {
+  repeated K8SPodDisruptionBudget list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+
+// Access Control (SA 14)
+message K8SServiceAccount {
+  string namespace = 1;
+  string name = 2;
+  int32 secrets = 3;
+  string age = 4;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SServiceAccountList {
+  repeated K8SServiceAccount list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SRole {
+  string namespace = 1;
+  string name = 2;
+  string age = 3;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SRoleList {
+  repeated K8SRole list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SClusterRole {
+  string name = 1;
+  string age = 2;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SClusterRoleList {
+  repeated K8SClusterRole list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SRoleBinding {
+  string namespace = 1;
+  string name = 2;
+  string role_ref = 3;
+  string age = 4;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SRoleBindingList {
+  repeated K8SRoleBinding list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SClusterRoleBinding {
+  string name = 1;
+  string role_ref = 2;
+  string age = 3;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SClusterRoleBindingList {
+  repeated K8SClusterRoleBinding list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+
+// CRDs (SA 19)
+message K8SCRD {
+  string name = 1;
+  string group = 2;
+  string version = 3;
+  string scope = 4;
+  string age = 5;
+  string cluster_name = 100;
+}
+message K8SCRDList {
+  repeated K8SCRD list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+
+// Events (SA 20)
+message K8SEvent {
+  string namespace = 1;
+  string name = 2;
+  string type = 3;
+  string reason = 4;
+  string object = 5;
+  string message = 6;
+  string source = 7;
+  int32 count = 8;
+  string first_seen = 9;
+  string last_seen = 10;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SEventList {
+  repeated K8SEvent list = 1;
+  l8api.L8MetaData metadata = 2;
+}

@@ -1,0 +1,495 @@
+/*
+ * © 2025 Sharon Aicler (saichler@gmail.com)
+ *
+ * Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+package types;
+
+option java_multiple_files = true;
+option java_outer_classname = "KubernetesCommon";
+option java_package = "com.inventory.types";
+option go_package = "./types";
+
+// Common Kubernetes metadata
+message ObjectMeta {
+  string name = 1;
+  string namespace = 2;
+  string uid = 3;
+  string resource_version = 4;
+  int64 generation = 5;
+  string creation_timestamp = 6;
+  string deletion_timestamp = 7;
+  int64 deletion_grace_period_seconds = 8;
+  map<string, string> labels = 9;
+  map<string, string> annotations = 10;
+  repeated OwnerReference owner_references = 11;
+  repeated string finalizers = 12;
+}
+
+message OwnerReference {
+  string api_version = 1;
+  string kind = 2;
+  string name = 3;
+  string uid = 4;
+  bool controller = 5;
+  bool block_owner_deletion = 6;
+}
+
+message ObjectStatus {
+  repeated KCondition conditions = 1;
+  string phase = 2;
+  string message = 3;
+  string reason = 4;
+  int32 observed_generation = 5;
+}
+
+message KCondition {
+  string type = 1;
+  string status = 2;
+  string last_transition_time = 3;
+  string last_update_time = 4;
+  string reason = 5;
+  string message = 6;
+}
+
+message ObjectReference {
+  string kind = 1;
+  string namespace = 2;
+  string name = 3;
+  string uid = 4;
+  string api_version = 5;
+  string resource_version = 6;
+  string field_path = 7;
+}
+
+message LabelSelector {
+  map<string, string> match_labels = 1;
+  repeated LabelSelectorRequirement match_expressions = 2;
+}
+
+message LabelSelectorRequirement {
+  string key = 1;
+  string operator = 2;
+  repeated string values = 3;
+}
+
+message TypedLocalObjectReference {
+  string api_group = 1;
+  string kind = 2;
+  string name = 3;
+}
+
+message ResourceRequirements {
+  map<string, string> limits = 1;
+  map<string, string> requests = 2;
+}
+
+// Pod specification and sub-types
+
+message PodSpec {
+  repeated Container containers = 1;
+  repeated Container init_containers = 2;
+  string restart_policy = 3;
+  int64 termination_grace_period_seconds = 4;
+  int64 active_deadline_seconds = 5;
+  string dns_policy = 6;
+  map<string, string> node_selector = 7;
+  string service_account_name = 8;
+  string node_name = 9;
+  bool host_network = 10;
+  bool host_pid = 11;
+  bool host_ipc = 12;
+  SecurityContext security_context = 13;
+  repeated Volume volumes = 14;
+  repeated Toleration tolerations = 15;
+  Affinity affinity = 16;
+  string scheduler_name = 17;
+}
+
+message Container {
+  string name = 1;
+  string image = 2;
+  string image_pull_policy = 3;
+  repeated string command = 4;
+  repeated string args = 5;
+  repeated ContainerPort ports = 6;
+  repeated EnvVar env = 7;
+  ResourceRequirements resources = 8;
+  repeated VolumeMount volume_mounts = 9;
+  Probe liveness_probe = 10;
+  Probe readiness_probe = 11;
+  Probe startup_probe = 12;
+  SecurityContext security_context = 13;
+  string working_dir = 14;
+  bool stdin = 15;
+  bool stdin_once = 16;
+  bool tty = 17;
+}
+
+message ContainerPort {
+  string name = 1;
+  int32 host_port = 2;
+  int32 container_port = 3;
+  string protocol = 4;
+  string host_ip = 5;
+}
+
+message EnvVar {
+  string name = 1;
+  string value = 2;
+  EnvVarSource value_from = 3;
+}
+
+message EnvVarSource {
+  FieldRef field_ref = 1;
+  ResourceFieldRef resource_field_ref = 2;
+  ConfigMapKeyRef config_map_key_ref = 3;
+  SecretKeyRef secret_key_ref = 4;
+}
+
+message FieldRef {
+  string api_version = 1;
+  string field_path = 2;
+}
+
+message ResourceFieldRef {
+  string container_name = 1;
+  string resource = 2;
+  string divisor = 3;
+}
+
+message ConfigMapKeyRef {
+  string name = 1;
+  string key = 2;
+  bool optional = 3;
+}
+
+message SecretKeyRef {
+  string name = 1;
+  string key = 2;
+  bool optional = 3;
+}
+
+message VolumeMount {
+  string name = 1;
+  bool read_only = 2;
+  string mount_path = 3;
+  string sub_path = 4;
+  string mount_propagation = 5;
+  string sub_path_expr = 6;
+}
+
+message Probe {
+  HTTPGetAction http_get = 1;
+  TCPSocketAction tcp_socket = 2;
+  ExecAction exec = 3;
+  int32 initial_delay_seconds = 4;
+  int32 timeout_seconds = 5;
+  int32 period_seconds = 6;
+  int32 success_threshold = 7;
+  int32 failure_threshold = 8;
+}
+
+message HTTPGetAction {
+  string path = 1;
+  string port = 2;
+  string host = 3;
+  string scheme = 4;
+  repeated HTTPHeader http_headers = 5;
+}
+
+message HTTPHeader {
+  string name = 1;
+  string value = 2;
+}
+
+message TCPSocketAction {
+  string port = 1;
+  string host = 2;
+}
+
+message ExecAction {
+  repeated string command = 1;
+}
+
+message SecurityContext {
+  bool run_as_non_root = 1;
+  int64 run_as_user = 2;
+  int64 run_as_group = 3;
+  int64 fs_group = 4;
+  string fs_group_change_policy = 5;
+  SELinuxOptions se_linux_options = 6;
+  WindowsOptions windows_options = 7;
+  string seccomp_profile_type = 8;
+  string seccomp_profile_localhost_profile = 9;
+}
+
+message SELinuxOptions {
+  string user = 1;
+  string role = 2;
+  string type = 3;
+  string level = 4;
+}
+
+message WindowsOptions {
+  string gmsa_credential_spec_name = 1;
+  string gmsa_credential_spec = 2;
+  string run_as_user_name = 3;
+}
+
+// Volume types
+
+message Volume {
+  string name = 1;
+  VolumeSource volume_source = 2;
+}
+
+message VolumeSource {
+  HostPathVolumeSource host_path = 1;
+  EmptyDirVolumeSource empty_dir = 2;
+  SecretVolumeSource secret = 3;
+  ConfigMapVolumeSource config_map = 4;
+  PersistentVolumeClaimVolumeSource persistent_volume_claim = 5;
+  ProjectedVolumeSource projected = 6;
+}
+
+message HostPathVolumeSource {
+  string path = 1;
+  string type = 2;
+}
+
+message EmptyDirVolumeSource {
+  string medium = 1;
+  string size_limit = 2;
+}
+
+message SecretVolumeSource {
+  string secret_name = 1;
+  repeated KeyToPath items = 2;
+  int32 default_mode = 3;
+  bool optional = 4;
+}
+
+message ConfigMapVolumeSource {
+  string name = 1;
+  repeated KeyToPath items = 2;
+  int32 default_mode = 3;
+  bool optional = 4;
+}
+
+message KeyToPath {
+  string key = 1;
+  string path = 2;
+  int32 mode = 3;
+}
+
+message PersistentVolumeClaimVolumeSource {
+  string claim_name = 1;
+  bool read_only = 2;
+}
+
+message ProjectedVolumeSource {
+  repeated VolumeProjection sources = 1;
+  int32 default_mode = 2;
+}
+
+message VolumeProjection {
+  SecretProjection secret = 1;
+  ConfigMapProjection config_map = 2;
+  DownwardAPIProjection downward_api = 3;
+  ServiceAccountTokenProjection service_account_token = 4;
+}
+
+message SecretProjection {
+  string name = 1;
+  repeated KeyToPath items = 2;
+  bool optional = 3;
+}
+
+message ConfigMapProjection {
+  string name = 1;
+  repeated KeyToPath items = 2;
+  bool optional = 3;
+}
+
+message DownwardAPIProjection {
+  repeated DownwardAPIVolumeFile items = 1;
+}
+
+message DownwardAPIVolumeFile {
+  string path = 1;
+  FieldRef field_ref = 2;
+  ResourceFieldRef resource_field_ref = 3;
+  int32 mode = 4;
+}
+
+message ServiceAccountTokenProjection {
+  string audience = 1;
+  int64 expiration_seconds = 2;
+  string path = 3;
+}
+
+// Scheduling types
+
+message Toleration {
+  string key = 1;
+  string operator = 2;
+  string value = 3;
+  string effect = 4;
+  int64 toleration_seconds = 5;
+}
+
+message Affinity {
+  NodeAffinity node_affinity = 1;
+  PodAffinity pod_affinity = 2;
+  PodAntiAffinity pod_anti_affinity = 3;
+}
+
+message NodeAffinity {
+  NodeSelector required_during_scheduling_ignored_during_execution = 1;
+  repeated PreferredSchedulingTerm preferred_during_scheduling_ignored_during_execution = 2;
+}
+
+message NodeSelector {
+  repeated NodeSelectorTerm node_selector_terms = 1;
+}
+
+message NodeSelectorTerm {
+  repeated NodeSelectorRequirement match_expressions = 1;
+  repeated NodeSelectorRequirement match_fields = 2;
+}
+
+message NodeSelectorRequirement {
+  string key = 1;
+  string operator = 2;
+  repeated string values = 3;
+}
+
+message PreferredSchedulingTerm {
+  int32 weight = 1;
+  NodeSelectorTerm preference = 2;
+}
+
+message PodAffinity {
+  repeated PodAffinityTerm required_during_scheduling_ignored_during_execution = 1;
+  repeated WeightedPodAffinityTerm preferred_during_scheduling_ignored_during_execution = 2;
+}
+
+message PodAntiAffinity {
+  repeated PodAffinityTerm required_during_scheduling_ignored_during_execution = 1;
+  repeated WeightedPodAffinityTerm preferred_during_scheduling_ignored_during_execution = 2;
+}
+
+message PodAffinityTerm {
+  LabelSelector label_selector = 1;
+  repeated string namespaces = 2;
+  string topology_key = 3;
+  LabelSelector namespace_selector = 4;
+}
+
+message WeightedPodAffinityTerm {
+  int32 weight = 1;
+  PodAffinityTerm pod_affinity_term = 2;
+}
+
+// Pod status types
+
+message PodStatus {
+  string phase = 1;
+  repeated KCondition conditions = 2;
+  string message = 3;
+  string reason = 4;
+  string nominated_node_name = 5;
+  string host_ip = 6;
+  string pod_ip = 7;
+  repeated string pod_ips = 8;
+  string start_time = 9;
+  repeated ContainerStatus init_container_statuses = 10;
+  repeated ContainerStatus container_statuses = 11;
+  string qos_class = 12;
+  repeated ContainerStatus ephemeral_container_statuses = 13;
+}
+
+message ContainerStatus {
+  string name = 1;
+  ContainerState state = 2;
+  ContainerState last_termination_state = 3;
+  bool ready = 4;
+  int32 restart_count = 5;
+  string image = 6;
+  string image_id = 7;
+  string container_id = 8;
+  bool started = 9;
+}
+
+message ContainerState {
+  ContainerStateWaiting waiting = 1;
+  ContainerStateRunning running = 2;
+  ContainerStateTerminated terminated = 3;
+}
+
+message ContainerStateWaiting {
+  string reason = 1;
+  string message = 2;
+}
+
+message ContainerStateRunning {
+  string started_at = 1;
+}
+
+message ContainerStateTerminated {
+  int32 exit_code = 1;
+  int32 signal = 2;
+  string reason = 3;
+  string message = 4;
+  string started_at = 5;
+  string finished_at = 6;
+  string container_id = 7;
+}
+
+message PodTemplateSpec {
+  ObjectMeta metadata = 1;
+  PodSpec spec = 2;
+}
+
+// PersistentVolumeClaim (shared: used by StatefulSet volume_claim_templates)
+
+message PersistentVolumeClaim {
+  string api_version = 1;
+  string kind = 2;
+  ObjectMeta metadata = 3;
+  PersistentVolumeClaimSpec spec = 4;
+  PersistentVolumeClaimStatus status = 5;
+}
+
+message PersistentVolumeClaimSpec {
+  repeated string access_modes = 1;
+  LabelSelector selector = 2;
+  ResourceRequirements resources = 3;
+  string volume_name = 4;
+  string storage_class_name = 5;
+  string volume_mode = 6;
+  TypedLocalObjectReference data_source = 7;
+  TypedLocalObjectReference data_source_ref = 8;
+}
+
+message PersistentVolumeClaimStatus {
+  string phase = 1;
+  repeated string access_modes = 2;
+  map<string, string> capacity = 3;
+  repeated KCondition conditions = 4;
+  string allocated_resources = 5;
+  string resize_status = 6;
+}

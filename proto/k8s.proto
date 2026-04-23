@@ -21,6 +21,7 @@ option java_multiple_files = true;
 option java_outer_classname = "Types";
 option java_package = "com.k8s.types";
 option go_package = "./types";
+import "api.proto";
 
 message K8sReadyState {
   int32 count = 1;
@@ -32,69 +33,87 @@ message K8sRestartsState {
   string ago = 2;
 }
 
-enum K8sPodStatus {
-  Invalid_Pod_Status = 0;
-  Running = 1;
-  Pending = 2;
-  Succeeded = 3;
-  Failed = 4;
-  Unknown = 5;
-  CrashLoopBackOff = 6;
-  Terminating = 7;
-  ContainerCreating = 8;
-  ImagePullBackOff = 9;
-  Error = 10;
-  Completed = 11;
+enum K8SPodStatus {
+  K8S_POD_STATUS_UNSPECIFIED = 0;
+  K8S_POD_STATUS_RUNNING = 1;
+  K8S_POD_STATUS_PENDING = 2;
+  K8S_POD_STATUS_SUCCEEDED = 3;
+  K8S_POD_STATUS_FAILED = 4;
+  K8S_POD_STATUS_UNKNOWN = 5;
+  K8S_POD_STATUS_CRASHLOOPBACKOFF = 6;
+  K8S_POD_STATUS_TERMINATING = 7;
+  K8S_POD_STATUS_CONTAINERCREATING = 8;
+  K8S_POD_STATUS_IMAGEPULLBACKOFF = 9;
+  K8S_POD_STATUS_ERROR = 10;
+  K8S_POD_STATUS_COMPLETED = 11;
 }
 
-enum K8sNodeStatus {
-  Invalid_Node_Status = 0;
-  Ready = 1;
+enum K8SNodeStatus {
+  K8S_NODE_STATUS_UNSPECIFIED = 0;
+  K8S_NODE_STATUS_READY = 1;
+  K8S_NODE_STATUS_NOT_READY = 2;
 }
 
-message K8sClusterList {
-  repeated K8sCluster list = 1;
+enum K8SJobCondition {
+  K8S_JOB_CONDITION_UNSPECIFIED = 0;
+  K8S_JOB_CONDITION_COMPLETE = 1;
+  K8S_JOB_CONDITION_FAILED = 2;
+  K8S_JOB_CONDITION_SUSPENDED = 3;
 }
 
-message K8sCluster {
+// Cluster summary
+message K8SCluster {
   string name = 1;
-  map<string, K8sNode> nodes = 2;
-  map<string, K8sPod> pods = 3;
-  map<string, K8sDeployment> deployments = 4;
-  map<string, K8sStatefulSet> statefulsets = 5;
-  map<string, K8sDaemonSet> daemonsets = 6;
-  map<string, K8sService> services = 7;
-  map<string, K8sNamespace> namespaces = 8;
-  map<string, K8sNetworkPolicy> networkpolicies = 9;
+  K8SClusterSummary summary = 2;
+  string k8s_version = 3;
+  string platform = 4;
+}
+message K8SClusterList {
+  repeated K8SCluster list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SClusterSummary {
+  int32 total_nodes = 1;
+  int32 ready_nodes = 2;
+  int32 total_pods = 3;
+  int32 running_pods = 4;
+  int32 failed_pods = 5;
+  int32 pending_pods = 6;
+  int32 total_deployments = 7;
+  int32 available_deployments = 8;
+  int32 total_services = 9;
+  int32 total_namespaces = 10;
+  int32 total_pvcs = 11;
+  int32 bound_pvcs = 12;
+  int32 total_ingresses = 13;
+  int32 total_jobs = 14;
+  int32 active_jobs = 15;
+  bool istio_installed = 16;
+  string istio_version = 17;
+  int32 total_vclusters = 18;
+  int32 total_crds = 19;
 }
 
-message K8sPod {
+// Workloads (SA 10)
+message K8SPod {
   string namespace = 1;
   string name = 2;
   K8sReadyState ready = 3;
-  K8sPodStatus status = 4;
+  K8SPodStatus status = 4;
   K8sRestartsState restarts = 5;
   string age = 6;
   string ip = 7;
   string node = 8;
   string nominated_node = 9;
   string readiness_gates = 10;
+  string cluster_name = 100;
+  string key = 101;
 }
-
-message K8sNode {
-  string name = 1;
-  K8sNodeStatus status = 2;
-  string roles = 3;
-  string age = 4;
-  string version = 5;
-  string internal_ip = 6;
-  string external_ip = 7;
-  string os_image = 8;
-  string kernel_version = 9;
-  string container_runtime = 10;
+message K8SPodList {
+  repeated K8SPod list = 1;
+  l8api.L8MetaData metadata = 2;
 }
-
-message K8sDeployment {
+message K8SDeployment {
   string namespace = 1;
   string name = 2;
   string ready = 3;
@@ -104,18 +123,28 @@ message K8sDeployment {
   string containers = 7;
   string images = 8;
   string selector = 9;
+  string cluster_name = 100;
+  string key = 101;
 }
-
-message K8sStatefulSet {
+message K8SDeploymentList {
+  repeated K8SDeployment list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SStatefulSet {
   string namespace = 1;
   string name = 2;
   string ready = 3;
   string age = 4;
   string containers = 5;
   string images = 6;
+  string cluster_name = 100;
+  string key = 101;
 }
-
-message K8sDaemonSet {
+message K8SStatefulSetList {
+  repeated K8SStatefulSet list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SDaemonSet {
   string namespace = 1;
   string name = 2;
   string desired = 3;
@@ -128,9 +157,75 @@ message K8sDaemonSet {
   string containers = 10;
   string images = 11;
   string selector = 12;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SDaemonSetList {
+  repeated K8SDaemonSet list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SReplicaSet {
+  string namespace = 1;
+  string name = 2;
+  string desired = 3;
+  string current = 4;
+  string ready = 5;
+  string age = 6;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SReplicaSetList {
+  repeated K8SReplicaSet list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SJob {
+  string namespace = 1;
+  string name = 2;
+  string completions = 3;
+  string duration = 4;
+  string age = 5;
+  K8SJobCondition condition = 6;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SJobList {
+  repeated K8SJob list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SCronJob {
+  string namespace = 1;
+  string name = 2;
+  string schedule = 3;
+  string last_schedule = 4;
+  bool suspend = 5;
+  int32 active = 6;
+  string age = 7;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SCronJobList {
+  repeated K8SCronJob list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SHPA {
+  string namespace = 1;
+  string name = 2;
+  string reference = 3;
+  string targets = 4;
+  int32 min_replicas = 5;
+  int32 max_replicas = 6;
+  int32 current_replicas = 7;
+  string age = 8;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SHPAList {
+  repeated K8SHPA list = 1;
+  l8api.L8MetaData metadata = 2;
 }
 
-message K8sService {
+// Networking (SA 11)
+message K8SService {
   string namespace = 1;
   string name = 2;
   string type = 3;
@@ -139,17 +234,105 @@ message K8sService {
   string ports = 6;
   string age = 7;
   string selector = 8;
+  string cluster_name = 100;
+  string key = 101;
 }
-
-message K8sNamespace {
-  string name = 1;
-  string status = 2;
-  string age = 3;
+message K8SServiceList {
+  repeated K8SService list = 1;
+  l8api.L8MetaData metadata = 2;
 }
-
-message K8sNetworkPolicy {
+message K8SIngress {
+  string namespace = 1;
+  string name = 2;
+  string class_name = 3;
+  string hosts = 4;
+  string address = 5;
+  string ports = 6;
+  string age = 7;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SIngressList {
+  repeated K8SIngress list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SNetworkPolicy {
   string namespace = 1;
   string name = 2;
   string pod_selector = 3;
   string age = 4;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SNetworkPolicyList {
+  repeated K8SNetworkPolicy list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SEndpoints {
+  string namespace = 1;
+  string name = 2;
+  string endpoints = 3;
+  string age = 4;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SEndpointsList {
+  repeated K8SEndpoints list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SEndpointSlice {
+  string namespace = 1;
+  string name = 2;
+  string address_type = 3;
+  string ports = 4;
+  string endpoints = 5;
+  string age = 6;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SEndpointSliceList {
+  repeated K8SEndpointSlice list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+message K8SIngressClass {
+  string name = 1;
+  string controller = 2;
+  string age = 3;
+  string cluster_name = 100;
+  string key = 101;
+}
+message K8SIngressClassList {
+  repeated K8SIngressClass list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+
+// Nodes (SA 15)
+message K8SNode {
+  string name = 1;
+  K8SNodeStatus status = 2;
+  string roles = 3;
+  string age = 4;
+  string version = 5;
+  string internal_ip = 6;
+  string external_ip = 7;
+  string os_image = 8;
+  string kernel_version = 9;
+  string container_runtime = 10;
+  string cluster_name = 100;
+}
+message K8SNodeList {
+  repeated K8SNode list = 1;
+  l8api.L8MetaData metadata = 2;
+}
+
+// Namespaces (SA 16)
+message K8SNamespace {
+  string name = 1;
+  string status = 2;
+  string age = 3;
+  string cluster_name = 100;
+}
+message K8SNamespaceList {
+  repeated K8SNamespace list = 1;
+  l8api.L8MetaData metadata = 2;
 }
