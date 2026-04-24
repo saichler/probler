@@ -131,7 +131,7 @@
 
 .k8s-service-tab.active {
     background: var(--layer8d-primary);
-    color: #fff;
+    color: var(--layer8d-bg-white);
     border-color: var(--layer8d-primary);
 }
 

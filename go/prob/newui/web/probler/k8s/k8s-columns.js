@@ -2,6 +2,14 @@
 window.ProblerK8s = window.ProblerK8s || {};
 ProblerK8s.columns = {};
 
+// --- Overview (SA 1) ---
+
+ProblerK8s.columns.K8SCluster = [
+    { key: 'name', label: 'NAME', filterKey: 'name' },
+    { key: 'k8sVersion', label: 'K8S VERSION' },
+    { key: 'platform', label: 'PLATFORM', filterKey: 'platform' }
+];
+
 // --- Workloads (SA 10) ---
 
 ProblerK8s.columns.K8SPod = [
