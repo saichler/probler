@@ -4,7 +4,7 @@ ProblerK8s.enums = {};
 
 // Pod status: enum index -> display label
 ProblerK8s.enums.POD_STATUS = {
-    0: 'Invalid_Pod_Status',
+    0: 'Unspecified',
     1: 'Running',
     2: 'Pending',
     3: 'Succeeded',
@@ -18,30 +18,77 @@ ProblerK8s.enums.POD_STATUS = {
     11: 'Completed'
 };
 
-// Convert pod status value (int or string) to display text
+// Node status: enum index -> display label
+ProblerK8s.enums.NODE_STATUS = {
+    0: 'Unspecified',
+    1: 'Ready',
+    2: 'NotReady'
+};
+
+// Job condition: enum index -> display label
+ProblerK8s.enums.JOB_CONDITION = {
+    0: 'Unspecified',
+    1: 'Complete',
+    2: 'Failed',
+    3: 'Suspended'
+};
+
+// PV phase: enum index -> display label
+ProblerK8s.enums.PV_PHASE = {
+    0: 'Unspecified',
+    1: 'Available',
+    2: 'Bound',
+    3: 'Released',
+    4: 'Failed'
+};
+
 ProblerK8s.enums.getPodStatusText = function(statusValue) {
     if (typeof statusValue === 'string') return statusValue;
     return ProblerK8s.enums.POD_STATUS[statusValue] || 'Unknown';
 };
 
-// Get CSS class for pod status display text
 ProblerK8s.enums.getPodStatusClass = function(statusText) {
-    var s = statusText.toLowerCase();
+    var s = (typeof statusText === 'string') ? statusText.toLowerCase() : '';
     if (s === 'running' || s === 'succeeded' || s === 'completed') return 'status-operational';
     if (s === 'pending' || s === 'containercreating' || s === 'terminating') return 'status-warning';
     if (s === 'failed' || s === 'error' || s === 'crashloopbackoff' ||
-        s === 'imagepullbackoff' || s === 'unknown' || s === 'invalid_pod_status') return 'status-critical';
+        s === 'imagepullbackoff' || s === 'unknown' || s === 'unspecified') return 'status-critical';
     return 'status-warning';
 };
 
-// Node status CSS class mapping
-ProblerK8s.enums.getNodeStatusClass = function(status) {
-    if (status === 'Ready') return 'status-operational';
-    if (status === 'SchedulingDisabled') return 'status-warning';
-    return 'status-critical';
+ProblerK8s.enums.getNodeStatusClass = function(statusValue) {
+    if (statusValue === 1 || statusValue === 'Ready') return 'status-operational';
+    if (statusValue === 2 || statusValue === 'NotReady') return 'status-critical';
+    return 'status-warning';
 };
 
-// Namespace status CSS class mapping
 ProblerK8s.enums.getNamespaceStatusClass = function(status) {
     return status === 'Active' ? 'status-operational' : 'status-warning';
+};
+
+ProblerK8s.enums.getJobConditionText = function(condValue) {
+    if (typeof condValue === 'string') return condValue;
+    return ProblerK8s.enums.JOB_CONDITION[condValue] || 'Unspecified';
+};
+
+ProblerK8s.enums.getJobConditionClass = function(condValue) {
+    var v = (typeof condValue === 'number') ? condValue : 0;
+    if (v === 1) return 'status-operational';
+    if (v === 2) return 'status-critical';
+    if (v === 3) return 'status-warning';
+    return 'status-warning';
+};
+
+ProblerK8s.enums.getPvPhaseText = function(phaseValue) {
+    if (typeof phaseValue === 'string') return phaseValue;
+    return ProblerK8s.enums.PV_PHASE[phaseValue] || 'Unspecified';
+};
+
+ProblerK8s.enums.getPvPhaseClass = function(phaseValue) {
+    var v = (typeof phaseValue === 'number') ? phaseValue : 0;
+    if (v === 1) return 'status-operational';
+    if (v === 2) return 'status-operational';
+    if (v === 3) return 'status-warning';
+    if (v === 4) return 'status-critical';
+    return 'status-warning';
 };

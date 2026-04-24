@@ -1,20 +1,11 @@
-// Probler Kubernetes Column Definitions
+// Probler Kubernetes Column Definitions — Core, Workloads, Networking
 window.ProblerK8s = window.ProblerK8s || {};
 ProblerK8s.columns = {};
 
-ProblerK8s.columns.Node = [
-    { key: 'name', label: 'NAME', filterKey: 'name' },
-    { key: 'roles', label: 'ROLES', filterKey: 'roles' },
-    { key: 'age', label: 'AGE' },
-    { key: 'version', label: 'VERSION', filterKey: 'version' },
-    { key: 'internalIp', label: 'INTERNAL-IP', filterKey: 'internalIp' },
-    { key: 'externalIp', label: 'EXTERNAL-IP', filterKey: 'externalIp' },
-    { key: 'osImage', label: 'OS-IMAGE', filterKey: 'osImage' },
-    { key: 'kernelVersion', label: 'KERNEL-VERSION', filterKey: 'kernelVersion' },
-    { key: 'containerRuntime', label: 'CONTAINER-RUNTIME', filterKey: 'containerRuntime' }
-];
+// --- Workloads (SA 10) ---
 
-ProblerK8s.columns.Pod = [
+ProblerK8s.columns.K8SPod = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     {
@@ -32,16 +23,16 @@ ProblerK8s.columns.Pod = [
             } else {
                 count = 0; outof = 0;
             }
-            var statusClass = count === outof ? 'status-operational' : count > 0 ? 'status-warning' : 'status-critical';
-            return '<span class="status-badge ' + statusClass + '">' + count + '/' + outof + '</span>';
+            var cls = count === outof ? 'status-operational' : count > 0 ? 'status-warning' : 'status-critical';
+            return '<span class="status-badge ' + cls + '">' + count + '/' + outof + '</span>';
         }
     },
     {
         key: 'status', label: 'STATUS', filterKey: 'status',
         render: function(item) {
-            var statusText = ProblerK8s.enums.getPodStatusText(item.status);
-            var statusClass = ProblerK8s.enums.getPodStatusClass(statusText);
-            return '<span class="status-badge ' + statusClass + '">' + statusText + '</span>';
+            var txt = ProblerK8s.enums.getPodStatusText(item.status);
+            var cls = ProblerK8s.enums.getPodStatusClass(txt);
+            return '<span class="status-badge ' + cls + '">' + txt + '</span>';
         }
     },
     {
@@ -61,7 +52,8 @@ ProblerK8s.columns.Pod = [
     { key: 'readinessGates', label: 'READINESS GATES' }
 ];
 
-ProblerK8s.columns.Deployment = [
+ProblerK8s.columns.K8SDeployment = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'ready', label: 'READY' },
@@ -73,7 +65,8 @@ ProblerK8s.columns.Deployment = [
     { key: 'selector', label: 'SELECTOR', filterKey: 'selector' }
 ];
 
-ProblerK8s.columns.StatefulSet = [
+ProblerK8s.columns.K8SStatefulSet = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'ready', label: 'READY' },
@@ -82,7 +75,8 @@ ProblerK8s.columns.StatefulSet = [
     { key: 'images', label: 'IMAGES', filterKey: 'images' }
 ];
 
-ProblerK8s.columns.DaemonSet = [
+ProblerK8s.columns.K8SDaemonSet = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'desired', label: 'DESIRED' },
@@ -97,7 +91,66 @@ ProblerK8s.columns.DaemonSet = [
     { key: 'selector', label: 'SELECTOR', filterKey: 'selector' }
 ];
 
-ProblerK8s.columns.Service = [
+ProblerK8s.columns.K8SReplicaSet = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
+    { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+    { key: 'name', label: 'NAME', filterKey: 'name' },
+    { key: 'desired', label: 'DESIRED' },
+    { key: 'current', label: 'CURRENT' },
+    { key: 'ready', label: 'READY' },
+    { key: 'age', label: 'AGE' }
+];
+
+ProblerK8s.columns.K8SJob = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
+    { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+    { key: 'name', label: 'NAME', filterKey: 'name' },
+    { key: 'completions', label: 'COMPLETIONS' },
+    { key: 'duration', label: 'DURATION' },
+    {
+        key: 'condition', label: 'CONDITION', filterKey: 'condition',
+        render: function(item) {
+            var txt = ProblerK8s.enums.getJobConditionText(item.condition);
+            var cls = ProblerK8s.enums.getJobConditionClass(item.condition);
+            return '<span class="status-badge ' + cls + '">' + txt + '</span>';
+        }
+    },
+    { key: 'age', label: 'AGE' }
+];
+
+ProblerK8s.columns.K8SCronJob = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
+    { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+    { key: 'name', label: 'NAME', filterKey: 'name' },
+    { key: 'schedule', label: 'SCHEDULE', filterKey: 'schedule' },
+    { key: 'lastSchedule', label: 'LAST SCHEDULE' },
+    {
+        key: 'suspend', label: 'SUSPEND',
+        render: function(item) {
+            var cls = item.suspend ? 'status-warning' : 'status-operational';
+            return '<span class="status-badge ' + cls + '">' + (item.suspend ? 'Yes' : 'No') + '</span>';
+        }
+    },
+    { key: 'active', label: 'ACTIVE' },
+    { key: 'age', label: 'AGE' }
+];
+
+ProblerK8s.columns.K8SHPA = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
+    { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+    { key: 'name', label: 'NAME', filterKey: 'name' },
+    { key: 'reference', label: 'REFERENCE', filterKey: 'reference' },
+    { key: 'targets', label: 'TARGETS' },
+    { key: 'minReplicas', label: 'MIN' },
+    { key: 'maxReplicas', label: 'MAX' },
+    { key: 'currentReplicas', label: 'CURRENT' },
+    { key: 'age', label: 'AGE' }
+];
+
+// --- Networking (SA 11) ---
+
+ProblerK8s.columns.K8SService = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'type', label: 'TYPE', filterKey: 'type' },
@@ -108,15 +161,84 @@ ProblerK8s.columns.Service = [
     { key: 'selector', label: 'SELECTOR', filterKey: 'selector' }
 ];
 
-ProblerK8s.columns.Namespace = [
+ProblerK8s.columns.K8SIngress = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
+    { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
-    { key: 'status', label: 'STATUS', filterKey: 'status' },
+    { key: 'className', label: 'CLASS', filterKey: 'className' },
+    { key: 'hosts', label: 'HOSTS', filterKey: 'hosts' },
+    { key: 'address', label: 'ADDRESS', filterKey: 'address' },
+    { key: 'ports', label: 'PORTS' },
     { key: 'age', label: 'AGE' }
 ];
 
-ProblerK8s.columns.NetworkPolicy = [
+ProblerK8s.columns.K8SNetworkPolicy = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'podSelector', label: 'POD-SELECTOR', filterKey: 'podSelector' },
+    { key: 'age', label: 'AGE' }
+];
+
+ProblerK8s.columns.K8SEndpoints = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
+    { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+    { key: 'name', label: 'NAME', filterKey: 'name' },
+    { key: 'endpoints', label: 'ENDPOINTS' },
+    { key: 'age', label: 'AGE' }
+];
+
+ProblerK8s.columns.K8SEndpointSlice = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
+    { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
+    { key: 'name', label: 'NAME', filterKey: 'name' },
+    { key: 'addressType', label: 'ADDRESS TYPE', filterKey: 'addressType' },
+    { key: 'ports', label: 'PORTS' },
+    { key: 'endpoints', label: 'ENDPOINTS' },
+    { key: 'age', label: 'AGE' }
+];
+
+ProblerK8s.columns.K8SIngressClass = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
+    { key: 'name', label: 'NAME', filterKey: 'name' },
+    { key: 'controller', label: 'CONTROLLER', filterKey: 'controller' },
+    { key: 'age', label: 'AGE' }
+];
+
+// --- Nodes (SA 15) ---
+
+ProblerK8s.columns.K8SNode = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
+    { key: 'name', label: 'NAME', filterKey: 'name' },
+    { key: 'roles', label: 'ROLES', filterKey: 'roles' },
+    {
+        key: 'status', label: 'STATUS', filterKey: 'status',
+        render: function(item) {
+            var txt = ProblerK8s.enums.NODE_STATUS[item.status] || item.status || 'Unknown';
+            var cls = ProblerK8s.enums.getNodeStatusClass(item.status);
+            return '<span class="status-badge ' + cls + '">' + txt + '</span>';
+        }
+    },
+    { key: 'age', label: 'AGE' },
+    { key: 'version', label: 'VERSION', filterKey: 'version' },
+    { key: 'internalIp', label: 'INTERNAL-IP', filterKey: 'internalIp' },
+    { key: 'externalIp', label: 'EXTERNAL-IP', filterKey: 'externalIp' },
+    { key: 'osImage', label: 'OS-IMAGE', filterKey: 'osImage' },
+    { key: 'kernelVersion', label: 'KERNEL-VERSION', filterKey: 'kernelVersion' },
+    { key: 'containerRuntime', label: 'CONTAINER-RUNTIME', filterKey: 'containerRuntime' }
+];
+
+// --- Namespaces (SA 16) ---
+
+ProblerK8s.columns.K8SNamespace = [
+    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
+    { key: 'name', label: 'NAME', filterKey: 'name' },
+    {
+        key: 'status', label: 'STATUS', filterKey: 'status',
+        render: function(item) {
+            var cls = ProblerK8s.enums.getNamespaceStatusClass(item.status);
+            return '<span class="status-badge ' + cls + '">' + (item.status || 'Unknown') + '</span>';
+        }
+    },
     { key: 'age', label: 'AGE' }
 ];

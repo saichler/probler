@@ -1,39 +1,9 @@
 /* Kubernetes Section Styles */
 
-/* K8s Section */
 .k8s-section {
     padding: 0;
 }
 
-/* Compact hero header */
-.k8s-section .l8-header-frame {
-    height: 96px;
-    min-height: 96px;
-}
-
-.k8s-section .l8-header-title {
-    padding: 20px 24px;
-}
-
-.k8s-section .l8-title {
-    font-size: 28px;
-    line-height: 1.1;
-    text-transform: none;
-    text-shadow: none;
-}
-
-.k8s-section .l8-subtitle {
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    text-transform: none;
-    margin-top: 4px;
-}
-
-/* Flex constraint chain: section-content → k8s-content → nav-bar + main-content → table
-   This ensures the table's .l8-table-container is height-constrained so it scrolls
-   internally and sticky headers work. */
-
-/* K8s Content */
 .k8s-content {
     padding: 0 20px 20px 20px;
     flex: 1;
@@ -42,386 +12,194 @@
     flex-direction: column;
 }
 
-/* ============================================ */
-/* SINGLE NAVIGATION BAR                        */
-/* Cluster dropdown (left) + resource tabs (right) */
-/* ============================================ */
-
-.k8s-nav-bar {
+/* Toolbar — cluster selector */
+.k8s-toolbar {
     display: flex;
     align-items: center;
+    padding: 12px 0;
     gap: 12px;
-    background: var(--layer8d-bg-card);
-    border-radius: 12px 12px 0 0;
-    padding: 0 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    border-bottom: 2px solid var(--layer8d-border);
-    flex-shrink: 0;
 }
 
-/* Cluster Selector (left side) */
 .k8s-cluster-selector {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 0;
-    flex-shrink: 0;
-    border-right: 1px solid var(--layer8d-border);
-    padding-right: 12px;
 }
 
-.k8s-cluster-status {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--layer8d-success);
-    box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
-    flex-shrink: 0;
-}
-
-#k8s-cluster-dropdown {
-    border: 1px solid var(--layer8d-border);
-    border-radius: 6px;
-    padding: 5px 10px;
+.k8s-cluster-label {
     font-size: 13px;
     font-weight: 600;
-    color: var(--layer8d-text-dark);
-    background: var(--layer8d-bg-light);
-    cursor: pointer;
-    min-width: 120px;
+    color: var(--layer8d-text-medium);
 }
 
-#k8s-cluster-dropdown:focus {
+.k8s-cluster-dropdown {
+    padding: 6px 12px;
+    border: 1px solid var(--layer8d-border);
+    border-radius: 6px;
+    background: var(--layer8d-bg-input);
+    color: var(--layer8d-text-dark);
+    font-size: 13px;
+    min-width: 200px;
+    cursor: pointer;
+}
+
+.k8s-cluster-dropdown:focus {
     outline: none;
     border-color: var(--layer8d-primary);
-    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15);
 }
 
-/* Resource Tabs (right side, scrollable) */
-.k8s-resource-tabs {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    flex: 1;
-    min-width: 0;
-    overflow-x: auto;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.k8s-resource-tabs::-webkit-scrollbar {
-    display: none;
-}
-
-.k8s-resource-tab {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 14px;
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
+.k8s-no-clusters {
     color: var(--layer8d-text-muted);
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* Category tabs — 12 top-level categories */
+.k8s-category-bar {
+    display: flex;
+    gap: 2px;
+    border-bottom: 2px solid var(--layer8d-border);
+    padding: 0;
+    overflow-x: auto;
+    flex-shrink: 0;
+}
+
+.k8s-category-tab {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 14px;
+    border: none;
+    background: transparent;
+    color: var(--layer8d-text-medium);
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
     white-space: nowrap;
-    position: relative;
-    bottom: -2px;
+    transition: color 0.15s, border-color 0.15s;
 }
 
-.k8s-resource-tab:hover {
-    color: var(--layer8d-primary);
-    background: rgba(14, 165, 233, 0.04);
+.k8s-category-tab:hover {
+    color: var(--layer8d-text-dark);
+    background: var(--layer8d-bg-light);
 }
 
-.k8s-resource-tab.active {
+.k8s-category-tab.active {
     color: var(--layer8d-primary);
     border-bottom-color: var(--layer8d-primary);
     font-weight: 600;
 }
 
-.k8s-tab-count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 20px;
-    height: 18px;
-    padding: 0 5px;
-    border-radius: 9px;
-    font-size: 10px;
-    font-weight: 700;
-    background: var(--layer8d-border);
-    color: var(--layer8d-text-muted);
-}
-
-.k8s-resource-tab.active .k8s-tab-count {
-    background: rgba(14, 165, 233, 0.15);
-    color: var(--layer8d-primary);
-}
-
-/* ============================================ */
-/* MAIN CONTENT AREA                            */
-/* ============================================ */
-
-.k8s-main-content {
-    flex: 1;
-    min-height: 0;
-    background: var(--layer8d-bg-card);
-    border-radius: 0 0 12px 12px;
-    padding: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.cluster-content {
-    display: none;
-}
-
-.cluster-content.active {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    animation: k8s-fade-in 0.3s ease-out;
-}
-
-@keyframes k8s-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.resource-content {
-    display: none;
-}
-
-.resource-content.active {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-}
-
-/* Table container div (e.g. div#pods-{cluster}-table) passes flex chain to .l8-table-wrapper */
-.resource-content.active > div {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-/* ============================================ */
-/* K8s MODAL STYLES (scoped to prevent global leaks) */
-/* ============================================ */
-
-.k8s-section .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-.k8s-section .modal-overlay.active {
-    display: flex;
-}
-
-.k8s-section .modal-container {
-    background: var(--layer8d-bg-card);
-    border-radius: 12px;
-    width: 90%;
-    max-width: 1000px;
-    max-height: 85vh;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.k8s-section .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px;
-    background: linear-gradient(135deg, var(--layer8d-primary) 0%, var(--layer8d-primary-dark) 100%);
-    color: #ffffff;
-}
-
-.k8s-section .modal-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin: 0;
-}
-
-.k8s-section .modal-close {
-    background: none;
-    border: none;
-    color: #ffffff;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 0;
+.k8s-cat-icon {
+    font-size: 14px;
     line-height: 1;
-    opacity: 0.8;
-    transition: opacity 0.2s;
 }
 
-.k8s-section .modal-close:hover {
-    opacity: 1;
+.k8s-cat-label {
+    line-height: 1;
 }
 
-.k8s-section .modal-body {
-    padding: 24px;
-    overflow-y: auto;
-    max-height: calc(85vh - 70px);
-    color: var(--layer8d-text-dark);
-}
-
-/* K8s Modal Tabs */
-.k8s-section .modal-tabs {
+/* Service sub-tabs — resource types within a category */
+.k8s-service-bar {
     display: flex;
-    gap: 4px;
-    margin-bottom: 24px;
-    border-bottom: 2px solid var(--layer8d-border);
-    flex-wrap: wrap;
+    gap: 2px;
+    padding: 6px 0;
+    flex-shrink: 0;
+    overflow-x: auto;
 }
 
-.k8s-section .modal-tab {
-    padding: 10px 20px;
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
-    color: var(--layer8d-text-muted);
-    font-size: 0.9rem;
+.k8s-service-tab {
+    padding: 5px 12px;
+    border: 1px solid var(--layer8d-border);
+    border-radius: 4px;
+    background: var(--layer8d-bg-white);
+    color: var(--layer8d-text-medium);
+    font-size: 11px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-    bottom: -2px;
+    white-space: nowrap;
+    transition: all 0.15s;
 }
 
-.k8s-section .modal-tab:hover {
-    color: var(--layer8d-primary);
-}
-
-.k8s-section .modal-tab.active {
-    color: var(--layer8d-primary);
-    border-bottom-color: var(--layer8d-primary);
-    font-weight: 600;
-}
-
-.k8s-section .modal-tab-content {
-    display: none;
-}
-
-.k8s-section .modal-tab-content.active {
-    display: block;
-}
-
-/* ============================================ */
-/* K8s DETAIL SECTIONS                          */
-/* ============================================ */
-
-.k8s-section .detail-section {
-    margin-bottom: 24px;
-}
-
-.k8s-section .detail-section h3 {
-    font-size: 1.1rem;
+.k8s-service-tab:hover {
+    background: var(--layer8d-bg-light);
     color: var(--layer8d-text-dark);
+}
+
+.k8s-service-tab.active {
+    background: var(--layer8d-primary);
+    color: #fff;
+    border-color: var(--layer8d-primary);
+}
+
+/* Table area */
+.k8s-table-area {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Detail popup styles */
+.k8s-detail-view {
+    padding: 0;
+}
+
+.k8s-detail-section {
     margin-bottom: 16px;
+}
+
+.k8s-detail-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--layer8d-text-dark);
+    margin: 0 0 12px 0;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--layer8d-border);
 }
 
-.k8s-section .detail-section h4 {
-    font-size: 1rem;
-    color: var(--layer8d-primary);
-    margin-bottom: 12px;
-}
-
-.k8s-section .detail-section h5 {
-    font-size: 0.9rem;
-    color: var(--layer8d-text-medium);
-    margin-top: 16px;
-    margin-bottom: 8px;
-}
-
-.k8s-section .detail-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 16px;
-}
-
-.k8s-section .detail-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.k8s-section .detail-item.full-width {
-    grid-column: 1 / -1;
-}
-
-.k8s-section .detail-label {
-    font-size: 0.8rem;
-    color: var(--layer8d-text-muted);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.k8s-section .detail-value {
-    font-size: 0.95rem;
-    color: var(--layer8d-text-dark);
-}
-
-.k8s-section .detail-value code {
-    font-family: 'Monaco', 'Menlo', monospace;
-    font-size: 0.85rem;
-    background: var(--layer8d-bg-input);
-    color: var(--layer8d-text-dark);
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-/* K8s Detail Tables */
-.k8s-section .detail-table {
+.k8s-detail-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9rem;
 }
 
-.k8s-section .detail-table th,
-.k8s-section .detail-table td {
-    padding: 10px 12px;
-    text-align: left;
+.k8s-detail-table tr {
     border-bottom: 1px solid var(--layer8d-border);
 }
 
-.k8s-section .detail-table th {
-    background: var(--layer8d-bg-light);
+.k8s-detail-table tr:last-child {
+    border-bottom: none;
+}
+
+.k8s-detail-label {
+    padding: 8px 12px;
+    font-size: 12px;
     font-weight: 600;
+    color: var(--layer8d-text-medium);
+    width: 180px;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+.k8s-detail-value {
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--layer8d-text-dark);
+    word-break: break-all;
+}
+
+.k8s-detail-empty {
     color: var(--layer8d-text-muted);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
-.k8s-section .detail-table td {
-    color: var(--layer8d-text-dark);
-}
-
-.k8s-section .detail-table code {
-    font-family: 'Monaco', 'Menlo', monospace;
-    font-size: 0.85rem;
-    background: var(--layer8d-bg-input);
-    color: var(--layer8d-text-dark);
-    padding: 2px 6px;
-    border-radius: 4px;
+/* Status badges (reuse existing probler styles) */
+.k8s-detail-value .status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
 }
