@@ -23,7 +23,7 @@ import (
 func CreateCluster(id string) *l8tpollaris.L8PTarget {
 	device := &l8tpollaris.L8PTarget{}
 	device.TargetId = id
-	device.LinksId = common.K8s_Links_ID
+	device.LinksId = common.K8sClust_Links_ID
 	device.InventoryType = l8tpollaris.L8PTargetType_K8s_Cluster
 
 	device.Hosts = make(map[string]*l8tpollaris.L8PHost)

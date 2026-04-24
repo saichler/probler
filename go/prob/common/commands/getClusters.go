@@ -41,7 +41,7 @@ func GetCluster(rc *client.RestClient, resources common2.IResources, name string
 		return
 	}
 
-	cs, _ := targets.Links.Cache(common.K8s_Links_ID)
+	cs, _ := targets.Links.Cache(common.K8sClust_Links_ID)
 
 	resp, err := rc.GET("1/"+cs, "K8SClusterList",
 		"", "", pq)
@@ -66,7 +66,7 @@ func GetClusterOrm(rc *client.RestClient, resources common2.IResources, name str
 		return
 	}
 
-	cs, _ := targets.Links.Cache(common.K8s_Links_ID)
+	cs, _ := targets.Links.Cache(common.K8sClust_Links_ID)
 
 	resp, err := rc.GET("1/"+cs, "K8SCluster",
 		"", "", pq)

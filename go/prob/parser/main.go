@@ -57,8 +57,70 @@ func main() {
 	//Activate Inventory parser
 	service.Activate(common2.NetworkDevice_Links_ID, &types3.NetworkDevice{}, false, nic, "Id")
 
-	//Activate Kubernetes parser
-	service.Activate(common2.K8s_Links_ID, &types3.K8SCluster{}, false, nic, "Name")
+	// Activate Kubernetes parsers — cluster summary
+	service.Activate(common2.K8sClust_Links_ID, &types3.K8SCluster{}, false, nic, "Name")
+
+	// Workloads (SA 10)
+	service.Activate(common2.K8sPod_Links_ID, &types3.K8SPod{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sDeploy_Links_ID, &types3.K8SDeployment{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sSts_Links_ID, &types3.K8SStatefulSet{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sDs_Links_ID, &types3.K8SDaemonSet{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sRs_Links_ID, &types3.K8SReplicaSet{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sJob_Links_ID, &types3.K8SJob{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sCj_Links_ID, &types3.K8SCronJob{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sHpa_Links_ID, &types3.K8SHPA{}, false, nic, "ClusterName", "Key")
+
+	// Networking (SA 11)
+	service.Activate(common2.K8sSvc_Links_ID, &types3.K8SService{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sIng_Links_ID, &types3.K8SIngress{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sNetPol_Links_ID, &types3.K8SNetworkPolicy{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sEp_Links_ID, &types3.K8SEndpoints{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sEpSl_Links_ID, &types3.K8SEndpointSlice{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sIngCl_Links_ID, &types3.K8SIngressClass{}, false, nic, "ClusterName", "Key")
+
+	// Storage (SA 12)
+	service.Activate(common2.K8sPv_Links_ID, &types3.K8SPersistentVolume{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sPvc_Links_ID, &types3.K8SPersistentVolumeClaim{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sScl_Links_ID, &types3.K8SStorageClass{}, false, nic, "ClusterName", "Key")
+
+	// Configuration (SA 13)
+	service.Activate(common2.K8sCm_Links_ID, &types3.K8SConfigMap{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sSec_Links_ID, &types3.K8SSecret{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sRq_Links_ID, &types3.K8SResourceQuota{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sLr_Links_ID, &types3.K8SLimitRange{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sPdb_Links_ID, &types3.K8SPodDisruptionBudget{}, false, nic, "ClusterName", "Key")
+
+	// Access Control (SA 14)
+	service.Activate(common2.K8sSa_Links_ID, &types3.K8SServiceAccount{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sRole_Links_ID, &types3.K8SRole{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sCr_Links_ID, &types3.K8SClusterRole{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sRb_Links_ID, &types3.K8SRoleBinding{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.K8sCrb_Links_ID, &types3.K8SClusterRoleBinding{}, false, nic, "ClusterName", "Key")
+
+	// Nodes (SA 15) — PK is ClusterName + Name (no namespace)
+	service.Activate(common2.K8sNode_Links_ID, &types3.K8SNode{}, false, nic, "ClusterName", "Name")
+
+	// Namespaces (SA 16) — PK is ClusterName + Name (no namespace)
+	service.Activate(common2.K8sNs_Links_ID, &types3.K8SNamespace{}, false, nic, "ClusterName", "Name")
+
+	// vCluster (SA 17)
+	service.Activate(common2.K8sVCl_Links_ID, &types3.K8SVCluster{}, false, nic, "ClusterName", "Key")
+
+	// Istio (SA 18)
+	service.Activate(common2.IstioVs_Links_ID, &types3.IstioVirtualService{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.IstioDr_Links_ID, &types3.IstioDestinationRule{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.IstioGw_Links_ID, &types3.IstioGateway{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.IstioSe_Links_ID, &types3.IstioServiceEntry{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.IstioPa_Links_ID, &types3.IstioPeerAuthentication{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.IstioAp_Links_ID, &types3.IstioAuthorizationPolicy{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.IstioSc_Links_ID, &types3.IstioSidecar{}, false, nic, "ClusterName", "Key")
+	service.Activate(common2.IstioEf_Links_ID, &types3.IstioEnvoyFilter{}, false, nic, "ClusterName", "Key")
+
+	// CRDs (SA 19) — PK is ClusterName + Name (no namespace)
+	service.Activate(common2.K8sCrd_Links_ID, &types3.K8SCRD{}, false, nic, "ClusterName", "Name")
+
+	// Events (SA 20)
+	service.Activate(common2.K8sEvt_Links_ID, &types3.K8SEvent{}, false, nic, "ClusterName", "Key")
 
 	//Activate GPU parser
 	service.Activate(common2.GPU_Links_ID, &types3.GpuDevice{}, false, nic, "Id")

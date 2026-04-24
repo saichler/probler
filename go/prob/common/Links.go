@@ -31,14 +31,10 @@ const (
 	NetDev_Parser_Service_Area  = byte(0)
 	NetDev_Model_Name           = "networkdevice"
 
-	K8s_Links_ID             = "K8s"
-	K8s_Cache_Service_Name   = "KCache"
-	K8s_Cache_Service_Area   = byte(1)
 	K8s_Persist_Service_Name = "KPersist"
 	K8s_Persist_Service_Area = byte(1)
 	K8s_Parser_Service_Name  = "KPars"
 	K8s_Parser_Service_Area  = byte(1)
-	K8s_Model_Name           = "k8scluster"
 
 	GPU_Links_ID             = "GPU"
 	GPU_Cache_Service_Name   = "GCache"
@@ -62,13 +58,15 @@ func (this *Links) Collector(linkid string) (string, byte) {
 }
 
 func (this *Links) Parser(linkid string) (string, byte) {
+	if name, area, ok := k8sParser(linkid); ok {
+		return name, area
+	}
+	if linkid == K8sC_Links_ID {
+		return K8s_Parser_Service_Name, K8s_Parser_Service_Area
+	}
 	switch linkid {
 	case NetworkDevice_Links_ID:
 		return NetDev_Parser_Service_Name, NetDev_Parser_Service_Area
-	case K8s_Links_ID:
-		return K8s_Parser_Service_Name, K8s_Parser_Service_Area
-	case K8sC_Links_ID:
-		return K8s_Parser_Service_Name, K8s_Parser_Service_Area
 	case GPU_Links_ID:
 		return GPU_Parser_Service_Name, GPU_Parser_Service_Area
 	}
@@ -76,13 +74,16 @@ func (this *Links) Parser(linkid string) (string, byte) {
 }
 
 func (this *Links) Cache(linkid string) (string, byte) {
+	if name, area, ok := k8sCache(linkid); ok {
+		return name, area
+	}
+	if linkid == K8sC_Links_ID {
+		e, _ := k8sLinkMap[K8sClust_Links_ID]
+		return e.CacheName, e.CacheArea
+	}
 	switch linkid {
 	case NetworkDevice_Links_ID:
 		return NetDev_Cache_Service_Name, NetDev_Cache_Service_Area
-	case K8s_Links_ID:
-		return K8s_Cache_Service_Name, K8s_Cache_Service_Area
-	case K8sC_Links_ID:
-		return K8s_Cache_Service_Name, K8s_Cache_Service_Area
 	case GPU_Links_ID:
 		return GPU_Cache_Service_Name, GPU_Cache_Service_Area
 	}
@@ -90,13 +91,16 @@ func (this *Links) Cache(linkid string) (string, byte) {
 }
 
 func (this *Links) Persist(linkid string) (string, byte) {
+	if name, area, ok := k8sPersist(linkid); ok {
+		return name, area
+	}
+	if linkid == K8sC_Links_ID {
+		e, _ := k8sLinkMap[K8sClust_Links_ID]
+		return e.PersistName, e.PersistArea
+	}
 	switch linkid {
 	case NetworkDevice_Links_ID:
 		return NetDev_Persist_Service_Name, NetDev_Persist_Service_Area
-	case K8s_Links_ID:
-		return K8s_Persist_Service_Name, K8s_Persist_Service_Area
-	case K8sC_Links_ID:
-		return K8s_Persist_Service_Name, K8s_Persist_Service_Area
 	case GPU_Links_ID:
 		return GPU_Persist_Service_Name, GPU_Persist_Service_Area
 	}
@@ -104,13 +108,16 @@ func (this *Links) Persist(linkid string) (string, byte) {
 }
 
 func (this *Links) Model(linkid string) string {
+	if name, ok := k8sModel(linkid); ok {
+		return name
+	}
+	if linkid == K8sC_Links_ID {
+		e, _ := k8sLinkMap[K8sClust_Links_ID]
+		return e.ModelName
+	}
 	switch linkid {
 	case NetworkDevice_Links_ID:
 		return NetDev_Model_Name
-	case K8s_Links_ID:
-		return K8s_Model_Name
-	case K8sC_Links_ID:
-		return K8s_Model_Name
 	case GPU_Links_ID:
 		return GPU_Model_Name
 	}
