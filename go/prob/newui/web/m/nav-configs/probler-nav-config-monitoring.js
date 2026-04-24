@@ -49,29 +49,101 @@
             }
         },
 
-        // Kubernetes — READ-ONLY tables for 8 resource types
-        // Desktop: Cluster dropdown + resource tabs with counts, all data from /1/KCache
-        // Detail modals: Node (8 tabs), Pod (7 tabs), Deployment (6 tabs),
-        //   StatefulSet (3 tabs), DaemonSet (3 tabs), Service (3 tabs),
-        //   Namespace (no tabs), NetworkPolicy (no tabs)
-        // Detail data fetched via /0/exec POST with job names (nodedetails, poddetails, etc.)
-        kubernetes: {
-            subModules: [
-                { key: 'k8s-resources', label: 'Kubernetes Resources', icon: 'kubernetes' }
-            ],
-            services: {
-                'k8s-resources': [
-                    { key: 'pods', label: 'Pods', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sPod', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showK8sPodDetail === 'function') showK8sPodDetail(item); } },
-                    { key: 'nodes', label: 'Nodes', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sNode', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showK8sNodeDetail === 'function') showK8sNodeDetail(item); } },
-                    { key: 'deployments', label: 'Deployments', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sDeployment', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showK8sDeploymentDetail === 'function') showK8sDeploymentDetail(item); } },
-                    { key: 'statefulsets', label: 'StatefulSets', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sStatefulSet', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showK8sStatefulSetDetail === 'function') showK8sStatefulSetDetail(item); } },
-                    { key: 'daemonsets', label: 'DaemonSets', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sDaemonSet', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showK8sDaemonSetDetail === 'function') showK8sDaemonSetDetail(item); } },
-                    { key: 'services', label: 'Services', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sService', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showK8sServiceDetail === 'function') showK8sServiceDetail(item); } },
-                    { key: 'namespaces', label: 'Namespaces', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sNamespace', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showK8sNamespaceDetail === 'function') showK8sNamespaceDetail(item); } },
-                    { key: 'networkpolicies', label: 'Network Policies', icon: 'kubernetes', endpoint: '/1/KCache', model: 'K8sNetworkPolicy', idField: 'id', readOnly: true, supportedViews: ['table'], onRowClick: function(item) { if (typeof showK8sNetworkPolicyDetail === 'function') showK8sNetworkPolicyDetail(item); } }
-                ]
+        // Kubernetes — READ-ONLY tables for 42 resource types across 12 categories
+        // Per-type endpoints, generic detail popup via MobileK8sDetail.show()
+        kubernetes: (function() {
+            function k8sClick(svc) {
+                return function(item) { if (typeof MobileK8sDetail !== 'undefined') MobileK8sDetail.show(item, svc); };
             }
-        },
+            function svc(key, label, endpoint, model, idField) {
+                var s = { key: key, label: label, icon: 'kubernetes', endpoint: endpoint, model: model, idField: idField || 'key', readOnly: true, supportedViews: ['table'] };
+                s.onRowClick = k8sClick(s);
+                return s;
+            }
+            return {
+                subModules: [
+                    { key: 'k8s-overview', label: 'Overview', icon: 'kubernetes' },
+                    { key: 'k8s-workloads', label: 'Workloads', icon: 'kubernetes' },
+                    { key: 'k8s-networking', label: 'Networking', icon: 'kubernetes' },
+                    { key: 'k8s-storage', label: 'Storage', icon: 'kubernetes' },
+                    { key: 'k8s-configuration', label: 'Configuration', icon: 'kubernetes' },
+                    { key: 'k8s-access-control', label: 'Access Control', icon: 'kubernetes' },
+                    { key: 'k8s-nodes', label: 'Nodes', icon: 'kubernetes' },
+                    { key: 'k8s-namespaces', label: 'Namespaces', icon: 'kubernetes' },
+                    { key: 'k8s-vcluster', label: 'vCluster', icon: 'kubernetes' },
+                    { key: 'k8s-istio', label: 'Istio', icon: 'kubernetes' },
+                    { key: 'k8s-crds', label: 'CRDs', icon: 'kubernetes' },
+                    { key: 'k8s-events', label: 'Events', icon: 'kubernetes' }
+                ],
+                services: {
+                    'k8s-overview': [
+                        svc('clusters', 'Clusters', '/1/KCluster', 'K8SCluster', 'name')
+                    ],
+                    'k8s-workloads': [
+                        svc('pods', 'Pods', '/10/K8sPod', 'K8SPod'),
+                        svc('deployments', 'Deployments', '/10/K8sDeploy', 'K8SDeployment'),
+                        svc('statefulsets', 'StatefulSets', '/10/K8sSts', 'K8SStatefulSet'),
+                        svc('daemonsets', 'DaemonSets', '/10/K8sDs', 'K8SDaemonSet'),
+                        svc('replicasets', 'ReplicaSets', '/10/K8sRs', 'K8SReplicaSet'),
+                        svc('jobs', 'Jobs', '/10/K8sJob', 'K8SJob'),
+                        svc('cronjobs', 'CronJobs', '/10/K8sCj', 'K8SCronJob'),
+                        svc('hpas', 'HPA', '/10/K8sHpa', 'K8SHPA')
+                    ],
+                    'k8s-networking': [
+                        svc('services', 'Services', '/11/K8sSvc', 'K8SService'),
+                        svc('ingresses', 'Ingresses', '/11/K8sIng', 'K8SIngress'),
+                        svc('networkpolicies', 'Network Policies', '/11/K8sNetPol', 'K8SNetworkPolicy'),
+                        svc('endpoints', 'Endpoints', '/11/K8sEp', 'K8SEndpoints'),
+                        svc('endpointslices', 'Endpoint Slices', '/11/K8sEpSl', 'K8SEndpointSlice'),
+                        svc('ingressclasses', 'Ingress Classes', '/11/K8sIngCl', 'K8SIngressClass')
+                    ],
+                    'k8s-storage': [
+                        svc('pvs', 'Persistent Volumes', '/12/K8sPv', 'K8SPersistentVolume'),
+                        svc('pvcs', 'Persistent Volume Claims', '/12/K8sPvc', 'K8SPersistentVolumeClaim'),
+                        svc('storageclasses', 'Storage Classes', '/12/K8sScl', 'K8SStorageClass')
+                    ],
+                    'k8s-configuration': [
+                        svc('configmaps', 'ConfigMaps', '/13/K8sCm', 'K8SConfigMap'),
+                        svc('secrets', 'Secrets', '/13/K8sSec', 'K8SSecret'),
+                        svc('resourcequotas', 'Resource Quotas', '/13/K8sRq', 'K8SResourceQuota'),
+                        svc('limitranges', 'Limit Ranges', '/13/K8sLr', 'K8SLimitRange'),
+                        svc('pdbs', 'Pod Disruption Budgets', '/13/K8sPdb', 'K8SPodDisruptionBudget')
+                    ],
+                    'k8s-access-control': [
+                        svc('serviceaccounts', 'Service Accounts', '/14/K8sSa', 'K8SServiceAccount'),
+                        svc('roles', 'Roles', '/14/K8sRole', 'K8SRole'),
+                        svc('clusterroles', 'Cluster Roles', '/14/K8sCr', 'K8SClusterRole'),
+                        svc('rolebindings', 'Role Bindings', '/14/K8sRb', 'K8SRoleBinding'),
+                        svc('clusterrolebindings', 'Cluster Role Bindings', '/14/K8sCrb', 'K8SClusterRoleBinding')
+                    ],
+                    'k8s-nodes': [
+                        svc('nodes', 'Nodes', '/15/K8sNode', 'K8SNode')
+                    ],
+                    'k8s-namespaces': [
+                        svc('namespaces', 'Namespaces', '/16/K8sNs', 'K8SNamespace', 'name')
+                    ],
+                    'k8s-vcluster': [
+                        svc('vclusters', 'vClusters', '/17/K8sVCl', 'K8SVCluster')
+                    ],
+                    'k8s-istio': [
+                        svc('virtualservices', 'Virtual Services', '/18/IstioVs', 'IstioVirtualService'),
+                        svc('destinationrules', 'Destination Rules', '/18/IstioDr', 'IstioDestinationRule'),
+                        svc('gateways', 'Gateways', '/18/IstioGw', 'IstioGateway'),
+                        svc('serviceentries', 'Service Entries', '/18/IstioSe', 'IstioServiceEntry'),
+                        svc('peerauthn', 'Peer Authentication', '/18/IstioPa', 'IstioPeerAuthentication'),
+                        svc('authzpolicies', 'Authorization Policies', '/18/IstioAp', 'IstioAuthorizationPolicy'),
+                        svc('sidecars', 'Sidecars', '/18/IstioSc', 'IstioSidecar'),
+                        svc('envoyfilters', 'Envoy Filters', '/18/IstioEf', 'IstioEnvoyFilter')
+                    ],
+                    'k8s-crds': [
+                        svc('crds', 'Custom Resource Definitions', '/19/K8sCrd', 'K8SCRD', 'name')
+                    ],
+                    'k8s-events': [
+                        svc('events', 'Events', '/20/K8sEvt', 'K8SEvent')
+                    ]
+                }
+            };
+        })(),
 
         // Inventory — single EDITABLE table (Targets CRUD)
         // Desktop: Full CRUD with nested hosts/protocol configs (targets.js 740 lines)
