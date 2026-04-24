@@ -195,6 +195,38 @@
     color: var(--layer8d-text-muted);
 }
 
+/* JSON tab */
+.k8s-detail-json {
+    background: var(--layer8d-bg-light);
+    border: 1px solid var(--layer8d-border);
+    border-radius: 6px;
+    padding: 16px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--layer8d-text-dark);
+    overflow-x: auto;
+    max-height: 500px;
+    overflow-y: auto;
+    white-space: pre;
+    margin: 0;
+}
+
+/* Inline JSON in All Fields tab */
+.k8s-detail-inline-json {
+    background: var(--layer8d-bg-light);
+    border: 1px solid var(--layer8d-border);
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--layer8d-text-dark);
+    overflow-x: auto;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre;
+    margin: 0;
+}
+
 /* Status badges (reuse existing probler styles) */
 .k8s-detail-value .status-badge {
     display: inline-block;
