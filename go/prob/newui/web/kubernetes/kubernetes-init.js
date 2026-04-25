@@ -18,7 +18,7 @@
     };
 
     function fetchClusterList(callback) {
-        var endpoint = Layer8DConfig.resolveEndpoint('/1/KCluster');
+        var endpoint = Layer8DConfig.resolveEndpoint('/10/KCluster');
         var query = encodeURIComponent(JSON.stringify({ text: 'select * from K8SCluster' }));
         var url = endpoint + '?body=' + query;
         var headers = {};

@@ -99,10 +99,10 @@ function initializeAlarmsTable() {
 
 async function fetchK8sStats() {
     try {
-        const endpoint = Layer8DConfig.resolveEndpoint('/1/KCache');
+        const endpoint = Layer8DConfig.resolveEndpoint('/10/KCluster');
         const url = endpoint +
             '?body=' + encodeURIComponent(JSON.stringify({
-                text: 'select * from K8sCluster'
+                text: 'select * from K8SCluster'
             }));
 
         const response = await fetch(url, {

@@ -77,69 +77,69 @@
                 ],
                 services: {
                     'k8s-overview': [
-                        svc('clusters', 'Clusters', '/1/KCluster', 'K8SCluster', 'name')
+                        svc('clusters', 'Clusters', '/10/KCluster', 'K8SCluster', 'name')
                     ],
                     'k8s-workloads': [
-                        svc('pods', 'Pods', '/10/K8sPod', 'K8SPod'),
-                        svc('deployments', 'Deployments', '/10/K8sDeploy', 'K8SDeployment'),
-                        svc('statefulsets', 'StatefulSets', '/10/K8sSts', 'K8SStatefulSet'),
-                        svc('daemonsets', 'DaemonSets', '/10/K8sDs', 'K8SDaemonSet'),
-                        svc('replicasets', 'ReplicaSets', '/10/K8sRs', 'K8SReplicaSet'),
-                        svc('jobs', 'Jobs', '/10/K8sJob', 'K8SJob'),
-                        svc('cronjobs', 'CronJobs', '/10/K8sCj', 'K8SCronJob'),
-                        svc('hpas', 'HPA', '/10/K8sHpa', 'K8SHPA')
+                        svc('pods', 'Pods', '/11/K8sPod', 'K8SPod'),
+                        svc('deployments', 'Deployments', '/12/K8sDploy', 'K8SDeployment'),
+                        svc('statefulsets', 'StatefulSets', '/13/K8sSts', 'K8SStatefulSet'),
+                        svc('daemonsets', 'DaemonSets', '/14/K8sDs', 'K8SDaemonSet'),
+                        svc('replicasets', 'ReplicaSets', '/15/K8sRs', 'K8SReplicaSet'),
+                        svc('jobs', 'Jobs', '/16/K8sJob', 'K8SJob'),
+                        svc('cronjobs', 'CronJobs', '/17/K8sCj', 'K8SCronJob'),
+                        svc('hpas', 'HPA', '/18/K8sHpa', 'K8SHPA')
                     ],
                     'k8s-networking': [
-                        svc('services', 'Services', '/11/K8sSvc', 'K8SService'),
-                        svc('ingresses', 'Ingresses', '/11/K8sIng', 'K8SIngress'),
-                        svc('networkpolicies', 'Network Policies', '/11/K8sNetPol', 'K8SNetworkPolicy'),
-                        svc('endpoints', 'Endpoints', '/11/K8sEp', 'K8SEndpoints'),
-                        svc('endpointslices', 'Endpoint Slices', '/11/K8sEpSl', 'K8SEndpointSlice'),
-                        svc('ingressclasses', 'Ingress Classes', '/11/K8sIngCl', 'K8SIngressClass')
+                        svc('services', 'Services', '/19/K8sSvc', 'K8SService'),
+                        svc('ingresses', 'Ingresses', '/20/K8sIng', 'K8SIngress'),
+                        svc('networkpolicies', 'Network Policies', '/21/K8sNtPol', 'K8SNetworkPolicy'),
+                        svc('endpoints', 'Endpoints', '/22/K8sEp', 'K8SEndpoints'),
+                        svc('endpointslices', 'Endpoint Slices', '/23/K8sEpSl', 'K8SEndpointSlice'),
+                        svc('ingressclasses', 'Ingress Classes', '/24/K8sIngCl', 'K8SIngressClass')
                     ],
                     'k8s-storage': [
-                        svc('pvs', 'Persistent Volumes', '/12/K8sPv', 'K8SPersistentVolume'),
-                        svc('pvcs', 'Persistent Volume Claims', '/12/K8sPvc', 'K8SPersistentVolumeClaim'),
-                        svc('storageclasses', 'Storage Classes', '/12/K8sScl', 'K8SStorageClass')
+                        svc('pvs', 'Persistent Volumes', '/25/K8sPv', 'K8SPersistentVolume'),
+                        svc('pvcs', 'Persistent Volume Claims', '/26/K8sPvc', 'K8SPersistentVolumeClaim'),
+                        svc('storageclasses', 'Storage Classes', '/27/K8sScl', 'K8SStorageClass')
                     ],
                     'k8s-configuration': [
-                        svc('configmaps', 'ConfigMaps', '/13/K8sCm', 'K8SConfigMap'),
-                        svc('secrets', 'Secrets', '/13/K8sSec', 'K8SSecret'),
-                        svc('resourcequotas', 'Resource Quotas', '/13/K8sRq', 'K8SResourceQuota'),
-                        svc('limitranges', 'Limit Ranges', '/13/K8sLr', 'K8SLimitRange'),
-                        svc('pdbs', 'Pod Disruption Budgets', '/13/K8sPdb', 'K8SPodDisruptionBudget')
+                        svc('configmaps', 'ConfigMaps', '/28/K8sCm', 'K8SConfigMap'),
+                        svc('secrets', 'Secrets', '/29/K8sSec', 'K8SSecret'),
+                        svc('resourcequotas', 'Resource Quotas', '/30/K8sRq', 'K8SResourceQuota'),
+                        svc('limitranges', 'Limit Ranges', '/31/K8sLr', 'K8SLimitRange'),
+                        svc('pdbs', 'Pod Disruption Budgets', '/32/K8sPdb', 'K8SPodDisruptionBudget')
                     ],
                     'k8s-access-control': [
-                        svc('serviceaccounts', 'Service Accounts', '/14/K8sSa', 'K8SServiceAccount'),
-                        svc('roles', 'Roles', '/14/K8sRole', 'K8SRole'),
-                        svc('clusterroles', 'Cluster Roles', '/14/K8sCr', 'K8SClusterRole'),
-                        svc('rolebindings', 'Role Bindings', '/14/K8sRb', 'K8SRoleBinding'),
-                        svc('clusterrolebindings', 'Cluster Role Bindings', '/14/K8sCrb', 'K8SClusterRoleBinding')
+                        svc('serviceaccounts', 'Service Accounts', '/33/K8sSa', 'K8SServiceAccount'),
+                        svc('roles', 'Roles', '/34/K8sRole', 'K8SRole'),
+                        svc('clusterroles', 'Cluster Roles', '/35/K8sCr', 'K8SClusterRole'),
+                        svc('rolebindings', 'Role Bindings', '/36/K8sRb', 'K8SRoleBinding'),
+                        svc('clusterrolebindings', 'Cluster Role Bindings', '/37/K8sCrb', 'K8SClusterRoleBinding')
                     ],
                     'k8s-nodes': [
-                        svc('nodes', 'Nodes', '/15/K8sNode', 'K8SNode')
+                        svc('nodes', 'Nodes', '/38/K8sNode', 'K8SNode')
                     ],
                     'k8s-namespaces': [
-                        svc('namespaces', 'Namespaces', '/16/K8sNs', 'K8SNamespace', 'name')
+                        svc('namespaces', 'Namespaces', '/39/K8sNs', 'K8SNamespace', 'name')
                     ],
                     'k8s-vcluster': [
-                        svc('vclusters', 'vClusters', '/17/K8sVCl', 'K8SVCluster')
+                        svc('vclusters', 'vClusters', '/40/K8sVCl', 'K8SVCluster')
                     ],
                     'k8s-istio': [
-                        svc('virtualservices', 'Virtual Services', '/18/IstioVs', 'IstioVirtualService'),
-                        svc('destinationrules', 'Destination Rules', '/18/IstioDr', 'IstioDestinationRule'),
-                        svc('gateways', 'Gateways', '/18/IstioGw', 'IstioGateway'),
-                        svc('serviceentries', 'Service Entries', '/18/IstioSe', 'IstioServiceEntry'),
-                        svc('peerauthn', 'Peer Authentication', '/18/IstioPa', 'IstioPeerAuthentication'),
-                        svc('authzpolicies', 'Authorization Policies', '/18/IstioAp', 'IstioAuthorizationPolicy'),
-                        svc('sidecars', 'Sidecars', '/18/IstioSc', 'IstioSidecar'),
-                        svc('envoyfilters', 'Envoy Filters', '/18/IstioEf', 'IstioEnvoyFilter')
+                        svc('virtualservices', 'Virtual Services', '/41/IstioVs', 'IstioVirtualService'),
+                        svc('destinationrules', 'Destination Rules', '/42/IstioDr', 'IstioDestinationRule'),
+                        svc('gateways', 'Gateways', '/43/IstioGw', 'IstioGateway'),
+                        svc('serviceentries', 'Service Entries', '/44/IstioSe', 'IstioServiceEntry'),
+                        svc('peerauthn', 'Peer Authentication', '/45/IstioPa', 'IstioPeerAuthentication'),
+                        svc('authzpolicies', 'Authorization Policies', '/46/IstioAp', 'IstioAuthorizationPolicy'),
+                        svc('sidecars', 'Sidecars', '/47/IstioSc', 'IstioSidecar'),
+                        svc('envoyfilters', 'Envoy Filters', '/48/IstioEf', 'IstioEnvoyFilter')
                     ],
                     'k8s-crds': [
-                        svc('crds', 'Custom Resource Definitions', '/19/K8sCrd', 'K8SCRD', 'name')
+                        svc('crds', 'Custom Resource Definitions', '/49/K8sCrd', 'K8SCRD', 'name')
                     ],
                     'k8s-events': [
-                        svc('events', 'Events', '/20/K8sEvt', 'K8SEvent')
+                        svc('events', 'Events', '/50/K8sEvt', 'K8SEvent')
                     ]
                 }
             };

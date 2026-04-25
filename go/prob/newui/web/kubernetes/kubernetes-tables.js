@@ -14,7 +14,8 @@
         }
 
         var endpoint = Layer8DConfig.resolveEndpoint(service.endpoint);
-        var baseWhere = clusterFilter ? 'clusterName=' + clusterFilter : '';
+        var hasClusterNameField = service.model !== 'K8SCluster';
+        var baseWhere = (clusterFilter && hasClusterNameField) ? 'clusterName=' + clusterFilter : '';
 
         var table = new Layer8DTable({
             containerId: containerId,

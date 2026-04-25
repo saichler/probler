@@ -34,7 +34,6 @@ const (
 	K8s_Persist_Service_Name = "KPersist"
 	K8s_Persist_Service_Area = byte(1)
 	K8s_Parser_Service_Name  = "KPars"
-	K8s_Parser_Service_Area  = byte(1)
 
 	GPU_Links_ID             = "GPU"
 	GPU_Cache_Service_Name   = "GCache"
@@ -62,7 +61,8 @@ func (this *Links) Parser(linkid string) (string, byte) {
 		return name, area
 	}
 	if linkid == K8sC_Links_ID {
-		return K8s_Parser_Service_Name, K8s_Parser_Service_Area
+		e := k8sLinkMap[K8sClust_Links_ID]
+		return e.ParserName, e.ParserArea
 	}
 	switch linkid {
 	case NetworkDevice_Links_ID:
