@@ -17,9 +17,18 @@
 
     var PV_PHASE = { 0: 'Unspecified', 1: 'Available', 2: 'Bound', 3: 'Released', 4: 'Failed' };
 
+    // Non-silent-fallback rule (see plans/k8s-table-fixes.md):
+    //   - null/undefined/'' → '—' (truly absent)
+    //   - unmapped enum value → console.warn + show raw
     function getPodStatusText(v) {
+        if (v === null || v === undefined || v === '') return '—';
         if (typeof v === 'string') return v;
-        return POD_STATUS[v] || 'Unknown';
+        var label = POD_STATUS[v];
+        if (label) return label;
+        if (typeof console !== 'undefined' && console.warn) {
+            console.warn('K8s pod status: unmapped enum value', v);
+        }
+        return String(v);
     }
 
     function getPodStatusClass(txt) {
@@ -87,7 +96,23 @@
             return '<span class="status-badge ' + cls + '">' + text + '</span>';
         },
         nodeStatus: function(value) {
-            var txt = NODE_STATUS[value] || value || 'Unknown';
+            // Same non-silent-fallback rule as getPodStatusText.
+            var txt;
+            if (value === null || value === undefined || value === '') {
+                txt = '—';
+            } else if (typeof value === 'string') {
+                txt = value;
+            } else {
+                var label = NODE_STATUS[value];
+                if (label) {
+                    txt = label;
+                } else {
+                    if (typeof console !== 'undefined' && console.warn) {
+                        console.warn('K8s node status: unmapped enum value', value);
+                    }
+                    txt = String(value);
+                }
+            }
             var cls = getNodeStatusClass(value);
             return '<span class="status-badge ' + cls + '">' + txt + '</span>';
         },

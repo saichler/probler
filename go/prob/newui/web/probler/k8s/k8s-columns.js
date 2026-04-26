@@ -13,7 +13,6 @@ ProblerK8s.columns.K8SCluster = [
 // --- Workloads (SA 10) ---
 
 ProblerK8s.columns.K8SPod = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     {
@@ -61,7 +60,6 @@ ProblerK8s.columns.K8SPod = [
 ];
 
 ProblerK8s.columns.K8SDeployment = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'ready', label: 'READY' },
@@ -74,7 +72,6 @@ ProblerK8s.columns.K8SDeployment = [
 ];
 
 ProblerK8s.columns.K8SStatefulSet = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'ready', label: 'READY' },
@@ -84,7 +81,6 @@ ProblerK8s.columns.K8SStatefulSet = [
 ];
 
 ProblerK8s.columns.K8SDaemonSet = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'desired', label: 'DESIRED' },
@@ -100,7 +96,6 @@ ProblerK8s.columns.K8SDaemonSet = [
 ];
 
 ProblerK8s.columns.K8SReplicaSet = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'desired', label: 'DESIRED' },
@@ -110,7 +105,6 @@ ProblerK8s.columns.K8SReplicaSet = [
 ];
 
 ProblerK8s.columns.K8SJob = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'completions', label: 'COMPLETIONS' },
@@ -127,7 +121,6 @@ ProblerK8s.columns.K8SJob = [
 ];
 
 ProblerK8s.columns.K8SCronJob = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'schedule', label: 'SCHEDULE', filterKey: 'schedule' },
@@ -144,7 +137,6 @@ ProblerK8s.columns.K8SCronJob = [
 ];
 
 ProblerK8s.columns.K8SHPA = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'reference', label: 'REFERENCE', filterKey: 'reference' },
@@ -158,7 +150,6 @@ ProblerK8s.columns.K8SHPA = [
 // --- Networking (SA 11) ---
 
 ProblerK8s.columns.K8SService = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'type', label: 'TYPE', filterKey: 'type' },
@@ -170,7 +161,6 @@ ProblerK8s.columns.K8SService = [
 ];
 
 ProblerK8s.columns.K8SIngress = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'className', label: 'CLASS', filterKey: 'className' },
@@ -181,7 +171,6 @@ ProblerK8s.columns.K8SIngress = [
 ];
 
 ProblerK8s.columns.K8SNetworkPolicy = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'podSelector', label: 'POD-SELECTOR', filterKey: 'podSelector' },
@@ -189,7 +178,6 @@ ProblerK8s.columns.K8SNetworkPolicy = [
 ];
 
 ProblerK8s.columns.K8SEndpoints = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'endpoints', label: 'ENDPOINTS' },
@@ -197,7 +185,6 @@ ProblerK8s.columns.K8SEndpoints = [
 ];
 
 ProblerK8s.columns.K8SEndpointSlice = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'addressType', label: 'ADDRESS TYPE', filterKey: 'addressType' },
@@ -207,7 +194,6 @@ ProblerK8s.columns.K8SEndpointSlice = [
 ];
 
 ProblerK8s.columns.K8SIngressClass = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'controller', label: 'CONTROLLER', filterKey: 'controller' },
     { key: 'age', label: 'AGE' }
@@ -216,13 +202,29 @@ ProblerK8s.columns.K8SIngressClass = [
 // --- Nodes (SA 15) ---
 
 ProblerK8s.columns.K8SNode = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'roles', label: 'ROLES', filterKey: 'roles' },
     {
         key: 'status', label: 'STATUS', filterKey: 'status',
         render: function(item) {
-            var txt = ProblerK8s.enums.NODE_STATUS[item.status] || item.status || 'Unknown';
+            // Non-silent-fallback rule: '—' for absent, raw + warn for unmapped.
+            var v = item.status;
+            var txt;
+            if (v === null || v === undefined || v === '') {
+                txt = '—';
+            } else if (typeof v === 'string') {
+                txt = v;
+            } else {
+                var label = ProblerK8s.enums.NODE_STATUS[v];
+                if (label) {
+                    txt = label;
+                } else {
+                    if (typeof console !== 'undefined' && console.warn) {
+                        console.warn('K8s node status: unmapped enum value', v);
+                    }
+                    txt = String(v);
+                }
+            }
             var cls = ProblerK8s.enums.getNodeStatusClass(item.status);
             return '<span class="status-badge ' + cls + '">' + txt + '</span>';
         }
@@ -239,7 +241,6 @@ ProblerK8s.columns.K8SNode = [
 // --- Namespaces (SA 16) ---
 
 ProblerK8s.columns.K8SNamespace = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     {
         key: 'status', label: 'STATUS', filterKey: 'status',

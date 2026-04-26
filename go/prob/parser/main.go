@@ -17,6 +17,7 @@ package main
 
 import (
 	"github.com/saichler/l8bus/go/overlay/vnic"
+	"github.com/saichler/l8parser/go/parser/rules"
 	"github.com/saichler/l8parser/go/parser/service"
 	"github.com/saichler/l8pollaris/go/pollaris"
 	"github.com/saichler/l8types/go/ifs"
@@ -50,6 +51,32 @@ func main() {
 	}
 
 	nic.Resources().Registry().RegisterEnums(types3.K8SPodStatus_value)
+
+	// Register string→int32 maps for typed-enum fields populated from raw
+	// K8s API strings. The keys here mirror what the K8s API returns
+	// directly ("Running", "Ready", …) and what the collector's enrichment
+	// emits for derived statuses ("Ready" / "NotReady" from
+	// status.conditions[type=Ready]). Without this, the parser's
+	// setFieldValue would either reject the assignment or convert string→
+	// int32 via a rune cast and leave the proto field at 0 (UNSPECIFIED) —
+	// which the UI rendered as a permanent "Unknown".
+	rules.RegisterEnum("K8SPodStatus", map[string]int32{
+		"Running":           int32(types3.K8SPodStatus_K8S_POD_STATUS_RUNNING),
+		"Pending":           int32(types3.K8SPodStatus_K8S_POD_STATUS_PENDING),
+		"Succeeded":         int32(types3.K8SPodStatus_K8S_POD_STATUS_SUCCEEDED),
+		"Failed":            int32(types3.K8SPodStatus_K8S_POD_STATUS_FAILED),
+		"Unknown":           int32(types3.K8SPodStatus_K8S_POD_STATUS_UNKNOWN),
+		"CrashLoopBackOff":  int32(types3.K8SPodStatus_K8S_POD_STATUS_CRASHLOOPBACKOFF),
+		"Terminating":       int32(types3.K8SPodStatus_K8S_POD_STATUS_TERMINATING),
+		"ContainerCreating": int32(types3.K8SPodStatus_K8S_POD_STATUS_CONTAINERCREATING),
+		"ImagePullBackOff":  int32(types3.K8SPodStatus_K8S_POD_STATUS_IMAGEPULLBACKOFF),
+		"Error":             int32(types3.K8SPodStatus_K8S_POD_STATUS_ERROR),
+		"Completed":         int32(types3.K8SPodStatus_K8S_POD_STATUS_COMPLETED),
+	})
+	rules.RegisterEnum("K8SNodeStatus", map[string]int32{
+		"Ready":    int32(types3.K8SNodeStatus_K8S_NODE_STATUS_READY),
+		"NotReady": int32(types3.K8SNodeStatus_K8S_NODE_STATUS_NOT_READY),
+	})
 
 	//Activate Polaris
 	pollaris.Activate(nic)

@@ -11,7 +11,6 @@
     // --- Storage (SA 12) ---
 
     MobileK8s.columns.K8SPersistentVolume = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'capacity', label: 'CAPACITY' },
         { key: 'accessModes', label: 'ACCESS MODES' },
@@ -26,7 +25,6 @@
     ];
 
     MobileK8s.columns.K8SPersistentVolumeClaim = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'status', label: 'STATUS', secondary: true, filterKey: 'status',
@@ -40,7 +38,6 @@
     ];
 
     MobileK8s.columns.K8SStorageClass = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'provisioner', label: 'PROVISIONER', secondary: true, filterKey: 'provisioner' },
         { key: 'reclaimPolicy', label: 'RECLAIM POLICY', filterKey: 'reclaimPolicy' },
@@ -53,7 +50,6 @@
     // --- Configuration (SA 13) ---
 
     MobileK8s.columns.K8SConfigMap = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'dataCount', label: 'DATA' },
@@ -61,7 +57,6 @@
     ];
 
     MobileK8s.columns.K8SSecret = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'type', label: 'TYPE', secondary: true, filterKey: 'type' },
@@ -70,7 +65,6 @@
     ];
 
     MobileK8s.columns.K8SResourceQuota = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'requestCpu', label: 'REQ CPU' },
@@ -83,14 +77,12 @@
     ];
 
     MobileK8s.columns.K8SLimitRange = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'age', label: 'AGE' }
     ];
 
     MobileK8s.columns.K8SPodDisruptionBudget = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'minAvailable', label: 'MIN AVAILABLE' },
@@ -102,7 +94,6 @@
     // --- Access Control (SA 14) ---
 
     MobileK8s.columns.K8SServiceAccount = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'secrets', label: 'SECRETS' },
@@ -110,20 +101,17 @@
     ];
 
     MobileK8s.columns.K8SRole = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'age', label: 'AGE' }
     ];
 
     MobileK8s.columns.K8SClusterRole = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'age', label: 'AGE' }
     ];
 
     MobileK8s.columns.K8SRoleBinding = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'roleRef', label: 'ROLE REF', filterKey: 'roleRef' },
@@ -131,7 +119,6 @@
     ];
 
     MobileK8s.columns.K8SClusterRoleBinding = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'roleRef', label: 'ROLE REF', secondary: true, filterKey: 'roleRef' },
         { key: 'age', label: 'AGE' }
@@ -140,7 +127,6 @@
     // --- vCluster (SA 17) ---
 
     MobileK8s.columns.K8SVCluster = [
-        { key: 'clusterName', label: 'HOST CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'status', label: 'STATUS', secondary: true, filterKey: 'status',
@@ -157,7 +143,6 @@
     // --- Istio (SA 18) ---
 
     MobileK8s.columns.IstioVirtualService = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'gateways', label: 'GATEWAYS' },
@@ -166,7 +151,6 @@
     ];
 
     MobileK8s.columns.IstioDestinationRule = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'host', label: 'HOST', filterKey: 'host' },
@@ -174,7 +158,6 @@
     ];
 
     MobileK8s.columns.IstioGateway = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'servers', label: 'SERVERS' },
@@ -183,7 +166,6 @@
     ];
 
     MobileK8s.columns.IstioServiceEntry = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'hosts', label: 'HOSTS' },
@@ -194,7 +176,6 @@
     ];
 
     MobileK8s.columns.IstioPeerAuthentication = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'mode', label: 'MODE', filterKey: 'mode' },
@@ -202,7 +183,6 @@
     ];
 
     MobileK8s.columns.IstioAuthorizationPolicy = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'action', label: 'ACTION', filterKey: 'action' },
@@ -210,14 +190,12 @@
     ];
 
     MobileK8s.columns.IstioSidecar = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'age', label: 'AGE' }
     ];
 
     MobileK8s.columns.IstioEnvoyFilter = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'age', label: 'AGE' }
@@ -226,7 +204,6 @@
     // --- CRDs (SA 19) ---
 
     MobileK8s.columns.K8SCRD = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'group', label: 'GROUP', secondary: true, filterKey: 'group' },
         { key: 'version', label: 'VERSION', filterKey: 'version' },
@@ -237,7 +214,6 @@
     // --- Events (SA 20) ---
 
     MobileK8s.columns.K8SEvent = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
         { key: 'type', label: 'TYPE', secondary: true, filterKey: 'type',
           render: function(item) { return render.eventType(item.type); } },

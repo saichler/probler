@@ -5,7 +5,6 @@ ProblerK8s.columns = ProblerK8s.columns || {};
 // --- Storage (SA 12) ---
 
 ProblerK8s.columns.K8SPersistentVolume = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'capacity', label: 'CAPACITY' },
     { key: 'accessModes', label: 'ACCESS MODES' },
@@ -26,7 +25,6 @@ ProblerK8s.columns.K8SPersistentVolume = [
 ];
 
 ProblerK8s.columns.K8SPersistentVolumeClaim = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     {
@@ -46,7 +44,6 @@ ProblerK8s.columns.K8SPersistentVolumeClaim = [
 ];
 
 ProblerK8s.columns.K8SStorageClass = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'provisioner', label: 'PROVISIONER', filterKey: 'provisioner' },
     { key: 'reclaimPolicy', label: 'RECLAIM POLICY', filterKey: 'reclaimPolicy' },
@@ -63,7 +60,6 @@ ProblerK8s.columns.K8SStorageClass = [
 // --- Configuration (SA 13) ---
 
 ProblerK8s.columns.K8SConfigMap = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'dataCount', label: 'DATA' },
@@ -71,7 +67,6 @@ ProblerK8s.columns.K8SConfigMap = [
 ];
 
 ProblerK8s.columns.K8SSecret = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'type', label: 'TYPE', filterKey: 'type' },
@@ -80,7 +75,6 @@ ProblerK8s.columns.K8SSecret = [
 ];
 
 ProblerK8s.columns.K8SResourceQuota = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'requestCpu', label: 'REQ CPU' },
@@ -93,14 +87,12 @@ ProblerK8s.columns.K8SResourceQuota = [
 ];
 
 ProblerK8s.columns.K8SLimitRange = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'age', label: 'AGE' }
 ];
 
 ProblerK8s.columns.K8SPodDisruptionBudget = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'minAvailable', label: 'MIN AVAILABLE' },
@@ -112,7 +104,6 @@ ProblerK8s.columns.K8SPodDisruptionBudget = [
 // --- Access Control (SA 14) ---
 
 ProblerK8s.columns.K8SServiceAccount = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'secrets', label: 'SECRETS' },
@@ -120,20 +111,17 @@ ProblerK8s.columns.K8SServiceAccount = [
 ];
 
 ProblerK8s.columns.K8SRole = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'age', label: 'AGE' }
 ];
 
 ProblerK8s.columns.K8SClusterRole = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'age', label: 'AGE' }
 ];
 
 ProblerK8s.columns.K8SRoleBinding = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'roleRef', label: 'ROLE REF', filterKey: 'roleRef' },
@@ -141,7 +129,6 @@ ProblerK8s.columns.K8SRoleBinding = [
 ];
 
 ProblerK8s.columns.K8SClusterRoleBinding = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'roleRef', label: 'ROLE REF', filterKey: 'roleRef' },
     { key: 'age', label: 'AGE' }
@@ -150,7 +137,6 @@ ProblerK8s.columns.K8SClusterRoleBinding = [
 // --- vCluster (SA 17) ---
 
 ProblerK8s.columns.K8SVCluster = [
-    { key: 'clusterName', label: 'HOST CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     {
@@ -172,7 +158,6 @@ ProblerK8s.columns.K8SVCluster = [
 // --- Istio (SA 18) ---
 
 ProblerK8s.columns.IstioVirtualService = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'gateways', label: 'GATEWAYS' },
@@ -181,7 +166,6 @@ ProblerK8s.columns.IstioVirtualService = [
 ];
 
 ProblerK8s.columns.IstioDestinationRule = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'host', label: 'HOST', filterKey: 'host' },
@@ -189,7 +173,6 @@ ProblerK8s.columns.IstioDestinationRule = [
 ];
 
 ProblerK8s.columns.IstioGateway = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'servers', label: 'SERVERS' },
@@ -198,7 +181,6 @@ ProblerK8s.columns.IstioGateway = [
 ];
 
 ProblerK8s.columns.IstioServiceEntry = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'hosts', label: 'HOSTS' },
@@ -209,7 +191,6 @@ ProblerK8s.columns.IstioServiceEntry = [
 ];
 
 ProblerK8s.columns.IstioPeerAuthentication = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'mode', label: 'MODE', filterKey: 'mode' },
@@ -217,7 +198,6 @@ ProblerK8s.columns.IstioPeerAuthentication = [
 ];
 
 ProblerK8s.columns.IstioAuthorizationPolicy = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'action', label: 'ACTION', filterKey: 'action' },
@@ -225,14 +205,12 @@ ProblerK8s.columns.IstioAuthorizationPolicy = [
 ];
 
 ProblerK8s.columns.IstioSidecar = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'age', label: 'AGE' }
 ];
 
 ProblerK8s.columns.IstioEnvoyFilter = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'age', label: 'AGE' }
@@ -241,7 +219,6 @@ ProblerK8s.columns.IstioEnvoyFilter = [
 // --- CRDs (SA 19) ---
 
 ProblerK8s.columns.K8SCRD = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'name', label: 'NAME', filterKey: 'name' },
     { key: 'group', label: 'GROUP', filterKey: 'group' },
     { key: 'version', label: 'VERSION', filterKey: 'version' },
@@ -252,7 +229,6 @@ ProblerK8s.columns.K8SCRD = [
 // --- Events (SA 20) ---
 
 ProblerK8s.columns.K8SEvent = [
-    { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
     { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
     {
         key: 'type', label: 'TYPE', filterKey: 'type',

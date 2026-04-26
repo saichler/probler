@@ -18,7 +18,6 @@
     // --- Workloads (SA 10) ---
 
     MobileK8s.columns.K8SPod = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'ready', label: 'READY', render: function(item) { return render.podReady(item.ready); } },
@@ -33,7 +32,6 @@
     ];
 
     MobileK8s.columns.K8SDeployment = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'ready', label: 'READY' },
@@ -46,7 +44,6 @@
     ];
 
     MobileK8s.columns.K8SStatefulSet = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'ready', label: 'READY' },
@@ -56,7 +53,6 @@
     ];
 
     MobileK8s.columns.K8SDaemonSet = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'desired', label: 'DESIRED' },
@@ -72,7 +68,6 @@
     ];
 
     MobileK8s.columns.K8SReplicaSet = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'desired', label: 'DESIRED' },
@@ -82,7 +77,6 @@
     ];
 
     MobileK8s.columns.K8SJob = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'completions', label: 'COMPLETIONS' },
@@ -93,7 +87,6 @@
     ];
 
     MobileK8s.columns.K8SCronJob = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'schedule', label: 'SCHEDULE', filterKey: 'schedule' },
@@ -105,7 +98,6 @@
     ];
 
     MobileK8s.columns.K8SHPA = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'reference', label: 'REFERENCE', filterKey: 'reference' },
@@ -119,7 +111,6 @@
     // --- Networking (SA 11) ---
 
     MobileK8s.columns.K8SService = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'type', label: 'TYPE', secondary: true, filterKey: 'type' },
@@ -131,7 +122,6 @@
     ];
 
     MobileK8s.columns.K8SIngress = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'className', label: 'CLASS', filterKey: 'className' },
@@ -142,7 +132,6 @@
     ];
 
     MobileK8s.columns.K8SNetworkPolicy = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'podSelector', label: 'POD-SELECTOR', filterKey: 'podSelector' },
@@ -150,7 +139,6 @@
     ];
 
     MobileK8s.columns.K8SEndpoints = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'endpoints', label: 'ENDPOINTS' },
@@ -158,7 +146,6 @@
     ];
 
     MobileK8s.columns.K8SEndpointSlice = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'namespace', label: 'NAMESPACE', secondary: true, filterKey: 'namespace' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'addressType', label: 'ADDRESS TYPE', filterKey: 'addressType' },
@@ -168,7 +155,6 @@
     ];
 
     MobileK8s.columns.K8SIngressClass = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'controller', label: 'CONTROLLER', secondary: true, filterKey: 'controller' },
         { key: 'age', label: 'AGE' }
@@ -177,7 +163,6 @@
     // --- Nodes (SA 15) ---
 
     MobileK8s.columns.K8SNode = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'roles', label: 'ROLES', filterKey: 'roles' },
         { key: 'status', label: 'STATUS', secondary: true, filterKey: 'status',
@@ -194,7 +179,6 @@
     // --- Namespaces (SA 16) ---
 
     MobileK8s.columns.K8SNamespace = [
-        { key: 'clusterName', label: 'CLUSTER', filterKey: 'clusterName' },
         { key: 'name', label: 'NAME', primary: true, filterKey: 'name' },
         { key: 'status', label: 'STATUS', secondary: true, filterKey: 'status',
           render: function(item) { return render.namespaceStatus(item.status); } },

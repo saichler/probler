@@ -42,9 +42,20 @@ ProblerK8s.enums.PV_PHASE = {
     4: 'Failed'
 };
 
+// Per the non-silent-fallback rule: distinguish (a) genuinely-absent values
+// (null/undefined/'') from (b) values the parser produced but the UI does
+// not have a label for. Case (a) renders "—"; case (b) console.warns and
+// returns the raw value so the bug stays visible instead of being silently
+// coerced to "Unknown".
 ProblerK8s.enums.getPodStatusText = function(statusValue) {
+    if (statusValue === null || statusValue === undefined || statusValue === '') return '—';
     if (typeof statusValue === 'string') return statusValue;
-    return ProblerK8s.enums.POD_STATUS[statusValue] || 'Unknown';
+    var label = ProblerK8s.enums.POD_STATUS[statusValue];
+    if (label) return label;
+    if (typeof console !== 'undefined' && console.warn) {
+        console.warn('K8s pod status: unmapped enum value', statusValue);
+    }
+    return String(statusValue);
 };
 
 ProblerK8s.enums.getPodStatusClass = function(statusText) {
