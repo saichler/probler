@@ -143,16 +143,21 @@
     border-color: var(--layer8d-primary);
 }
 
-/* Table area */
+/* Table area.
+   Do NOT add `overflow-y: auto` here. The Layer8DTable's
+   .l8-table-container already provides the scroll viewport and the
+   sticky `<thead>` is positioned relative to it. Adding overflow here
+   creates an outer scroll context that hijacks wheel events and
+   carries the entire table — header included — past the top of the
+   viewport, breaking sticky positioning. The flex chain on
+   .k8s-section above is what actually fixes the original
+   "can't reach the bottom row" issue; this element just needs to
+   propagate flex space, not scroll. */
 .k8s-table-area {
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    /* Ensures rows beyond the viewport are reachable when the inner table
-       does not provide its own scrolling. Belt-and-braces with the flex
-       chain on .k8s-section above. */
-    overflow-y: auto;
 }
 
 /* Detail popup styles */
@@ -281,4 +286,93 @@
 .k8s-overview-card-icon {
     font-size: 18px;
     line-height: 1;
+}
+
+/* Pod detail — per-container card with sub-tables for ports/env/etc.
+   Uses theme tokens only (per l8ui-theme-compliance). */
+.k8s-detail-container-card {
+    border: 1px solid var(--layer8d-border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    background: var(--layer8d-bg-white);
+}
+.k8s-detail-container-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+.k8s-detail-container-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--layer8d-text-dark);
+}
+.k8s-detail-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--layer8d-bg-light);
+    color: var(--layer8d-text-medium);
+    border: 1px solid var(--layer8d-border);
+    text-transform: lowercase;
+    letter-spacing: 0.3px;
+}
+.k8s-detail-pill-init {
+    background: var(--layer8d-bg-light);
+    color: var(--layer8d-primary);
+    border-color: var(--layer8d-primary);
+}
+.k8s-detail-pill-container {
+    background: var(--layer8d-bg-light);
+    color: var(--layer8d-text-dark);
+}
+.k8s-detail-pill-state {
+    background: var(--layer8d-bg-input);
+    color: var(--layer8d-text-medium);
+}
+.k8s-detail-pill-ready {
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--layer8d-success, #16a34a);
+    border-color: var(--layer8d-success, #16a34a);
+}
+.k8s-detail-pill-notready {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--layer8d-error, #dc2626);
+    border-color: var(--layer8d-error, #dc2626);
+}
+.k8s-detail-container-subtitle {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--layer8d-text-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 10px 0 4px 0;
+}
+.k8s-detail-container-subtable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+.k8s-detail-container-subtable th,
+.k8s-detail-container-subtable td {
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--layer8d-border);
+    text-align: left;
+    color: var(--layer8d-text-dark);
+    word-break: break-all;
+}
+.k8s-detail-container-subtable th {
+    font-weight: 600;
+    color: var(--layer8d-text-medium);
+    background: var(--layer8d-bg-light);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.k8s-detail-container-subtable tr:last-child td {
+    border-bottom: none;
 }

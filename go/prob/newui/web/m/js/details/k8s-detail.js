@@ -9,7 +9,8 @@
         K8SPod: [
             { title: 'Identity', keys: ['clusterName', 'namespace', 'name', 'key'] },
             { title: 'Status', keys: ['status', 'ready', 'restarts', 'age'] },
-            { title: 'Scheduling', keys: ['ip', 'node', 'nominatedNode', 'readinessGates'] }
+            { title: 'Scheduling', keys: ['ip', 'node', 'nominatedNode', 'readinessGates'] },
+            { title: 'Containers', custom: 'containers' }
         ],
         K8SNode: [
             { title: 'Identity', keys: ['clusterName', 'name', 'roles', 'status', 'age'] },
@@ -156,17 +157,161 @@
             html += '<div class="detail-section">';
             html += '<div class="detail-section-title">' + D.esc(section.title) + '</div>';
 
-            for (var k = 0; k < section.keys.length; k++) {
-                var key = section.keys[k];
-                var col = columnMap[key];
-                var label = col ? col.label : formatKeyLabel(key);
-                var value = getNestedValue(item, key);
-                var displayValue = renderValue(item, col, value);
-                html += D.rowHtml(label, displayValue);
+            // Custom renderer dispatch — mirrors desktop kubernetes-detail.js.
+            // Currently only "containers" is implemented (pod containers).
+            if (section.custom === 'containers') {
+                html += renderContainers(item.containersJson);
+            } else {
+                for (var k = 0; k < section.keys.length; k++) {
+                    var key = section.keys[k];
+                    var col = columnMap[key];
+                    var label = col ? col.label : formatKeyLabel(key);
+                    var value = getNestedValue(item, key);
+                    var displayValue = renderValue(item, col, value);
+                    html += D.rowHtml(label, displayValue);
+                }
             }
             html += '</div>';
         }
         return html;
+    }
+
+    // renderContainers parses K8sPod.containers_json and renders one
+    // stacked card per container with its image / imagePullPolicy / ports /
+    // env / resources / volumeMounts. Non-silent-fallback rule:
+    //   • empty/missing → "—"
+    //   • parse failure → console.warn + raw JSON in a code block
+    function renderContainers(jsonStr) {
+        if (jsonStr === null || jsonStr === undefined || jsonStr === '') {
+            return '<div style="color:var(--layer8d-text-muted);padding:8px 0;">—</div>';
+        }
+        var list;
+        try {
+            list = JSON.parse(jsonStr);
+        } catch (e) {
+            if (typeof console !== 'undefined' && console.warn) {
+                console.warn('K8s pod containers_json parse failed:', e, jsonStr);
+            }
+            return '<pre style="background:var(--layer8d-bg-light);border:1px solid var(--layer8d-border);' +
+                'border-radius:4px;padding:8px;font-size:11px;overflow-x:auto;max-height:150px;overflow-y:auto;' +
+                'white-space:pre;margin:0;">' + D.esc(jsonStr) + '</pre>';
+        }
+        if (!Array.isArray(list) || list.length === 0) {
+            return '<div style="color:var(--layer8d-text-muted);padding:8px 0;">—</div>';
+        }
+        var html = '';
+        for (var i = 0; i < list.length; i++) {
+            html += renderContainerCard(list[i]);
+        }
+        return html;
+    }
+
+    function renderContainerCard(c) {
+        if (!c || typeof c !== 'object') return '';
+        var html = '<div style="border:1px solid var(--layer8d-border);border-radius:6px;'
+            + 'padding:10px;margin-bottom:10px;background:var(--layer8d-bg-white);">';
+
+        // Header
+        html += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px;">';
+        html += '<span style="font-weight:600;color:var(--layer8d-text-dark);font-size:13px;">'
+            + D.esc(c.name || '(unnamed)') + '</span>';
+        if (c.kind) html += pill(c.kind, c.kind === 'init' ? 'initContainer' : 'container');
+        if (c.state) html += pill(c.state);
+        if (c.ready === true) html += pill('ready', 'ready');
+        else if (c.ready === false) html += pill('not ready', 'notready');
+        if (typeof c.restartCount === 'number' && c.restartCount > 0) {
+            html += pill('restarts: ' + c.restartCount);
+        }
+        html += '</div>';
+
+        // Meta: image / imagePullPolicy
+        html += D.rowHtml('Image', escOrDash(c.image));
+        html += D.rowHtml('Image Pull Policy', escOrDash(c.imagePullPolicy));
+
+        // Ports
+        if (c.ports && c.ports.length) {
+            html += '<div style="font-size:10px;font-weight:600;color:var(--layer8d-text-medium);'
+                + 'text-transform:uppercase;margin:8px 0 4px;letter-spacing:0.4px;">Ports</div>';
+            for (var p = 0; p < c.ports.length; p++) {
+                var port = c.ports[p] || {};
+                var portStr = (port.containerPort != null ? port.containerPort : '?')
+                    + '/' + (port.protocol || 'TCP')
+                    + (port.name ? ' (' + port.name + ')' : '');
+                html += D.rowHtml('Port ' + (p + 1), D.esc(portStr));
+            }
+        }
+
+        // Env
+        if (c.env && c.env.length) {
+            html += '<div style="font-size:10px;font-weight:600;color:var(--layer8d-text-medium);'
+                + 'text-transform:uppercase;margin:8px 0 4px;letter-spacing:0.4px;">Environment</div>';
+            for (var e = 0; e < c.env.length; e++) {
+                var env = c.env[e] || {};
+                var val = env.value;
+                if (val === undefined && env.valueFrom) {
+                    val = '<from: ' + JSON.stringify(env.valueFrom) + '>';
+                }
+                html += D.rowHtml(D.esc(env.name || ''), D.esc(strOr(val, '')));
+            }
+        }
+
+        // Resources
+        if (c.resources && (c.resources.requests || c.resources.limits)) {
+            html += '<div style="font-size:10px;font-weight:600;color:var(--layer8d-text-medium);'
+                + 'text-transform:uppercase;margin:8px 0 4px;letter-spacing:0.4px;">Resources</div>';
+            if (c.resources.requests) {
+                html += D.rowHtml('Requests CPU', escOrDash(c.resources.requests.cpu));
+                html += D.rowHtml('Requests Mem', escOrDash(c.resources.requests.memory));
+            }
+            if (c.resources.limits) {
+                html += D.rowHtml('Limits CPU', escOrDash(c.resources.limits.cpu));
+                html += D.rowHtml('Limits Mem', escOrDash(c.resources.limits.memory));
+            }
+        }
+
+        // Volume mounts
+        if (c.volumeMounts && c.volumeMounts.length) {
+            html += '<div style="font-size:10px;font-weight:600;color:var(--layer8d-text-medium);'
+                + 'text-transform:uppercase;margin:8px 0 4px;letter-spacing:0.4px;">Volume Mounts</div>';
+            for (var v = 0; v < c.volumeMounts.length; v++) {
+                var m = c.volumeMounts[v] || {};
+                var mount = (m.mountPath || '?') + (m.readOnly ? ' (ro)' : '')
+                    + (m.subPath ? ' subPath=' + m.subPath : '');
+                html += D.rowHtml(D.esc(m.name || ''), D.esc(mount));
+            }
+        }
+
+        html += '</div>';
+        return html;
+    }
+
+    function pill(text, variant) {
+        var bg = 'var(--layer8d-bg-light)';
+        var color = 'var(--layer8d-text-medium)';
+        var border = 'var(--layer8d-border)';
+        if (variant === 'ready') {
+            bg = 'rgba(34,197,94,0.12)'; color = 'var(--layer8d-success,#16a34a)'; border = color;
+        } else if (variant === 'notready') {
+            bg = 'rgba(239,68,68,0.12)'; color = 'var(--layer8d-error,#dc2626)'; border = color;
+        } else if (variant === 'initContainer') {
+            color = 'var(--layer8d-primary)'; border = color;
+        }
+        return '<span style="display:inline-block;font-size:10px;font-weight:600;'
+            + 'padding:2px 8px;border-radius:10px;background:' + bg + ';color:' + color + ';'
+            + 'border:1px solid ' + border + ';text-transform:lowercase;letter-spacing:0.3px;">'
+            + D.esc(text) + '</span>';
+    }
+
+    function escOrDash(v) {
+        if (v === null || v === undefined || v === '') {
+            return '<span style="color:var(--layer8d-text-muted);">—</span>';
+        }
+        return D.esc(String(v));
+    }
+
+    function strOr(v, fallback) {
+        if (v === null || v === undefined || v === '') return fallback;
+        return String(v);
     }
 
     function buildFlatOverview(item, columns) {
