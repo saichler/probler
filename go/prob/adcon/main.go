@@ -31,8 +31,12 @@ import (
 // k8sPrimeObjectLinkIDs is the list of K8s/Istio prime objects we collect.
 // One target per LinkID is posted to the collector so that JobsQueue.target.LinksId
 // is per-PrimeObject and CJobs route to the matching parser/inventory cache.
+//
+// K8sClust_Links_ID is intentionally excluded: there is no Pollaris named "K8sClust"
+// (cluster summary has no API poll), so posting that target would fall back to the
+// legacy "run all Pollarises" path and waste cycles. Cluster summary, when needed,
+// must come from a separate source.
 var k8sPrimeObjectLinkIDs = []string{
-	common2.K8sClust_Links_ID,
 	common2.K8sPod_Links_ID,
 	common2.K8sDeploy_Links_ID,
 	common2.K8sSts_Links_ID,
