@@ -1,6 +1,7 @@
 FROM saichler/builder:latest AS build
 
 COPY main.go /home/src/github.com/saichler/build/main.go
+COPY summary.go /home/src/github.com/saichler/build/summary.go
 RUN go mod init
 #RUN GOPROXY=direct GOPRIVATE=github.com go mod tidy
 RUN GOPROXY=https://proxy.golang.org,direct GOPRIVATE=github.com go mod tidy
