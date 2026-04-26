@@ -9,19 +9,18 @@ if [ -z "$1" ]; then
   sleep 1
 
   # Start background services with nohup so they survive when webui_demo exits
-  nohup ./vnet_demo > vnet_demo.log 2>&1 &
-  nohup ./logvnet_demo > logvnet_demo.log 2>&1 &
+  nohup ./vnet_demo &
+  nohup ./logvnet_demo &
   sleep 5
-  nohup ./orm_demo local > orm_demo.log 2>&1 &
-  nohup ./alarms_demo > alarms_demo.log 2>&1 &
-  nohup ./collector_demo > collector_demo.log 2>&1 &
-  nohup ./parser_demo > parser_demo.log 2>&1 &
-  nohup ./box_demo > box_demo.log 2>&1 &
-  nohup ./k8s_demo > k8s_demo.log 2>&1 &
-  nohup ./gpu_demo > gpu_demo.log 2>&1 &
-  nohup ./topology_demo > topology_demo.log 2>&1 &
-  nohup ./logagent_demo > logagent_demo.log 2>&1 &
-  #../run-orm.sh
+  nohup ./orm_demo local &
+  nohup ./alarms_demo &
+  nohup ./collector_demo &
+  nohup ./parser_demo &
+  nohup ./box_demo &
+  nohup ./k8s_demo &
+  nohup ./gpu_demo &
+  nohup ./topology_demo & 
+  nohup ./logagent_demo &
   echo "Background services started."
 else
   echo "Running webui_demo only (background services should already be running)..."

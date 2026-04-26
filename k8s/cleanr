@@ -1,0 +1,4 @@
+remote_sudo.sh 'rm -rf /data/logs/rubi'
+remote_sudo.sh 'rm -rf /data/logsdb/rubi'
+remote_sudo.sh 'rm -rf /data/postgres/rubi'
+remote_sudo.sh 'rm -rf /data/.{48000,48000}{u,r,c}'
