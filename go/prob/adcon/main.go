@@ -95,6 +95,10 @@ func main() {
 	res.Logger().SetLogLevel(ifs.Info_Level)
 
 	clusterName := os.Getenv("ClusterName")
+
+	// Periodically publish K8SCluster + K8SClusterSummary for the Overview tab.
+	go publishClusterSummary(nic, clusterName)
+
 	coll, _ := nic.Resources().Services().ServiceHandler(common2.AdControl_Service_Name, common2.AdControl_Service_Area)
 	fmt.Println("Posting", len(k8sPrimeObjectLinkIDs), "K8s targets to the collector!")
 	for _, linkID := range k8sPrimeObjectLinkIDs {

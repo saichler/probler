@@ -30,10 +30,11 @@ Probler.submodules = ['ProblerNetwork', 'ProblerGpus', 'ProblerHosts', 'ProblerK
 // Kubernetes resource categories — used by kubernetes-init.js to build the UI
 Probler.k8sCategories = [
     {
+        // Overview is a custom view rendered by kubernetes-overview.js — it shows
+        // KPI cards summarizing every other category for the selected cluster.
+        // It does not have sub-services (kubernetes-init.js special-cases it).
         key: 'overview', label: 'Overview', icon: '📊',
-        services: [
-            { key: 'cluster-summary', label: 'Clusters', endpoint: '/10/KCluster', model: 'K8SCluster', readOnly: true }
-        ]
+        services: []
     },
     {
         key: 'workloads', label: 'Workloads', icon: '⚙️',

@@ -1,4 +1,5 @@
-// Kubernetes Section — Server-side paginated, 12 category tabs
+// Kubernetes Section — Server-side paginated, 12 category tabs.
+// Cluster dropdown is the global filter for every sub-tab and the Overview.
 (function() {
     'use strict';
 
@@ -6,6 +7,8 @@
     var activeCategory = null;
     var activeService = null;
     var selectedCluster = '';
+    var OVERVIEW_KEY = 'overview';
+    var OVERVIEW_CONTAINER_ID = 'k8s-overview-area';
 
     window.initializeKubernetes = function() {
         fetchClusterList(function(clusters) {
@@ -15,6 +18,16 @@
                 selectCategory(categories[0]);
             }
         });
+    };
+
+    // K8sCategoryNav lets the Overview cards (and any other component) jump
+    // to a category tab by key.
+    window.K8sCategoryNav = {
+        activate: function(catKey) {
+            var cat = findCategory(catKey);
+            if (cat) selectCategory(cat);
+        },
+        getSelectedCluster: function() { return selectedCluster; }
     };
 
     function fetchClusterList(callback) {
@@ -60,10 +73,25 @@
         if (dropdown) {
             dropdown.addEventListener('change', function() {
                 selectedCluster = dropdown.value;
-                if (activeService) {
-                    loadServiceTable(activeService);
-                }
+                onSelectedClusterChanged();
             });
+        }
+    }
+
+    // onSelectedClusterChanged is the single place that fans out the
+    // selected-cluster change to every visible piece of UI: the Overview
+    // card grid and any active sub-tab table.
+    function onSelectedClusterChanged() {
+        if (typeof K8sTables !== 'undefined' && K8sTables.setClusterFilter) {
+            K8sTables.setClusterFilter(selectedCluster);
+        }
+        if (activeCategory && activeCategory.key === OVERVIEW_KEY) {
+            if (typeof K8sOverview !== 'undefined') {
+                K8sOverview.show(OVERVIEW_CONTAINER_ID, selectedCluster);
+            }
+        } else if (activeService) {
+            // Re-render the active sub-tab so the new filter applies.
+            loadServiceTable(activeService);
         }
     }
 
@@ -92,16 +120,39 @@
 
     function selectCategory(cat) {
         activeCategory = cat;
+        activeService = null;
 
         var tabs = document.querySelectorAll('.k8s-category-tab');
         for (var i = 0; i < tabs.length; i++) {
             tabs[i].classList.toggle('active', tabs[i].getAttribute('data-category') === cat.key);
         }
 
+        // Overview tab is a custom view — KPI cards driven by K8SCluster summary,
+        // not the regular sub-tabs + Layer8DTable path.
+        if (cat.key === OVERVIEW_KEY) {
+            renderOverviewSubTabs();
+            renderOverview();
+            return;
+        }
+
         renderServiceSubTabs(cat);
 
         if (cat.services && cat.services.length > 0) {
             selectService(cat.services[0]);
+        }
+    }
+
+    function renderOverviewSubTabs() {
+        var container = document.getElementById('k8s-service-tabs');
+        if (container) container.innerHTML = '';
+    }
+
+    function renderOverview() {
+        var tableArea = document.getElementById('k8s-table-area');
+        if (!tableArea) return;
+        tableArea.innerHTML = '<div id="' + OVERVIEW_CONTAINER_ID + '"></div>';
+        if (typeof K8sOverview !== 'undefined') {
+            K8sOverview.show(OVERVIEW_CONTAINER_ID, selectedCluster);
         }
     }
 

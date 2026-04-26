@@ -235,3 +235,38 @@
     font-size: 11px;
     font-weight: 500;
 }
+
+/* Overview layout — KPI cards are rendered by Layer8DWidget; this only lays
+   out the grid + cluster meta strip. */
+.k8s-overview-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0 12px 0;
+    flex-wrap: wrap;
+}
+.k8s-overview-meta-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--layer8d-text-dark);
+}
+.k8s-overview-meta-pill {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--layer8d-bg-light);
+    color: var(--layer8d-text-medium);
+    border: 1px solid var(--layer8d-border);
+}
+.k8s-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+}
+.k8s-overview-card-wrap {
+    cursor: pointer;
+}
+.k8s-overview-card-icon {
+    font-size: 18px;
+    line-height: 1;
+}

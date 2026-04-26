@@ -92,6 +92,55 @@ message K8SClusterSummary {
   string istio_version = 17;
   int32 total_vclusters = 18;
   int32 total_crds = 19;
+
+  // Workloads (additional)
+  int32 total_statefulsets = 20;
+  int32 ready_statefulsets = 21;
+  int32 total_daemonsets = 22;
+  int32 ready_daemonsets = 23;
+  int32 total_replicasets = 24;
+  int32 total_cronjobs = 25;
+  int32 active_cronjobs = 26;
+  int32 total_hpas = 27;
+
+  // Networking (additional)
+  int32 total_networkpolicies = 28;
+  int32 total_endpoints = 29;
+  int32 total_endpointslices = 30;
+  int32 total_ingressclasses = 31;
+
+  // Storage (additional)
+  int32 total_persistentvolumes = 32;
+  int32 bound_persistentvolumes = 33;
+  int32 total_storageclasses = 34;
+
+  // Configuration
+  int32 total_configmaps = 35;
+  int32 total_secrets = 36;
+  int32 total_resourcequotas = 37;
+  int32 total_limitranges = 38;
+  int32 total_poddisruptionbudgets = 39;
+
+  // Access Control
+  int32 total_serviceaccounts = 40;
+  int32 total_roles = 41;
+  int32 total_clusterroles = 42;
+  int32 total_rolebindings = 43;
+  int32 total_clusterrolebindings = 44;
+
+  // Istio per-resource counts (istio_installed=16 preserved above)
+  int32 total_istio_virtualservices = 45;
+  int32 total_istio_destinationrules = 46;
+  int32 total_istio_gateways = 47;
+  int32 total_istio_serviceentries = 48;
+  int32 total_istio_peerauthentications = 49;
+  int32 total_istio_authorizationpolicies = 50;
+  int32 total_istio_sidecars = 51;
+  int32 total_istio_envoyfilters = 52;
+
+  // Events
+  int32 total_events = 53;
+  int32 warning_events = 54;
 }
 
 // Workloads (SA 10)
