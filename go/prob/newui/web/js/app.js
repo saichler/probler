@@ -147,6 +147,23 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load l8ui configuration (apiPrefix, dateFormat, etc.)
     await Layer8DConfig.load();
 
+    // Render the portal switcher dropdown in the header (between the theme
+    // picker and the user menu). The switcher reads the portal list from
+    // login.json's `portals` map and falls back gracefully when only one
+    // portal is registered.
+    if (typeof Layer8DPortalSwitcher !== 'undefined') {
+        var headerRight = document.querySelector('.header-right');
+        var userMenu = document.querySelector('.header-right .user-menu');
+        if (headerRight) {
+            Layer8DPortalSwitcher.init({
+                container: headerRight,
+                insertBefore: userMenu,
+                apiPrefix: Layer8DConfig.getApiPrefix(),
+                currentPath: window.location.pathname
+            });
+        }
+    }
+
     // Load per-type action permissions for the current user.
     // Helper reads the bearer token inline — see Phase 0.3.
     await ProblerPermissions.load();

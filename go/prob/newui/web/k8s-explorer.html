@@ -1,0 +1,223 @@
+<!--
+    Kubernetes Explorer — portal stub.
+    See plans/k8s-explorer-portal.md (Phase 0c). The real shell/rail/content
+    lands in Phase 1 (scaffold) and Phase 2 (Layer8DExplorer + groups).
+    This page exists today only to validate the Layer8DPortalSwitcher
+    round-trip from app.html.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes Explorer · Probler</title>
+
+    <!-- Theme tokens + base styles, shared with app.html so theme + brand
+         feel identical across portals. -->
+    <link rel="stylesheet" href="l8ui/shared/layer8d-theme-tokens.css">
+    <link rel="stylesheet" href="l8ui/shared/layer8d-theme.css">
+    <link rel="stylesheet" href="l8ui/shared/layer8d-animations.css">
+    <link rel="stylesheet" href="l8ui/shared/layer8d-scrollbar.css">
+    <link rel="stylesheet" href="l8ui/shared/layer8-section-layout.css">
+    <link rel="stylesheet" href="css/base-core.css">
+    <link rel="stylesheet" href="css/landing-fonts.css">
+
+    <style>
+        /* Portal stub layout — minimal until Phase 1 lands the real shell. */
+        body {
+            margin: 0;
+            font-family: var(--layer8d-font-stack, system-ui, sans-serif);
+            background: var(--bg-primary, var(--layer8d-bg-light));
+            color: var(--text-primary, var(--layer8d-text-dark));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .k8s-explorer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            border-bottom: 1px solid var(--border-subtle, var(--layer8d-border));
+            background: var(--bg-card, var(--layer8d-bg-white));
+        }
+        .k8s-explorer-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .k8s-explorer-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary, var(--layer8d-text-dark));
+            margin: 0;
+        }
+        .k8s-explorer-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary, var(--layer8d-text-medium));
+            margin: 2px 0 0 0;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-primary, var(--layer8d-text-dark));
+        }
+        .user-menu .logout-btn {
+            background: var(--layer8d-bg-light);
+            border: 1px solid var(--layer8d-border);
+            color: var(--layer8d-text-dark);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .user-menu .logout-btn:hover {
+            background: var(--layer8d-bg-input);
+        }
+        .k8s-explorer-body {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px;
+        }
+        .k8s-explorer-stub {
+            text-align: center;
+            max-width: 520px;
+        }
+        .k8s-explorer-stub h2 {
+            font-size: 24px;
+            color: var(--text-primary, var(--layer8d-text-dark));
+            margin: 0 0 12px 0;
+            font-weight: 600;
+        }
+        .k8s-explorer-stub p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary, var(--layer8d-text-medium));
+            margin: 6px 0;
+        }
+        .k8s-explorer-stub code {
+            background: var(--layer8d-bg-light);
+            border: 1px solid var(--layer8d-border);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .k8s-explorer-back {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: var(--layer8d-primary);
+            color: var(--layer8d-bg-white);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .k8s-explorer-back:hover {
+            opacity: 0.92;
+        }
+    </style>
+</head>
+<body>
+    <header class="k8s-explorer-header">
+        <div class="k8s-explorer-header-left">
+            <img src="images/logo.gif" alt="Probler Logo" style="height:32px;">
+            <div>
+                <h1 class="k8s-explorer-title">Kubernetes Explorer</h1>
+                <p class="k8s-explorer-subtitle">Resource navigator (preview)</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <!-- Portal switcher will be injected here; user menu sits to its right. -->
+            <div class="user-menu">
+                <span class="username" id="k8s-explorer-username">Loading…</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="k8s-explorer-body">
+        <div class="k8s-explorer-stub">
+            <h2>Kubernetes Explorer is coming online</h2>
+            <p>This portal is a stub for now. The full layout — left explorer rail,
+               cluster + namespace context bar, action-oriented overview, related-resource
+               drill-down — lands phase-by-phase per
+               <code>plans/k8s-explorer-portal.md</code>.</p>
+            <p>Until then, use the portal switcher in the header to return to the main
+               Probler console, or jump to the existing Kubernetes section there.</p>
+            <a class="k8s-explorer-back" href="app.html#kubernetes">Open classic Kubernetes section</a>
+        </div>
+    </main>
+
+    <!-- L8UI core (shared with app.html) -->
+    <script src="l8ui/shared/layer8d-config.js"></script>
+    <script src="l8ui/shared/layer8d-router.js"></script>
+    <script src="l8ui/shared/layer8d-portal-switcher.js"></script>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // Auth gate: if no bearer token, bounce to login and remember to
+            // come back here.
+            var token = sessionStorage.getItem('bearerToken');
+            if (!token) {
+                window.location.href = 'login.html?redirect=k8s-explorer.html';
+                return;
+            }
+
+            // Show username if available.
+            var username = sessionStorage.getItem('username') || 'Admin';
+            var u = document.getElementById('k8s-explorer-username');
+            if (u) u.textContent = username;
+
+            // Load shared config + render portal switcher in the header so
+            // the user can hop back to the main app. Layer8DPortalSwitcher
+            // needs at least 2 portals registered in login.json to render —
+            // see plans/k8s-explorer-portal.md (Phase 0c).
+            (async function() {
+                if (typeof Layer8DConfig !== 'undefined') {
+                    try { await Layer8DConfig.load(); } catch (e) {
+                        if (typeof console !== 'undefined' && console.warn) {
+                            console.warn('Layer8DConfig.load failed:', e);
+                        }
+                    }
+                }
+                if (typeof Layer8DPortalSwitcher !== 'undefined') {
+                    var headerRight = document.querySelector('.header-right');
+                    var userMenu = document.querySelector('.header-right .user-menu');
+                    if (headerRight) {
+                        Layer8DPortalSwitcher.init({
+                            container: headerRight,
+                            insertBefore: userMenu,
+                            apiPrefix: typeof Layer8DConfig !== 'undefined'
+                                ? Layer8DConfig.getApiPrefix()
+                                : '',
+                            currentPath: window.location.pathname
+                        });
+                    }
+                }
+            })();
+
+            // Minimal logout — clears session and bounces to login. Mirrors
+            // the helper in app.html so the stub doesn't depend on app.js.
+            window.logout = function() {
+                sessionStorage.removeItem('bearerToken');
+                sessionStorage.removeItem('username');
+                localStorage.removeItem('bearerToken');
+                window.location.href = 'login.html';
+            };
+        })();
+    </script>
+</body>
+</html>

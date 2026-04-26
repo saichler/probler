@@ -160,6 +160,26 @@
     flex-direction: column;
 }
 
+/* `kubernetes-init.js` mounts table/overview content inside .k8s-table-area
+   via a single dynamically-created wrapper div (#k8s-table-<svc>, or
+   #k8s-overview-area). That wrapper is otherwise unstyled — display:block,
+   natural-content height. Without this rule, the wrapper expands to fit
+   ALL rows and breaks the flex chain: the inner Layer8DTable's
+   .l8-table-wrapper has flex:1 but its parent isn't a flex container, so
+   .l8-table-container ends up unbounded (clientHeight === scrollHeight)
+   and the body never scrolls.
+
+   Confirmed via runtime diagnostic — see plans/k8s-table-scroll-rca.md
+   Phase 0 output: [K8S-SCROLL-DBG][table:pods] showed #k8s-table-pods at
+   client=3712 scroll=3712 display=block while .k8s-table-area was
+   correctly bounded at client=499. This rule restores the chain. */
+.k8s-table-area > div {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 /* Detail popup styles */
 .k8s-detail-view {
     padding: 0;
