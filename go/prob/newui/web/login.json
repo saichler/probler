@@ -20,10 +20,10 @@
     },
     "app": {
         "apiPrefix": "/probler",
-        "dateFormat": "mm/dd/yyyy"
-    },
-    "portals": {
-        "app.html": "Probler",
-        "k8s-explorer.html": "Kubernetes Explorer"
+        "dateFormat": "mm/dd/yyyy",
+        "portals": {
+            "app.html": "Probler",
+            "k8s-explorer.html": "Kubernetes Explorer"
+        }
     }
 }

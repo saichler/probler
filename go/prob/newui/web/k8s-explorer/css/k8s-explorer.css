@@ -1,0 +1,306 @@
+/*
+ * Kubernetes Explorer portal — scaffold styles.
+ *
+ * Layout: full-viewport flex column.
+ *   header  (auto height — logo, title, context-bar slot, theme, portal switcher, user menu)
+ *   shell   (flex:1 — rail aside + main slot)
+ *
+ * The rail aside is reserved for Layer8DExplorer (Phase 2) and currently
+ * renders an empty container.
+ * The main slot is reserved for resource views / overview cards (Phase 4+)
+ * and currently renders a "Select a resource to begin" placeholder.
+ *
+ * Theme tokens only — see l8ui-theme-compliance global rule.
+ */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Figtree', system-ui, -apple-system, sans-serif;
+    background: var(--bg-primary, var(--layer8d-bg-light));
+    color: var(--text-primary, var(--layer8d-text-dark));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+
+.k8s-explorer-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-subtle, var(--layer8d-border));
+    background: var(--bg-card, var(--layer8d-bg-white));
+    flex-shrink: 0;
+}
+
+.k8s-explorer-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.k8s-explorer-header-logo {
+    height: 32px;
+    width: auto;
+}
+
+.k8s-explorer-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary, var(--layer8d-text-dark));
+    line-height: 1.2;
+}
+
+.k8s-explorer-subtitle {
+    font-size: 11px;
+    color: var(--text-secondary, var(--layer8d-text-medium));
+    margin: 1px 0 0 0;
+    line-height: 1.2;
+}
+
+/* Context-bar slot reserved for Phase 3 (Layer8DContextBar mounts here:
+   cluster + namespace selectors + search). Empty in Phase 1. */
+.k8s-explorer-context-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.k8s-explorer-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* User menu (mirrors app.html structure so the portal switcher's
+   `insertBefore: .user-menu` lookup succeeds.) */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-primary, var(--layer8d-text-dark));
+}
+
+.user-menu .username {
+    font-weight: 500;
+}
+
+.user-menu .logout-btn {
+    background: var(--layer8d-bg-light);
+    border: 1px solid var(--layer8d-border);
+    color: var(--layer8d-text-dark);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+
+.user-menu .logout-btn:hover {
+    background: var(--layer8d-bg-input);
+}
+
+/* Theme picker — same chrome as app.html so themes feel consistent. */
+.layer8d-theme-picker {
+    position: relative;
+}
+
+.layer8d-theme-btn {
+    background: var(--layer8d-bg-light);
+    border: 1px solid var(--layer8d-border);
+    color: var(--layer8d-text-medium);
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s;
+}
+
+.layer8d-theme-btn:hover {
+    background: var(--layer8d-bg-input);
+}
+
+/* ── Shell (rail + main) ─────────────────────────────────────────── */
+
+.k8s-explorer-shell {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    overflow: hidden;
+}
+
+.k8s-explorer-rail {
+    width: 260px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border-subtle, var(--layer8d-border));
+    background: var(--bg-card, var(--layer8d-bg-white));
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.k8s-explorer-rail-placeholder {
+    padding: 16px;
+    font-size: 12px;
+    color: var(--text-secondary, var(--layer8d-text-muted));
+    font-style: italic;
+}
+
+.k8s-explorer-main {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Inner views (Layer8DTable, overview grids) handle their own padding
+       and scroll. The main slot just provides a bounded flex container. */
+}
+
+.k8s-explorer-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary, var(--layer8d-text-muted));
+    font-size: 14px;
+    padding: 40px;
+    text-align: center;
+}
+
+.k8s-explorer-empty-inner {
+    max-width: 480px;
+}
+
+.k8s-explorer-empty-inner h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary, var(--layer8d-text-dark));
+    margin: 0 0 8px 0;
+}
+
+.k8s-explorer-empty-inner p {
+    margin: 4px 0;
+    line-height: 1.6;
+}
+
+/* ── Resource view (Phase 5) ──────────────────────────────────── */
+
+.k8s-explorer-resource-view {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 20px;
+}
+
+.k8s-explorer-resource-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+
+.k8s-explorer-resource-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary, var(--layer8d-text-dark));
+    margin: 0;
+}
+
+.k8s-explorer-resource-scope {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.k8s-explorer-scope-pill {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--layer8d-bg-light);
+    color: var(--layer8d-text-medium);
+    border: 1px solid var(--layer8d-border);
+}
+
+.k8s-explorer-scope-muted {
+    font-style: italic;
+    color: var(--layer8d-text-muted);
+}
+
+/* The resource-table slot is the host for Layer8DTable. Mirrors the
+   k8s-table-area fix from the classic section: every direct child div
+   needs to participate in the flex chain so the inner Layer8DTable's
+   .l8-table-container can scroll. See plans/k8s-table-scroll-rca.md
+   for the original RCA. */
+.k8s-explorer-resource-table {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.k8s-explorer-resource-table > div {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Overview (Phase 5) ───────────────────────────────────────── */
+
+.k8s-explorer-overview {
+    padding: 16px 20px;
+    overflow-y: auto;
+}
+
+.k8s-explorer-overview-header {
+    margin-bottom: 14px;
+}
+
+.k8s-explorer-overview-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary, var(--layer8d-text-dark));
+    margin: 0 0 4px 0;
+}
+
+.k8s-explorer-overview-sub {
+    font-size: 12px;
+    color: var(--layer8d-text-muted);
+    margin: 0;
+}
+
+.k8s-explorer-overview-grid {
+    /* Reuses Layer8DActionCard's grid styles via the
+       .layer8d-action-card-grid class — Layer8DActionCard.renderGrid
+       attaches that class. We intentionally do not duplicate the grid
+       declaration here. */
+}
+
+.k8s-explorer-overview-stale {
+    margin-top: 16px;
+    padding: 10px 12px;
+    background: var(--layer8d-bg-light);
+    border: 1px dashed var(--layer8d-border);
+    border-radius: 6px;
+    color: var(--layer8d-text-muted);
+    font-size: 12px;
+}

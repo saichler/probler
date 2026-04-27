@@ -1,9 +1,10 @@
 <!--
-    Kubernetes Explorer — portal stub.
-    See plans/k8s-explorer-portal.md (Phase 0c). The real shell/rail/content
-    lands in Phase 1 (scaffold) and Phase 2 (Layer8DExplorer + groups).
-    This page exists today only to validate the Layer8DPortalSwitcher
-    round-trip from app.html.
+    Kubernetes Explorer — portal scaffold.
+    See plans/k8s-explorer-portal.md (Phase 1). The header is canonical
+    Probler chrome (logo + portal switcher + theme + user menu); the body
+    is a flex shell with an empty rail aside (mounts Layer8DExplorer in
+    Phase 2) and an empty main slot (mounts overview/resource views in
+    Phase 4+). All chrome uses --layer8d-* theme tokens via shared CSS.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -12,133 +13,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kubernetes Explorer · Probler</title>
 
-    <!-- Theme tokens + base styles, shared with app.html so theme + brand
+    <!-- Theme tokens + base shared styles. Same set as app.html so themes
          feel identical across portals. -->
     <link rel="stylesheet" href="l8ui/shared/layer8d-theme-tokens.css">
     <link rel="stylesheet" href="l8ui/shared/layer8d-theme.css">
     <link rel="stylesheet" href="l8ui/shared/layer8d-animations.css">
     <link rel="stylesheet" href="l8ui/shared/layer8d-scrollbar.css">
-    <link rel="stylesheet" href="l8ui/shared/layer8-section-layout.css">
-    <link rel="stylesheet" href="css/base-core.css">
-    <link rel="stylesheet" href="css/landing-fonts.css">
 
-    <style>
-        /* Portal stub layout — minimal until Phase 1 lands the real shell. */
-        body {
-            margin: 0;
-            font-family: var(--layer8d-font-stack, system-ui, sans-serif);
-            background: var(--bg-primary, var(--layer8d-bg-light));
-            color: var(--text-primary, var(--layer8d-text-dark));
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .k8s-explorer-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 24px;
-            border-bottom: 1px solid var(--border-subtle, var(--layer8d-border));
-            background: var(--bg-card, var(--layer8d-bg-white));
-        }
-        .k8s-explorer-header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .k8s-explorer-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary, var(--layer8d-text-dark));
-            margin: 0;
-        }
-        .k8s-explorer-subtitle {
-            font-size: 12px;
-            color: var(--text-secondary, var(--layer8d-text-medium));
-            margin: 2px 0 0 0;
-        }
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: var(--text-primary, var(--layer8d-text-dark));
-        }
-        .user-menu .logout-btn {
-            background: var(--layer8d-bg-light);
-            border: 1px solid var(--layer8d-border);
-            color: var(--layer8d-text-dark);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        .user-menu .logout-btn:hover {
-            background: var(--layer8d-bg-input);
-        }
-        .k8s-explorer-body {
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 24px;
-        }
-        .k8s-explorer-stub {
-            text-align: center;
-            max-width: 520px;
-        }
-        .k8s-explorer-stub h2 {
-            font-size: 24px;
-            color: var(--text-primary, var(--layer8d-text-dark));
-            margin: 0 0 12px 0;
-            font-weight: 600;
-        }
-        .k8s-explorer-stub p {
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--text-secondary, var(--layer8d-text-medium));
-            margin: 6px 0;
-        }
-        .k8s-explorer-stub code {
-            background: var(--layer8d-bg-light);
-            border: 1px solid var(--layer8d-border);
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-size: 13px;
-        }
-        .k8s-explorer-back {
-            display: inline-block;
-            margin-top: 18px;
-            padding: 8px 16px;
-            border-radius: 6px;
-            background: var(--layer8d-primary);
-            color: var(--layer8d-bg-white);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        .k8s-explorer-back:hover {
-            opacity: 0.92;
-        }
-    </style>
+    <!-- Layer8DExplorer rail (Phase 2). -->
+    <link rel="stylesheet" href="l8ui/explorer/layer8d-explorer.css">
+
+    <!-- Layer8DContextBar (Phase 3). -->
+    <link rel="stylesheet" href="l8ui/context_bar/layer8d-context-bar.css">
+
+    <!-- Layer8DActionCard (Phase 5). -->
+    <link rel="stylesheet" href="l8ui/dashboard/layer8d-action-card.css">
+
+    <!-- Layer8DRelatedResources (Phase 7). -->
+    <link rel="stylesheet" href="l8ui/related/layer8d-related-resources.css">
+
+    <!-- Layer8DTable + Layer8DPopup CSS (resource view + classic detail). -->
+    <link rel="stylesheet" href="l8ui/edit_table/layer8d-table.css">
+    <link rel="stylesheet" href="l8ui/popup/layer8d-popup.css">
+
+    <!-- Portal-specific layout — flex column body, fixed header, rail+main shell. -->
+    <link rel="stylesheet" href="k8s-explorer/css/k8s-explorer.css">
+
+    <!-- K8s detail popup styles (reuses the classic section's CSS so the
+         detail popup looks identical across portals). -->
+    <link rel="stylesheet" href="kubernetes/kubernetes.css">
 </head>
 <body>
     <header class="k8s-explorer-header">
         <div class="k8s-explorer-header-left">
-            <img src="images/logo.gif" alt="Probler Logo" style="height:32px;">
+            <img src="images/logo.gif" alt="Probler Logo" class="k8s-explorer-header-logo">
             <div>
                 <h1 class="k8s-explorer-title">Kubernetes Explorer</h1>
-                <p class="k8s-explorer-subtitle">Resource navigator (preview)</p>
+                <p class="k8s-explorer-subtitle">Resource navigator</p>
             </div>
         </div>
-        <div class="header-right">
-            <!-- Portal switcher will be injected here; user menu sits to its right. -->
+
+        <!-- Phase 3 mounts Layer8DContextBar (cluster + namespace + search) here. -->
+        <div class="k8s-explorer-context-bar" id="k8s-explorer-context-bar"></div>
+
+        <div class="k8s-explorer-header-right">
+            <!-- Theme picker (same chrome as app.html). -->
+            <div class="layer8d-theme-picker">
+                <button class="layer8d-theme-btn" onclick="Layer8DThemeSwitcher.toggleDropdown()" aria-label="Choose theme">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 0 0 0 20V2z"/></svg>
+                </button>
+                <div class="layer8d-theme-menu"></div>
+            </div>
+            <!-- Layer8DPortalSwitcher dropdown is injected here at runtime,
+                 between the theme picker and the user menu. -->
             <div class="user-menu">
                 <span class="username" id="k8s-explorer-username">Loading…</span>
                 <button class="logout-btn" onclick="logout()">Logout</button>
@@ -146,78 +73,90 @@
         </div>
     </header>
 
-    <main class="k8s-explorer-body">
-        <div class="k8s-explorer-stub">
-            <h2>Kubernetes Explorer is coming online</h2>
-            <p>This portal is a stub for now. The full layout — left explorer rail,
-               cluster + namespace context bar, action-oriented overview, related-resource
-               drill-down — lands phase-by-phase per
-               <code>plans/k8s-explorer-portal.md</code>.</p>
-            <p>Until then, use the portal switcher in the header to return to the main
-               Probler console, or jump to the existing Kubernetes section there.</p>
-            <a class="k8s-explorer-back" href="app.html#kubernetes">Open classic Kubernetes section</a>
-        </div>
-    </main>
+    <div class="k8s-explorer-shell">
+        <!-- Phase 2 mounts Layer8DExplorer (rail tree of K8s groups). -->
+        <aside class="k8s-explorer-rail" id="k8s-explorer-rail">
+            <div class="k8s-explorer-rail-placeholder">Resource navigator coming in Phase 2.</div>
+        </aside>
 
-    <!-- L8UI core (shared with app.html) -->
+        <!-- Phase 4+ mounts overview action cards / Layer8DTable views here.
+             Today this is a friendly placeholder until the rail is wired. -->
+        <main class="k8s-explorer-main" id="k8s-explorer-main">
+            <div class="k8s-explorer-empty">
+                <div class="k8s-explorer-empty-inner">
+                    <h2>Welcome to Kubernetes Explorer</h2>
+                    <p>The portal scaffold is in place. The left rail will list
+                       Kubernetes resource groups; the main pane will host the
+                       overview dashboard and resource lists.</p>
+                    <p>Use the portal switcher in the header to return to the
+                       main Probler console at any time.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Shared L8UI core. -->
     <script src="l8ui/shared/layer8d-config.js"></script>
+    <script src="l8ui/shared/layer8d-utils.js"></script>
     <script src="l8ui/shared/layer8d-router.js"></script>
+    <script src="l8ui/shared/layer8d-favorites.js"></script>
+    <script src="l8ui/shared/layer8d-recents.js"></script>
     <script src="l8ui/shared/layer8d-portal-switcher.js"></script>
+    <script src="l8ui/shared/layer8d-theme-switcher.js"></script>
 
-    <script>
-        (function() {
-            'use strict';
+    <!-- Layer8DPopup (used by the classic K8s detail wrapper). -->
+    <script src="l8ui/popup/layer8d-popup.js"></script>
 
-            // Auth gate: if no bearer token, bounce to login and remember to
-            // come back here.
-            var token = sessionStorage.getItem('bearerToken');
-            if (!token) {
-                window.location.href = 'login.html?redirect=k8s-explorer.html';
-                return;
-            }
+    <!-- Layer8DTable — required for resource views. Loaded in the order
+         specified by the desktop-script-loading-order rule. -->
+    <script src="l8ui/edit_table/layer8d-table-core.js"></script>
+    <script src="l8ui/edit_table/layer8d-table-data.js"></script>
+    <script src="l8ui/edit_table/layer8d-table-render.js"></script>
+    <script src="l8ui/edit_table/layer8d-table-events.js"></script>
+    <script src="l8ui/edit_table/layer8d-table-filter.js"></script>
+    <script src="l8ui/edit_table/layer8d-table.js"></script>
 
-            // Show username if available.
-            var username = sessionStorage.getItem('username') || 'Admin';
-            var u = document.getElementById('k8s-explorer-username');
-            if (u) u.textContent = username;
+    <!-- Layer8DExplorer rail (Phase 2; Phase 8 split rendering helpers
+         into a sibling file that must load before the main class). -->
+    <script src="l8ui/explorer/layer8d-explorer-render.js"></script>
+    <script src="l8ui/explorer/layer8d-explorer.js"></script>
 
-            // Load shared config + render portal switcher in the header so
-            // the user can hop back to the main app. Layer8DPortalSwitcher
-            // needs at least 2 portals registered in login.json to render —
-            // see plans/k8s-explorer-portal.md (Phase 0c).
-            (async function() {
-                if (typeof Layer8DConfig !== 'undefined') {
-                    try { await Layer8DConfig.load(); } catch (e) {
-                        if (typeof console !== 'undefined' && console.warn) {
-                            console.warn('Layer8DConfig.load failed:', e);
-                        }
-                    }
-                }
-                if (typeof Layer8DPortalSwitcher !== 'undefined') {
-                    var headerRight = document.querySelector('.header-right');
-                    var userMenu = document.querySelector('.header-right .user-menu');
-                    if (headerRight) {
-                        Layer8DPortalSwitcher.init({
-                            container: headerRight,
-                            insertBefore: userMenu,
-                            apiPrefix: typeof Layer8DConfig !== 'undefined'
-                                ? Layer8DConfig.getApiPrefix()
-                                : '',
-                            currentPath: window.location.pathname
-                        });
-                    }
-                }
-            })();
+    <!-- Layer8DContextBar (Phase 3). -->
+    <script src="l8ui/context_bar/layer8d-context-bar.js"></script>
 
-            // Minimal logout — clears session and bounces to login. Mirrors
-            // the helper in app.html so the stub doesn't depend on app.js.
-            window.logout = function() {
-                sessionStorage.removeItem('bearerToken');
-                sessionStorage.removeItem('username');
-                localStorage.removeItem('bearerToken');
-                window.location.href = 'login.html';
-            };
-        })();
-    </script>
+    <!-- Layer8DActionCard (Phase 5). -->
+    <script src="l8ui/dashboard/layer8d-action-card.js"></script>
+
+    <!-- Layer8DRelatedResources (Phase 7). -->
+    <script src="l8ui/related/layer8d-related-resources.js"></script>
+
+    <!-- Classic K8s data + detail popup. The columns/enums files are
+         pure data and live in the classic-section tree; reusing them
+         here is the documented "no duplicate column defs" path. The
+         detail popup script is needed because the explorer's detail
+         wrapper composes with K8sDetail.show. -->
+    <script src="probler/k8s/k8s-enums.js"></script>
+    <script src="probler/k8s/k8s-columns.js"></script>
+    <script src="probler/k8s/k8s-columns-ext.js"></script>
+    <script src="kubernetes/kubernetes-detail.js"></script>
+
+    <!-- K8s-specific config (group/service definitions for the rail). -->
+    <script src="k8s-explorer/js/k8s-explorer-config.js"></script>
+
+    <!-- K8SCluster summary → rail counts + status (Phase 4). -->
+    <script src="k8s-explorer/js/k8s-explorer-summary.js"></script>
+
+    <!-- Resource views + Overview action cards (Phase 5). -->
+    <script src="k8s-explorer/js/k8s-explorer-resource-view.js"></script>
+    <script src="k8s-explorer/js/k8s-explorer-overview.js"></script>
+
+    <!-- Related-resource panel + detail-popup wrapper (Phase 7). -->
+    <script src="k8s-explorer/js/k8s-explorer-related.js"></script>
+    <script src="k8s-explorer/js/k8s-explorer-detail.js"></script>
+
+    <!-- Portal bootstrap — auth gate, theme, portal switcher init,
+         username, Layer8DExplorer mount, Layer8DContextBar mount,
+         main-pane router (Overview / resource view), summary wiring. -->
+    <script src="k8s-explorer/js/k8s-explorer-init.js"></script>
 </body>
 </html>
