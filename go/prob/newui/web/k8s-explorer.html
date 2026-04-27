@@ -20,6 +20,18 @@
     <link rel="stylesheet" href="l8ui/shared/layer8d-animations.css">
     <link rel="stylesheet" href="l8ui/shared/layer8d-scrollbar.css">
 
+    <!-- Probler classic chrome (.app-header, .header-*, .section-title,
+         theme tokens). Loaded so the portal header renders identically to
+         the main app header — see plans/k8s-explorer-header-parity.md. -->
+    <link rel="stylesheet" href="css/base-core.css">
+
+    <!-- Section hero chrome (.l8-header-frame, .l8-title, .l8-subtitle,
+         parallax). Used by Layer8SectionGenerator.renderHero for the
+         per-resource and overview heroes — see
+         plans/k8s-explorer-resource-hero.md. -->
+    <link rel="stylesheet" href="l8ui/shared/layer8-section-layout.css">
+    <link rel="stylesheet" href="l8ui/shared/layer8-section-responsive.css">
+
     <!-- Layer8DExplorer rail (Phase 2). -->
     <link rel="stylesheet" href="l8ui/explorer/layer8d-explorer.css">
 
@@ -44,19 +56,25 @@
     <link rel="stylesheet" href="kubernetes/kubernetes.css">
 </head>
 <body>
-    <header class="k8s-explorer-header">
-        <div class="k8s-explorer-header-left">
-            <img src="images/logo.gif" alt="Probler Logo" class="k8s-explorer-header-logo">
-            <div>
-                <h1 class="k8s-explorer-title">Kubernetes Explorer</h1>
-                <p class="k8s-explorer-subtitle">Resource navigator</p>
+    <!-- Header chrome reuses the classic `.app-header` / `.header-*` classes
+         from web/css/base-core.css so the explorer portal looks pixel-
+         identical to the main Probler header (logo size, title typography,
+         subtitle, bottom border line). The retained `.k8s-explorer-header`
+         class is the explorer-local hook for layout-specific tweaks (e.g.
+         flex-shrink against our shell). See plans/k8s-explorer-header-parity.md. -->
+    <header class="app-header k8s-explorer-header">
+        <div class="header-left">
+            <img src="images/logo.gif" alt="Probler Logo" class="header-logo">
+            <div class="header-title">
+                <h1>Kubernetes Explorer</h1>
+                <p class="header-subtitle">Resource navigator</p>
             </div>
         </div>
 
         <!-- Phase 3 mounts Layer8DContextBar (cluster + namespace + search) here. -->
         <div class="k8s-explorer-context-bar" id="k8s-explorer-context-bar"></div>
 
-        <div class="k8s-explorer-header-right">
+        <div class="header-right">
             <!-- Theme picker (same chrome as app.html). -->
             <div class="layer8d-theme-picker">
                 <button class="layer8d-theme-btn" onclick="Layer8DThemeSwitcher.toggleDropdown()" aria-label="Choose theme">
@@ -115,6 +133,13 @@
     <script src="l8ui/edit_table/layer8d-table-events.js"></script>
     <script src="l8ui/edit_table/layer8d-table-filter.js"></script>
     <script src="l8ui/edit_table/layer8d-table.js"></script>
+
+    <!-- Section hero primitive: Layer8SvgFactory + Layer8SectionGenerator
+         (renderHero). The K8s-themed SVG template registers itself with
+         the factory at load time. See plans/k8s-explorer-resource-hero.md. -->
+    <script src="l8ui/shared/layer8-svg-factory.js"></script>
+    <script src="l8ui/shared/layer8-section-generator.js"></script>
+    <script src="k8s-explorer/js/k8s-explorer-svg.js"></script>
 
     <!-- Layer8DExplorer rail (Phase 2; Phase 8 split rendering helpers
          into a sibling file that must load before the main class). -->

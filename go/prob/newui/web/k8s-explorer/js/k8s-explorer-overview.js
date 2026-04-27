@@ -169,12 +169,19 @@
             container.innerHTML = '<div class="k8s-explorer-empty"><div class="k8s-explorer-empty-inner"><p>Layer8DActionCard not loaded.</p></div></div>';
             return;
         }
+        // Hero header — same Probler `.l8-header-frame` look as the
+        // resource views, so the Overview landing matches the rest of
+        // the explorer's chrome instead of standing out as a one-off.
+        var heroHtml = (typeof Layer8SectionGenerator !== 'undefined' && Layer8SectionGenerator.renderHero)
+            ? Layer8SectionGenerator.renderHero({
+                title:    'KUBERNETES OVERVIEW',
+                subtitle: 'Cluster health at a glance · click a card to drill in',
+                svgKey:   'k8s-explorer'
+              })
+            : '<h2>Overview</h2>';
         container.innerHTML =
             '<div class="k8s-explorer-overview">'
-            + '<div class="k8s-explorer-overview-header">'
-            +   '<h2 class="k8s-explorer-overview-title">Overview</h2>'
-            +   '<p class="k8s-explorer-overview-sub">Click a card to drill in</p>'
-            + '</div>'
+            + heroHtml
             + '<div class="k8s-explorer-overview-grid" id="' + containerId + '-grid"></div>'
             + (summary ? '' : '<p class="k8s-explorer-overview-stale">No cluster summary available yet — counts will appear once the next 30-second poll lands.</p>')
             + '</div>';

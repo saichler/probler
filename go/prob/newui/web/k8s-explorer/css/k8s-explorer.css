@@ -30,109 +30,30 @@ body {
 
 /* ── Header ──────────────────────────────────────────────────────── */
 
+/* The header itself uses the canonical .app-header / .header-left /
+   .header-title / .header-subtitle / .header-logo / .header-right
+   classes from web/css/base-core.css — see plans/k8s-explorer-header-parity.md.
+   This rule provides ONLY the explorer-local layout overrides
+   (specifically the middle context-bar slot, which has no counterpart
+   in the classic app's two-column header). */
 .k8s-explorer-header {
-    display: flex;
-    align-items: center;
+    /* .app-header from base-core sets background, border, padding, z-index.
+       The explorer needs `gap` so the three slots (left / context bar /
+       right) breathe, and `flex-shrink: 0` so the header keeps its height
+       inside our flex-column body. */
     gap: 16px;
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--border-subtle, var(--layer8d-border));
-    background: var(--bg-card, var(--layer8d-bg-white));
     flex-shrink: 0;
 }
 
-.k8s-explorer-header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-}
-
-.k8s-explorer-header-logo {
-    height: 32px;
-    width: auto;
-}
-
-.k8s-explorer-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0;
-    color: var(--text-primary, var(--layer8d-text-dark));
-    line-height: 1.2;
-}
-
-.k8s-explorer-subtitle {
-    font-size: 11px;
-    color: var(--text-secondary, var(--layer8d-text-medium));
-    margin: 1px 0 0 0;
-    line-height: 1.2;
-}
-
-/* Context-bar slot reserved for Phase 3 (Layer8DContextBar mounts here:
-   cluster + namespace selectors + search). Empty in Phase 1. */
+/* Context-bar slot — Phase 3 mounts Layer8DContextBar here (cluster +
+   namespace + search). Takes the middle of the header between the
+   classic .header-left and .header-right groups. */
 .k8s-explorer-context-bar {
     flex: 1;
     display: flex;
     align-items: center;
     gap: 12px;
     min-width: 0;
-}
-
-.k8s-explorer-header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
-}
-
-/* User menu (mirrors app.html structure so the portal switcher's
-   `insertBefore: .user-menu` lookup succeeds.) */
-.user-menu {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: var(--text-primary, var(--layer8d-text-dark));
-}
-
-.user-menu .username {
-    font-weight: 500;
-}
-
-.user-menu .logout-btn {
-    background: var(--layer8d-bg-light);
-    border: 1px solid var(--layer8d-border);
-    color: var(--layer8d-text-dark);
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    font-family: inherit;
-    transition: background 0.15s;
-}
-
-.user-menu .logout-btn:hover {
-    background: var(--layer8d-bg-input);
-}
-
-/* Theme picker — same chrome as app.html so themes feel consistent. */
-.layer8d-theme-picker {
-    position: relative;
-}
-
-.layer8d-theme-btn {
-    background: var(--layer8d-bg-light);
-    border: 1px solid var(--layer8d-border);
-    color: var(--layer8d-text-medium);
-    padding: 6px 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    transition: background 0.15s;
-}
-
-.layer8d-theme-btn:hover {
-    background: var(--layer8d-bg-input);
 }
 
 /* ── Shell (rail + main) ─────────────────────────────────────────── */
@@ -205,30 +126,45 @@ body {
     min-height: 0;
     display: flex;
     flex-direction: column;
-    padding: 16px 20px;
+    /* No top padding so the .l8-header-frame hero sits flush at the top
+       of the main pane (matches how classic sections like GPUs/Hosts let
+       their hero bleed against the section-container edges). Side padding
+       is preserved so the table + scope row don't kiss the rail border. */
+    padding: 0 20px 16px 20px;
 }
 
-.k8s-explorer-resource-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 12px;
-    flex-shrink: 0;
+/* The hero's default `margin: -7px -7px 20px -7px` bleeds past the
+   classic .section-container's 7px padding. Inside the explorer the
+   parent has 0 top + 20px side padding instead, so we cancel the
+   bleed margins to keep the hero squared up with the side padding. */
+.k8s-explorer-resource-view > .l8-header-frame,
+.k8s-explorer-overview > .l8-header-frame {
+    width: auto;
+    margin: 0 -20px 16px -20px;
 }
 
-.k8s-explorer-resource-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-primary, var(--layer8d-text-dark));
-    margin: 0;
-}
+/* The resource view + overview now use the Probler `.l8-header-frame`
+   hero pattern (gradient bg + animated SVG illustration + 36px uppercase
+   .l8-title + .l8-subtitle), via Layer8SectionGenerator.renderHero. The
+   hero CSS lives in web/l8ui/shared/layer8-section-layout.css.
+   See plans/k8s-explorer-resource-hero.md.
 
-.k8s-explorer-resource-scope {
+   The cyan-bar `.k8s-explorer-resource-title` / `.k8s-explorer-overview-title`
+   rules that used to live here have been removed — they were a hand-copy
+   of the wrong classic primitive (`.section-title` is a sub-heading,
+   not a section hero). */
+
+/* Scope-pills row — used by both Resource view and Overview when they
+   need a thin secondary chrome below the hero (cluster + namespace +
+   model labels for resource view; nothing on Overview today). Sits
+   between the hero and the main content. */
+.k8s-explorer-scope-row {
     display: flex;
     align-items: center;
     gap: 6px;
     flex-wrap: wrap;
+    padding: 0 0 10px 0;
+    flex-shrink: 0;
 }
 
 .k8s-explorer-scope-pill {
@@ -267,26 +203,14 @@ body {
 /* ── Overview (Phase 5) ───────────────────────────────────────── */
 
 .k8s-explorer-overview {
-    padding: 16px 20px;
+    /* Same edge-bleed treatment as .k8s-explorer-resource-view above. */
+    padding: 0 20px 16px 20px;
     overflow-y: auto;
 }
 
-.k8s-explorer-overview-header {
-    margin-bottom: 14px;
-}
-
-.k8s-explorer-overview-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-primary, var(--layer8d-text-dark));
-    margin: 0 0 4px 0;
-}
-
-.k8s-explorer-overview-sub {
-    font-size: 12px;
-    color: var(--layer8d-text-muted);
-    margin: 0;
-}
+/* Overview header is now the Probler hero (Layer8SectionGenerator.renderHero
+   with svgKey='k8s-explorer'). The previous cyan-bar `.k8s-explorer-overview-*`
+   rules have been removed — see comment above. */
 
 .k8s-explorer-overview-grid {
     /* Reuses Layer8DActionCard's grid styles via the

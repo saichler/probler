@@ -24,6 +24,22 @@
         return;
     }
 
+    // Global getAuthHeaders() — Layer8DTable, K8sDetail, and several other
+    // l8ui consumers look up this name to attach the bearer token to
+    // server requests. The classic app defines it in js/app.js; this
+    // portal must define its own equivalent or every fetch returns 401.
+    // Mirrors the implementation in app.js so behavior is identical.
+    if (typeof window.getAuthHeaders !== 'function') {
+        window.getAuthHeaders = function() {
+            var headers = { 'Content-Type': 'application/json' };
+            var bearerToken = sessionStorage.getItem('bearerToken');
+            if (bearerToken) {
+                headers['Authorization'] = 'Bearer ' + bearerToken;
+            }
+            return headers;
+        };
+    }
+
     // Surface the username (matches app.html behavior).
     var username = sessionStorage.getItem('username') || 'Admin';
     var usernameEl = document.getElementById('k8s-explorer-username');
@@ -55,8 +71,11 @@
 
         // Portal switcher dropdown.
         if (typeof Layer8DPortalSwitcher !== 'undefined') {
-            var headerRight = document.querySelector('.k8s-explorer-header-right');
-            var userMenu = document.querySelector('.k8s-explorer-header-right .user-menu');
+            // Header now uses the classic `.header-right` class (Phase 1 of
+            // plans/k8s-explorer-header-parity.md). Same DOM intent, just
+            // the canonical Probler class name.
+            var headerRight = document.querySelector('.header-right');
+            var userMenu = document.querySelector('.header-right .user-menu');
             if (headerRight) {
                 Layer8DPortalSwitcher.init({
                     container: headerRight,

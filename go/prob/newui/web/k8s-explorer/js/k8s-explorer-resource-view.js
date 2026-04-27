@@ -56,12 +56,21 @@
 
         // Mount slot. Layer8DTable expects its own container.
         var slotId = 'k8s-explorer-table-' + service.key;
+        // Hero header — uses the canonical Probler `.l8-header-frame` look
+        // via the public Layer8DSectionGenerator.renderHero primitive (no
+        // icon, so the K8s SVG illustration carries visual identity, like
+        // the GPUs / Hosts / Network classic sections).
+        var heroHtml = (typeof Layer8SectionGenerator !== 'undefined' && Layer8SectionGenerator.renderHero)
+            ? Layer8SectionGenerator.renderHero({
+                title:    (service.label || '').toUpperCase(),
+                subtitle: K8sExplorerConfig.subtitleFor(service.key),
+                svgKey:   'k8s-explorer'
+              })
+            : '<h2>' + escapeHtml(service.label) + '</h2>'; // graceful degradation
         container.innerHTML =
             '<div class="k8s-explorer-resource-view">'
-            + '<div class="k8s-explorer-resource-header">'
-            +   '<h2 class="k8s-explorer-resource-title">' + escapeHtml(service.label) + '</h2>'
-            +   '<div class="k8s-explorer-resource-scope" id="' + slotId + '-scope"></div>'
-            + '</div>'
+            + heroHtml
+            + '<div class="k8s-explorer-scope-row" id="' + slotId + '-scope"></div>'
             + '<div class="k8s-explorer-resource-table" id="' + slotId + '"></div>'
             + '</div>';
 

@@ -187,4 +187,76 @@
         }
         return null;
     };
+
+    /**
+     * Per-resource subtitle text shown under the hero title. Keep concise —
+     * it sits as a 12px uppercase letter-spaced caption beneath a 36px
+     * uppercase title, so a short descriptive phrase reads better than a
+     * full sentence. As K8s evolves and new resource types are added,
+     * keep this map in sync; the fallback is `<service.model> resources`.
+     */
+    var SUBTITLES = {
+        'pods':                    'Workload instances – container groups',
+        'deployments':             'Rolling updates and replica management',
+        'statefulsets':            'Stateful workloads with stable identity',
+        'daemonsets':              'Per-node system agents',
+        'replicasets':             'Replica controllers',
+        'jobs':                    'One-off and parallel tasks',
+        'cronjobs':                'Scheduled jobs',
+        'hpas':                    'Horizontal pod autoscalers',
+
+        'services':                'Stable network endpoints',
+        'ingresses':               'External HTTP / HTTPS routes',
+        'network-policies':        'Pod-level network isolation rules',
+        'endpoints':               'Service backend targets',
+        'endpoint-slices':         'Sharded endpoint backends',
+        'ingress-classes':         'Ingress controller bindings',
+
+        'persistent-volumes':      'Cluster-wide storage backends',
+        'pvcs':                    'Namespace-scoped storage requests',
+        'storage-classes':         'Dynamic provisioning profiles',
+
+        'configmaps':              'Non-sensitive configuration data',
+        'secrets':                 'Encrypted credential and token store',
+        'resource-quotas':         'Per-namespace usage caps',
+        'limit-ranges':            'Per-pod resource constraints',
+        'pdbs':                    'Disruption budgets for voluntary evictions',
+        'service-accounts':       'Workload identities',
+        'roles':                   'Namespaced RBAC permissions',
+        'cluster-roles':           'Cluster-wide RBAC permissions',
+        'role-bindings':           'Namespaced RBAC grants',
+        'cluster-role-bindings':   'Cluster-wide RBAC grants',
+
+        'namespaces':              'Tenancy boundaries',
+        'vclusters':               'Virtual Kubernetes clusters',
+        'crds':                    'Custom resource definitions',
+
+        'nodes':                   'Cluster compute capacity',
+
+        'virtual-services':        'Istio HTTP / TCP routing',
+        'destination-rules':       'Istio traffic-policy rules',
+        'gateways':                'Istio ingress / egress gateways',
+        'service-entries':         'External service registrations',
+        'peer-auth':               'Istio mTLS peer authentication',
+        'authz-policy':            'Istio authorization policies',
+        'sidecars':                'Istio sidecar configuration',
+        'envoy-filters':           'Low-level Envoy customizations',
+
+        'events':                  'Cluster activity stream'
+    };
+
+    /**
+     * subtitleFor(itemKey) — return the configured subtitle text for a
+     * rail item, or fall back to a generic phrase derived from the proto
+     * model name when none is mapped. Never returns empty so the hero
+     * always has both a title and a subtitle line.
+     */
+    K8sExplorerConfig.subtitleFor = function(itemKey) {
+        if (SUBTITLES[itemKey]) return SUBTITLES[itemKey];
+        var hit = K8sExplorerConfig.findItem(itemKey);
+        if (hit && hit.item && hit.item.model) {
+            return hit.item.model + ' resources';
+        }
+        return 'Kubernetes resources';
+    };
 })();
