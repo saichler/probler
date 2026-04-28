@@ -118,9 +118,17 @@ async function fetchK8sStats() {
         var clusters = data.list || [];
         var totalNodes = 0;
         var totalPods = 0;
+        // The K8SCluster proto carries counts in its `summary` sub-object
+        // (totalNodes / totalPods on K8SClusterSummary). Earlier dashboard
+        // code looked for `c.nodes` / `c.pods` as nested maps, which the
+        // current proto doesn't have — the always-zero result was the
+        // symptom. Read the correct fields and fall back to 0 when a
+        // cluster has no summary attached yet.
         clusters.forEach(function(c) {
-            if (c.nodes) totalNodes += Object.keys(c.nodes).length;
-            if (c.pods) totalPods += Object.keys(c.pods).length;
+            var s = c && c.summary;
+            if (!s) return;
+            totalNodes += (typeof s.totalNodes === 'number' ? s.totalNodes : Number(s.totalNodes) || 0);
+            totalPods  += (typeof s.totalPods  === 'number' ? s.totalPods  : Number(s.totalPods)  || 0);
         });
         return { clusters: clusters.length, nodes: totalNodes, pods: totalPods };
     } catch (error) {

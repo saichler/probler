@@ -14,5 +14,6 @@ RUN go build -o vnet
 
 FROM saichler/probler-security:latest AS final
 COPY --from=build /home/src/github.com/saichler/build/vnet /home/run/vnet
-
+RUN mkdir -p /data
+RUN chmod 777 /data
 ENTRYPOINT ["/home/run/vnet"]
