@@ -22,7 +22,7 @@ import (
 	"github.com/saichler/l8pollaris/go/pollaris"
 	"github.com/saichler/l8types/go/ifs"
 	common2 "github.com/saichler/probler/go/prob/common"
-	"github.com/saichler/probler/go/serializers"
+	"github.com/saichler/probler/go/prob/parser/serializers"
 	types3 "github.com/saichler/probler/go/types"
 )
 
@@ -33,24 +33,10 @@ func main() {
 	nic.Start()
 	nic.WaitForConnection()
 
-	nic.Resources().Registry().Register(&types3.K8SReadyState{})
-	nic.Resources().Registry().Register(&types3.K8SRestartsState{})
-
-	info, err := nic.Resources().Registry().Info("K8SReadyState")
-	if err != nil {
-		nic.Resources().Logger().Error(err)
-	} else {
-		info.AddSerializer(&serializers.Ready{})
-	}
-
-	info, err = nic.Resources().Registry().Info("K8SRestartsState")
-	if err != nil {
-		nic.Resources().Logger().Error(err)
-	} else {
-		info.AddSerializer(&serializers.Restarts{})
-	}
-
 	nic.Resources().Registry().RegisterEnums(types3.K8SPodStatus_value)
+	nic.Resources().Registry().Register(&types3.K8SReadyState{})
+	info, _ := nic.Resources().Registry().Info("K8SReadyState")
+	info.AddSerializer(&serializers.Ready{})
 
 	// Register string→int32 maps for typed-enum fields populated from raw
 	// K8s API strings. The keys here mirror what the K8s API returns
