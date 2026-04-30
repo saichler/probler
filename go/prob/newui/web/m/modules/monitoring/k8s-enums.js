@@ -130,10 +130,23 @@
             return '<span class="status-badge ' + cls + '">' + count + '/' + outof + '</span>';
         },
         restarts: function(value) {
-            if (typeof value === 'object' && value !== null) {
-                return (value.count || 0) + ' ' + (value.ago || '');
+            var count, ago;
+            if (value && typeof value === 'object') {
+                count = value.count || 0;
+                ago = value.ago || '';
+            } else if (typeof value === 'string') {
+                var idx = value.indexOf('(');
+                if (idx !== -1) {
+                    count = parseInt(value.substring(0, idx)) || 0;
+                    ago = value.substring(idx).trim();
+                } else {
+                    count = parseInt(value) || 0;
+                    ago = '';
+                }
+            } else {
+                count = 0; ago = '';
             }
-            return '' + (value || 0);
+            return count + (ago ? ' ' + ago : '');
         },
         namespaceStatus: function(value) {
             var cls = getNamespaceStatusClass(value);

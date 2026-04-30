@@ -46,10 +46,23 @@ ProblerK8s.columns.K8SPod = [
         key: 'restarts', label: 'RESTARTS',
         render: function(item) {
             var value = item.restarts;
-            if (typeof value === 'object' && value !== null) {
-                return '<span>' + (value.count || 0) + ' ' + (value.ago || '') + '</span>';
+            var count, ago;
+            if (value && typeof value === 'object') {
+                count = value.count || 0;
+                ago = value.ago || '';
+            } else if (typeof value === 'string') {
+                var idx = value.indexOf('(');
+                if (idx !== -1) {
+                    count = parseInt(value.substring(0, idx)) || 0;
+                    ago = value.substring(idx).trim();
+                } else {
+                    count = parseInt(value) || 0;
+                    ago = '';
+                }
+            } else {
+                count = 0; ago = '';
             }
-            return '<span>' + value + '</span>';
+            return '<span>' + count + (ago ? ' ' + ago : '') + '</span>';
         }
     },
     { key: 'age', label: 'AGE' },

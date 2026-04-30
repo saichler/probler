@@ -38,6 +38,10 @@ func main() {
 	info, _ := nic.Resources().Registry().Info("K8SReadyState")
 	info.AddSerializer(&serializers.Ready{})
 
+	nic.Resources().Registry().Register(&types3.K8SRestartsState{})
+	infoR, _ := nic.Resources().Registry().Info("K8SRestartsState")
+	infoR.AddSerializer(&serializers.Restarts{})
+
 	// Register string→int32 maps for typed-enum fields populated from raw
 	// K8s API strings. The keys here mirror what the K8s API returns
 	// directly ("Running", "Ready", …) and what the collector's enrichment
