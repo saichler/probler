@@ -7,6 +7,24 @@ metadata:
 
 ---
 
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: probler-vnet
+  name: probler-vnet-headless
+  labels:
+    app: probler-vnet
+spec:
+  clusterIP: None
+  selector:
+    app: probler-vnet
+  ports:
+    - name: vnet
+      port: 25998
+      targetPort: 25998
+
+---
+
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -28,6 +46,11 @@ spec:
         - name: probler-vnet
           image: saichler/probler-vnet:latest
           imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
           ports:
             - containerPort: 25998
           volumeMounts:
