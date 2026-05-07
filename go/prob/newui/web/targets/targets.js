@@ -219,6 +219,7 @@ function initTargetsTable() {
         pageSizeOptions: [10, 20, 50, 100],
         emptyMessage: getEmptyMessage(),
         serverSide: true,
+        realtime: true,
         onDataLoaded: (data, items, totalCount) => {
             // Store targets in local cache for editing
             targets = {};

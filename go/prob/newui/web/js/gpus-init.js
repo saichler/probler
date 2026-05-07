@@ -67,6 +67,7 @@ function initializeGPUs() {
         sortable: true,
         filterable: true,
         serverSide: true,
+        realtime: true,
         transformData: transformGpuDeviceData,
         onDataLoaded: (data, items, totalCount) => {
             if (data.metadata?.keyCount?.counts) {

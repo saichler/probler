@@ -84,6 +84,7 @@
             columns: columns,
             pageSize: 50,
             serverSide: true,
+            realtime: true,
             sortable: true,
             filterable: true,
             baseWhereClause: baseWhere,

@@ -25,6 +25,7 @@ import (
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8api"
 	"github.com/saichler/l8types/go/types/l8health"
+	"github.com/saichler/l8types/go/types/l8notify"
 	"github.com/saichler/l8types/go/types/l8web"
 	"github.com/saichler/probler/go/types"
 	types2 "github.com/saichler/probler/go/types"
@@ -60,6 +61,7 @@ func RegisterTypes(res ifs.IResources) {
 	res.Registry().Register(&l8health.L8HealthList{})
 	res.Registry().Register(&l8logf.L8File{})
 	res.Registry().Register(&l8tpollaris.TargetAction{})
+	res.Registry().Register(&l8notify.L8NotificationSet{})
 	res.Registry().Register(&l8topo.L8Topology{})
 	res.Registry().Register(&l8topo.L8TopologyQuery{})
 	res.Registry().Register(&types2.GpuDevice{})

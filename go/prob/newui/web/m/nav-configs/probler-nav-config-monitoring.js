@@ -15,7 +15,7 @@
             ],
             services: {
                 'devices': [
-                    { key: 'network-devices', label: 'Network Devices', icon: 'network', endpoint: '/0/NCache', model: 'NetworkDevice', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showNetworkDeviceDetail === 'function') showNetworkDeviceDetail(item); } }
+                    { key: 'network-devices', label: 'Network Devices', icon: 'network', endpoint: '/0/NCache', model: 'NetworkDevice', idField: 'id', readOnly: true, realtime: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showNetworkDeviceDetail === 'function') showNetworkDeviceDetail(item); } }
                 ]
             }
         },
@@ -28,7 +28,7 @@
             ],
             services: {
                 'gpu-devices': [
-                    { key: 'gpus', label: 'GPU Devices', icon: 'gpus', endpoint: '/2/GCache', model: 'GpuDevice', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showGpuDetail === 'function') showGpuDetail(item); } }
+                    { key: 'gpus', label: 'GPU Devices', icon: 'gpus', endpoint: '/2/GCache', model: 'GpuDevice', idField: 'id', readOnly: true, realtime: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showGpuDetail === 'function') showGpuDetail(item); } }
                 ]
             }
         },
@@ -43,8 +43,8 @@
             ],
             services: {
                 'hosts-vms': [
-                    { key: 'hypervisors', label: 'Hypervisors', icon: 'hosts', endpoint: '/0/NCache', model: 'Hypervisor', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showHypervisorDetail === 'function') showHypervisorDetail(item); } },
-                    { key: 'vms', label: 'Virtual Machines', icon: 'hosts', endpoint: '/0/NCache', model: 'VirtualMachine', idField: 'id', readOnly: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showVmDetail === 'function') showVmDetail(item); } }
+                    { key: 'hypervisors', label: 'Hypervisors', icon: 'hosts', endpoint: '/0/NCache', model: 'Hypervisor', idField: 'id', readOnly: true, realtime: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showHypervisorDetail === 'function') showHypervisorDetail(item); } },
+                    { key: 'vms', label: 'Virtual Machines', icon: 'hosts', endpoint: '/0/NCache', model: 'VirtualMachine', idField: 'id', readOnly: true, realtime: true, supportedViews: ['table', 'chart'], onRowClick: function(item) { if (typeof showVmDetail === 'function') showVmDetail(item); } }
                 ]
             }
         },
@@ -56,7 +56,7 @@
                 return function(item) { if (typeof MobileK8sDetail !== 'undefined') MobileK8sDetail.show(item, svc); };
             }
             function svc(key, label, endpoint, model, idField) {
-                var s = { key: key, label: label, icon: 'kubernetes', endpoint: endpoint, model: model, idField: idField || 'key', readOnly: true, supportedViews: ['table'] };
+                var s = { key: key, label: label, icon: 'kubernetes', endpoint: endpoint, model: model, idField: idField || 'key', readOnly: true, realtime: true, supportedViews: ['table'] };
                 s.onRowClick = k8sClick(s);
                 return s;
             }
@@ -157,7 +157,7 @@
             ],
             services: {
                 'targets': [
-                    { key: 'targets', label: 'Targets', icon: 'inventory', endpoint: '/91/Targets', model: 'L8PTarget', idField: 'targetId', supportedViews: ['table'],
+                    { key: 'targets', label: 'Targets', icon: 'inventory', endpoint: '/91/Targets', model: 'L8PTarget', idField: 'targetId', realtime: true, supportedViews: ['table'],
                         baseWhereClause: 'inventoryType=1',
                         filterDropdown: {
                             label: 'Type',

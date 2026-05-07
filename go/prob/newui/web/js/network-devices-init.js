@@ -73,6 +73,7 @@ function initializeNetworkDevices() {
         sortable: true,
         filterable: true,
         serverSide: true,
+        realtime: true,
         transformData: transformDeviceData,
         onDataLoaded: (data, items, totalCount) => {
             if (data.metadata?.keyCount?.counts) {

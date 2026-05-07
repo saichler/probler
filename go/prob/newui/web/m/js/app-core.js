@@ -15,6 +15,9 @@
             await Layer8MConfig.load();
             // Load per-type action permissions for the current user (same helper as desktop)
             await ProblerPermissions.load();
+            if (typeof Layer8DWebSocket !== 'undefined') {
+                Layer8DWebSocket.init();
+            }
             this.updateUserInfo();
             this.initSidebar();
 
