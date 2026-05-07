@@ -18,13 +18,26 @@ function showDeviceDetailModal(device) {
     const titleHtml = ProblerDom.popupTitle(device.name, device.status);
     const content = buildDeviceContent(device, statusClass, esc);
 
+    var _liveUnsub = null;
+    if (typeof LivePopup !== 'undefined') {
+        _liveUnsub = LivePopup.subscribe({
+            modelType: 'NetworkDevice',
+            primaryKey: device.id,
+            onUpdate: function() {
+                Layer8DPopup.close();
+                if (typeof initializeNetworkDevices === 'function') initializeNetworkDevices();
+            }
+        });
+    }
+
     // Show popup directly
     Layer8DPopup.show({
         titleHtml: titleHtml,
         content: content,
         size: 'xlarge',
         showFooter: false,
-        id: 'device-detail-' + device.id
+        id: 'device-detail-' + device.id,
+        onClose: function() { if (_liveUnsub) _liveUnsub(); }
     });
 
     // Initialize physical inventory tree and performance charts after popup renders

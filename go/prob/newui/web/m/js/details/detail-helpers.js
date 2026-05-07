@@ -141,7 +141,7 @@
     /**
      * Show a tabbed detail popup using Layer8MPopup
      */
-    ProblerDetail.showTabbedPopup = function(title, tabs, onShow, onTabChange) {
+    ProblerDetail.showTabbedPopup = function(title, tabs, onShow, onTabChange, onClose) {
         if (typeof Layer8MPopup !== 'undefined') {
             var opts = {
                 title: title,
@@ -152,6 +152,7 @@
             };
             if (onShow) opts.onShow = onShow;
             if (onTabChange) opts.onTabChange = onTabChange;
+            if (onClose) opts.onClose = onClose;
             Layer8MPopup.show(opts);
         }
     };

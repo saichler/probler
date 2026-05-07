@@ -220,10 +220,31 @@
 </style>
 
 <script>
+var _mobileDashTimers = {};
+function _debouncedDashRefresh(modelType, fn) {
+    if (_mobileDashTimers[modelType]) return;
+    _mobileDashTimers[modelType] = setTimeout(function() {
+        _mobileDashTimers[modelType] = null;
+        fn();
+    }, 1000);
+}
+
 function initMobileDashboard() {
     loadDashboardStats();
     loadCriticalAlarms();
     Layer8MNav.showHome();
+
+    if (typeof Layer8DWebSocket !== 'undefined') {
+        Layer8DWebSocket.subscribe('NetworkDevice', function() {
+            _debouncedDashRefresh('NetworkDevice', function() { loadDashboardStats(); });
+        });
+        Layer8DWebSocket.subscribe('GpuDevice', function() {
+            _debouncedDashRefresh('GpuDevice', function() { loadDashboardStats(); });
+        });
+        Layer8DWebSocket.subscribe('K8SCluster', function() {
+            _debouncedDashRefresh('K8SCluster', function() { loadDashboardStats(); });
+        });
+    }
 }
 
 async function loadDashboardStats(idPrefix) {

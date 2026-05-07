@@ -26,12 +26,25 @@ function showGPUDetailModal(device) {
     var titleHtml = ProblerDom.popupTitle(device.hostname || device.id, device.status);
     var content = buildGpuDeviceContent(device, esc);
 
+    var _liveUnsub = null;
+    if (typeof LivePopup !== 'undefined') {
+        _liveUnsub = LivePopup.subscribe({
+            modelType: 'GpuDevice',
+            primaryKey: device.id,
+            onUpdate: function() {
+                Layer8DPopup.close();
+                if (typeof initializeGpus === 'function') initializeGpus();
+            }
+        });
+    }
+
     Layer8DPopup.show({
         titleHtml: titleHtml,
         content: content,
         size: 'xlarge',
         showFooter: false,
-        id: 'gpu-device-detail-' + device.id
+        id: 'gpu-device-detail-' + device.id,
+        onClose: function() { if (_liveUnsub) _liveUnsub(); }
     });
 }
 

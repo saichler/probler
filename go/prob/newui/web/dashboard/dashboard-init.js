@@ -240,8 +240,29 @@ function initializeDashboardCardNavigation() {
     });
 }
 
+var _dashboardRefreshTimers = {};
+function debouncedCardRefresh(modelType, refreshFn) {
+    if (_dashboardRefreshTimers[modelType]) return;
+    _dashboardRefreshTimers[modelType] = setTimeout(function() {
+        _dashboardRefreshTimers[modelType] = null;
+        refreshFn();
+    }, 1000);
+}
+
 async function initializeDashboard() {
     initializeDashboardCardNavigation();
     await Promise.all([updateNetworkDevicesCard(), updateK8sCard(), updateGpuCard()]);
     initializeAlarmsTable();
+
+    if (typeof Layer8DWebSocket !== 'undefined') {
+        Layer8DWebSocket.subscribe('NetworkDevice', function() {
+            debouncedCardRefresh('NetworkDevice', updateNetworkDevicesCard);
+        });
+        Layer8DWebSocket.subscribe('GpuDevice', function() {
+            debouncedCardRefresh('GpuDevice', updateGpuCard);
+        });
+        Layer8DWebSocket.subscribe('K8SCluster', function() {
+            debouncedCardRefresh('K8SCluster', updateK8sCard);
+        });
+    }
 }

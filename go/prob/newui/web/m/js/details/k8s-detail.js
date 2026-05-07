@@ -142,7 +142,19 @@
             { id: 'json', label: 'JSON', content: buildJson(item) }
         ];
 
-        D.showTabbedPopup(title, tabs);
+        var unsub = null;
+        if (typeof LivePopup !== 'undefined' && service.model) {
+            unsub = LivePopup.subscribe({
+                modelType: service.model,
+                primaryKey: item.key || item.name || '',
+                onUpdate: function() {
+                    if (typeof Layer8MPopup !== 'undefined') Layer8MPopup.close();
+                }
+            });
+        }
+        D.showTabbedPopup(title, tabs, null, null,
+            function() { if (unsub) unsub(); }
+        );
     };
 
     function buildSectionedOverview(item, columns, sections) {

@@ -458,6 +458,16 @@
 
         var needsDeferred = hasPhysicals || hasPerf;
         var rendered = {};
+        var unsub = null;
+        if (typeof LivePopup !== 'undefined') {
+            unsub = LivePopup.subscribe({
+                modelType: 'NetworkDevice',
+                primaryKey: device.id || raw.id || '',
+                onUpdate: function() {
+                    if (typeof Layer8MPopup !== 'undefined') Layer8MPopup.close();
+                }
+            });
+        }
         D.showTabbedPopup(
             device.name,
             tabs,
@@ -469,7 +479,8 @@
                     rendered.performance = true;
                     initPerformanceCharts(raw);
                 }
-            } : null
+            } : null,
+            function() { if (unsub) unsub(); }
         );
     };
 

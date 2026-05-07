@@ -283,6 +283,16 @@
             { id: 'processes', label: 'Processes', content: buildProcessesTab(gpus) }
         ];
 
+        var unsub = null;
+        if (typeof LivePopup !== 'undefined') {
+            unsub = LivePopup.subscribe({
+                modelType: 'GpuDevice',
+                primaryKey: device.id || '',
+                onUpdate: function() {
+                    if (typeof Layer8MPopup !== 'undefined') Layer8MPopup.close();
+                }
+            });
+        }
         D.showTabbedPopup(
             device.hostname || device.id,
             tabs,
@@ -294,7 +304,8 @@
                     perfRendered[0] = true;
                     setTimeout(function() { renderPerfCharts(gpus, 0); }, 50);
                 }
-            }
+            },
+            function() { if (unsub) unsub(); }
         );
     };
 

@@ -157,12 +157,24 @@
             'padding:10px 20px;border-radius:6px;font-size:14px;cursor:pointer;">Memory & CPU</button>' +
             '</div>';
 
+        var unsub = null;
+        if (typeof LivePopup !== 'undefined') {
+            unsub = LivePopup.subscribe({
+                modelType: 'L8Health',
+                primaryKey: rowData.service || '',
+                onUpdate: function() {
+                    if (typeof Layer8MPopup !== 'undefined') Layer8MPopup.close();
+                }
+            });
+        }
         D.showTabbedPopup(rowData.service, [
             { id: 'overview', label: 'Overview', content: overviewContent },
             { id: 'network', label: 'Network', content: networkContent },
             { id: 'resources', label: 'Resources', content: resourcesContent },
             { id: 'services', label: 'Services', content: servicesContent }
-        ]);
+        ], null, null,
+            function() { if (unsub) unsub(); }
+        );
 
         // Wire up pprof button after popup renders
         setTimeout(function() {

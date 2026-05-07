@@ -127,11 +127,24 @@
         var sections = detailSections[service.model];
         var html = buildTabbedHtml(item, columns, service, sections);
 
+        var _liveUnsub = null;
+        if (typeof LivePopup !== 'undefined' && service.model) {
+            var pk = item.key || item.name || '';
+            _liveUnsub = LivePopup.subscribe({
+                modelType: service.model,
+                primaryKey: pk,
+                onUpdate: function() {
+                    Layer8DPopup.close();
+                }
+            });
+        }
+
         Layer8DPopup.show({
             title: title,
             content: html,
             size: 'large',
-            showFooter: false
+            showFooter: false,
+            onClose: function() { if (_liveUnsub) _liveUnsub(); }
         });
     };
 

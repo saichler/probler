@@ -30,6 +30,18 @@
         }
         K8sDetail.show(item, service);
         touchObjectRecent(item, service);
+
+        if (typeof LivePopup !== 'undefined' && service.model) {
+            var pk = item.key || item.name || '';
+            LivePopup.subscribe({
+                modelType: service.model,
+                primaryKey: pk,
+                onUpdate: function() {
+                    Layer8DPopup.close();
+                }
+            });
+        }
+
         // Defer the injection so Layer8DPopup has finished mounting the
         // initial tabs/content. 80ms is comfortably past the popup's
         // 50ms onShow scheduling.
