@@ -596,7 +596,7 @@
                 <a href="https://github.com/saichler/probler" target="_blank" class="btn-secondary">GitHub</a>
             </div>
             <div class="hero-badges">
-                <span class="badge">Go 1.23.8</span>
+                <span class="badge">Go 1.26.1</span>
                 <span class="badge">Kubernetes Ready</span>
                 <span class="badge">Apache 2.0</span>
                 <span class="badge">DCIM Solution</span>
@@ -887,24 +887,24 @@
                     <h3>Build Services</h3>
                     <p>Build all microservices using the provided script</p>
                     <div class="code-block"><span class="comment"># Build all services</span>
-<span class="command">cd</span> go && ./build-images.sh</div>
+<span class="command">cd</span> go && ./build-all-images.sh</div>
                 </div>
                 <div class="step-card">
                     <div class="step-number">3</div>
                     <h3>Deploy Platform</h3>
                     <p>Choose your deployment method</p>
-                    <div class="code-block"><span class="comment"># Docker Compose (Development)</span>
-<span class="command">docker-compose up -d</span>
+                    <div class="code-block"><span class="comment"># Kubernetes (Production)</span>
+<span class="command">cd</span> k8s && ./deploy.sh
 
-<span class="comment"># Kubernetes (Production)</span>
-<span class="command">cd</span> k8s && ./apply-all.sh</div>
+<span class="comment"># Local Development</span>
+<span class="command">cd</span> go && ./build-demo.sh && ./run-demo.sh</div>
                 </div>
                 <div class="step-card">
                     <div class="step-number">4</div>
                     <h3>Access Dashboard</h3>
                     <p>Open the Network Operations Center</p>
                     <div class="code-block"><span class="comment"># Local access</span>
-open https://localhost:443/probler/
+open https://localhost:2443
 
 <span class="comment"># Default credentials: admin / admin</span></div>
                 </div>
@@ -912,7 +912,7 @@ open https://localhost:443/probler/
             <div class="prereqs">
                 <h3>Prerequisites</h3>
                 <div class="prereqs-badges">
-                    <span class="badge">Go 1.23.8+</span>
+                    <span class="badge">Go 1.26.1+</span>
                     <span class="badge">Docker &amp; Docker Compose</span>
                     <span class="badge">Kubernetes cluster</span>
                     <span class="badge">PostgreSQL database</span>
@@ -982,7 +982,7 @@ Password: admin</div>
             </div>
             <div class="footer-section">
                 <h3>Technology</h3>
-                <a href="#">Go 1.23.8</a>
+                <a href="#">Go 1.26.1</a>
                 <a href="#">Kubernetes</a>
                 <a href="#">PostgreSQL</a>
                 <a href="#">gRPC &amp; REST APIs</a>
@@ -1001,7 +1001,7 @@ Password: admin</div>
         </div>
         <div class="footer-bottom">
             <p><a href="../index.html" onclick="localStorage.setItem('preferDesktop','true');">Desktop Version</a></p>
-            <p>&copy; 2024-2025 Probler. Licensed under Apache License 2.0.</p>
+            <p>&copy; 2024-2026 Probler. Licensed under Apache License 2.0.</p>
         </div>
     </footer>
 
