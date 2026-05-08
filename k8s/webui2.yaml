@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: probler-webui2
+  name: probler
   labels:
-    name: probler-webui2
+    name: probler
 
 ---
 
 apiVersion: apps/v1
-kind: DaemonSet 
+kind: DaemonSet
 metadata:
-  namespace: probler-webui2
+  namespace: probler
   name: probler-webui2
   labels:
     app: probler-webui2

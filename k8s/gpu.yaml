@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: probler-gpu
+  name: probler
   labels:
-    name: probler-gpu
+    name: probler
 
 ---
 
 apiVersion: apps/v1
-kind: DaemonSet 
+kind: DaemonSet
 metadata:
-  namespace: probler-gpu
+  namespace: probler
   name: probler-gpu
   labels:
     app: probler-gpu

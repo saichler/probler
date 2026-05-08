@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: probler-maint
+  name: probler
   labels:
-    name: probler-maint
+    name: probler
 
 ---
 
 apiVersion: apps/v1
-kind: DaemonSet 
+kind: DaemonSet
 metadata:
-  namespace: probler-maint
+  namespace: probler
   name: probler-maint
   labels:
     app: probler-maint

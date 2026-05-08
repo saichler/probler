@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: probler-collector
+  name: probler
   labels:
-    name: probler-collector
+    name: probler
 
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: probler-collector
+  namespace: probler
   name: probler-collector-large
   labels:
     app: probler-collector
@@ -51,7 +51,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: probler-collector
+  namespace: probler
   name: probler-collector-medium
   labels:
     app: probler-collector
@@ -92,7 +92,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: probler-collector
+  namespace: probler
   name: probler-collector-small
   labels:
     app: probler-collector

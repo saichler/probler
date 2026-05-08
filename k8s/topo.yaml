@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: probler-topo
+  name: probler
   labels:
-    name: probler-topo
+    name: probler
 
 ---
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  namespace: probler-topo
+  namespace: probler
   name: probler-topo
   labels:
     app: probler-topo

@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: probler-parser
+  name: probler
   labels:
-    name: probler-parser
+    name: probler
 
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: probler-parser
+  namespace: probler
   name: probler-parser-large
   labels:
     app: probler-parser
@@ -51,7 +51,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: probler-parser
+  namespace: probler
   name: probler-parser-medium
   labels:
     app: probler-parser
@@ -92,7 +92,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: probler-parser
+  namespace: probler
   name: probler-parser-small
   labels:
     app: probler-parser

@@ -1,21 +1,21 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: probler-k8s-admin
+  name: probler
   labels:
-    name: probler-k8s-admin
+    name: probler
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: l8collector-admission
-  namespace: probler-k8s-admin
+  namespace: probler
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: l8collector-admission-bootstrap
-  namespace: probler-k8s-admin
+  namespace: probler
 rules:
   - apiGroups:
       - ""
@@ -176,7 +176,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: l8collector-admission-bootstrap
-  namespace: probler-k8s-admin
+  namespace: probler
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -184,7 +184,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: l8collector-admission
-    namespace: probler-k8s-admin
+    namespace: probler
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -197,13 +197,13 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: l8collector-admission
-    namespace: probler-k8s-admin
+    namespace: probler
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: l8collector-admission-bootstrap
-  namespace: probler-k8s-admin
+  namespace: probler
 data:
   generate-cert.sh: |
     #!/bin/sh
@@ -270,7 +270,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: l8collector-admission-bootstrap
-  namespace: probler-k8s-admin
+  namespace: probler
 spec:
   backoffLimit: 3
   template:
@@ -289,7 +289,7 @@ spec:
             - apk add --no-cache openssl >/dev/null && /bootstrap/generate-cert.sh
           env:
             - name: NAMESPACE
-              value: probler-k8s-admin
+              value: probler
             - name: SERVICE_NAME
               value: l8collector-admission
             - name: SECRET_NAME
@@ -310,7 +310,7 @@ spec:
             - /bootstrap/apply-tls.sh
           env:
             - name: NAMESPACE
-              value: probler-k8s-admin
+              value: probler
             - name: SERVICE_NAME
               value: l8collector-admission
             - name: SECRET_NAME
@@ -334,7 +334,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: l8collector-admission
-  namespace: probler-k8s-admin
+  namespace: probler
 spec:
   selector:
     app: l8collector-admission
@@ -348,7 +348,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: l8collector-admission
-  namespace: probler-k8s-admin
+  namespace: probler
 spec:
   replicas: 1
   selector:

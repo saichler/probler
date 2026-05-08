@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: probler-logs
+  name: probler
   labels:
-    name: probler-logs
+    name: probler
 
 ---
 
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  namespace: probler-logs
+  namespace: probler
   name: probler-logs
   labels:
     app: probler-logs

@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: probler-vnet
+  name: probler
   labels:
-    name: probler-vnet
+    name: probler
 
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: probler-vnet
+  namespace: probler
   name: probler-vnet-headless
   labels:
     app: probler-vnet
@@ -28,7 +28,7 @@ spec:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  namespace: probler-vnet
+  namespace: probler
   name: probler-vnet
   labels:
     app: probler-vnet
