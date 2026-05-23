@@ -32,6 +32,13 @@ apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
   - role: control-plane
   - role: worker
+    extraPortMappings:
+      - containerPort: 2443
+        hostPort: 2443
+        protocol: TCP
+      - containerPort: 4445
+        hostPort: 4445
+        protocol: TCP
   - role: worker
   - role: worker
 EOF
@@ -54,8 +61,6 @@ IMAGES=(
   saichler/probler-orm:latest
   saichler/probler-alarms:latest
   saichler/probler-webui2:latest
-  saichler/probler-webui:latest
-  saichler/probler-maint:latest
   saichler/probler-logagent:latest
   saichler/probler-topo:latest
   saichler/probler-admission:latest
