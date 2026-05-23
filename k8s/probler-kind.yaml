@@ -1,0 +1,1501 @@
+# KIND cluster version — uses KIND's built-in standard StorageClass
+# KIND ships with rancher/local-path-provisioner pre-installed as StorageClass "standard"
+# No custom StorageClass definition needed.
+#
+# Usage:
+#   kind create cluster --config kind-cluster.yaml
+#   kubectl apply -f probler-kind.yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: probler
+  labels:
+    name: probler
+
+---
+
+# probler-vnet: was DaemonSet, now StatefulSet with anti-affinity for one-per-node
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-vnet
+  labels:
+    app: probler-vnet
+spec:
+  serviceName: probler-vnet
+  replicas: 3
+  selector:
+    matchLabels:
+      app: probler-vnet
+  template:
+    metadata:
+      labels:
+        app: probler-vnet
+    spec:
+      hostNetwork: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: probler-vnet
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: probler-vnet
+          image: saichler/probler-vnet:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 25998
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+# probler-logs: was DaemonSet, now StatefulSet with anti-affinity
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-logs
+  labels:
+    app: probler-logs
+spec:
+  serviceName: probler-logs
+  replicas: 3
+  selector:
+    matchLabels:
+      app: probler-logs
+  template:
+    metadata:
+      labels:
+        app: probler-logs
+    spec:
+      hostNetwork: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: probler-logs
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: probler-logs
+          image: saichler/logs-vnet:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 12888
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+# probler-parser-large: was Deployment, now StatefulSet with volumeClaimTemplates
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-parser-large
+  labels:
+    app: probler-parser
+spec:
+  serviceName: probler-parser-large
+  replicas: 6
+  selector:
+    matchLabels:
+      app: probler-parser
+      size: large
+  template:
+    metadata:
+      labels:
+        app: probler-parser
+        size: large
+    spec:
+      nodeSelector:
+        probler-size: large
+      containers:
+        - name: probler-parser
+          image: saichler/probler-parser:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+
+# probler-parser-medium
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-parser-medium
+  labels:
+    app: probler-parser
+spec:
+  serviceName: probler-parser-medium
+  replicas: 4
+  selector:
+    matchLabels:
+      app: probler-parser
+      size: medium
+  template:
+    metadata:
+      labels:
+        app: probler-parser
+        size: medium
+    spec:
+      nodeSelector:
+        probler-size: medium
+      containers:
+        - name: probler-parser
+          image: saichler/probler-parser:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+
+# probler-parser-small
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-parser-small
+  labels:
+    app: probler-parser
+spec:
+  serviceName: probler-parser-small
+  replicas: 2
+  selector:
+    matchLabels:
+      app: probler-parser
+      size: small
+  template:
+    metadata:
+      labels:
+        app: probler-parser
+        size: small
+    spec:
+      nodeSelector:
+        probler-size: small
+      containers:
+        - name: probler-parser
+          image: saichler/probler-parser:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+
+# probler-collector-large
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-collector-large
+  labels:
+    app: probler-collector
+spec:
+  serviceName: probler-collector-large
+  replicas: 6
+  selector:
+    matchLabels:
+      app: probler-collector
+      size: large
+  template:
+    metadata:
+      labels:
+        app: probler-collector
+        size: large
+    spec:
+      nodeSelector:
+        probler-size: large
+      containers:
+        - name: probler-collector
+          image: saichler/probler-collector:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+
+# probler-collector-medium
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-collector-medium
+  labels:
+    app: probler-collector
+spec:
+  serviceName: probler-collector-medium
+  replicas: 4
+  selector:
+    matchLabels:
+      app: probler-collector
+      size: medium
+  template:
+    metadata:
+      labels:
+        app: probler-collector
+        size: medium
+    spec:
+      nodeSelector:
+        probler-size: medium
+      containers:
+        - name: probler-collector
+          image: saichler/probler-collector:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+
+# probler-collector-small
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-collector-small
+  labels:
+    app: probler-collector
+spec:
+  serviceName: probler-collector-small
+  replicas: 2
+  selector:
+    matchLabels:
+      app: probler-collector
+      size: small
+  template:
+    metadata:
+      labels:
+        app: probler-collector
+        size: small
+    spec:
+      nodeSelector:
+        probler-size: small
+      containers:
+        - name: probler-collector
+          image: saichler/probler-collector:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+
+# probler-box: was DaemonSet, now StatefulSet with anti-affinity
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-box
+  labels:
+    app: probler-box
+spec:
+  serviceName: probler-box
+  replicas: 3
+  selector:
+    matchLabels:
+      app: probler-box
+  template:
+    metadata:
+      labels:
+        app: probler-box
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: probler-box
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: probler-box
+          image: saichler/probler-inv-box:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+# probler-gpu: was DaemonSet, now StatefulSet with anti-affinity
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-gpu
+  labels:
+    app: probler-gpu
+spec:
+  serviceName: probler-gpu
+  replicas: 3
+  selector:
+    matchLabels:
+      app: probler-gpu
+  template:
+    metadata:
+      labels:
+        app: probler-gpu
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: probler-gpu
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: probler-gpu
+          image: saichler/probler-inv-gpu:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+# probler-k8s: was DaemonSet, now StatefulSet with anti-affinity
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-k8s
+  labels:
+    app: probler-k8s
+spec:
+  serviceName: probler-k8s
+  replicas: 3
+  selector:
+    matchLabels:
+      app: probler-k8s
+  template:
+    metadata:
+      labels:
+        app: probler-k8s
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: probler-k8s
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: probler-k8s
+          image: saichler/probler-inv-k8s:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+# probler-orm: already StatefulSet, added volumeClaimTemplates
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-orm
+  labels:
+    app: probler-orm
+spec:
+  serviceName: probler-orm
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probler-orm
+  template:
+    metadata:
+      labels:
+        app: probler-orm
+    spec:
+      containers:
+        - name: probler-orm
+          image: saichler/probler-orm:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 10Gi
+
+---
+
+# probler-alarms: already StatefulSet, added volumeClaimTemplates
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-alarms
+  labels:
+    app: probler-alarms
+spec:
+  serviceName: probler-alarms
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probler-alarms
+  template:
+    metadata:
+      labels:
+        app: probler-alarms
+    spec:
+      containers:
+        - name: probler-alarms
+          image: saichler/probler-alarms:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 10Gi
+
+---
+
+# probler-webui2: was DaemonSet, now StatefulSet with anti-affinity
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-webui2
+  labels:
+    app: probler-webui2
+spec:
+  serviceName: probler-webui2
+  replicas: 3
+  selector:
+    matchLabels:
+      app: probler-webui2
+  template:
+    metadata:
+      labels:
+        app: probler-webui2
+    spec:
+      hostNetwork: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: probler-webui2
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: probler-webui2
+          image: saichler/probler-webui2:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+# probler-webui: was DaemonSet, now StatefulSet with anti-affinity
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-webui
+  labels:
+    app: probler-webui
+spec:
+  serviceName: probler-webui
+  replicas: 3
+  selector:
+    matchLabels:
+      app: probler-webui
+  template:
+    metadata:
+      labels:
+        app: probler-webui
+    spec:
+      hostNetwork: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: probler-webui
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: probler-webui
+          image: saichler/probler-webui:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+# probler-maint: was DaemonSet, now StatefulSet with anti-affinity
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-maint
+  labels:
+    app: probler-maint
+spec:
+  serviceName: probler-maint
+  replicas: 3
+  selector:
+    matchLabels:
+      app: probler-maint
+  template:
+    metadata:
+      labels:
+        app: probler-maint
+    spec:
+      hostNetwork: true
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: probler-maint
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: probler-maint
+          image: saichler/probler-maint:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+# probler-log-agent: was DaemonSet, now StatefulSet with anti-affinity
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-log-agent
+  labels:
+    app: probler-log-agent
+spec:
+  serviceName: probler-log-agent
+  replicas: 3
+  selector:
+    matchLabels:
+      app: probler-log-agent
+  template:
+    metadata:
+      labels:
+        app: probler-log-agent
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: probler-log-agent
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: probler-log-agent
+          image: saichler/probler-logagent:latest
+          imagePullPolicy: Always
+          env:
+            - name: LOGPATH
+              value: /data/logs/probler
+            - name: LOGFILE
+              value: "*"
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+# probler-topo: already StatefulSet, no volume needed
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-topo
+  labels:
+    app: probler-topo
+spec:
+  serviceName: probler-topo
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probler-topo
+  template:
+    metadata:
+      labels:
+        app: probler-topo
+    spec:
+      containers:
+        - name: probler-topo
+          image: saichler/probler-topo:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+
+---
+
+# te-app: Deployment, no volume
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: probler
+  name: te-app
+  labels:
+    app: te-app
+    component: traffic-engineering
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: te-app
+  template:
+    metadata:
+      labels:
+        app: te-app
+        component: traffic-engineering
+    spec:
+      containers:
+      - name: te-app
+        image: probler/te_app:latest
+        ports:
+        - containerPort: 8443
+          name: https
+        env:
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8443
+            scheme: HTTPS
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8443
+            scheme: HTTPS
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: probler
+  name: te-app-service
+  labels:
+    app: te-app
+    component: traffic-engineering
+spec:
+  selector:
+    app: te-app
+  ports:
+  - name: https
+    port: 8443
+    targetPort: 8443
+    protocol: TCP
+  type: ClusterIP
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: probler
+  name: te-app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - host: te-app.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: te-app-service
+            port:
+              number: 8443
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: l8collector-admission
+  namespace: probler
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: l8collector-admission-bootstrap
+  namespace: probler
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - create
+      - update
+      - patch
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: l8collector-admission
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - endpoints
+      - events
+      - limitranges
+      - namespaces
+      - nodes
+      - persistentvolumeclaims
+      - persistentvolumes
+      - pods
+      - resourcequotas
+      - secrets
+      - serviceaccounts
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - daemonsets
+      - deployments
+      - replicasets
+      - statefulsets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - batch
+    resources:
+      - cronjobs
+      - jobs
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - autoscaling
+    resources:
+      - horizontalpodautoscalers
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingressclasses
+      - ingresses
+      - networkpolicies
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - storage.k8s.io
+    resources:
+      - storageclasses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - policy
+    resources:
+      - poddisruptionbudgets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - rbac.authorization.k8s.io
+    resources:
+      - clusterrolebindings
+      - clusterroles
+      - rolebindings
+      - roles
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - management.loft.sh
+    resources:
+      - virtualclusterinstances
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - networking.istio.io
+    resources:
+      - destinationrules
+      - envoyfilters
+      - gateways
+      - serviceentries
+      - sidecars
+      - virtualservices
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - security.istio.io
+    resources:
+      - authorizationpolicies
+      - peerauthentications
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - validatingwebhookconfigurations
+    verbs:
+      - get
+      - patch
+      - update
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: l8collector-admission-bootstrap
+  namespace: probler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: l8collector-admission-bootstrap
+subjects:
+  - kind: ServiceAccount
+    name: l8collector-admission
+    namespace: probler
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: l8collector-admission
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: l8collector-admission
+subjects:
+  - kind: ServiceAccount
+    name: l8collector-admission
+    namespace: probler
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: l8collector-admission-bootstrap
+  namespace: probler
+data:
+  generate-cert.sh: |
+    #!/bin/sh
+    set -eu
+
+    namespace="${NAMESPACE:-default}"
+    service="${SERVICE_NAME:-l8collector-admission}"
+    tmp="/work"
+    crt="${tmp}/tls.crt"
+    key="${tmp}/tls.key"
+    csr_conf="${tmp}/csr.conf"
+
+    cat > "${csr_conf}" <<EOF
+    [req]
+    prompt = no
+    default_bits = 2048
+    distinguished_name = dn
+    x509_extensions = v3_req
+
+    [dn]
+    CN = ${service}.${namespace}.svc
+
+    [v3_req]
+    subjectAltName = @alt_names
+
+    [alt_names]
+    DNS.1 = ${service}
+    DNS.2 = ${service}.${namespace}
+    DNS.3 = ${service}.${namespace}.svc
+    EOF
+
+    openssl req -x509 -nodes -newkey rsa:2048 -days 365 \
+      -keyout "${key}" \
+      -out "${crt}" \
+      -config "${csr_conf}"
+
+    chmod 0644 "${crt}" "${key}"
+  apply-tls.sh: |
+    #!/bin/sh
+    set -eu
+
+    namespace="${NAMESPACE:-default}"
+    service="${SERVICE_NAME:-l8collector-admission}"
+    secret="${SECRET_NAME:-l8collector-admission-tls}"
+    webhook="${WEBHOOK_NAME:-l8collector-k8s}"
+    crt="/work/tls.crt"
+    key="/work/tls.key"
+
+    kubectl -n "${namespace}" create secret tls "${secret}" \
+      --cert="${crt}" \
+      --key="${key}" \
+      --dry-run=client -o yaml | kubectl apply -f -
+
+    ca_bundle="$(base64 < "${crt}" | tr -d '\n')"
+    kubectl patch validatingwebhookconfiguration "${webhook}" \
+      --type=json \
+      -p="[{\"op\":\"add\",\"path\":\"/webhooks/0/clientConfig/caBundle\",\"value\":\"${ca_bundle}\"}]"
+
+    kubectl patch validatingwebhookconfiguration "${webhook}" \
+      --type=json \
+      -p="[{\"op\":\"replace\",\"path\":\"/webhooks/0/name\",\"value\":\"${service}.${namespace}.svc\"}]"
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: l8collector-admission-bootstrap
+  namespace: probler
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: l8collector-admission-bootstrap
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: l8collector-admission
+      initContainers:
+        - name: generate-cert
+          image: alpine:3.22
+          command:
+            - /bin/sh
+            - -c
+            - apk add --no-cache openssl >/dev/null && /bootstrap/generate-cert.sh
+          env:
+            - name: NAMESPACE
+              value: probler
+            - name: SERVICE_NAME
+              value: l8collector-admission
+            - name: SECRET_NAME
+              value: l8collector-admission-tls
+            - name: WEBHOOK_NAME
+              value: l8collector-k8s
+          volumeMounts:
+            - name: bootstrap
+              mountPath: /bootstrap
+            - name: work
+              mountPath: /work
+      containers:
+        - name: apply-secret-and-cabundle
+          image: bitnami/kubectl:latest
+          command:
+            - /bin/sh
+            - -c
+            - /bootstrap/apply-tls.sh
+          env:
+            - name: NAMESPACE
+              value: probler
+            - name: SERVICE_NAME
+              value: l8collector-admission
+            - name: SECRET_NAME
+              value: l8collector-admission-tls
+            - name: WEBHOOK_NAME
+              value: l8collector-k8s
+          volumeMounts:
+            - name: bootstrap
+              mountPath: /bootstrap
+            - name: work
+              mountPath: /work
+      volumes:
+        - name: bootstrap
+          configMap:
+            name: l8collector-admission-bootstrap
+            defaultMode: 0755
+        - name: work
+          emptyDir: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: l8collector-admission
+  namespace: probler
+spec:
+  selector:
+    app: l8collector-admission
+  ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+
+---
+
+# l8collector-admission: was Deployment, now StatefulSet with volumeClaimTemplates + TLS secret
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: l8collector-admission
+  namespace: probler
+spec:
+  serviceName: l8collector-admission
+  replicas: 1
+  selector:
+    matchLabels:
+      app: l8collector-admission
+  template:
+    metadata:
+      labels:
+        app: l8collector-admission
+    spec:
+      serviceAccountName: l8collector-admission
+      containers:
+        - name: admission
+          image: saichler/probler-admission:latest
+          imagePullPolicy: Always
+          env:
+            - name: ClusterName
+              value: Home
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: ADMISSION_HOST
+              value: 0.0.0.0
+            - name: ADMISSION_PORT
+              value: "8443"
+            - name: ADMISSION_PATH
+              value: /admission/kubernetes
+            - name: ADMISSION_CERT_NAME
+              value: /data/admission
+          ports:
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+            - name: tls
+              mountPath: /data/admission.crt
+              subPath: admission.crt
+              readOnly: true
+            - name: tls
+              mountPath: /data/admission.crtKey
+              subPath: admission.crtKey
+              readOnly: true
+      volumes:
+        - name: tls
+          secret:
+            secretName: l8collector-admission-tls
+            items:
+              - key: tls.crt
+                path: admission.crt
+              - key: tls.key
+                path: admission.crtKey
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: l8collector-k8s
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: l8collector-admission
+        namespace: probler
+        path: /admission/kubernetes
+    failurePolicy: Ignore
+    name: l8collector-admission.probler.svc
+    rules:
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - DELETE
+          - UPDATE
+        resources:
+          - daemonsets
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - DELETE
+          - UPDATE
+        resources:
+          - deployments
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - DELETE
+          - UPDATE
+        resources:
+          - statefulsets
+      - apiGroups:
+          - networking.k8s.io
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - DELETE
+          - UPDATE
+        resources:
+          - networkpolicies
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - DELETE
+          - UPDATE
+        resources:
+          - namespaces
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - DELETE
+          - UPDATE
+        resources:
+          - nodes
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - DELETE
+          - UPDATE
+        resources:
+          - pods
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - DELETE
+          - UPDATE
+        resources:
+          - services
+    sideEffects: None
