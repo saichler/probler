@@ -36,6 +36,24 @@ spec:
 
 ---
 
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: probler
+  name: probler-vnet-headless
+  labels:
+    app: probler-vnet
+spec:
+  clusterIP: None
+  selector:
+    app: probler-vnet
+  ports:
+    - name: vnet
+      port: 25998
+      targetPort: 25998
+
+---
+
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -57,6 +75,11 @@ spec:
         - name: probler-vnet
           image: saichler/probler-vnet:latest
           imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
           ports:
             - containerPort: 25998
           volumeMounts:
@@ -66,6 +89,24 @@ spec:
         - name: hdata
           persistentVolumeClaim:
             claimName: probler-data
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: probler
+  name: probler-logs-headless
+  labels:
+    app: probler-logs
+spec:
+  clusterIP: None
+  selector:
+    app: probler-logs
+  ports:
+    - name: logs-vnet
+      port: 12888
+      targetPort: 12888
 
 ---
 
@@ -90,6 +131,11 @@ spec:
         - name: probler-logs
           image: saichler/logs-vnet:latest
           imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
           ports:
             - containerPort: 12888
           volumeMounts:
@@ -369,11 +415,12 @@ spec:
       labels:
         app: probler-webui2
     spec:
-      hostNetwork: true
       containers:
         - name: probler-webui2
           image: saichler/probler-webui2:latest
           imagePullPolicy: Always
+          ports:
+            - containerPort: 2443
           env:
             - name: NODE_IP
               valueFrom:
@@ -964,3 +1011,66 @@ webhooks:
         resources:
           - services
     sideEffects: None
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: probler
+  name: probler-webui2-svc
+  labels:
+    app: probler-webui2
+  annotations:
+    cloud.google.com/backend-config: '{"default": "probler-webui2-backend"}'
+spec:
+  type: NodePort
+  selector:
+    app: probler-webui2
+  ports:
+    - name: https
+      port: 2443
+      targetPort: 2443
+      protocol: TCP
+
+---
+
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  namespace: probler
+  name: probler-webui2-backend
+spec:
+  healthCheck:
+    type: HTTPS
+    port: 2443
+    requestPath: /
+
+---
+
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  namespace: probler
+  name: probler-cert
+spec:
+  domains:
+    - probler.example.com
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: probler
+  name: probler-ingress
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    networking.gke.io/managed-certificates: "probler-cert"
+    kubernetes.io/ingress.allow-http: "false"
+spec:
+  defaultBackend:
+    service:
+      name: probler-webui2-svc
+      port:
+        number: 2443
