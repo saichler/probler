@@ -18,12 +18,12 @@ package main
 import (
 	"github.com/saichler/l8alarms/go/alm/ui"
 	common2 "github.com/saichler/l8common/go/common"
-	"github.com/saichler/l8events/go/types/l8events"
 	"github.com/saichler/l8logfusion/go/types/l8logf"
 	"github.com/saichler/l8pollaris/go/types/l8tpollaris"
 	"github.com/saichler/l8topology/go/types/l8topo"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8api"
+	"github.com/saichler/l8types/go/types/l8events"
 	"github.com/saichler/l8types/go/types/l8health"
 	"github.com/saichler/l8types/go/types/l8notify"
 	"github.com/saichler/l8types/go/types/l8web"
