@@ -1180,22 +1180,12 @@ spec:
             - name: hdata
               mountPath: /data
             - name: tls
-              mountPath: /data/admission.crt
-              subPath: admission.crt
-              readOnly: true
-            - name: tls
-              mountPath: /data/admission.crtKey
-              subPath: admission.crtKey
+              mountPath: /data/admission
               readOnly: true
       volumes:
         - name: tls
           secret:
             secretName: l8collector-admission-tls
-            items:
-              - key: tls.crt
-                path: admission.crt
-              - key: tls.key
-                path: admission.crtKey
   volumeClaimTemplates:
     - metadata:
         name: hdata

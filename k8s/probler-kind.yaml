@@ -25,7 +25,7 @@ metadata:
     app: probler-vnet
 spec:
   serviceName: probler-vnet
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: probler-vnet
@@ -71,7 +71,7 @@ metadata:
     app: probler-logs
 spec:
   serviceName: probler-logs
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: probler-logs
@@ -107,7 +107,7 @@ spec:
 
 ---
 
-# probler-parser: merged from large/medium/small (6+4+2 = 12 replicas)
+# probler-parser: 6 replicas for KIND
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -117,7 +117,7 @@ metadata:
     app: probler-parser
 spec:
   serviceName: probler-parser
-  replicas: 12
+  replicas: 1
   selector:
     matchLabels:
       app: probler-parser
@@ -150,7 +150,7 @@ spec:
 
 ---
 
-# probler-collector: merged from large/medium/small (6+4+2 = 12 replicas)
+# probler-collector: 6 replicas for KIND
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -160,7 +160,7 @@ metadata:
     app: probler-collector
 spec:
   serviceName: probler-collector
-  replicas: 12
+  replicas: 1
   selector:
     matchLabels:
       app: probler-collector
@@ -203,7 +203,7 @@ metadata:
     app: probler-box
 spec:
   serviceName: probler-box
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: probler-box
@@ -246,7 +246,7 @@ metadata:
     app: probler-gpu
 spec:
   serviceName: probler-gpu
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: probler-gpu
@@ -289,7 +289,7 @@ metadata:
     app: probler-k8s
 spec:
   serviceName: probler-k8s
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: probler-k8s
@@ -418,7 +418,7 @@ metadata:
     app: probler-webui2
 spec:
   serviceName: probler-webui2
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: probler-webui2
@@ -462,7 +462,7 @@ metadata:
     app: probler-log-agent
 spec:
   serviceName: probler-log-agent
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: probler-log-agent
@@ -930,22 +930,12 @@ spec:
             - name: hdata
               mountPath: /data
             - name: tls
-              mountPath: /data/admission.crt
-              subPath: admission.crt
-              readOnly: true
-            - name: tls
-              mountPath: /data/admission.crtKey
-              subPath: admission.crtKey
+              mountPath: /data/admission
               readOnly: true
       volumes:
         - name: tls
           secret:
             secretName: l8collector-admission-tls
-            items:
-              - key: tls.crt
-                path: admission.crt
-              - key: tls.key
-                path: admission.crtKey
   volumeClaimTemplates:
     - metadata:
         name: hdata

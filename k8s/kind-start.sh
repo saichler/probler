@@ -31,6 +31,13 @@ kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
   - role: control-plane
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          taints:
+            - key: node-role.kubernetes.io/control-plane
+              effect: NoSchedule
   - role: worker
     extraPortMappings:
       - containerPort: 2443
@@ -39,11 +46,9 @@ nodes:
       - containerPort: 4443
         hostPort: 4443
         protocol: TCP
-  - role: worker
-  - role: worker
 EOF
 
-echo "Creating KIND cluster '${CLUSTER_NAME}' (1 control-plane + 3 workers)..."
+echo "Creating KIND cluster '${CLUSTER_NAME}' (1 control-plane + 1 worker)..."
 kind create cluster --name "${CLUSTER_NAME}" --config "${SCRIPT_DIR}/${KIND_CONFIG}"
 
 echo "Waiting for nodes to be Ready..."
@@ -75,7 +80,25 @@ for img in "${IMAGES[@]}"; do
   fi
 done
 
-echo "Deploying probler-kind.yaml..."
+echo "Phase 1: Deploying namespace + vnet + logs-vnet..."
+head -n 107 "${SCRIPT_DIR}/probler-kind.yaml" | kubectl apply -f -
+
+echo "Waiting for probler-vnet to be Ready..."
+kubectl -n probler rollout status statefulset/probler-vnet --timeout=120s
+echo "Waiting for probler-logs to be Ready..."
+kubectl -n probler rollout status statefulset/probler-logs --timeout=120s
+
+echo "Phase 2: Deploying core services..."
+sed -n '1,530p' "${SCRIPT_DIR}/probler-kind.yaml" | kubectl apply -f -
+
+echo "Waiting for all core services to be Ready..."
+for sts in probler-parser probler-collector probler-box probler-gpu probler-k8s \
+           probler-orm probler-alarms probler-webui2 probler-log-agent probler-topo; do
+  echo "  Waiting for ${sts}..."
+  kubectl -n probler rollout status statefulset/"${sts}" --timeout=180s
+done
+
+echo "Phase 3: Deploying admission controller..."
 kubectl apply -f "${SCRIPT_DIR}/probler-kind.yaml"
 
 echo ""
