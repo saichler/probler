@@ -36,8 +36,8 @@ nodes:
       - containerPort: 2443
         hostPort: 2443
         protocol: TCP
-      - containerPort: 4445
-        hostPort: 4445
+      - containerPort: 4443
+        hostPort: 4443
         protocol: TCP
   - role: worker
   - role: worker
