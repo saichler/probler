@@ -1,38 +1,38 @@
-set -e
+TAG="${1:-latest}"
 cd prob
 echo "*** Building Collector ***"
 cd ./collector
-./build.sh
+if ! ./build.sh "$TAG"; then echo "FAILED to build Collector"; exit 1; fi
 echo "*** Building Parser ***"
 cd ../parser
-./build.sh
-echo "*** Building Parser ***"
+if ! ./build.sh "$TAG"; then echo "FAILED to build Parser"; exit 1; fi
+echo "*** Building Vnet ***"
 cd ../vnet
-./build.sh
+if ! ./build.sh "$TAG"; then echo "FAILED to build Vnet"; exit 1; fi
 echo "*** Building Box ***"
 cd ../inv_box
-./build.sh
+if ! ./build.sh "$TAG"; then echo "FAILED to build Box"; exit 1; fi
 echo "*** Building K8s ***"
 cd ../inv_k8s
-./build.sh
+if ! ./build.sh "$TAG"; then echo "FAILED to build K8s"; exit 1; fi
 echo "*** Building GPUs ***"
 cd ../inv_gpu
-./build.sh
+if ! ./build.sh "$TAG"; then echo "FAILED to build GPUs"; exit 1; fi
 echo "*** Building UI ***"
 cd ../newui
-./build.sh
+if ! ./build.sh "$TAG"; then echo "FAILED to build UI"; exit 1; fi
 echo "*** Building Log Vnet ***"
 cd ../log-vnet
-./build.sh
+if ! ./build.sh "$TAG"; then echo "FAILED to build Log Vnet"; exit 1; fi
 echo "*** Building Log Agent ***"
 cd ../log-agent
-./build.sh
+if ! ./build.sh "$TAG"; then echo "FAILED to build Log Agent"; exit 1; fi
 echo "*** Building ORM ***"
 cd ../orm
-./build.sh
+if ! ./build.sh "$TAG"; then echo "FAILED to build ORM"; exit 1; fi
 echo "*** Building Alarms ***"
 cd ../alarms
-./build.sh
+if ! ./build.sh "$TAG"; then echo "FAILED to build Alarms"; exit 1; fi
 echo "*** Building Topology ***"
 cd ../topology
-./build.sh
+if ! ./build.sh "$TAG"; then echo "FAILED to build Topology"; exit 1; fi

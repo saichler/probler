@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 set -e
-docker build --no-cache --platform=linux/amd64 -t saichler/probler-inv-k8s:latest .
-docker push saichler/probler-inv-k8s:latest
+TAG="${1:-latest}"
+docker build --no-cache --platform=linux/amd64 -t saichler/probler-inv-k8s:${TAG} .
+docker push saichler/probler-inv-k8s:${TAG}
