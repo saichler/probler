@@ -2,6 +2,12 @@
 set -e
 
 CLUSTER_NAME="probler"
+
+# Pin the target cluster instead of inheriting the ambient context. `kind
+# create cluster` rewrites the global current-context, so whichever kind
+# cluster was created last would otherwise own every kubectl call here --
+# which is how one project's pods end up inside another's cluster.
+KUBECTL=(kubectl --context "kind-${CLUSTER_NAME}")
 KIND_CONFIG="kind-cluster.yaml"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
@@ -52,7 +58,7 @@ echo "Creating KIND cluster '${CLUSTER_NAME}' (1 control-plane + 1 worker)..."
 kind create cluster --name "${CLUSTER_NAME}" --config "${SCRIPT_DIR}/${KIND_CONFIG}"
 
 echo "Waiting for nodes to be Ready..."
-kubectl wait --for=condition=Ready nodes --all --timeout=120s
+"${KUBECTL[@]}" wait --for=condition=Ready nodes --all --timeout=120s
 
 echo "Loading Docker images into KIND cluster..."
 IMAGES=(
@@ -81,25 +87,25 @@ for img in "${IMAGES[@]}"; do
 done
 
 echo "Phase 1: Deploying namespace + vnet + logs-vnet..."
-head -n 107 "${SCRIPT_DIR}/probler-kind.yaml" | kubectl apply -f -
+head -n 107 "${SCRIPT_DIR}/probler-kind.yaml" | "${KUBECTL[@]}" apply -f -
 
 echo "Waiting for probler-vnet to be Ready..."
-kubectl -n probler rollout status statefulset/probler-vnet --timeout=120s
+"${KUBECTL[@]}" -n probler rollout status statefulset/probler-vnet --timeout=120s
 echo "Waiting for probler-logs to be Ready..."
-kubectl -n probler rollout status statefulset/probler-logs --timeout=120s
+"${KUBECTL[@]}" -n probler rollout status statefulset/probler-logs --timeout=120s
 
 echo "Phase 2: Deploying core services..."
-sed -n '1,530p' "${SCRIPT_DIR}/probler-kind.yaml" | kubectl apply -f -
+sed -n '1,530p' "${SCRIPT_DIR}/probler-kind.yaml" | "${KUBECTL[@]}" apply -f -
 
 echo "Waiting for all core services to be Ready..."
 for sts in probler-parser probler-collector probler-box probler-gpu probler-k8s \
            probler-orm probler-alarms probler-webui2 probler-log-agent probler-topo; do
   echo "  Waiting for ${sts}..."
-  kubectl -n probler rollout status statefulset/"${sts}" --timeout=180s
+  "${KUBECTL[@]}" -n probler rollout status statefulset/"${sts}" --timeout=180s
 done
 
 echo "Phase 3: Deploying admission controller..."
-kubectl apply -f "${SCRIPT_DIR}/probler-kind.yaml"
+"${KUBECTL[@]}" apply -f "${SCRIPT_DIR}/probler-kind.yaml"
 
 echo ""
 echo "KIND cluster '${CLUSTER_NAME}' is up and probler is deployed."

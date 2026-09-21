@@ -5,7 +5,7 @@ import (
 	"github.com/saichler/l8alarms/go/alm/services"
 	"github.com/saichler/l8alarms/go/alm/ui"
 	"github.com/saichler/l8bus/go/overlay/vnic"
-	events "github.com/saichler/l8events/go/services"
+	"github.com/saichler/l8common/go/system"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/probler/go/prob/common"
 	"os"
@@ -30,10 +30,12 @@ func main() {
 
 	services.ActivateAlmServices(creds, dbname, nic)
 
-	// Events moved out of l8alarms into l8events: the alm-local /10/Event service
-	// is gone, and ActivateAlmServices does not activate the shared store. Without
-	// this, /76/Events -- which the Events UI tab reads -- has no backend.
-	events.ActivateEvents(creds, dbname, nic)
+	// Required system services: l8events (Events, area 76 -- what the Events UI tab
+	// reads now that the alm-local /10/Event service is gone) plus l8notify (Notify,
+	// IntegCfg), which l8alarms needs for notification/escalation delivery.
+	// Always through l8common's system.Activate, never by calling the individual
+	// Activate* functions -- see layer-8-arch.md.
+	system.Activate(creds, dbname, nic)
 
 	resources.Logger().Info("alm services activated!")
 	common.WaitForSignal(resources)
