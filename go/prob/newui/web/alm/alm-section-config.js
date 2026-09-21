@@ -10,7 +10,7 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
 
     Layer8SectionConfigs.register('alarms', {
         title: 'Alarms & Events Management',
-        subtitle: 'Monitoring, Correlation, Notification & Maintenance',
+        subtitle: 'Monitoring, Correlation, Notification & Archive',
         icon: '\uD83D\uDD14',
         svgContent: Layer8SvgFactory.generate('alarms'),
         initFn: 'initializeAlm',
@@ -43,16 +43,9 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
                 ]
             },
             {
-                key: 'maintenance', label: 'Maintenance', icon: '\uD83D\uDD27',
-                services: [
-                    { key: 'maintenance-windows', label: 'Windows', icon: '\uD83D\uDD27', isDefault: true }
-                ]
-            },
-            {
                 key: 'archive', label: 'Archive', icon: '\uD83D\uDDC4\uFE0F',
                 services: [
-                    { key: 'archived-alarms', label: 'Archived Alarms', icon: '\uD83D\uDD14', isDefault: true },
-                    { key: 'archived-events', label: 'Archived Events', icon: '\u26A1' }
+                    { key: 'archived-alarms', label: 'Archived Alarms', icon: '\uD83D\uDD14', isDefault: true }
                 ]
             }
         ]

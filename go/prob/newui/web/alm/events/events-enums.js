@@ -1,65 +1,36 @@
 /*
-Copyright 2024 Sharon Aicler (saichler@gmail.com)
-
-Layer 8 Alarms is licensed under the Apache License, Version 2.0.
-You may obtain a copy of the License at:
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+© 2025 Sharon Aicler (saichler@gmail.com)
+Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
 */
 // ALM Events Module - Enum Definitions
-// EventType and EventProcessingState enums
+//
+// The alm-local /10/Event service is gone; this module now reads l8events's
+// shared EventRecord store at /76/Events. EventRecord's enums live in l8ui's
+// L8EventsEnums (severity/state/category), so they are re-exported here rather
+// than redefined — a second copy would silently drift from the .pb.go ordering.
+//
+// Gone with the old Event model: EVENT_TYPE (eventType is a free-form string on
+// EventRecord, not an enum) and EVENT_PROCESSING_STATE (renamed to `state`,
+// and its 'Processing' member no longer exists — EventState is
+// Unspecified/New/Processed/Discarded/Archived).
 
 (function() {
     'use strict';
 
     window.AlmEvents = window.AlmEvents || {};
 
-    const factory = Layer8EnumFactory;
+    const shared = L8EventsEnums;
 
-    // EventType: simple enum (no status classes)
-    const EVENT_TYPE = factory.simple([
-        'Unspecified',
-        'Fault',
-        'Threshold',
-        'StateChange',
-        'ConfigChange',
-        'Security',
-        'Performance',
-        'Syslog'
-    ]);
-
-    // EventProcessingState: status enum with classes
-    const EVENT_PROCESSING_STATE = factory.create([
-        ['Unspecified', null, ''],
-        ['New', 'new', 'layer8d-status-pending'],
-        ['Processing', 'processing', 'layer8d-status-pending'],
-        ['Processed', 'processed', 'layer8d-status-active'],
-        ['Discarded', 'discarded', 'layer8d-status-inactive'],
-        ['Archived', 'archived', 'layer8d-status-inactive']
-    ]);
-
-    // Enum exports
     AlmEvents.enums = {
-        EVENT_TYPE: EVENT_TYPE.enum,
-        EVENT_PROCESSING_STATE: EVENT_PROCESSING_STATE.enum,
-        EVENT_PROCESSING_STATE_CLASSES: EVENT_PROCESSING_STATE.classes
+        SEVERITY: shared.SEVERITY.enum,
+        EVENT_STATE: shared.EVENT_STATE.enum,
+        EVENT_CATEGORY: shared.EVENT_CATEGORY.enum
     };
 
-    // Renderers
-    const { renderEnum, createStatusRenderer } = Layer8DRenderers;
-
     AlmEvents.render = {
-        eventType: (value) => renderEnum(value, EVENT_TYPE.enum),
-        processingState: createStatusRenderer(
-            EVENT_PROCESSING_STATE.enum,
-            EVENT_PROCESSING_STATE.classes
-        )
+        severity: shared.render.severity,
+        state: shared.render.eventState,
+        category: shared.render.eventCategory
     };
 
 })();

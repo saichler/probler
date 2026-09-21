@@ -1,38 +1,83 @@
-TAG="${1:-latest}"
-cd prob
-echo "*** Building Collector ***"
-cd ./collector
-if ! ./build.sh "$TAG"; then echo "FAILED to build Collector"; exit 1; fi
-echo "*** Building Parser ***"
-cd ../parser
-if ! ./build.sh "$TAG"; then echo "FAILED to build Parser"; exit 1; fi
-echo "*** Building Vnet ***"
-cd ../vnet
-if ! ./build.sh "$TAG"; then echo "FAILED to build Vnet"; exit 1; fi
-echo "*** Building Box ***"
-cd ../inv_box
-if ! ./build.sh "$TAG"; then echo "FAILED to build Box"; exit 1; fi
-echo "*** Building K8s ***"
-cd ../inv_k8s
-if ! ./build.sh "$TAG"; then echo "FAILED to build K8s"; exit 1; fi
-echo "*** Building GPUs ***"
-cd ../inv_gpu
-if ! ./build.sh "$TAG"; then echo "FAILED to build GPUs"; exit 1; fi
-echo "*** Building UI ***"
-cd ../newui
-if ! ./build.sh "$TAG"; then echo "FAILED to build UI"; exit 1; fi
-echo "*** Building Log Vnet ***"
-cd ../log-vnet
-if ! ./build.sh "$TAG"; then echo "FAILED to build Log Vnet"; exit 1; fi
-echo "*** Building Log Agent ***"
-cd ../log-agent
-if ! ./build.sh "$TAG"; then echo "FAILED to build Log Agent"; exit 1; fi
-echo "*** Building ORM ***"
-cd ../orm
-if ! ./build.sh "$TAG"; then echo "FAILED to build ORM"; exit 1; fi
-echo "*** Building Alarms ***"
-cd ../alarms
-if ! ./build.sh "$TAG"; then echo "FAILED to build Alarms"; exit 1; fi
-echo "*** Building Topology ***"
-cd ../topology
-if ! ./build.sh "$TAG"; then echo "FAILED to build Topology"; exit 1; fi
+#!/usr/bin/env bash
+
+# Arguments may be given in any order: [tag] [amd64|arm64]
+# A blank architecture builds both amd64 and arm64.
+TAG="latest"
+ARCH=""
+for arg in "$@"; do
+    case "$arg" in
+        "")            ;;
+        -h|--help)     echo "Usage: $0 [tag] [amd64|arm64]"; echo "  Arguments may be in any order. Blank architecture builds both."; exit 0 ;;
+        amd64|x86_64)  ARCH="amd64" ;;
+        arm64|aarch64) ARCH="arm64" ;;
+        *)             TAG="$arg" ;;
+    esac
+done
+
+# "<Display Name>:<directory under prob/>"
+IMAGES=(
+    "Collector:collector"
+    "Parser:parser"
+    "Vnet:vnet"
+    "Box:inv_box"
+    "K8s:inv_k8s"
+    "GPUs:inv_gpu"
+    "UI:newui"
+    "Log Vnet:log-vnet"
+    "Log Agent:log-agent"
+    "ORM:orm"
+    "Alarms:alarms"
+    "Topology:topology"
+)
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SUCCEEDED=()
+FAILED=()
+
+echo "*** Tag: ${TAG} | Architecture: ${ARCH:-amd64 + arm64} ***"
+
+for entry in "${IMAGES[@]}"; do
+    NAME="${entry%%:*}"
+    DIR="${entry##*:}"
+    echo ""
+    echo "*** Building ${NAME} ***"
+    if (cd "$SCRIPT_DIR/prob/$DIR" && ./build.sh "$TAG" "$ARCH"); then
+        SUCCEEDED+=("$NAME")
+    else
+        echo "FAILED to build ${NAME}"
+        FAILED+=("$NAME")
+    fi
+done
+
+echo ""
+echo "======================================================"
+echo " Build summary (tag: ${TAG}, arch: ${ARCH:-amd64 + arm64})"
+echo "======================================================"
+echo " Succeeded (${#SUCCEEDED[@]}/${#IMAGES[@]}):"
+if [ ${#SUCCEEDED[@]} -eq 0 ]; then
+    echo "   (none)"
+else
+    for name in "${SUCCEEDED[@]}"; do echo "   OK      $name"; done
+fi
+echo " Failed (${#FAILED[@]}/${#IMAGES[@]}):"
+if [ ${#FAILED[@]} -eq 0 ]; then
+    echo "   (none)"
+else
+    for name in "${FAILED[@]}"; do echo "   FAILED  $name"; done
+fi
+echo "======================================================"
+
+if [ ${#FAILED[@]} -eq ${#IMAGES[@]} ]; then
+    echo ""
+    echo " Every image failed. The usual cause is a base image that is not"
+    echo " available for a requested architecture -- saichler/builder,"
+    echo " saichler/probler-security and saichler/probler-postgres must each"
+    echo " exist for ${ARCH:-amd64 and arm64}. Rebuild them from l8secure:"
+    echo "   cd ../../l8secure/builder  && ./build.sh ${ARCH}"
+    echo "   cd ../security             && ./build.sh probler ${ARCH}"
+    echo "   cd ../postgres             && ./build.sh probler ${ARCH}"
+    echo " A build stage that dies immediately with exit code 255 is the"
+    echo " symptom: the base image is the wrong architecture for the target."
+fi
+
+[ ${#FAILED[@]} -eq 0 ] || exit 1

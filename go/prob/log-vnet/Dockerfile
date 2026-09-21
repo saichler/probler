@@ -1,5 +1,9 @@
 FROM saichler/builder:latest AS build
 
+# Populated automatically by buildx from --platform (blank => host default).
+ARG TARGETOS=linux
+ARG TARGETARCH
+
 ENV CGO_ENABLED 1
 COPY main.go /home/src/github.com/saichler/build/main.go
 RUN go mod init
@@ -10,7 +14,7 @@ WORKDIR /
 RUN /patch.sh
 
 WORKDIR /home/src/github.com/saichler/build
-RUN go build -o logvnet
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o logvnet
 
 FROM saichler/probler-security:latest AS final
 COPY --from=build /home/src/github.com/saichler/build/logvnet /home/run/logvnet

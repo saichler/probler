@@ -41,16 +41,11 @@
         ],
 
         // ── Events ──────────────────────────────────────────────────
-        Event: [
-            ...col.id('eventId', 'Event ID'),
-            ...col.enum('eventType', 'Event Type', null, render.eventType),
-            ...col.status('processingState', 'Processing State', null, render.processingState),
-            ...col.status('severity', 'Severity', null, render.severity),
-            ...col.col('nodeName', 'Node Name'),
-            ...col.col('message', 'Message'),
-            ...col.col('category', 'Category'),
-            ...col.datetime('occurredAt', 'Occurred At')
-        ],
+        // /76/Events serves l8events.EventRecord, so the shared l8ui viewer
+        // owns these columns (it also sets the primary/secondary card flags
+        // mobile needs). The old Event model and its processingState/nodeName
+        // fields no longer exist.
+        EventRecord: L8EventsEventViewer.getColumns(),
 
         // ── Correlation ─────────────────────────────────────────────
         CorrelationRule: [
@@ -81,18 +76,6 @@
             ...col.status('minSeverity', 'Min Severity', null, render.severity)
         ],
 
-        // ── Maintenance ─────────────────────────────────────────────
-        MaintenanceWindow: [
-            ...col.id('windowId', 'Window ID'),
-            ...col.col('name', 'Name'),
-            ...col.status('status', 'Status', null, render.windowStatus),
-            ...col.date('startTime', 'Start Time'),
-            ...col.date('endTime', 'End Time'),
-            ...col.enum('recurrence', 'Recurrence', null, render.recurrenceType),
-            ...col.boolean('suppressAlarms', 'Suppress Alarms'),
-            ...col.col('createdBy', 'Created By')
-        ],
-
         // ── Archive ─────────────────────────────────────────────────
         ArchivedAlarm: [
             ...col.id('alarmId'),
@@ -103,17 +86,6 @@
             ...col.datetime('firstOccurrence', 'First Occurrence'),
             ...col.datetime('archivedAt', 'Archived At'),
             ...col.col('archivedBy', 'Archived By')
-        ],
-
-        ArchivedEvent: [
-            ...col.id('eventId', 'Event ID'),
-            ...col.enum('eventType', 'Event Type', null, render.eventType),
-            ...col.status('severity', 'Severity', null, render.severity),
-            ...col.col('nodeName', 'Node Name'),
-            ...col.col('message', 'Message'),
-            ...col.datetime('occurredAt', 'Occurred At'),
-            ...col.datetime('archivedAt', 'Archived At'),
-            ...col.col('archivedBy', 'Archived By')
         ]
     };
 
@@ -121,13 +93,11 @@
         Alarm: 'alarmId',
         AlarmDefinition: 'definitionId',
         AlarmFilter: 'filterId',
-        Event: 'eventId',
+        EventRecord: 'eventId',
         CorrelationRule: 'ruleId',
         NotificationPolicy: 'policyId',
         EscalationPolicy: 'policyId',
-        MaintenanceWindow: 'windowId',
-        ArchivedAlarm: 'alarmId',
-        ArchivedEvent: 'eventId'
+        ArchivedAlarm: 'alarmId'
     };
 
 })();

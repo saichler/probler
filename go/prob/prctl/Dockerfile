@@ -1,11 +1,15 @@
 FROM saichler/builder:latest AS build
 
+# Populated automatically by buildx from --platform (blank => host default).
+ARG TARGETOS=linux
+ARG TARGETARCH
+
 ENV CGO_ENABLED 1
 COPY prctl.go /home/src/github.com/saichler/build/prctl.go
 
 RUN go mod init
 RUN GOPROXY=direct GOPRIVATE=github.com go mod tidy
-RUN go build -o prctl
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o prctl
 
 FROM saichler/probler-security:latest AS final
 #FROM alpine

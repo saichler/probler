@@ -1,39 +1,22 @@
 /*
-Copyright 2024 Sharon Aicler (saichler@gmail.com)
-
-Layer 8 Alarms is licensed under the Apache License, Version 2.0.
-You may obtain a copy of the License at:
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+© 2025 Sharon Aicler (saichler@gmail.com)
+Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
 */
 // ALM Events Module - Column Definitions
-// Table column configurations for Event
+//
+// Columns come from l8ui's shared L8EventsEventViewer, which is built for
+// l8events.EventRecord (occurredAt/category/eventType/severity/sourceName/
+// message/state) — the shape /76/Events actually returns. The old hand-written
+// column set targeted the deleted Event model and referenced fields EventRecord
+// does not have (processingState, nodeName).
 
 (function() {
     'use strict';
 
     window.AlmEvents = window.AlmEvents || {};
 
-    const col = Layer8ColumnFactory;
-    const render = AlmEvents.render;
-
     AlmEvents.columns = {
-        Event: [
-            ...col.id('eventId', 'Event ID'),
-            ...col.enum('eventType', 'Event Type', null, render.eventType),
-            ...col.status('processingState', 'Processing State', null, render.processingState),
-            ...col.enum('severity', 'Severity', null, AlmAlarms.render.severity),
-            ...col.col('nodeName', 'Node Name'),
-            ...col.col('message', 'Message'),
-            ...col.col('category', 'Category'),
-            ...col.datetime('occurredAt', 'Occurred At')
-        ]
+        EventRecord: L8EventsEventViewer.getColumns()
     };
 
 })();

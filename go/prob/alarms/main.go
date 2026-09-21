@@ -5,6 +5,7 @@ import (
 	"github.com/saichler/l8alarms/go/alm/services"
 	"github.com/saichler/l8alarms/go/alm/ui"
 	"github.com/saichler/l8bus/go/overlay/vnic"
+	events "github.com/saichler/l8events/go/services"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/probler/go/prob/common"
 	"os"
@@ -24,7 +25,16 @@ func main() {
 	//Start postgres
 	startDb(nic)
 
-	services.ActivateAlmServices(nic.Resources().SysConfig().TimeSeriesStoreConfig.Type, nic.Resources().SysConfig().TimeSeriesStoreConfig.Name, nic)
+	creds := nic.Resources().SysConfig().TimeSeriesStoreConfig.Type
+	dbname := nic.Resources().SysConfig().TimeSeriesStoreConfig.Name
+
+	services.ActivateAlmServices(creds, dbname, nic)
+
+	// Events moved out of l8alarms into l8events: the alm-local /10/Event service
+	// is gone, and ActivateAlmServices does not activate the shared store. Without
+	// this, /76/Events -- which the Events UI tab reads -- has no backend.
+	events.ActivateEvents(creds, dbname, nic)
+
 	resources.Logger().Info("alm services activated!")
 	common.WaitForSignal(resources)
 }

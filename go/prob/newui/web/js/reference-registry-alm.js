@@ -25,7 +25,7 @@ Layer8DReferenceRegistry.register({
     // ========================================
     // ALM - Events
     // ========================================
-    Event: {
+    EventRecord: {
         idColumn: 'eventId',
         displayColumn: 'message',
         selectColumns: ['eventId', 'message', 'eventType'],
@@ -41,10 +41,5 @@ Layer8DReferenceRegistry.register({
     // ALM - Policies
     // ========================================
     ...refAlm.simple('NotificationPolicy', 'policyId', 'name', 'Notification Policy'),
-    ...refAlm.simple('EscalationPolicy', 'policyId', 'name', 'Escalation Policy'),
-
-    // ========================================
-    // ALM - Maintenance
-    // ========================================
-    ...refAlm.simple('MaintenanceWindow', 'windowId', 'name', 'Maintenance Window')
+    ...refAlm.simple('EscalationPolicy', 'policyId', 'name', 'Escalation Policy')
 });

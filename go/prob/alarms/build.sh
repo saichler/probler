@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
 set -e
-TAG="${1:-latest}"
-docker build --no-cache --platform=linux/amd64 -t saichler/probler-alarms:${TAG} .
+
+# Arguments may be given in any order: [tag] [amd64|arm64]
+# A blank architecture builds both amd64 and arm64.
+TAG="latest"
+ARCH=""
+for arg in "$@"; do
+    case "$arg" in
+        "")            ;;
+        -h|--help)     echo "Usage: $0 [tag] [amd64|arm64]"; echo "  Arguments may be in any order. Blank architecture builds both."; exit 0 ;;
+        amd64|x86_64)  ARCH="amd64" ;;
+        arm64|aarch64) ARCH="arm64" ;;
+        *)             TAG="$arg" ;;
+    esac
+done
+PLATFORM="linux/amd64,linux/arm64"
+[ -n "$ARCH" ] && PLATFORM="linux/$ARCH"
+
+echo "Building saichler/probler-alarms:${TAG} for ${PLATFORM}"
+docker buildx build --no-cache --platform="$PLATFORM" -t saichler/probler-alarms:${TAG} .
 docker push saichler/probler-alarms:${TAG}

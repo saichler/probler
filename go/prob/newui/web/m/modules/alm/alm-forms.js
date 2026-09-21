@@ -1,13 +1,25 @@
 /**
  * Mobile ALM Module - Form Definitions
  * Desktop Equivalents: alarms-forms.js, events-forms.js, correlation-forms.js,
- *   policies-forms.js, maintenance-forms.js
+ *   policies-forms.js
  */
 (function() {
     'use strict';
 
     var f = window.Layer8FormFactory;
     var enums = MobileAlm.enums;
+
+    // EventRecord's base form comes from the shared l8ui viewer so it cannot
+    // drift from l8events's proto shape.
+    function eventRecordForm() {
+        var form = L8EventsEventViewer.getFormDefinition();
+        form.sections.push(
+            f.section('Correlation', [
+                ...f.reference('generatedAlarmId', 'Generated Alarm', 'Alarm')
+            ])
+        );
+        return form;
+    }
 
     function ro(fields) {
         return fields.map(function(field) { field.readOnly = true; return field; });
@@ -82,29 +94,10 @@
         ]),
 
         // ── Event ───────────────────────────────────────────────────
-        Event: f.form('Event', [
-            f.section('Event Details', [
-                ...f.select('eventType', 'Event Type', enums.EVENT_TYPE, true),
-                ...f.select('severity', 'Severity', enums.ALARM_SEVERITY),
-                ...f.text('nodeId', 'Node ID', true),
-                ...f.text('nodeName', 'Node Name'),
-                ...f.text('sourceIdentifier', 'Source Identifier'),
-                ...f.textarea('message', 'Message', true),
-                ...f.textarea('rawData', 'Raw Data'),
-                ...f.text('category', 'Category'),
-                ...f.text('subcategory', 'Subcategory')
-            ]),
-            f.section('Processing', [
-                ...f.select('processingState', 'Processing State', enums.EVENT_PROCESSING_STATE),
-                ...f.reference('alarmId', 'Alarm', 'Alarm'),
-                ...f.reference('definitionId', 'Alarm Definition', 'AlarmDefinition')
-            ]),
-            f.section('Timing', [
-                ...f.datetime('occurredAt', 'Occurred At'),
-                ...f.datetime('receivedAt', 'Received At'),
-                ...f.datetime('processedAt', 'Processed At')
-            ])
-        ]),
+        // /76/Events serves l8events.EventRecord; the shared l8ui viewer owns
+        // the base form, and probler appends generatedAlarmId (the alarm this
+        // event raised), which is what the old form's alarmId reference was for.
+        EventRecord: eventRecordForm(),
 
         // ── Correlation Rule ────────────────────────────────────────
         CorrelationRule: f.form('Correlation Rule', [
@@ -180,28 +173,29 @@
             ])
         ]),
 
-        // ── Maintenance Window ──────────────────────────────────────
-        MaintenanceWindow: f.form('Maintenance Window', [
-            f.section('Window Details', [
-                ...f.text('name', 'Name', true),
-                ...f.textarea('description', 'Description'),
-                ...f.select('status', 'Status', enums.MAINTENANCE_WINDOW_STATUS),
-                ...f.text('createdBy', 'Created By')
+        // ── Archived Alarm ──────────────────────────────────────────
+        // Mirrors desktop alm/archive/archive-forms.js. Read-only: the archive
+        // service is registered readOnly in the nav config.
+        ArchivedAlarm: f.form('Archived Alarm', [
+            f.section('Alarm Details', [
+                ...ro(f.text('name', 'Name')),
+                ...ro(f.textarea('description', 'Description')),
+                ...ro(f.select('severity', 'Severity', enums.ALARM_SEVERITY)),
+                ...ro(f.select('state', 'State', enums.ALARM_STATE)),
+                ...ro(f.text('nodeId', 'Node ID')),
+                ...ro(f.text('nodeName', 'Node Name')),
+                ...ro(f.text('location', 'Location')),
+                ...ro(f.text('sourceIdentifier', 'Source Identifier'))
             ]),
-            f.section('Schedule', [
-                ...f.date('startTime', 'Start Time', true),
-                ...f.date('endTime', 'End Time', true),
-                ...f.select('recurrence', 'Recurrence', enums.RECURRENCE_TYPE),
-                ...f.number('recurrenceInterval', 'Recurrence Interval')
+            f.section('Timing', [
+                ...ro(f.datetime('firstOccurrence', 'First Occurrence')),
+                ...ro(f.datetime('lastOccurrence', 'Last Occurrence')),
+                ...ro(f.datetime('acknowledgedAt', 'Acknowledged At')),
+                ...ro(f.datetime('clearedAt', 'Cleared At'))
             ]),
-            f.section('Scope', [
-                ...f.text('nodeIds', 'Node IDs'),
-                ...f.text('nodeTypes', 'Node Types'),
-                ...f.text('locations', 'Locations')
-            ]),
-            f.section('Behavior', [
-                ...f.checkbox('suppressAlarms', 'Suppress Alarms'),
-                ...f.checkbox('suppressNotifications', 'Suppress Notifications')
+            f.section('Archive Info', [
+                ...ro(f.datetime('archivedAt', 'Archived At')),
+                ...ro(f.text('archivedBy', 'Archived By'))
             ])
         ])
     };

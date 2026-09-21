@@ -18,7 +18,7 @@
         },
         ...ref.simple('AlarmDefinition', 'definitionId', 'name', 'Definition'),
         ...ref.simple('AlarmFilter', 'filterId', 'name', 'Filter'),
-        Event: {
+        EventRecord: {
             idColumn: 'eventId',
             displayColumn: 'message',
             selectColumns: ['eventId', 'message', 'eventType'],
@@ -26,8 +26,7 @@
         },
         ...ref.simple('CorrelationRule', 'ruleId', 'name', 'Rule'),
         ...ref.simple('NotificationPolicy', 'policyId', 'name', 'Notification Policy'),
-        ...ref.simple('EscalationPolicy', 'policyId', 'name', 'Escalation Policy'),
-        ...ref.simple('MaintenanceWindow', 'windowId', 'name', 'Maintenance Window')
+        ...ref.simple('EscalationPolicy', 'policyId', 'name', 'Escalation Policy')
     });
 
 })();
