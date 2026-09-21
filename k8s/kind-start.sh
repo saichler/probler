@@ -36,15 +36,13 @@ cat > "${SCRIPT_DIR}/${KIND_CONFIG}" <<'EOF'
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
+  # Single node: kind removes the control-plane NoSchedule taint itself on a
+  # one-node cluster, so do NOT patch nodeRegistration.taints here -- setting
+  # it empty makes kind's own `kubectl taint ... control-plane-` step fail with
+  # `taint "node-role.kubernetes.io/control-plane" not found` and the create
+  # aborts. The port mappings must live on this node because probler-kind.yaml
+  # declares no hostPorts, so host access to 2443/4443 comes only from here.
   - role: control-plane
-    kubeadmConfigPatches:
-      - |
-        kind: InitConfiguration
-        nodeRegistration:
-          taints:
-            - key: node-role.kubernetes.io/control-plane
-              effect: NoSchedule
-  - role: worker
     extraPortMappings:
       - containerPort: 2443
         hostPort: 2443
@@ -54,7 +52,7 @@ nodes:
         protocol: TCP
 EOF
 
-echo "Creating KIND cluster '${CLUSTER_NAME}' (1 control-plane + 1 worker)..."
+echo "Creating KIND cluster '${CLUSTER_NAME}' (single node)..."
 kind create cluster --name "${CLUSTER_NAME}" --config "${SCRIPT_DIR}/${KIND_CONFIG}"
 
 echo "Waiting for nodes to be Ready..."
