@@ -15,12 +15,14 @@
                 'alarms': [
                     // readOnly: Alarm has no POST/PUT HTTP route (see AlarmService.go);
                     // state changes are PATCH-only, matching desktop alm-config.js
-                    { key: 'active-alarms', label: 'Active Alarms', icon: 'alarms-active', endpoint: '/10/Alarm', model: 'Alarm', idField: 'alarmId', supportedViews: ['table', 'kanban', 'chart'], readOnly: true },
+                    { key: 'active-alarms', label: 'Active Alarms', icon: 'alarms-active', endpoint: '/10/Alarm', model: 'Alarm', idField: 'alarmId', supportedViews: ['table', 'kanban', 'chart'], readOnly: true,
+                        onRowClick: ProblerMobileDetails.readOnly({ endpoint: '/10/Alarm', label: 'Active Alarms', model: 'Alarm', idField: 'alarmId' }) },
                     { key: 'alarm-definitions', label: 'Definitions', icon: 'alarms', endpoint: '/10/AlmDef', model: 'AlarmDefinition', idField: 'definitionId' },
                     { key: 'alarm-filters', label: 'Saved Filters', icon: 'alarms', endpoint: '/10/AlmFilter', model: 'AlarmFilter', idField: 'filterId' }
                 ],
                 'events': [
-                    { key: 'events', label: 'Events', icon: 'events', endpoint: '/76/Events', model: 'EventRecord', idField: 'eventId', readOnly: true }
+                    { key: 'events', label: 'Events', icon: 'events', endpoint: '/76/Events', model: 'EventRecord', idField: 'eventId', readOnly: true,
+                        onRowClick: ProblerMobileDetails.readOnly({ endpoint: '/76/Events', label: 'Events', model: 'EventRecord', idField: 'eventId' }) }
                 ],
                 'correlation': [
                     { key: 'rules', label: 'Correlation Rules', icon: 'correlation', endpoint: '/10/CorrRule', model: 'CorrelationRule', idField: 'ruleId' }
@@ -30,7 +32,8 @@
                     { key: 'escalation', label: 'Escalation', icon: 'policies', endpoint: '/10/EscPolicy', model: 'EscalationPolicy', idField: 'policyId' }
                 ],
                 'archive': [
-                    { key: 'archived-alarms', label: 'Archived Alarms', icon: 'archive', endpoint: '/10/ArcAlarm', model: 'ArchivedAlarm', idField: 'alarmId', readOnly: true }
+                    { key: 'archived-alarms', label: 'Archived Alarms', icon: 'archive', endpoint: '/10/ArcAlarm', model: 'ArchivedAlarm', idField: 'alarmId', readOnly: true,
+                        onRowClick: ProblerMobileDetails.readOnly({ endpoint: '/10/ArcAlarm', label: 'Archived Alarms', model: 'ArchivedAlarm', idField: 'alarmId' }) }
                 ]
             }
         }

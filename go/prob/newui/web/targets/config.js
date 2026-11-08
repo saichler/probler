@@ -12,7 +12,9 @@ async function loadConfig() {
         }
         const config = await response.json();
         TARGETS_CONFIG = {
-            apiPrefix: config.app.apiPrefix,
+            // The web server rewrites login.json's prefix with a trailing slash;
+            // endpoint paths start with one, so drop it to avoid '//' (307s).
+            apiPrefix: config.app.apiPrefix.replace(/\/+$/, ''),
             targetsPath: config.api.targetsPath || '/91/Targets',
             credsPath: config.api.credsPath || '/75/Creds'
         };

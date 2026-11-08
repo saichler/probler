@@ -37,13 +37,21 @@ func main() {
 }
 
 func RegisterTypes(res ifs.IResources) {
+	// SYS > Logs reads the log server (/87/logs) on the logs vnet. l8common only
+	// opens the web server's logs vnic when LogConfig.LogDirectory is set, and
+	// probler's security config leaves it empty -- so default it here (the same
+	// path the log agent tails, k8s LOGPATH). RegisterTypes runs on the first
+	// vnic's resources, before that check.
+	if lc := res.SysConfig().LogConfig; lc != nil && lc.LogDirectory == "" {
+		lc.LogDirectory = "/data/logs/probler"
+	}
+
 	ui.RegisterAlmTypes(res)
 
 	res.Introspector().Decorators().AddPrimaryKeyDecorator(&types.NetworkDevice{}, "Id")
 	res.Introspector().Decorators().AddPrimaryKeyDecorator(&types2.GpuDevice{}, "Id")
 	res.Introspector().Decorators().AddPrimaryKeyDecorator(&l8topo.L8TopologyMetadata{}, "ServiceName", "ServiceArea")
 	res.Introspector().Decorators().AddPrimaryKeyDecorator(&l8tpollaris.L8PTarget{}, "TargetId")
-	res.Introspector().Decorators().AddPrimaryKeyDecorator(&l8events.EventRecord{}, "EventId")
 	res.Introspector().Decorators().AddPrimaryKeyDecorator(&l8logf.L8File{}, "Path", "Name")
 
 	registerK8sTypes(res)
@@ -68,7 +76,14 @@ func RegisterTypes(res ifs.IResources) {
 	res.Registry().Register(&types2.GpuDeviceList{})
 	res.Registry().Register(&l8topo.L8TopologyMetadataList{})
 	res.Registry().Register(&l8topo.L8TopologyMetadata{})
-	res.Registry().Register(&l8events.EventRecordList{})
+
+	// Required system services (l8events, l8notify) -- see SystemServicesRequired.
+	common2.RegisterType(res, &l8events.EventRecord{}, &l8events.EventRecordList{}, "EventId")
+	common2.RegisterType(res, &l8notify.NotifyRecord{}, &l8notify.NotifyRecordList{}, "NotifyId")
+	common2.RegisterType(res, &l8notify.IntegrationConfig{}, &l8notify.IntegrationConfigList{}, "IntegrationId")
+
+	// SYS > Data Import templates (ImprtTmpl, activated in probler-orm).
+	common2.RegisterType(res, &l8api.L8ImportTemplate{}, &l8api.L8ImportTemplateList{}, "TemplateId")
 }
 
 func registerK8sTypes(res ifs.IResources) {

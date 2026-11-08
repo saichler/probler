@@ -18,7 +18,7 @@ Probler.modules = {
         label: 'Infrastructure',
         icon: '🔌',
         services: [
-            { key: 'inventory', label: 'Inventory', icon: '📦', endpoint: '/0/L8PTarget', model: 'L8PTarget' },
+            { key: 'inventory', label: 'Inventory', icon: '📦', endpoint: '/91/Targets', model: 'L8PTarget' },
             { key: 'topologies', label: 'Topologies', icon: '🗺️', model: null },
             { key: 'storage', label: 'Storage & Power', icon: '🔌', model: null }
         ]

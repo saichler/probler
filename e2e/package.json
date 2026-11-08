@@ -1,0 +1,22 @@
+{
+  "name": "probler-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright end-to-end suite for probler, driven against a real KIND-deployed cluster.",
+  "scripts": {
+    "inventory": "node tools/generate-inventory.js",
+    "test": "playwright test",
+    "test:desktop": "playwright test tests/desktop",
+    "test:mobile": "playwright test tests/mobile",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:headed": "playwright test --headed",
+    "report": "playwright show-report",
+    "lint:scratch": "test -z \"$(find tests -name 'zzz-*')\" || (echo 'scratch specs left behind:'; find tests -name 'zzz-*'; exit 1)",
+    "lint:sleep": "test -z \"$(grep -rnE 'waitForTimeout\\(|(^|[^.[:alnum:]_])setTimeout\\(' tests pages drivers fixtures)\" || (echo 'fixed sleeps found -- wait on an event or condition instead:'; grep -rnE 'waitForTimeout\\(|(^|[^.[:alnum:]_])setTimeout\\(' tests pages drivers fixtures; exit 1)"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.2"
+  }
+}

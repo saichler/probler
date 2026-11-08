@@ -52,6 +52,8 @@ limitations under the License.
 }
 
 :root {
+    /* Colors and shadows come from l8ui's layer8d-theme-tokens.css / layer8d-theme.css
+       so every theme (incl. dark) applies; redefining them here shadowed the tokens. */
     /* Safe area insets */
     --sat: env(safe-area-inset-top, 0px);
     --sab: env(safe-area-inset-bottom, 0px);
@@ -59,41 +61,7 @@ limitations under the License.
     --sar: env(safe-area-inset-right, 0px);
 
     /* Probler Theme Colors — aligned with desktop */
-    --layer8d-primary: #0ea5e9;
-    --layer8d-primary-dark: #0284c7;
-    --layer8d-primary-light: #38bdf8;
     --layer8d-secondary: #06b6d4;
-
-    /* Text Colors — aligned with desktop warm neutrals */
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #64748b;
-    --text-dim: #94a3b8;
-    --text-light: #ffffff;
-
-    /* Background Colors — warm neutrals from desktop */
-    --bg-primary: #fcfbf8;
-    --bg-secondary: #f7f6f2;
-    --bg-tertiary: #f1eee8;
-    --bg-elevated: #fdfcf9;
-    --bg-card: #ffffff;
-
-    /* Border Colors — warm tones from desktop */
-    --border-light: #ddd7ce;
-    --border-default: #c8c0b4;
-    --border-emphasis: #94a3b8;
-
-    /* Status Colors — aligned with desktop */
-    --status-active: #00c853;
-    --status-active-bg: #dcfce7;
-    --status-pending: #ffc107;
-    --status-pending-bg: #fef3c7;
-    --status-inactive: #757575;
-    --status-inactive-bg: #f1f5f9;
-    --status-terminated: #ff3d00;
-    --status-terminated-bg: #fee2e2;
-    --status-info: #2196f3;
-    --status-info-bg: #dbeafe;
 
     /* Spacing (8px baseline) */
     --spacing-xs: 4px;
@@ -128,9 +96,6 @@ limitations under the License.
     --radius-full: 9999px;
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 
     /* Transitions */
     --transition-fast: 150ms ease;

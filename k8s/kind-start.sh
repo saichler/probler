@@ -24,6 +24,17 @@ if ! command -v kind &>/dev/null; then
   echo "kind installed: $(kind version)"
 fi
 
+# Optional: BUILD=1 builds every image locally first (k8s/build-images.sh).
+if [ -n "${BUILD}" ]; then
+  "${SCRIPT_DIR}/build-images.sh"
+fi
+
+# Simulated devices (l8opensim on the host) feed the network/GPU pipeline.
+# SKIP_SIM=1 deploys without them.
+if [ -z "${SKIP_SIM}" ]; then
+  "${SCRIPT_DIR}/sim-start.sh"
+fi
+
 # Check if cluster already exists
 if kind get clusters 2>/dev/null | grep -q "^${CLUSTER_NAME}$"; then
   echo "KIND cluster '${CLUSTER_NAME}' already exists."
@@ -104,6 +115,14 @@ done
 
 echo "Phase 3: Deploying admission controller..."
 "${KUBECTL[@]}" apply -f "${SCRIPT_DIR}/probler-kind.yaml"
+
+if [ -z "${SKIP_SIM}" ]; then
+  echo "Allowing KIND -> l8opensim forwarding..."
+  "${SCRIPT_DIR}/sim-route-kind.sh"
+fi
+
+echo "Seeding targets and waiting for live data..."
+"${SCRIPT_DIR}/seed-mocks.sh"
 
 echo ""
 echo "KIND cluster '${CLUSTER_NAME}' is up and probler is deployed."

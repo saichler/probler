@@ -40,7 +40,11 @@
                         onAdd: function() { if (typeof MobileSecurityCredentialsCRUD !== 'undefined') MobileSecurityCredentialsCRUD.openAdd({ endpoint: '/75/Creds', label: 'Credentials', model: 'L8Credentials', idField: 'id' }); },
                         onEdit: function(id, item) { if (typeof MobileSecurityCredentialsCRUD !== 'undefined') MobileSecurityCredentialsCRUD.openEdit({ endpoint: '/75/Creds', label: 'Credentials', model: 'L8Credentials', idField: 'id' }, item); },
                         onDelete: function(id) { if (typeof MobileSecurityCredentialsCRUD !== 'undefined') MobileSecurityCredentialsCRUD.confirmDelete({ endpoint: '/75/Creds', label: 'Credentials', model: 'L8Credentials', idField: 'id' }, id); }
-                    }
+                    },
+                    // Desktop parity (l8sys-config.js security: events, portals)
+                    { key: 'events', label: 'Events', icon: 'events', endpoint: '/76/Events', model: 'EventRecord', idField: 'eventId', readOnly: true, supportedViews: ['table'],
+                        onRowClick: ProblerMobileDetails.readOnly({ endpoint: '/76/Events', label: 'Events', model: 'EventRecord', idField: 'eventId' }) },
+                    { key: 'portals', label: 'Portals', icon: 'security', endpoint: '/77/L8Portal', model: 'L8Portal', idField: 'portalId', supportedViews: ['table'] }
                 ],
                 // Modules — custom toggle tree with dependency graph
                 // Desktop (l8sys-modules.js): Layer8DToggleTree with enable/disable

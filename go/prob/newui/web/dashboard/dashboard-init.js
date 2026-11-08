@@ -3,8 +3,27 @@
 
 let alarmsTable = null;
 
+// Live slot: all of the dashboard's KPI queries share one slot ('dashboard').
+// The owner is stable for the page's life: a NEW owner per entry would make
+// layer8d-websocket.js treat re-entry as a takeover and send an UNREGISTER for
+// the previous KPI queries on the other endpoints -- racing the re-registration
+// that follows immediately. Re-entry instead drops the previous entry's
+// listeners itself (listen() returns their unsubscribe functions).
+var DashboardLive = { id: 'dashboard', owner: {}, unlisten: [] };
+
+function dashboardQueryUrl(path, text) {
+    const endpoint = Layer8DConfig.resolveEndpoint(path);
+    const body = Layer8DWebSocket.registerQuery(DashboardLive.id, DashboardLive.owner, endpoint, text,
+        { onReconnect: refreshDashboardCards });
+    return endpoint + '?body=' + encodeURIComponent(JSON.stringify(body));
+}
+
+function refreshDashboardCards() {
+    return Promise.all([updateNetworkDevicesCard(), updateK8sCard(), updateGpuCard()]);
+}
+
 function getAuthHeaders() {
-    const bearerToken = localStorage.getItem('bearerToken') || null;
+    const bearerToken = sessionStorage.getItem('bearerToken');
     const headers = { 'Content-Type': 'application/json' };
     if (bearerToken) {
         headers['Authorization'] = 'Bearer ' + bearerToken;
@@ -14,11 +33,7 @@ function getAuthHeaders() {
 
 async function fetchNetworkDeviceStats() {
     try {
-        const endpoint = Layer8DConfig.resolveEndpoint('/0/NCache');
-        const url = endpoint +
-            '?body=' + encodeURIComponent(JSON.stringify({
-                text: 'select * from NetworkDevice where Id=* limit 1 page 0'
-            }));
+        const url = dashboardQueryUrl('/0/NCache', 'select * from NetworkDevice where Id=* limit 1 page 0');
 
         const response = await fetch(url, {
             method: 'GET',
@@ -99,11 +114,7 @@ function initializeAlarmsTable() {
 
 async function fetchK8sStats() {
     try {
-        const endpoint = Layer8DConfig.resolveEndpoint('/10/KCluster');
-        const url = endpoint +
-            '?body=' + encodeURIComponent(JSON.stringify({
-                text: 'select * from K8SCluster'
-            }));
+        const url = dashboardQueryUrl('/10/KCluster', 'select * from K8SCluster');
 
         const response = await fetch(url, {
             method: 'GET',
@@ -170,11 +181,7 @@ async function updateK8sCard() {
 
 async function fetchGpuStats() {
     try {
-        const endpoint = Layer8DConfig.resolveEndpoint('/2/GCache');
-        const url = endpoint +
-            '?body=' + encodeURIComponent(JSON.stringify({
-                text: 'select * from GpuDevice where Id=* limit 1 page 0'
-            }));
+        const url = dashboardQueryUrl('/2/GCache', 'select * from GpuDevice where Id=* limit 1 page 0');
 
         const response = await fetch(url, {
             method: 'GET',
@@ -250,19 +257,22 @@ function debouncedCardRefresh(modelType, refreshFn) {
 }
 
 async function initializeDashboard() {
+    DashboardLive.unlisten.forEach(function(off) { off(); });
+    DashboardLive.unlisten = [];
     initializeDashboardCardNavigation();
-    await Promise.all([updateNetworkDevicesCard(), updateK8sCard(), updateGpuCard()]);
+    await refreshDashboardCards();
     initializeAlarmsTable();
 
-    if (typeof Layer8DWebSocket !== 'undefined') {
-        Layer8DWebSocket.subscribe('NetworkDevice', function() {
+    const owner = DashboardLive.owner;
+    DashboardLive.unlisten.push(
+        Layer8DWebSocket.listen(DashboardLive.id, owner, 'NetworkDevice', function() {
             debouncedCardRefresh('NetworkDevice', updateNetworkDevicesCard);
-        });
-        Layer8DWebSocket.subscribe('GpuDevice', function() {
+        }),
+        Layer8DWebSocket.listen(DashboardLive.id, owner, 'GpuDevice', function() {
             debouncedCardRefresh('GpuDevice', updateGpuCard);
-        });
-        Layer8DWebSocket.subscribe('K8SCluster', function() {
+        }),
+        Layer8DWebSocket.listen(DashboardLive.id, owner, 'K8SCluster', function() {
             debouncedCardRefresh('K8SCluster', updateK8sCard);
-        });
-    }
+        })
+    );
 }

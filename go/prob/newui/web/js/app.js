@@ -198,9 +198,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.querySelector('.username').textContent = username;
 
     // Connect real-time WebSocket for live data updates
-    if (typeof Layer8DWebSocket !== 'undefined') {
-        Layer8DWebSocket.init();
-    }
+    Layer8DWebSocket.init();
 
     // Load default section (dashboard)
     loadSection('dashboard');

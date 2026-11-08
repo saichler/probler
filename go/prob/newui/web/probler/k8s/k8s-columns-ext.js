@@ -245,3 +245,13 @@ ProblerK8s.columns.K8SEvent = [
     { key: 'firstSeen', label: 'FIRST SEEN' },
     { key: 'lastSeen', label: 'LAST SEEN' }
 ];
+
+// Row identity within one cluster's table, shared by the Kubernetes section and
+// the K8s Explorer portal. inv_k8s keys every model by ClusterName+Key, except
+// the ones below (ClusterName+Name; K8SCluster is keyed by Name alone).
+(function() {
+    var NAME_KEYED = { K8SCluster: true, K8SNode: true, K8SNamespace: true, K8SCRD: true };
+    ProblerK8s.primaryKeyOf = function(model) {
+        return NAME_KEYED[model] ? 'name' : 'key';
+    };
+})();

@@ -18,7 +18,6 @@ package main
 import (
 	"fmt"
 	"github.com/saichler/l8bus/go/overlay/vnic"
-	"github.com/saichler/l8events/go/services"
 	"github.com/saichler/l8pollaris/go/pollaris/targets"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/probler/go/prob/common"
@@ -42,8 +41,9 @@ func main() {
 	//Activate targets
 	targets.Activate(nic.Resources().SysConfig().DataStoreConfig.Type, nic.Resources().SysConfig().DataStoreConfig.Name, nic)
 
-	//Activate Events
-	services.ActivateEvents(nic.Resources().SysConfig().DataStoreConfig.Type, nic.Resources().SysConfig().DataStoreConfig.Name, nic)
+	// l8events / l8notify are required system services, activated exactly once by
+	// probler-alarms via l8common's system.Activate -- never call ActivateEvents here
+	// (a second activation diverges the Events caches).
 
 	//targets.Activate("admin", "admin", nic)
 	common.WaitForSignal(res)

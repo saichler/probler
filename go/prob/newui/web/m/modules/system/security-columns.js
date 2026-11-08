@@ -50,6 +50,16 @@
     MobileSystem.primaryKeys.L8User = 'userId';
     MobileSystem.primaryKeys.L8Role = 'roleId';
     MobileSystem.primaryKeys.L8Credentials = 'id';
+    MobileSystem.primaryKeys.L8Portal = 'portalId';
+
+    // ── Portal columns (desktop: l8security-columns.js L8Portal) ────
+    MobileSystem.columns.L8Portal = [
+        ...col.col('portalId', 'Portal ID'),
+        ...col.custom('portals', 'Portals', function(item) {
+            var keys = Object.keys(item.portals || {});
+            return keys.length > 0 ? keys.join(', ') : '-';
+        })
+    ];
 
     // ── Forms ───────────────────────────────────────────────────────
     MobileSystem.forms = MobileSystem.forms || {};
@@ -59,6 +69,12 @@
             ...f.text('userId', 'User ID', true),
             ...f.text('fullName', 'Full Name', true),
             ...f.text('password', 'Password')
+        ])
+    ]);
+
+    MobileSystem.forms.L8Portal = f.form('Portal', [
+        f.section('Portal Info', [
+            ...f.text('portalId', 'Portal ID', true)
         ])
     ]);
 

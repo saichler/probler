@@ -50,3 +50,24 @@ Wrapper scripts are included:
 ./k8s/deploy-adm.sh
 ./k8s/un-deploy-adm.sh
 ```
+
+## Local Development Setup (KIND + l8opensim + e2e)
+
+Local runs and all testing go through a KIND cluster and the Playwright suite in `../e2e`.
+
+| Script | What it does |
+|--------|--------------|
+| `build-images.sh [dirs...]` | Builds the security plugin images (via `../l8secure`) and every service image locally for the host arch, `--load`, no push. `PARALLEL=N` (default 4). |
+| `sim-start.sh` / `sim-stop.sh` | Runs `../l8opensim` on the host (sudo): 19 network devices at 10.20.30.1/24 and 3 GPU servers at 20.20.30.1/24. |
+| `sim-route-kind.sh` | Adds `DOCKER-USER` accept rules between the kind docker bridge and `veth-sim-host` so collector pods reach the simulator. |
+| `kind-start.sh` | `sim-start` -> create cluster -> load images -> deploy in 3 phases -> `sim-route-kind` -> `seed-mocks`. `BUILD=1` builds images first, `SKIP_SIM=1` skips the simulator. |
+| `seed-mocks.sh` | Waits for the Targets endpoint, registers the simulator targets (`go run ./tests/seed`), then waits until NetworkDevice / GpuDevice / K8SCluster data is live. Re-runnable. |
+| `kind-stop.sh` | Stops the simulator (unless `KEEP_SIM=1`) and deletes the cluster. |
+
+```bash
+k8s/build-images.sh && k8s/kind-start.sh
+cd e2e && npm install && npx playwright install chromium && npm test
+k8s/kind-stop.sh
+```
+
+Kind manifests use `imagePullPolicy: IfNotPresent` (`Always` silently discards images loaded with `kind load`).

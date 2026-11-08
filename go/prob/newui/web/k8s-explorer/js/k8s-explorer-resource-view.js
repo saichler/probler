@@ -81,6 +81,7 @@
             containerId: slotId,
             endpoint: Layer8DConfig.resolveEndpoint(service.endpoint),
             modelName: service.model,
+            primaryKey: ProblerK8s.primaryKeyOf(service.model),
             columns: columns,
             pageSize: 50,
             serverSide: true,

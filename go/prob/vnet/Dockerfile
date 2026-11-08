@@ -8,6 +8,9 @@ ENV CGO_ENABLED 1
 COPY main.go /home/src/github.com/saichler/build/main.go
 RUN go mod init
 RUN GOPROXY=direct GOPRIVATE=github.com go mod tidy
+# Some layer8 modules still pin older siblings (e.g. pre-L8Register l8ql/l8utils);
+# move every layer8 module to its current version so they build together.
+RUN GOPROXY=direct GOPRIVATE=github.com go get $(go list -m all | awk '/^github.com\/saichler\// && $1 != "github.com/saichler/build" {print $1"@latest"}')
 RUN go mod vendor
 
 WORKDIR /

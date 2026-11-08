@@ -21,14 +21,12 @@
             //
             // Since showHealthDetailsModal is encapsulated, we instead subscribe
             // globally to L8Health changes and refresh the popup content if one is open.
-            if (typeof Layer8DWebSocket !== 'undefined') {
-                Layer8DWebSocket.subscribe('L8Health', function(msg) {
-                    var popup = document.getElementById('health-detail-modal');
-                    if (popup) {
-                        L8Health.refresh();
-                    }
-                });
-            }
+            Layer8DWebSocket.subscribe('L8Health', function(msg) {
+                var popup = document.getElementById('health-detail-modal');
+                if (popup) {
+                    L8Health.refresh();
+                }
+            });
         };
     }
 })();

@@ -21,6 +21,7 @@
             containerId: containerId,
             endpoint: endpoint,
             modelName: service.model,
+            primaryKey: ProblerK8s.primaryKeyOf(service.model),
             columns: columns,
             pageSize: 50,
             serverSide: true,

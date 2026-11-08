@@ -117,7 +117,7 @@
                         svc('clusterrolebindings', 'Cluster Role Bindings', '/37/K8sCrb', 'K8SClusterRoleBinding')
                     ],
                     'k8s-nodes': [
-                        svc('nodes', 'Nodes', '/38/K8sNode', 'K8SNode')
+                        svc('nodes', 'Nodes', '/38/K8sNode', 'K8SNode', 'name')
                     ],
                     'k8s-namespaces': [
                         svc('namespaces', 'Namespaces', '/39/K8sNs', 'K8SNamespace', 'name')

@@ -32,8 +32,13 @@ function showGPUDetailModal(device) {
             modelType: 'GpuDevice',
             primaryKey: device.id,
             onUpdate: function() {
-                Layer8DPopup.close();
-                if (typeof initializeGpus === 'function') initializeGpus();
+                LivePopup.refreshInPlace({
+                    popupId: 'gpu-device-detail-' + device.id,
+                    endpoint: '/2/GCache',
+                    query: 'select * from GpuDevice where Id=' + device.id,
+                    transform: transformGpuDeviceData,
+                    build: function(d) { return buildGpuDeviceContent(d, esc); }
+                });
             }
         });
     }

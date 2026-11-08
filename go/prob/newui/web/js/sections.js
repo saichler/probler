@@ -27,6 +27,12 @@ function loadSection(sectionName) {
         return;
     }
 
+    // Keep the sidebar in sync for every caller (dashboard cards and other
+    // in-app links navigate through here without clicking a nav link).
+    document.querySelectorAll('.nav-link[data-section]').forEach(function(link) {
+        link.classList.toggle('active', link.getAttribute('data-section') === sectionName);
+    });
+
     // Add fade-out animation
     contentArea.style.opacity = '0';
     contentArea.style.transform = 'translateY(20px)';

@@ -27,7 +27,7 @@ spec:
       containers:
         - name: probler-vnet
           image: saichler/probler-vnet:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 25998
           volumeMounts:
@@ -61,7 +61,7 @@ spec:
       containers:
         - name: probler-logs
           image: saichler/logs-vnet:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 12888
           volumeMounts:
@@ -95,7 +95,7 @@ spec:
       containers:
         - name: probler-parser
           image: saichler/probler-parser:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
               valueFrom:
@@ -132,7 +132,7 @@ spec:
       containers:
         - name: probler-collector
           image: saichler/probler-collector:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
               valueFrom:
@@ -168,7 +168,7 @@ spec:
       containers:
         - name: probler-box
           image: saichler/probler-inv-box:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
               valueFrom:
@@ -204,7 +204,7 @@ spec:
       containers:
         - name: probler-gpu
           image: saichler/probler-inv-gpu:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
               valueFrom:
@@ -240,7 +240,7 @@ spec:
       containers:
         - name: probler-k8s
           image: saichler/probler-inv-k8s:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
               valueFrom:
@@ -278,7 +278,7 @@ spec:
       containers:
         - name: probler-orm
           image: saichler/probler-orm:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
               valueFrom:
@@ -316,7 +316,7 @@ spec:
       containers:
         - name: probler-alarms
           image: saichler/probler-alarms:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
               valueFrom:
@@ -353,7 +353,7 @@ spec:
       containers:
         - name: probler-webui2
           image: saichler/probler-webui2:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
               valueFrom:
@@ -389,7 +389,7 @@ spec:
       containers:
         - name: probler-log-agent
           image: saichler/probler-logagent:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: LOGPATH
               value: /data/logs/probler
@@ -431,7 +431,7 @@ spec:
       containers:
         - name: probler-topo
           image: saichler/probler-topo:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
               valueFrom:
@@ -814,7 +814,7 @@ spec:
       containers:
         - name: admission
           image: saichler/probler-admission:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: ClusterName
               value: Home

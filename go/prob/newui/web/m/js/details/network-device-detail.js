@@ -463,8 +463,15 @@
             unsub = LivePopup.subscribe({
                 modelType: 'NetworkDevice',
                 primaryKey: device.id || raw.id || '',
+                // Desktop parity (LivePopup.refreshInPlace): keep the popup
+                // open with fresh data instead of closing it on every update.
                 onUpdate: function() {
-                    if (typeof Layer8MPopup !== 'undefined') Layer8MPopup.close();
+                    var q = encodeURIComponent(JSON.stringify({ text: 'select * from NetworkDevice where Id=' + (device.id || raw.id || '') }));
+                    Layer8MAuth.get(Layer8MConfig.resolveEndpoint('/0/NCache') + '?body=' + q).then(function(data) {
+                        var fresh = data && data.list && data.list[0];
+                        Layer8MPopup.close();
+                        if (fresh) window.showNetworkDeviceDetail(fresh);
+                    });
                 }
             });
         }

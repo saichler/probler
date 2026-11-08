@@ -24,3 +24,6 @@ go.work.sum
 # env file
 .env
 .idea
+k8s/.*.log
+k8s/.sim.log
+k8s/kind-cluster.yaml

@@ -62,6 +62,10 @@
             console.warn('K8sExplorer: Layer8DConfig missing — script include order may be wrong.');
         }
 
+        // Live tables (every Layer8DTable is realtime by default) need the
+        // shared websocket, exactly as app.html starts it.
+        Layer8DWebSocket.init();
+
         // Theme picker — same component as app.html. If the script wasn't
         // loaded, the button's onclick will throw at click time; logging
         // here makes the cause obvious.

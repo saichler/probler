@@ -229,60 +229,80 @@ function _debouncedDashRefresh(modelType, fn) {
     }, 1000);
 }
 
-function initMobileDashboard() {
-    loadDashboardStats();
-    loadCriticalAlarms();
-    Layer8MNav.showHome();
+// Live slot shared with the desktop dashboard pattern: every KPI query joins
+// the 'dashboard' slot under one stable owner (a new owner per entry would
+// send UNREGISTERs that race the re-registration); re-entry drops the previous
+// entry's listeners itself.
+var MobileDashboardLive = window.MobileDashboardLive || { id: 'dashboard', owner: {}, unlisten: [] };
+window.MobileDashboardLive = MobileDashboardLive;
 
-    if (typeof Layer8DWebSocket !== 'undefined') {
-        Layer8DWebSocket.subscribe('NetworkDevice', function() {
-            _debouncedDashRefresh('NetworkDevice', function() { loadDashboardStats(); });
-        });
-        Layer8DWebSocket.subscribe('GpuDevice', function() {
-            _debouncedDashRefresh('GpuDevice', function() { loadDashboardStats(); });
-        });
-        Layer8DWebSocket.subscribe('K8SCluster', function() {
-            _debouncedDashRefresh('K8SCluster', function() { loadDashboardStats(); });
-        });
-    }
+function mobileDashUrl(path, text) {
+    var endpoint = Layer8MConfig.resolveEndpoint(path);
+    var body = Layer8DWebSocket.registerQuery(MobileDashboardLive.id, MobileDashboardLive.owner, endpoint, text,
+        { onReconnect: function() { loadDashboardStats(); } });
+    return endpoint + '?body=' + encodeURIComponent(JSON.stringify(body));
+}
+
+async function initMobileDashboard() {
+    MobileDashboardLive.unlisten.forEach(function(off) { off(); });
+    MobileDashboardLive.unlisten = [];
+    var owner = MobileDashboardLive.owner;
+    Layer8MNav.showHome();
+    await Promise.all([loadDashboardStats(), loadCriticalAlarms()]);
+
+    ['NetworkDevice', 'GpuDevice', 'K8SCluster', 'Alarm'].forEach(function(model) {
+        MobileDashboardLive.unlisten.push(Layer8DWebSocket.listen(MobileDashboardLive.id, owner, model, function() {
+            _debouncedDashRefresh(model, function() { loadDashboardStats(); });
+        }));
+    });
 }
 
 async function loadDashboardStats(idPrefix) {
     var prefix = idPrefix || '';
+    // Same sources as the desktop dashboard (dashboard/dashboard-init.js).
     const kpis = [
-        { id: prefix + 'stat-devices', endpoint: '/0/NCache', query: 'select * from NetworkDevice limit 1 page 0' },
-        { id: prefix + 'stat-gpus', endpoint: '/2/GCache', query: 'select * from GpuDevice limit 1 page 0' },
-        { id: prefix + 'stat-hosts', endpoint: '/0/NCache', query: 'select * from Hypervisor limit 1 page 0' },
-        { id: prefix + 'stat-k8s', endpoint: '/0/NCache', query: 'select * from K8sPod limit 1 page 0' },
-        { id: prefix + 'stat-alarms', endpoint: '/20/Alarm', query: 'select * from Alarm limit 1 page 0' },
-        { id: prefix + 'stat-critical', endpoint: '/20/Alarm', query: 'select * from Alarm where severity=4 limit 1 page 0' }
+        { id: prefix + 'stat-devices', endpoint: '/0/NCache', query: 'select * from NetworkDevice where Id=* limit 1 page 0' },
+        { id: prefix + 'stat-gpus', endpoint: '/2/GCache', query: 'select * from GpuDevice where Id=* limit 1 page 0' },
+        { id: prefix + 'stat-alarms', endpoint: '/10/Alarm', query: 'select * from Alarm limit 1 page 0' },
+        { id: prefix + 'stat-critical', endpoint: '/10/Alarm', query: 'select * from Alarm where severity=4 limit 1 page 0' }
     ];
-    await Promise.all(kpis.map(kpi => loadKPI(kpi)));
+    // Hosts & VMs has no backend service yet (desktop hosts tables are empty too).
+    var hosts = document.getElementById(prefix + 'stat-hosts');
+    if (hosts) hosts.textContent = '—';
+    await Promise.all(kpis.map(kpi => loadKPI(kpi)).concat([loadK8sPods(prefix + 'stat-k8s')]));
 }
 
 async function loadKPI(kpi) {
+    const element = document.getElementById(kpi.id);
     try {
-        const body = encodeURIComponent(JSON.stringify({ text: kpi.query }));
-        const response = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint(kpi.endpoint) + '?body=' + body);
-        const element = document.getElementById(kpi.id);
-        if (element) {
-            if (response && response.metadata?.keyCount?.counts) {
-                element.textContent = response.metadata.keyCount.counts.Total || 0;
-            } else {
-                element.textContent = '0';
-            }
-        }
+        const response = await Layer8MAuth.get(mobileDashUrl(kpi.endpoint, kpi.query));
+        const counts = response && response.metadata && response.metadata.keyCount && response.metadata.keyCount.counts;
+        if (element) element.textContent = counts ? (counts.Total || 0) : '0';
     } catch (error) {
-        const element = document.getElementById(kpi.id);
-        if (element) element.textContent = '0';
+        console.error('Dashboard KPI failed: ' + kpi.endpoint, error);
+        if (element) element.textContent = '—';
+    }
+}
+
+async function loadK8sPods(id) {
+    const element = document.getElementById(id);
+    try {
+        const response = await Layer8MAuth.get(mobileDashUrl('/10/KCluster', 'select * from K8SCluster'));
+        var pods = 0;
+        ((response && response.list) || []).forEach(function(c) {
+            if (c && c.summary) pods += Number(c.summary.totalPods) || 0;
+        });
+        if (element) element.textContent = pods;
+    } catch (error) {
+        console.error('Dashboard K8s KPI failed', error);
+        if (element) element.textContent = '—';
     }
 }
 
 async function loadCriticalAlarms() {
     try {
         const query = 'select * from Alarm where severity=4 limit 5 page 0';
-        const body = encodeURIComponent(JSON.stringify({ text: query }));
-        const response = await Layer8MAuth.get(Layer8MConfig.resolveEndpoint('/20/Alarm') + '?body=' + body);
+        const response = await Layer8MAuth.get(mobileDashUrl('/10/Alarm', query));
         const container = document.getElementById('critical-alarms-list');
         if (!container) return;
         if (response && response.list && response.list.length > 0) {
@@ -299,7 +319,7 @@ async function loadCriticalAlarms() {
             container.innerHTML = '<div class="dashboard-alarms-empty">No critical alarms</div>';
         }
     } catch (e) {
-        // Leave default empty state
+        console.error('Critical alarms failed', e);
     }
 }
 </script>

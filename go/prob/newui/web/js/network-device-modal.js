@@ -24,8 +24,17 @@ function showDeviceDetailModal(device) {
             modelType: 'NetworkDevice',
             primaryKey: device.id,
             onUpdate: function() {
-                Layer8DPopup.close();
-                if (typeof initializeNetworkDevices === 'function') initializeNetworkDevices();
+                LivePopup.refreshInPlace({
+                    popupId: 'device-detail-' + device.id,
+                    endpoint: '/0/NCache',
+                    query: 'select * from NetworkDevice where Id=' + device.id,
+                    transform: transformDeviceData,
+                    build: function(d) { return buildDeviceContent(d, 'status-' + d.status, esc); },
+                    afterRender: function(d) {
+                        initializeDeviceTree(d);
+                        initializePerformanceCharts(d);
+                    }
+                });
             }
         });
     }

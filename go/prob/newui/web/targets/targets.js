@@ -214,6 +214,7 @@ function initTargetsTable() {
         tableId: 'targets-table',
         endpoint: getTargetsEndpoint(),
         modelName: 'L8PTarget',
+        primaryKey: 'targetId',
         baseWhereClause: `inventoryType=${selectedInventoryType}`,
         pageSize: 20,
         pageSizeOptions: [10, 20, 50, 100],
