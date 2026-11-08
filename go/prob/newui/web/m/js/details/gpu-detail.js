@@ -295,7 +295,8 @@
                     Layer8MAuth.get(Layer8MConfig.resolveEndpoint('/2/GCache') + '?body=' + q).then(function(data) {
                         var fresh = data && data.list && data.list[0];
                         Layer8MPopup.close();
-                        if (fresh) window.showGpuDetail(fresh);
+                        // Cards hold the transformed record (MobileGpus.transforms).
+                        if (fresh) window.showGpuDetail(MobileGpus.transforms.GpuDevice(fresh));
                     });
                 }
             });

@@ -219,7 +219,8 @@ itself, no extra target needed; (4) Hosts & VMs stays a `test.fail()` known gap.
 | l8orm `plugins/postgres/Read.go:167` | `hash<<32 \| int64(hashString(aaaId))` -- int32 sign extension wipes the query hash for ~half of sessions: every query of such a session returns its first cached result | `int64(uint32(hashString(aaaId)))` |
 | l8orm `plugins/postgres/Postgres.go invalidateIndex` | stamp = `time.Now().Unix()`: a query cached in the same second as a write is never invalidated (deleted rows keep showing while polled) | monotonic counter |
 | l8orm `persist/OrmCache.go cacheFetch` | returns before `cache.Fetch` when the cache is empty, so a live table over an empty model never registers for pushes | register even when empty |
-| l8parser `service/ParsingCenter.go JobComplete` | when `CTableToInstances` yields 0 instances it PATCHes the bare element (ClusterName only): keyless phantom record per empty K8s resource type (+ record-less pushes) | skip the fallback for multi-instance polls |
+| l8parser `service/ParsingCenter.go JobComplete` | when `CTableToInstances` yields 0 instances it PATCHes the bare element (ClusterName only): keyless phantom record per empty K8s resource type | skip the fallback for multi-instance polls |
+| l8inventory / l8utils cache notifications | K8s pushes carry only the FIRST field of the composite primary key (`primaryKey: "Home"` = ClusterName) and no `record` -- even for a real pod change (verified with `kubectl annotate`). Popups matched by the record key never see them; tables re-fetch on every push | carry the full composite key (and the record) |
 | l8pollaris `targets/TargetCallback.go` | `addressValidation` never released (no DELETE case, kept on failed tx): a deleted target's address can never be re-added | release on delete / failed commit |
 | l8ui `sys/l8sys-init.js` | `origOpenAdd/Edit/Delete.call(SYS, ...)` -- `SYS` undefined: Add/Edit/Delete throw for Portals (and any non user/role/creds model); app.js then ends the session | `.call(L8Sys, ...)` |
 | l8ui `m/js/layer8m-nav-data.js` | read-only services without `onRowClick` open nothing on tap (desktop opens a view-only popup) | default to `showRecordDetails` for readOnly too |
@@ -230,7 +231,13 @@ itself, no extra target needed; (4) Hosts & VMs stays a `test.fail()` known gap.
 Hosts & VMs (no backend service), ModConfig save, Portals CRUD, K8s phantom records, empty-model live
 registration, l8orm session cache collision, target address reuse.
 
+### Live detail popups (follow-up round)
+Every detail popup now stays open on a pushed update: desktop network / GPU / Kubernetes /
+k8s-explorer refresh in place (`LivePopup.refreshInPlace`, active tab kept, explorer Related tab
+re-injected; the explorer's duplicate, never-released subscription removed); mobile network / GPU /
+Kubernetes / health re-fetch and re-show. Specs: `desktop/27-live-popups`, `mobile/06-live-popups`.
+K8s popups will only receive real pushes once the composite-key notification bug above is fixed.
+
 ### Not done / follow-up
-- Desktop Kubernetes, k8s-explorer and mobile k8s/health detail popups still close on a pushed update.
 - Desktop GPU popup lacks the Performance and Processes tabs the mobile GPU popup has.
 - Inventory caches push `update` notifications without a `record`, so live tables re-fetch on every push.

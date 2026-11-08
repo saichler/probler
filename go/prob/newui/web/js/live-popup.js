@@ -42,10 +42,12 @@ window.LivePopup = {
         var active = popupBody && popupBody.querySelector('.probler-popup-tab.active');
         var activeTab = active ? active.getAttribute('data-tab') : null;
         Layer8DPopup.updateContent(config.build(record));
+        // afterRender first: it may add tabs (k8s-explorer's Related tab)
+        // that the restored active tab refers to.
+        if (config.afterRender) config.afterRender(record);
         if (activeTab) {
             var tab = Layer8DPopup.getBody().querySelector('.probler-popup-tab[data-tab="' + activeTab + '"]');
             if (tab) tab.click();
         }
-        if (config.afterRender) config.afterRender(record);
     }
 };

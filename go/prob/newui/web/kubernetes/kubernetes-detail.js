@@ -119,7 +119,12 @@
         ]
     };
 
-    K8sDetail.show = function(item, service) {
+    /**
+     * @param {Object} [opts] - { afterRender(item) }: called after every
+     *   in-place live refresh re-renders the body (k8s-explorer re-injects its
+     *   Related tab there).
+     */
+    K8sDetail.show = function(item, service, opts) {
         if (!item) return;
 
         var title = buildTitle(item, service);
@@ -127,26 +132,46 @@
         var sections = detailSections[service.model];
         var html = buildTabbedHtml(item, columns, service, sections);
 
-        var _liveUnsub = null;
-        if (typeof LivePopup !== 'undefined' && service.model) {
-            var pk = item.key || item.name || '';
-            _liveUnsub = LivePopup.subscribe({
-                modelType: service.model,
-                primaryKey: pk,
-                onUpdate: function() {
-                    Layer8DPopup.close();
-                }
-            });
-        }
+        var pk = item.key || item.name || '';
+        var popupId = 'k8s-detail-' + service.model + '-' + pk;
+        var afterRender = opts && opts.afterRender;
+        // Refresh in place on a pushed update (keeps the active tab) instead
+        // of closing the popup -- same as the network / GPU device popups.
+        var _liveUnsub = LivePopup.subscribe({
+            modelType: service.model,
+            primaryKey: pk,
+            onUpdate: function() {
+                LivePopup.refreshInPlace({
+                    popupId: popupId,
+                    endpoint: service.endpoint,
+                    query: recordQuery(item, service),
+                    transform: function(raw) { return raw; },
+                    build: function(fresh) { return buildTabbedHtml(fresh, columns, service, sections); },
+                    afterRender: afterRender
+                });
+            }
+        });
 
         Layer8DPopup.show({
+            id: popupId,
             title: title,
             content: html,
             size: 'large',
             showFooter: false,
-            onClose: function() { if (_liveUnsub) _liveUnsub(); }
+            onClose: function() { _liveUnsub(); }
         });
     };
+
+    // L8Query for this one record: its key field (ProblerK8s.primaryKeyOf),
+    // scoped to its cluster for every model but K8SCluster itself.
+    function recordQuery(item, service) {
+        var pkField = ProblerK8s.primaryKeyOf(service.model);
+        var q = 'select * from ' + service.model + ' where ' + pkField + '=' + item[pkField];
+        if (service.model !== 'K8SCluster' && item.clusterName) {
+            q += ' and clusterName=' + item.clusterName;
+        }
+        return q;
+    }
 
     function buildTitle(item, service) {
         var label = service.label || service.model;

@@ -28,19 +28,14 @@
             }
             return;
         }
-        K8sDetail.show(item, service);
+        // K8sDetail owns the live subscription (refresh in place, released on
+        // close); after each refresh the Related tab is injected again. (This
+        // wrapper used to add a second subscription that closed the popup on
+        // every update and was never unsubscribed.)
+        K8sDetail.show(item, service, {
+            afterRender: function(fresh) { injectRelatedTab(fresh, service); }
+        });
         touchObjectRecent(item, service);
-
-        if (typeof LivePopup !== 'undefined' && service.model) {
-            var pk = item.key || item.name || '';
-            LivePopup.subscribe({
-                modelType: service.model,
-                primaryKey: pk,
-                onUpdate: function() {
-                    Layer8DPopup.close();
-                }
-            });
-        }
 
         // Defer the injection so Layer8DPopup has finished mounting the
         // initial tabs/content. 80ms is comfortably past the popup's

@@ -13,7 +13,7 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
 // (ProtobufRules); callers pass `model` from the generated inventory, which is
 // read straight off the shipped module config, so it is always the former.
 
-import { request, APIRequestContext } from '@playwright/test';
+import { request, APIRequestContext, expect } from '@playwright/test';
 import { ENV, apiUrl } from './env';
 
 export interface QueryResult<T = Record<string, unknown>> {
@@ -189,7 +189,15 @@ export async function phantomModels(
  * Detects it on the Targets service (two filters with disjoint seeded results).
  */
 export async function sessionCollides(api: Api): Promise<boolean> {
-    const net = await api.query('/91/Targets', 'select * from L8PTarget where inventoryType=1 limit 5 page 0');
+    // Right after a web-pod restart the Targets endpoint registers late (404):
+    // wait for it instead of failing the whole worker.
+    let net: { list: Record<string, unknown>[] } = { list: [] };
+    await expect.poll(async () => {
+        try {
+            net = await api.query('/91/Targets', 'select * from L8PTarget where inventoryType=1 limit 5 page 0');
+            return true;
+        } catch { return false; }
+    }, { timeout: 60_000, intervals: [1000], message: 'the Targets endpoint never answered' }).toBe(true);
     const gpu = await api.query('/91/Targets', 'select * from L8PTarget where inventoryType=2 limit 5 page 0');
     const ids = (r: { list: Record<string, unknown>[] }) => r.list.map((t) => String(t.targetId)).join(',');
     return ids(net) !== '' && ids(net) === ids(gpu);

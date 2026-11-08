@@ -147,8 +147,18 @@
             unsub = LivePopup.subscribe({
                 modelType: service.model,
                 primaryKey: item.key || item.name || '',
+                // Desktop parity (K8sDetail refreshes in place): keep the
+                // popup open with fresh data instead of closing it.
                 onUpdate: function() {
-                    if (typeof Layer8MPopup !== 'undefined') Layer8MPopup.close();
+                    var pkField = item.key !== undefined ? 'key' : 'name';
+                    var text = 'select * from ' + service.model + ' where ' + pkField + '=' + item[pkField];
+                    if (service.model !== 'K8SCluster' && item.clusterName) text += ' and clusterName=' + item.clusterName;
+                    var q = encodeURIComponent(JSON.stringify({ text: text }));
+                    Layer8MAuth.get(Layer8MConfig.resolveEndpoint(service.endpoint) + '?body=' + q).then(function(data) {
+                        var fresh = data && data.list && data.list[0];
+                        Layer8MPopup.close();
+                        if (fresh) MobileK8sDetail.show(fresh, service);
+                    });
                 }
             });
         }

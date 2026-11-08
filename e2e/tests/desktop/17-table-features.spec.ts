@@ -46,12 +46,13 @@ test.describe('table features (network devices)', () => {
         // would satisfy a plain "re-rendered" wait.
         await next.click();
         await expect(table.pagination(), 'next-page never reached page 2').toContainText(/Page 2 of/i);
-        await expect.poll(async () => (await table.rows().allInnerTexts()).join('|'),
-            { message: 'page 2 shows the same rows as page 1' }).not.toBe(firstRows.join('|'));
-
-        const secondRows = await table.rows().allInnerTexts();
-        expect(secondRows, 'page 2 rendered no rows').not.toEqual([]);
-        expect(secondRows, 'page 2 shows the same rows as page 1').not.toEqual(firstRows);
+        // Capture page 2 inside the poll: a live re-render can empty the body
+        // for a moment, so a separate read afterwards could land mid-render.
+        let secondRows: string[] = [];
+        await expect.poll(async () => {
+            secondRows = await table.rows().allInnerTexts();
+            return secondRows.length > 0 && secondRows.join('|') !== firstRows.join('|');
+        }, { message: 'page 2 never showed different, non-empty rows' }).toBe(true);
         expect(await table.reportedTotal(), 'the total was lost when paging past page 1').toBe(total);
     });
 
@@ -80,7 +81,8 @@ test.describe('table features (network devices)', () => {
         await expect(sortable, 'no sortable column rendered').toBeVisible();
 
         const requestPromise = app.waitForRequest(
-            (r) => decodeURIComponent(r.url()).includes('sort-by'), { timeout: 15000 });
+            (r) => { const u = decodeURIComponent(r.url()); return u.includes('sort-by') && u.includes(`from ${MODEL}`); },
+            { timeout: 15000 });
         await sortable.click();
         const req = await requestPromise;
         const query = JSON.parse(new URL(req.url()).searchParams.get('body') || '{}').text as string;

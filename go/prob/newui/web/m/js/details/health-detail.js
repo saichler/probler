@@ -162,8 +162,16 @@
             unsub = LivePopup.subscribe({
                 modelType: 'L8Health',
                 primaryKey: rowData.service || '',
+                // Keep the popup open with fresh data instead of closing it
+                // (the desktop health popup refreshes too: health-detail-live.js).
                 onUpdate: function() {
-                    if (typeof Layer8MPopup !== 'undefined') Layer8MPopup.close();
+                    var q = encodeURIComponent(JSON.stringify({ text: 'select * from L8Health where alias=' + rowData.service }));
+                    Layer8MAuth.get(Layer8MConfig.resolveEndpoint('/0/Health') + '?body=' + q).then(function(data) {
+                        var fresh = data && data.list && data.list[0];
+                        var row = fresh && MobileSystem.transforms.L8Health(fresh);
+                        Layer8MPopup.close();
+                        if (row) window.showHealthDetail(row);
+                    });
                 }
             });
         }

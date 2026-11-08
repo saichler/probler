@@ -57,11 +57,12 @@ test.describe('mobile table features', () => {
         await next.click();
         // Wait for different cards, not just any re-render: a live re-render of
         // page 1 (pushed update) would satisfy a plain re-render wait.
-        await expect.poll(async () => (await table.cards().allInnerTexts()).join('|'),
-            { message: 'tapping next-page never showed page 2' }).not.toBe(first.join('|'));
-
-        const second = await table.cards().allInnerTexts();
-        expect(second, 'page 2 rendered no cards').not.toEqual([]);
+        // ...and non-empty: mid-render there are no cards, which also differs.
+        let second: string[] = [];
+        await expect.poll(async () => {
+            second = await table.cards().allInnerTexts();
+            return second.length > 0 && second.join('|') !== first.join('|');
+        }, { message: 'tapping next-page never showed a different, non-empty page' }).toBe(true);
         expect(second, 'page 2 shows the same cards as page 1').not.toEqual(first);
     });
 
