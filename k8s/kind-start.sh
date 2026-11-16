@@ -95,8 +95,15 @@ for img in "${IMAGES[@]}"; do
   fi
 done
 
+# Phase boundaries come from the manifest itself (not fixed line numbers, which
+# break on every edit): phase 1 ends before the parser, phase 2 before the
+# admission controller's ServiceAccount.
+MANIFEST="${SCRIPT_DIR}/probler-kind.yaml"
+PHASE1_END=$(( $(grep -n '^# probler-parser' "${MANIFEST}" | head -1 | cut -d: -f1) - 1 ))
+PHASE2_END=$(( $(grep -n '^kind: ServiceAccount' "${MANIFEST}" | head -1 | cut -d: -f1) - 2 ))
+
 echo "Phase 1: Deploying namespace + vnet + logs-vnet..."
-head -n 107 "${SCRIPT_DIR}/probler-kind.yaml" | "${KUBECTL[@]}" apply -f -
+head -n "${PHASE1_END}" "${MANIFEST}" | "${KUBECTL[@]}" apply -f -
 
 echo "Waiting for probler-vnet to be Ready..."
 "${KUBECTL[@]}" -n probler rollout status statefulset/probler-vnet --timeout=120s
@@ -104,7 +111,7 @@ echo "Waiting for probler-logs to be Ready..."
 "${KUBECTL[@]}" -n probler rollout status statefulset/probler-logs --timeout=120s
 
 echo "Phase 2: Deploying core services..."
-sed -n '1,530p' "${SCRIPT_DIR}/probler-kind.yaml" | "${KUBECTL[@]}" apply -f -
+head -n "${PHASE2_END}" "${MANIFEST}" | "${KUBECTL[@]}" apply -f -
 
 echo "Waiting for all core services to be Ready..."
 for sts in probler-parser probler-collector probler-box probler-gpu probler-k8s \

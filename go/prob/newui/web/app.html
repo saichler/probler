@@ -60,6 +60,11 @@
     <link rel="stylesheet" href="l8ui/notify/l8notify-notification.css">
     <link rel="stylesheet" href="alm/alm.css">
     <link rel="stylesheet" href="alm/alarms/alarms-correlation-tree.css">
+    <!-- Markdown renderer + AI Agent (l8agent) -->
+    <link rel="stylesheet" href="l8ui/shared/layer8-markdown.css">
+    <link rel="stylesheet" href="l8ui/l8agent/l8agent-chat.css">
+    <link rel="stylesheet" href="l8ui/l8agent/l8agent-bubble.css">
+    <link rel="stylesheet" href="aia/aia.css">
 
     <!-- Kubernetes -->
     <link rel="stylesheet" href="kubernetes/kubernetes.css?v=4">
@@ -187,6 +192,10 @@
                 <li><a href="#" data-section="analytics" class="nav-link">
                     <span class="nav-icon">📈</span>
                     <span>Analytics</span>
+                </a></li>
+                <li><a href="#" data-section="aia" class="nav-link">
+                    <span class="nav-icon">🤖</span>
+                    <span>AI Agent</span>
                 </a></li>
                 <li><a href="#" data-section="system" class="nav-link">
                     <span class="nav-icon">👥</span>
@@ -383,6 +392,21 @@
     <script src="alm/archive/archive-columns.js"></script>
     <script src="alm/archive/archive-forms.js"></script>
     <script src="alm/alm-init.js"></script>
+    <!-- Markdown Renderer (load before chat components) -->
+    <script src="l8ui/shared/layer8-markdown.js"></script>
+    <!-- AIA Module (AI Agent, l8agent) -->
+    <script src="l8ui/l8agent/l8agent-enums.js"></script>
+    <script src="l8ui/l8agent/l8agent-columns.js"></script>
+    <script src="l8ui/l8agent/l8agent-forms.js"></script>
+    <script src="l8ui/l8agent/l8agent-chat.js"></script>
+    <script src="l8ui/l8agent/l8agent-bubble.js"></script>
+    <script src="aia/aia-section-config.js"></script>
+    <script src="aia/aia-config.js"></script>
+    <script src="aia/agent/agent-enums.js"></script>
+    <script src="aia/agent/agent-columns.js"></script>
+    <script src="aia/agent/agent-forms.js"></script>
+    <script src="aia/aia-init.js"></script>
+    <script src="aia/agent/agent-chat-init.js"></script>
     <script src="alm/alarms/alarms-state-actions.js"></script>
     <script src="alm/alarms/alarms-correlation-tree.js"></script>
 

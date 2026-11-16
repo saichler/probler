@@ -2,6 +2,21 @@
     'use strict';
     // Endpoints from login.json: /0/Health, /73/users, /74/roles, /75/Creds
     window.PROBLER_NAV_CONFIG_SYSTEM = {
+        // AI Agent (desktop: aia/aia-config.js) -- chat, conversations, prompts
+        aia: {
+            subModules: [
+                { key: 'agent', label: 'Agent', icon: 'aia' }
+            ],
+            services: {
+                'agent': [
+                    // customInit names the global whose initialize() renders the
+                    // chat: AiaAgent (m/js/aia/agent-chat-init.js).
+                    { key: 'chat', label: 'Chat', icon: 'aia', customInit: 'AiaAgent', customContainer: 'aia-chat-container', subtitle: 'AI-powered assistant' },
+                    { key: 'conversations', label: 'Conversations', icon: 'aia', endpoint: '/120/AgntConvo', model: 'L8AgentConversation', idField: 'conversationId' },
+                    { key: 'prompts', label: 'Prompts', icon: 'aia', endpoint: '/120/AgntPrmpt', model: 'L8AgentPrompt', idField: 'promptId' }
+                ]
+            }
+        },
         system: {
             subModules: [
                 { key: 'health', label: 'Health', icon: 'health' },

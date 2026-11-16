@@ -152,6 +152,19 @@
       "alm/archive/archive-columns.js",
       "alm/archive/archive-forms.js",
       "alm/alm-init.js",
+      "l8ui/shared/layer8-markdown.js",
+      "l8ui/l8agent/l8agent-enums.js",
+      "l8ui/l8agent/l8agent-columns.js",
+      "l8ui/l8agent/l8agent-forms.js",
+      "l8ui/l8agent/l8agent-chat.js",
+      "l8ui/l8agent/l8agent-bubble.js",
+      "aia/aia-section-config.js",
+      "aia/aia-config.js",
+      "aia/agent/agent-enums.js",
+      "aia/agent/agent-columns.js",
+      "aia/agent/agent-forms.js",
+      "aia/aia-init.js",
+      "aia/agent/agent-chat-init.js",
       "alm/alarms/alarms-state-actions.js",
       "alm/alarms/alarms-correlation-tree.js",
       "js/live-popup.js",
@@ -3400,6 +3413,395 @@
         "modules": []
       },
       {
+        "section": "aia",
+        "namespace": "Aia",
+        "custom": false,
+        "modules": [
+          {
+            "moduleKey": "agent",
+            "label": "Agent",
+            "services": [
+              {
+                "key": "chat",
+                "label": "Chat",
+                "endpoint": "/120/AgntChat",
+                "model": "L8AgentChatConversation",
+                "viewType": "table",
+                "alternateViews": [],
+                "readOnly": false,
+                "customView": true,
+                "realtime": false,
+                "viewConfig": null,
+                "baseWhereClause": null,
+                "containerId": "agent-chat-table-container",
+                "primaryKey": "id",
+                "columns": [
+                  {
+                    "key": "id",
+                    "label": "ID",
+                    "type": null,
+                    "sortKey": null,
+                    "filterKey": null,
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "name",
+                    "label": "Name",
+                    "type": null,
+                    "sortKey": null,
+                    "filterKey": null,
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "status",
+                    "label": "Status",
+                    "type": null,
+                    "sortKey": null,
+                    "filterKey": null,
+                    "hasRender": false,
+                    "hasEnum": false
+                  }
+                ],
+                "form": null
+              },
+              {
+                "key": "conversations",
+                "label": "Conversations",
+                "endpoint": "/120/AgntConvo",
+                "model": "L8AgentConversation",
+                "viewType": "table",
+                "alternateViews": [],
+                "readOnly": false,
+                "customView": false,
+                "realtime": false,
+                "viewConfig": null,
+                "baseWhereClause": null,
+                "containerId": "agent-conversations-table-container",
+                "primaryKey": "conversationId",
+                "columns": [
+                  {
+                    "key": "conversationId",
+                    "label": "ID",
+                    "type": "id",
+                    "sortKey": "conversationId",
+                    "filterKey": "conversationId",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "title",
+                    "label": "Title",
+                    "type": null,
+                    "sortKey": "title",
+                    "filterKey": "title",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "userId",
+                    "label": "User",
+                    "type": null,
+                    "sortKey": "userId",
+                    "filterKey": "userId",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "status",
+                    "label": "Status",
+                    "type": "status",
+                    "sortKey": "status",
+                    "filterKey": "status",
+                    "hasRender": true,
+                    "hasEnum": true
+                  },
+                  {
+                    "key": "createdAt",
+                    "label": "Created",
+                    "type": "date",
+                    "sortKey": "createdAt",
+                    "filterKey": null,
+                    "hasRender": true,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "updatedAt",
+                    "label": "Updated",
+                    "type": "date",
+                    "sortKey": "updatedAt",
+                    "filterKey": null,
+                    "hasRender": true,
+                    "hasEnum": false
+                  }
+                ],
+                "form": {
+                  "title": "Conversation",
+                  "sections": [
+                    {
+                      "title": "Conversation",
+                      "fields": [
+                        {
+                          "key": "title",
+                          "label": "Title",
+                          "type": "text",
+                          "required": true,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "userId",
+                          "label": "User",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "status",
+                          "label": "Status",
+                          "type": "select",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": [
+                            0,
+                            1,
+                            2
+                          ],
+                          "columns": null
+                        },
+                        {
+                          "key": "createdAt",
+                          "label": "Created",
+                          "type": "date",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "updatedAt",
+                          "label": "Updated",
+                          "type": "date",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    }
+                  ],
+                  "fieldCount": 5,
+                  "fieldTypes": [
+                    "date",
+                    "select",
+                    "text"
+                  ],
+                  "lookupModels": [],
+                  "inlineTables": [],
+                  "requiredKeys": [
+                    "title"
+                  ],
+                  "readOnlyKeys": [
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              },
+              {
+                "key": "prompts",
+                "label": "Prompts",
+                "endpoint": "/120/AgntPrmpt",
+                "model": "L8AgentPrompt",
+                "viewType": "table",
+                "alternateViews": [],
+                "readOnly": false,
+                "customView": false,
+                "realtime": false,
+                "viewConfig": null,
+                "baseWhereClause": null,
+                "containerId": "agent-prompts-table-container",
+                "primaryKey": "promptId",
+                "columns": [
+                  {
+                    "key": "promptId",
+                    "label": "ID",
+                    "type": "id",
+                    "sortKey": "promptId",
+                    "filterKey": "promptId",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "name",
+                    "label": "Name",
+                    "type": null,
+                    "sortKey": "name",
+                    "filterKey": "name",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "category",
+                    "label": "Category",
+                    "type": "enum",
+                    "sortKey": "category",
+                    "filterKey": "category",
+                    "hasRender": true,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "status",
+                    "label": "Status",
+                    "type": "status",
+                    "sortKey": "status",
+                    "filterKey": "status",
+                    "hasRender": true,
+                    "hasEnum": true
+                  },
+                  {
+                    "key": "createdBy",
+                    "label": "Created By",
+                    "type": null,
+                    "sortKey": "createdBy",
+                    "filterKey": "createdBy",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "description",
+                    "label": "Description",
+                    "type": null,
+                    "sortKey": "description",
+                    "filterKey": "description",
+                    "hasRender": false,
+                    "hasEnum": false
+                  }
+                ],
+                "form": {
+                  "title": "Prompt Template",
+                  "sections": [
+                    {
+                      "title": "Prompt Information",
+                      "fields": [
+                        {
+                          "key": "name",
+                          "label": "Name",
+                          "type": "text",
+                          "required": true,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "description",
+                          "label": "Description",
+                          "type": "textarea",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "category",
+                          "label": "Category",
+                          "type": "select",
+                          "required": true,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4
+                          ],
+                          "columns": null
+                        },
+                        {
+                          "key": "status",
+                          "label": "Status",
+                          "type": "select",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": [
+                            0,
+                            1,
+                            2
+                          ],
+                          "columns": null
+                        },
+                        {
+                          "key": "createdBy",
+                          "label": "Created By",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    },
+                    {
+                      "title": "System Prompt",
+                      "fields": [
+                        {
+                          "key": "systemPrompt",
+                          "label": "System Prompt Template",
+                          "type": "textarea",
+                          "required": true,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    }
+                  ],
+                  "fieldCount": 6,
+                  "fieldTypes": [
+                    "select",
+                    "text",
+                    "textarea"
+                  ],
+                  "lookupModels": [],
+                  "inlineTables": [],
+                  "requiredKeys": [
+                    "name",
+                    "category",
+                    "systemPrompt"
+                  ],
+                  "readOnlyKeys": []
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "section": "system",
         "namespace": "L8Sys",
         "custom": false,
@@ -4341,6 +4743,17 @@
       "modules/system/security-credentials-crud.js",
       "modules/system-index.js",
       "js/readonly-details.js",
+      "../l8ui/shared/layer8-markdown.js",
+      "../l8ui/l8agent/l8agent-enums.js",
+      "../l8ui/l8agent/l8agent-columns.js",
+      "../l8ui/l8agent/l8agent-forms.js",
+      "../l8ui/l8agent/m/l8agent-chat-m.js",
+      "../l8ui/l8agent/m/l8agent-bubble-m.js",
+      "../aia/agent/agent-enums.js",
+      "../aia/agent/agent-columns.js",
+      "../aia/agent/agent-forms.js",
+      "js/aia/agent-chat-init.js",
+      "js/aia/aia-index.js",
       "../js/tree.js",
       "../js/live-popup.js",
       "js/details/detail-helpers.js",
@@ -9246,6 +9659,323 @@
         "subModules": []
       },
       {
+        "moduleKey": "aia",
+        "label": "AI Agent",
+        "hasSubModules": false,
+        "subModules": [
+          {
+            "subModuleKey": "agent",
+            "subModuleLabel": "Agent",
+            "services": [
+              {
+                "key": "chat",
+                "label": "Chat",
+                "idField": null,
+                "readOnly": false,
+                "alternateViews": [],
+                "columns": [],
+                "form": null
+              },
+              {
+                "key": "conversations",
+                "label": "Conversations",
+                "endpoint": "/120/AgntConvo",
+                "model": "L8AgentConversation",
+                "idField": "conversationId",
+                "readOnly": false,
+                "alternateViews": [],
+                "columns": [
+                  {
+                    "key": "conversationId",
+                    "label": "ID",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "title",
+                    "label": "Title",
+                    "primary": true,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "userId",
+                    "label": "User",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "status",
+                    "label": "Status",
+                    "primary": false,
+                    "secondary": true,
+                    "hidden": false
+                  },
+                  {
+                    "key": "createdAt",
+                    "label": "Created",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "updatedAt",
+                    "label": "Updated",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  }
+                ],
+                "form": {
+                  "title": "Conversation",
+                  "sections": [
+                    {
+                      "title": "Conversation",
+                      "fields": [
+                        {
+                          "key": "title",
+                          "label": "Title",
+                          "type": "text",
+                          "required": true,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "userId",
+                          "label": "User",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "status",
+                          "label": "Status",
+                          "type": "select",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": [
+                            0,
+                            1,
+                            2
+                          ],
+                          "columns": null
+                        },
+                        {
+                          "key": "createdAt",
+                          "label": "Created",
+                          "type": "date",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "updatedAt",
+                          "label": "Updated",
+                          "type": "date",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    }
+                  ],
+                  "fieldCount": 5,
+                  "fieldTypes": [
+                    "date",
+                    "select",
+                    "text"
+                  ],
+                  "lookupModels": [],
+                  "inlineTables": [],
+                  "requiredKeys": [
+                    "title"
+                  ],
+                  "readOnlyKeys": [
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              },
+              {
+                "key": "prompts",
+                "label": "Prompts",
+                "endpoint": "/120/AgntPrmpt",
+                "model": "L8AgentPrompt",
+                "idField": "promptId",
+                "readOnly": false,
+                "alternateViews": [],
+                "columns": [
+                  {
+                    "key": "promptId",
+                    "label": "ID",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "name",
+                    "label": "Name",
+                    "primary": true,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "category",
+                    "label": "Category",
+                    "primary": false,
+                    "secondary": true,
+                    "hidden": false
+                  },
+                  {
+                    "key": "status",
+                    "label": "Status",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "createdBy",
+                    "label": "Created By",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "description",
+                    "label": "Description",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  }
+                ],
+                "form": {
+                  "title": "Prompt Template",
+                  "sections": [
+                    {
+                      "title": "Prompt Information",
+                      "fields": [
+                        {
+                          "key": "name",
+                          "label": "Name",
+                          "type": "text",
+                          "required": true,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "description",
+                          "label": "Description",
+                          "type": "textarea",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "category",
+                          "label": "Category",
+                          "type": "select",
+                          "required": true,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4
+                          ],
+                          "columns": null
+                        },
+                        {
+                          "key": "status",
+                          "label": "Status",
+                          "type": "select",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": [
+                            0,
+                            1,
+                            2
+                          ],
+                          "columns": null
+                        },
+                        {
+                          "key": "createdBy",
+                          "label": "Created By",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    },
+                    {
+                      "title": "System Prompt",
+                      "fields": [
+                        {
+                          "key": "systemPrompt",
+                          "label": "System Prompt Template",
+                          "type": "textarea",
+                          "required": true,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    }
+                  ],
+                  "fieldCount": 6,
+                  "fieldTypes": [
+                    "select",
+                    "text",
+                    "textarea"
+                  ],
+                  "lookupModels": [],
+                  "inlineTables": [],
+                  "requiredKeys": [
+                    "name",
+                    "category",
+                    "systemPrompt"
+                  ],
+                  "readOnlyKeys": []
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "moduleKey": "system",
         "label": "System",
         "hasSubModules": false,
@@ -10050,6 +10780,7 @@
         "probler/k8s/k8s-enums.js",
         "probler/k8s/k8s-columns.js",
         "probler/k8s/k8s-columns-ext.js",
+        "js/live-popup.js",
         "kubernetes/kubernetes-detail.js",
         "k8s-explorer/js/k8s-explorer-config.js",
         "k8s-explorer/js/k8s-explorer-summary.js",

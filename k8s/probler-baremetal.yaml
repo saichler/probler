@@ -370,6 +370,54 @@ spec:
 
 ---
 
+# probler-agent: the AI agent (l8agent, area 120) with its own postgres (agentdb)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-agent
+  labels:
+    app: probler-agent
+spec:
+  serviceName: probler-agent
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probler-agent
+  template:
+    metadata:
+      labels:
+        app: probler-agent
+    spec:
+      # The agent chat calls the LLM / web tools by name; inside the LAN their
+      # public IP does not loop back (not for GKE).
+      hostAliases:
+        - ip: "192.168.1.121"
+          hostnames: ["llm.test-llm.dev", "embed.test-llm.dev", "muse.test-llm.dev", "tools.test-llm.dev"]
+      containers:
+        - name: probler-agent
+          image: saichler/probler-agent:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: probler-local-storage
+        resources:
+          requests:
+            storage: 10Gi
+
+---
+
 # probler-alarms: already StatefulSet, added volumeClaimTemplates
 apiVersion: apps/v1
 kind: StatefulSet

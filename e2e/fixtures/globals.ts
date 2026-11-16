@@ -59,7 +59,9 @@ export const DESKTOP_REQUIRED_GLOBALS = [
     'Probler', 'ProblerNetwork', 'ProblerGpus', 'ProblerHosts', 'ProblerK8s',
     'ProblerPermissions', 'Alm', 'L8Sys', 'LivePopup', 'loadSection',
     'initializeDashboard', 'initializeNetworkDevices', 'initializeGPUs', 'initializeHosts',
-    'initializeKubernetes', 'initializeAlm', 'initializeL8Sys'
+    'initializeKubernetes', 'initializeAlm', 'initializeL8Sys',
+    // AI agent (l8agent)
+    'Layer8Markdown', 'L8AgentBubble', 'L8AgentChat', 'Aia', 'AiaAgent', 'initializeAia'
 ];
 
 /** Globals the mobile bundle must have -- its own plus the shared desktop ones. */
@@ -76,5 +78,7 @@ export const MOBILE_REQUIRED_GLOBALS = [
     'Layer8ViewSwitcher', 'Layer8DToggleTree', 'Layer8DModuleFilter', 'Layer8DWebSocket',
     // probler
     'MobileApp', 'LAYER8M_NAV_CONFIG', 'ProblerPermissions', 'MobileMonitoring', 'MobileALM',
-    'MobileTargets'
+    'MobileTargets',
+    // AI agent (l8agent)
+    'Layer8Markdown', 'L8AgentBubbleMobile', 'L8AgentChatMobile', 'AiaAgent', 'MobileAia'
 ];

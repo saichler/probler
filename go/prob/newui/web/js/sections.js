@@ -14,6 +14,7 @@ const sections = {
     automation: 'sections/automation.html',
     applications: 'sections/applications.html',
     analytics: 'sections/analytics.html',
+    aia: 'sections/aia.html',
     system: 'sections/sys.html'
 };
 
@@ -118,6 +119,8 @@ function loadSection(sectionName) {
                         if (typeof initializeAlm === 'function') {
                             initializeAlm();
                         }
+                    } else if (sectionName === 'aia') {
+                        initializeAia();
                     }
 
                     // Apply module filter to hide disabled sub-modules/services

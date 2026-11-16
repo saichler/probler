@@ -1,0 +1,15 @@
+/*
+© 2025 Sharon Aicler (saichler@gmail.com)
+
+Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
+*/
+/* ============================================ */
+/* AIA STYLES - AI Agent Module                 */
+/* ============================================ */
+/*
+ * The AI Agent module reuses the shared layout classes
+ * and layer8d-theme.css variables. The chat component
+ * styles come from l8ui/l8agent/l8agent-chat.css.
+ *
+ * Any ERP-specific AI Agent style overrides can be added here.
+ */

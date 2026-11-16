@@ -16,6 +16,8 @@
             // Load per-type action permissions for the current user (same helper as desktop)
             await ProblerPermissions.load();
             Layer8DWebSocket.init();
+            // Floating AI agent chat bubble (l8agent, AgntChat area 120)
+            L8AgentBubbleMobile.init({ chatEndpoint: '/120/AgntChat' });
             this.updateUserInfo();
             this.initSidebar();
 

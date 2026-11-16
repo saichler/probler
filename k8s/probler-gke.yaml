@@ -362,6 +362,43 @@ spec:
 
 ---
 
+# probler-agent: the AI agent (l8agent, area 120) with its own postgres (agentdb)apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-agent
+  labels:
+    app: probler-agent
+spec:
+  serviceName: probler-agent
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probler-agent
+  template:
+    metadata:
+      labels:
+        app: probler-agent
+    spec:
+      containers:
+        - name: probler-agent
+          image: saichler/probler-agent:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          persistentVolumeClaim:
+            claimName: probler-data
+
+---
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

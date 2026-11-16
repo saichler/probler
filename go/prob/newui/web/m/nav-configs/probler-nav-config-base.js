@@ -15,6 +15,7 @@
             { key: 'automation', label: 'Automation & Workflows', icon: 'automation' },
             { key: 'applications', label: 'Applications', icon: 'applications' },
             { key: 'analytics', label: 'Analytics', icon: 'analytics' },
+            { key: 'aia', label: 'AI Agent', icon: 'aia' },
             { key: 'system', label: 'System', icon: 'system' }
         ]
     };
