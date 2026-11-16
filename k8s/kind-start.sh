@@ -103,7 +103,47 @@ done
 # Phase boundaries come from the manifest itself (not fixed line numbers, which
 # break on every edit): phase 1 ends before the parser, phase 2 before the
 # admission controller's ServiceAccount.
+# hostAliases map LAN-only names (the LLM and web tools of the chat agent) to
+# LAN addresses. They are used only when this machine is on the subnet of
+# those addresses; elsewhere they are left out and the pods resolve the public
+# names. The pods cannot decide this themselves: on KIND their node's address
+# is a docker address, not this machine's.
+ip2int() { local IFS=.; read -r a b c d <<< "$1"; echo $(( (a << 24) + (b << 16) + (c << 8) + d )); }
+in_subnet() {
+  local ip="$1" cidr="$2" bits mask
+  bits="${cidr#*/}"
+  mask=$(( bits == 0 ? 0 : (0xFFFFFFFF << (32 - bits)) & 0xFFFFFFFF ))
+  (( ($(ip2int "$ip") & mask) == ($(ip2int "${cidr%/*}") & mask) ))
+}
+on_lan_of() {
+  command -v ip &>/dev/null || return 1
+  local cidr
+  for cidr in $(ip -o -4 addr show scope global | awk '{print $4}'); do
+    in_subnet "$1" "$cidr" && return 0
+  done
+  return 1
+}
+
 MANIFEST="${SCRIPT_DIR}/probler-kind.yaml"
+LAN_IPS=$(grep -A2 'hostAliases:' "${MANIFEST}" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | sort -u)
+USE_LAN=1
+for lan_ip in ${LAN_IPS}; do
+  on_lan_of "${lan_ip}" || USE_LAN=""
+done
+if [ -n "${LAN_IPS}" ] && [ -z "${USE_LAN}" ]; then
+  echo "Not on the LAN of ${LAN_IPS//$'\n'/ }: deploying without hostAliases (public names)."
+  APPLIED="$(mktemp)"
+  trap 'rm -f "${APPLIED}"' EXIT
+  # Drop each hostAliases block: the key line and the lines indented under it.
+  awk '
+    /^[[:space:]]*hostAliases:/ { skip = 1; match($0, /^[[:space:]]*/); indent = RLENGTH; next }
+    skip { match($0, /^[[:space:]]*/); if (RLENGTH > indent) next; skip = 0 }
+    { print }
+  ' "${MANIFEST}" > "${APPLIED}"
+  MANIFEST="${APPLIED}"
+elif [ -n "${LAN_IPS}" ]; then
+  echo "On the LAN of ${LAN_IPS//$'\n'/ }: deploying with hostAliases."
+fi
 PHASE1_END=$(( $(grep -n '^# probler-parser' "${MANIFEST}" | head -1 | cut -d: -f1) - 1 ))
 PHASE2_END=$(( $(grep -n '^kind: ServiceAccount' "${MANIFEST}" | head -1 | cut -d: -f1) - 2 ))
 
@@ -127,7 +167,7 @@ for sts in probler-parser probler-collector probler-box probler-gpu probler-k8s 
 done
 
 echo "Phase 3: Deploying admission controller..."
-"${KUBECTL[@]}" apply -f "${SCRIPT_DIR}/probler-kind.yaml"
+"${KUBECTL[@]}" apply -f "${MANIFEST}"
 
 if [ -z "${SKIP_SIM}" ]; then
   echo "Allowing KIND -> l8opensim forwarding..."

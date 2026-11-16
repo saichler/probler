@@ -35,9 +35,9 @@ const systemPrompt = `You work in Probler, a datacenter management system. Its d
 
 func main() {
 	res := common.CreateResources("chat-agent")
-	// The same models the web server registers (newui), so the agent can
-	// describe and decode everything the UI serves.
-	models.Register(res)
+	// The same models the web server registers (newui), through Tanto, so the
+	// agent can describe and decode everything the UI serves.
+	agent.CallRegisterModels(res, models.Register)
 	ifs.SetNetworkMode(ifs.NETWORK_K8s)
 	nic := vnic.NewVirtualNetworkInterface(res, nil)
 	nic.Start()

@@ -149,7 +149,7 @@ test.describe('chat bubble', () => {
         assertNoPageErrors(consoleErrors);
     });
 
-    test('Tanto answers a question about the datacenter as markdown', async ({ app, consoleErrors }) => {
+    test('Tanto answers a question about the datacenter with the real count', async ({ app, api, consoleErrors }) => {
         test.setTimeout(LLM_TIMEOUT + 60_000);
         const chat = new Chat(app);
         await chat.open();
@@ -161,6 +161,12 @@ test.describe('chat bubble', () => {
         await expect(answers, 'Tanto never answered').toHaveCount(before + 1, { timeout: LLM_TIMEOUT });
         const reply = (await answers.last().locator('.l8chat-msg-body').innerText()).trim();
         expect(reply.length, 'Tanto answered with an empty message').toBeGreaterThan(0);
+        // The answer must come from the data, not a refusal: it names the count
+        // the network devices table reports.
+        const devices = await api.total('/0/NCache', 'NetworkDevice');
+        expect(devices, 'the cluster has no network devices to count').toBeGreaterThan(0);
+        expect(reply, `Tanto's answer does not state the ${devices} network devices: ${reply}`)
+            .toMatch(new RegExp(`\\b${devices}\\b`));
         await expect(chat.panel().locator('.l8chat-typing')).toBeHidden();
         assertNoPageErrors(consoleErrors);
     });
