@@ -13,7 +13,6 @@
         kubernetes: mon.kubernetes,
         topologies: mon.topologies,
         alarms: window.PROBLER_NAV_CONFIG_ALM.alarms,
-        aia: window.PROBLER_NAV_CONFIG_SYSTEM.aia,
         system: window.PROBLER_NAV_CONFIG_SYSTEM.system,
         // Placeholders — no config object = "Coming Soon" card
         // infrastructure, automation, applications, analytics

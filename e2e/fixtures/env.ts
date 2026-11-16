@@ -41,6 +41,15 @@ export const ENV = {
     limitedUser: env('PROBLER_LIMITED_USER', env('PROBLER_READONLY_USER', 'viewer')),
     limitedPass: env('PROBLER_LIMITED_PASS', env('PROBLER_READONLY_PASS', 'Viewer123!')),
 
+    /**
+     * A second writing account (role operator) for the chat specs: the peer
+     * that sends to and receives from `user`. Seeded in probler.json.
+     */
+    chatPeerUser: env('PROBLER_CHAT_PEER_USER', 'operator2'),
+    chatPeerPass: env('PROBLER_CHAT_PEER_PASS', 'Oper123!'),
+    chatPeerName: env('PROBLER_CHAT_PEER_NAME', 'Second Operator'),
+    userName: env('PROBLER_USER_NAME', 'Default Operator'),
+
     /** Shell paths. Mobile is the real mobile bundle, never a resized desktop. */
     desktopShell: '/app.html',
     mobileShell: '/m/app.html',

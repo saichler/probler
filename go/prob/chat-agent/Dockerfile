@@ -4,17 +4,17 @@ FROM saichler/builder:latest AS build
 ARG TARGETOS=linux
 ARG TARGETARCH
 
-COPY *.go /home/src/github.com/saichler/build/
+COPY main.go /home/src/github.com/saichler/build/main.go
 COPY help.md /home/src/github.com/saichler/build/help.md
 RUN go mod init
 RUN GOPROXY=direct GOPRIVATE=github.com go mod tidy
-# Some layer8 modules still pin older siblings (e.g. pre-L8Register l8ql/l8utils);
-# move every layer8 module to its current version so they build together.
+# Some layer8 modules still pin older siblings; move every layer8 module to its
+# current version so they build together.
 RUN GOPROXY=direct GOPRIVATE=github.com go get $(go list -m all | awk '/^github.com\/saichler\// && $1 != "github.com/saichler/build" {print $1"@latest"}')
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o agent
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o chatagent
 
-FROM saichler/probler-postgres:latest AS final
+FROM saichler/probler-security:latest AS final
 
-COPY --from=build /home/src/github.com/saichler/build/agent /home/run/agent
+COPY --from=build /home/src/github.com/saichler/build/chatagent /home/run/chatagent
 
-ENTRYPOINT ["/home/run/agent"]
+ENTRYPOINT ["/home/run/chatagent"]

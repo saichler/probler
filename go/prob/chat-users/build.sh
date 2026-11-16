@@ -17,6 +17,6 @@ done
 PLATFORM="linux/amd64,linux/arm64"
 [ -n "$ARCH" ] && PLATFORM="linux/$ARCH"
 
-echo "Building saichler/probler-agent:${TAG} for ${PLATFORM}"
-docker buildx build --no-cache --platform="$PLATFORM" -t saichler/probler-agent:${TAG} .
-docker push saichler/probler-agent:${TAG}
+echo "Building saichler/probler-chat-users:${TAG} for ${PLATFORM}"
+docker buildx build --no-cache --platform="$PLATFORM" -t saichler/probler-chat-users:${TAG} .
+docker push saichler/probler-chat-users:${TAG}

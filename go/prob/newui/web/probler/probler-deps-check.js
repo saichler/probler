@@ -13,6 +13,7 @@
     // Regenerate the lists by scanning the loaded scripts for unguarded
     // Layer8*/L8* member calls; do not hand-edit to make a failure go away.
     var REQUIRED_DESKTOP = [
+        'L8ChatApi', 'L8ChatStore', 'L8ChatLive', 'L8ChatSession', 'L8ChatFiles', 'L8ChatStatus', 'L8ChatSidebar', 'L8ChatConvList', 'L8ChatComposer', 'L8ChatThread', 'L8ChatGroupDialog', 'L8ChatConvDialog', 'Layer8Markdown', 'L8ChatBubble',
         'L8DIExecute', 'L8DITemplates', 'L8DITransfer', 'L8DataImport', 'L8EventsAlarmDetail',
         'L8EventsAlarmTable', 'L8EventsEnums', 'L8EventsEventViewer', 'L8EventsStateActions',
         'L8Health', 'L8Logs', 'L8NotifyEnums', 'L8Security', 'L8Sys', 'Layer8ColumnFactory',
@@ -37,6 +38,7 @@
     ];
 
     var REQUIRED_MOBILE = [
+        'L8ChatApi', 'L8ChatStore', 'L8ChatLive', 'L8ChatSession', 'L8ChatFiles', 'L8ChatStatus', 'L8ChatSidebar', 'L8ChatConvList', 'L8ChatComposer', 'L8ChatThread', 'L8ChatGroupDialog', 'L8ChatConvDialog', 'Layer8Markdown', 'L8ChatMobile', 'L8ChatBubbleMobile',
         'L8DIExecute', 'L8DITemplates', 'L8DITransfer', 'L8DataImport', 'L8EventsEnums',
         'L8EventsEventViewer', 'L8Logs', 'Layer8ColumnFactory', 'Layer8CsvExport',
         'Layer8DCalendar', 'Layer8DCalendarEvents', 'Layer8DCalendarRender', 'Layer8DChart',

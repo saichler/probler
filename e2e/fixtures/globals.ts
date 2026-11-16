@@ -60,8 +60,10 @@ export const DESKTOP_REQUIRED_GLOBALS = [
     'ProblerPermissions', 'Alm', 'L8Sys', 'LivePopup', 'loadSection',
     'initializeDashboard', 'initializeNetworkDevices', 'initializeGPUs', 'initializeHosts',
     'initializeKubernetes', 'initializeAlm', 'initializeL8Sys',
-    // AI agent (l8agent)
-    'Layer8Markdown', 'L8AgentBubble', 'L8AgentChat', 'Aia', 'AiaAgent', 'initializeAia'
+    // Chat (l8chat)
+    'Layer8Markdown', 'L8ChatApi', 'L8ChatStore', 'L8ChatLive', 'L8ChatSession', 'L8ChatFiles', 'L8ChatStatus',
+    'L8ChatSidebar', 'L8ChatConvList', 'L8ChatComposer', 'L8ChatThread', 'L8ChatGroupDialog', 'L8ChatConvDialog',
+    'PROBLER_CHAT_ENDPOINTS', 'L8ChatBubble'
 ];
 
 /** Globals the mobile bundle must have -- its own plus the shared desktop ones. */
@@ -79,6 +81,8 @@ export const MOBILE_REQUIRED_GLOBALS = [
     // probler
     'MobileApp', 'LAYER8M_NAV_CONFIG', 'ProblerPermissions', 'MobileMonitoring', 'MobileALM',
     'MobileTargets',
-    // AI agent (l8agent)
-    'Layer8Markdown', 'L8AgentBubbleMobile', 'L8AgentChatMobile', 'AiaAgent', 'MobileAia'
+    // Chat (l8chat)
+    'Layer8Markdown', 'L8ChatApi', 'L8ChatStore', 'L8ChatLive', 'L8ChatSession', 'L8ChatFiles', 'L8ChatStatus',
+    'L8ChatSidebar', 'L8ChatConvList', 'L8ChatComposer', 'L8ChatThread', 'L8ChatGroupDialog', 'L8ChatConvDialog',
+    'PROBLER_CHAT_ENDPOINTS', 'L8ChatMobile', 'L8ChatBubbleMobile'
 ];

@@ -84,6 +84,11 @@ IMAGES=(
   saichler/probler-logagent:latest
   saichler/probler-topo:latest
   saichler/probler-admission:latest
+  saichler/probler-chat-orm:latest
+  saichler/probler-chat:latest
+  saichler/probler-chat-router:latest
+  saichler/probler-chat-users:latest
+  saichler/probler-chat-agent:latest
 )
 
 for img in "${IMAGES[@]}"; do
@@ -115,7 +120,8 @@ head -n "${PHASE2_END}" "${MANIFEST}" | "${KUBECTL[@]}" apply -f -
 
 echo "Waiting for all core services to be Ready..."
 for sts in probler-parser probler-collector probler-box probler-gpu probler-k8s \
-           probler-orm probler-alarms probler-webui2 probler-log-agent probler-topo; do
+           probler-orm probler-alarms probler-webui2 probler-log-agent probler-topo \
+           probler-chat-orm probler-chat probler-chat-router probler-chat-users probler-chat-agent; do
   echo "  Waiting for ${sts}..."
   "${KUBECTL[@]}" -n probler rollout status statefulset/"${sts}" --timeout=180s
 done

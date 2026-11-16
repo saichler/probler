@@ -18,16 +18,10 @@ package main
 import (
 	common2 "github.com/saichler/l8common/go/common"
 	"github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/l8web/go/web/server"
 	"github.com/saichler/probler/go/prob/common/models"
 )
 
 func main() {
-	// The agent chat (AgntChat, area 120) waits on the LLM: the first message is
-	// ~14.5k prompt tokens and tool rounds add more, so the default 30s returned
-	// empty responses.
-	server.SetServiceTimeout("AgntChat", 120, 300)
-
 	svr := common2.CreateWebServer("web", RegisterTypes)
 	svr.Start()
 }

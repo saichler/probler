@@ -47,10 +47,10 @@
     <link rel="stylesheet" href="../l8ui/wizard/layer8d-wizard.css">
     <link rel="stylesheet" href="../l8ui/dashboard/layer8d-widget.css">
     <link rel="stylesheet" href="../l8ui/shared/layer8-view-switcher.css">
-    <!-- Markdown renderer + AI Agent (l8agent) -->
+    <!-- Markdown renderer + Chat (l8chat) -->
     <link rel="stylesheet" href="../l8ui/shared/layer8-markdown.css">
-    <link rel="stylesheet" href="../l8ui/l8agent/m/l8agent-chat-m.css">
-    <link rel="stylesheet" href="../l8ui/l8agent/m/l8agent-bubble-m.css">
+    <link rel="stylesheet" href="../l8ui/l8chat/l8chat.css">
+    <link rel="stylesheet" href="../l8ui/l8chat/m/l8chat-m.css">
 </head>
 <body>
     <div class="app-container">
@@ -369,17 +369,22 @@
     <script src="js/readonly-details.js"></script>
     <!-- Markdown Renderer (load before chat components) -->
     <script src="../l8ui/shared/layer8-markdown.js"></script>
-    <!-- AI Agent (l8agent): shared columns/forms, mobile chat + bubble -->
-    <script src="../l8ui/l8agent/l8agent-enums.js"></script>
-    <script src="../l8ui/l8agent/l8agent-columns.js"></script>
-    <script src="../l8ui/l8agent/l8agent-forms.js"></script>
-    <script src="../l8ui/l8agent/m/l8agent-chat-m.js"></script>
-    <script src="../l8ui/l8agent/m/l8agent-bubble-m.js"></script>
-    <script src="../aia/agent/agent-enums.js"></script>
-    <script src="../aia/agent/agent-columns.js"></script>
-    <script src="../aia/agent/agent-forms.js"></script>
-    <script src="js/aia/agent-chat-init.js"></script>
-    <script src="js/aia/aia-index.js"></script>
+    <!-- JS: Chat (l8chat), mobile: shared core + views, mobile drill-down + bubble -->
+    <script src="../l8ui/l8chat/l8chat-core-api.js"></script>
+    <script src="../l8ui/l8chat/l8chat-core-store.js"></script>
+    <script src="../l8ui/l8chat/l8chat-core-live.js"></script>
+    <script src="../l8ui/l8chat/l8chat-core-actions.js"></script>
+    <script src="../l8ui/l8chat/l8chat-core-files.js"></script>
+    <script src="../l8ui/l8chat/l8chat-status.js"></script>
+    <script src="../l8ui/l8chat/l8chat-sidebar.js"></script>
+    <script src="../l8ui/l8chat/l8chat-convlist.js"></script>
+    <script src="../l8ui/l8chat/l8chat-composer.js"></script>
+    <script src="../l8ui/l8chat/l8chat-thread.js"></script>
+    <script src="../l8ui/l8chat/l8chat-group-dialog.js"></script>
+    <script src="../l8ui/l8chat/l8chat-conv-dialog.js"></script>
+    <script src="../l8ui/l8chat/m/l8chat-m.js"></script>
+    <script src="../l8ui/l8chat/m/l8chat-bubble-m.js"></script>
+    <script src="../probler/probler-chat-config.js"></script>
     <!-- Tree Component -->
     <script src="../js/tree.js"></script>
     <!-- Live Popup (WebSocket subscription lifecycle for detail popups) -->

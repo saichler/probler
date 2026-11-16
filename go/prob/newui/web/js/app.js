@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (typeof Layer8DPermissionFilter !== 'undefined') {
         // Map probler section keys to the L8UI namespaces whose services back them.
         // Only L8UI-driven sections (those built with Layer8DModuleFactory) need mapping.
-        var nsMap = { 'system': 'L8Sys', 'alarms': 'Alm', 'aia': 'Aia' };
+        var nsMap = { 'system': 'L8Sys', 'alarms': 'Alm' };
         Layer8DPermissionFilter.registerResolver(function(sectionKey, moduleKey, serviceKey) {
             var ns = window[nsMap[sectionKey]];
             if (!ns || !ns.modules || !ns.modules[moduleKey]) return null;
@@ -198,8 +198,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.querySelector('.username').textContent = username;
 
     // Connect real-time WebSocket for live data updates
-    // Floating AI agent chat bubble (l8agent, AgntChat area 120)
-    L8AgentBubble.init({ chatEndpoint: '/120/AgntChat' });
+    // Floating chat bubble (l8chat): users, groups and Tanto, the AI agent.
+    L8ChatBubble.init({ endpoints: PROBLER_CHAT_ENDPOINTS });
 
     Layer8DWebSocket.init();
 

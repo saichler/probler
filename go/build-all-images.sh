@@ -28,6 +28,11 @@ IMAGES=(
     "ORM:orm"
     "Alarms:alarms"
     "Topology:topology"
+    "Chat ORM:chat-orm"
+    "Chat:chat"
+    "Chat Router:chat-router"
+    "Chat Users:chat-users"
+    "Chat Agent:chat-agent"
 )
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

@@ -94,12 +94,15 @@ class CaptureRouter {
  * sessionStorage.bearerToken"), so the session has to be injected by hand,
  * before any script on the page runs.
  */
-async function seedSession(context: BrowserContext, token: string, username: string) {
+export async function seedSession(context: BrowserContext, token: string, username: string) {
     await context.addInitScript(
         ([t, u]) => {
             try {
                 sessionStorage.setItem('bearerToken', t as string);
                 sessionStorage.setItem('username', u as string);
+                // The real login stores the user here too (layer8d-login-auth.js,
+                // layer8m-auth.js); app.js and l8chat read it.
+                sessionStorage.setItem('currentUser', u as string);
             } catch {
                 /* private mode / blocked storage -- the spec will fail visibly at login */
             }

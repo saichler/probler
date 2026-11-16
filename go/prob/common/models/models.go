@@ -14,12 +14,12 @@
  */
 
 // Package models registers probler's models (types, primary keys) on a node's
-// resources. The web server (newui) and the AI agent (probler-agent) share it,
+// resources. The web server (newui) and the chat agent (chat-agent) share it,
 // so the agent knows every model the UI serves.
 package models
 
 import (
-	"github.com/saichler/l8agent/go/types/l8agent"
+	l8aicommon "github.com/saichler/l8ai/go/ai/common"
 	"github.com/saichler/l8alarms/go/alm/ui"
 	common2 "github.com/saichler/l8common/go/common"
 	"github.com/saichler/l8logfusion/go/types/l8logf"
@@ -73,11 +73,8 @@ func Register(res ifs.IResources) {
 	common2.RegisterType(res, &l8notify.NotifyRecord{}, &l8notify.NotifyRecordList{}, "NotifyId")
 	common2.RegisterType(res, &l8notify.IntegrationConfig{}, &l8notify.IntegrationConfigList{}, "IntegrationId")
 
-	// AI agent (l8agent, area 120, activated in probler-agent).
-	common2.RegisterType(res, &l8agent.L8AgentConversation{}, &l8agent.L8AgentConversationList{}, "ConversationId")
-	common2.RegisterType(res, &l8agent.L8AgentChatMessage{}, &l8agent.L8AgentChatMessageList{}, "ConversationId")
-	common2.RegisterType(res, &l8agent.L8AgentChatConversation{}, &l8agent.L8AgentChatConversationList{}, "ConversationId")
-	common2.RegisterType(res, &l8agent.L8AgentPrompt{}, &l8agent.L8AgentPromptList{}, "PromptId")
+	// Chat and the Tanto agent (l8ai, area 81).
+	l8aicommon.RegisterTypes(res)
 
 	// SYS > Data Import templates (ImprtTmpl, activated in probler-alarms).
 	common2.RegisterType(res, &l8api.L8ImportTemplate{}, &l8api.L8ImportTemplateList{}, "TemplateId")

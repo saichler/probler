@@ -37,6 +37,11 @@ ALL=(
   "log-agent:saichler/probler-logagent"
   "topology:saichler/probler-topo"
   "adcon:saichler/probler-admission"
+  "chat-orm:saichler/probler-chat-orm"
+  "chat:saichler/probler-chat"
+  "chat-router:saichler/probler-chat-router"
+  "chat-users:saichler/probler-chat-users"
+  "chat-agent:saichler/probler-chat-agent"
 )
 
 build_security() {
