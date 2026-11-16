@@ -53,12 +53,14 @@ export class Chat {
 
     /** Selects a peer: from the list, or through the user search when it is not listed. */
     async openPeer(name: string): Promise<void> {
-        if (!(await this.peer(name).isVisible())) {
-            await this.panel().locator('.l8chat-search').fill(name);
-        }
+        const search = this.panel().locator('.l8chat-search');
+        const searched = !(await this.peer(name).isVisible());
+        if (searched) await search.fill(name);
         await this.peer(name).click();
         await expect(this.panel().locator('.l8chat-convlist-title')).toHaveText(name);
-        await this.panel().locator('.l8chat-search').fill('');
+        // On mobile the peers screen is left behind; the search only needs
+        // clearing where it stays on screen.
+        if (searched && await search.isVisible()) await search.fill('');
     }
 
     conversations(): Locator { return this.panel().locator('.l8chat-conv'); }
