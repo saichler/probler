@@ -601,28 +601,28 @@ spec:
 
 ---
 
-# probler-agent: the AI agent (l8agent, area 120) with its own postgres (agentdb)
+# probler-chat-orm: chat persistence (l8ai, area 81) with its own postgres (chatdb)
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   namespace: probler
-  name: probler-agent
+  name: probler-chat-orm
   labels:
-    app: probler-agent
+    app: probler-chat-orm
 spec:
-  serviceName: probler-agent
+  serviceName: probler-chat-orm
   replicas: 1
   selector:
     matchLabels:
-      app: probler-agent
+      app: probler-chat-orm
   template:
     metadata:
       labels:
-        app: probler-agent
+        app: probler-chat-orm
     spec:
       containers:
-        - name: probler-agent
-          image: saichler/probler-agent:latest
+        - name: probler-chat-orm
+          image: saichler/probler-chat-orm:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -641,6 +641,211 @@ spec:
         resources:
           requests:
             storage: 10Gi
+
+---
+# probler-chat: chat instances (l8ai): single writers of their conversations
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-chat
+  labels:
+    app: probler-chat
+spec:
+  serviceName: probler-chat
+  replicas: 3
+  selector:
+    matchLabels:
+      app: probler-chat
+  template:
+    metadata:
+      labels:
+        app: probler-chat
+    spec:
+      terminationGracePeriodSeconds: 30
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app: probler-chat
+      containers:
+        - name: probler-chat
+          image: saichler/probler-chat:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: probler-local-storage
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+# probler-chat-router: chat router (l8ai): conversation index + public chat services
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-chat-router
+  labels:
+    app: probler-chat-router
+spec:
+  serviceName: probler-chat-router
+  replicas: 2
+  selector:
+    matchLabels:
+      app: probler-chat-router
+  template:
+    metadata:
+      labels:
+        app: probler-chat-router
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app: probler-chat-router
+      containers:
+        - name: probler-chat-router
+          image: saichler/probler-chat-router:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: probler-local-storage
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+# probler-chat-users: chat users (l8ai): presence and groups
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-chat-users
+  labels:
+    app: probler-chat-users
+spec:
+  serviceName: probler-chat-users
+  replicas: 2
+  selector:
+    matchLabels:
+      app: probler-chat-users
+  template:
+    metadata:
+      labels:
+        app: probler-chat-users
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app: probler-chat-users
+      containers:
+        - name: probler-chat-users
+          image: saichler/probler-chat-users:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: probler-local-storage
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+# probler-chat-agent: Tanto, the AI agent (l8ai ChatAgent)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: probler
+  name: probler-chat-agent
+  labels:
+    app: probler-chat-agent
+spec:
+  serviceName: probler-chat-agent
+  replicas: 2
+  selector:
+    matchLabels:
+      app: probler-chat-agent
+  template:
+    metadata:
+      labels:
+        app: probler-chat-agent
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app: probler-chat-agent
+      containers:
+        - name: probler-chat-agent
+          image: saichler/probler-chat-agent:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: hdata
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: probler-local-storage
+        resources:
+          requests:
+            storage: 2Gi
 
 ---
 
