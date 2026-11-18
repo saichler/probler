@@ -201,6 +201,35 @@ test.describe('chat bubble', () => {
     });
 });
 
+test.describe('chat attachments', () => {
+    // The agent reads a text file attached to the user's message and does
+    // what it asks; before, it never saw attachments and asked for the file.
+    test('Tanto reads an attached file and answers the request inside it', async ({ app, api, consoleErrors }) => {
+        test.setTimeout(LLM_TIMEOUT + 60_000);
+        const devices = await api.total('/0/NCache', 'NetworkDevice');
+        expect(devices, 'the cluster has no network devices to count').toBeGreaterThan(0);
+        const title = unique('file');
+        await createAgentConversation(api, ENV.user, title);
+
+        const chat = new Chat(app);
+        await chat.open();
+        await chat.peer(TANTO).click();
+        await expect(chat.conversation(title)).toBeVisible({ timeout: LIVE_TIMEOUT });
+        await chat.conversation(title).click();
+        await expect(chat.threadTitle()).toHaveText(title, { timeout: LIVE_TIMEOUT });
+        const answers = chat.panel().locator('.l8chat-msg-agent');
+        const before = await answers.count();
+
+        await chat.attach('request.txt', 'can you tell me how many network devices are there in the system? Answer with the number.\n');
+        await chat.send('can you read the attached file and do the request inside of it?');
+        await expect(answers, 'Tanto never answered').toHaveCount(before + 1, { timeout: LLM_TIMEOUT });
+        const reply = (await answers.last().locator('.l8chat-msg-body').innerText()).trim();
+        expect(reply, `Tanto did not answer the file's request with the ${devices} network devices: ${reply}`)
+            .toMatch(new RegExp(`\\b${devices}\\b`));
+        assertNoPageErrors(consoleErrors);
+    });
+});
+
 test.describe('chat API', () => {
     test('a non-member can neither read nor post in a conversation', async ({ api }) => {
         const viewer = await Api.login(ENV.readOnlyUser, ENV.readOnlyPass);

@@ -148,6 +148,15 @@ export class Chat {
         await this.page.evaluate(() => (window as any).L8ChatBubble.resetPosition());
     }
 
+    // ---- attachments ----
+
+    /** Attaches an in-memory file through the composer's paperclip and waits for its chip. */
+    async attach(name: string, content: string, mimeType = 'text/plain'): Promise<void> {
+        await this.panel().locator('.l8chat-file-input').last().setInputFiles({ name, mimeType, buffer: Buffer.from(content) });
+        await expect(this.panel().locator('.l8chat-composer-files .l8chat-chip', { hasText: name }),
+            `the attachment ${name} was not uploaded`).toBeVisible({ timeout: 30_000 });
+    }
+
     // ---- message copy button ----
 
     copyButton(message: Locator): Locator { return message.locator('.l8chat-msg-copy'); }
