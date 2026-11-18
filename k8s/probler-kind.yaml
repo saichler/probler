@@ -553,11 +553,6 @@ spec:
       labels:
         app: probler-chat-agent
     spec:
-      # Tanto calls the LLM / web tools by name; inside the LAN their public IP
-      # does not loop back (not for GKE).
-      hostAliases:
-        - ip: "192.168.1.121"
-          hostnames: ["llm.test-llm.dev", "embed.test-llm.dev", "muse.test-llm.dev", "tools.test-llm.dev"]
       containers:
         - name: probler-chat-agent
           image: saichler/probler-chat-agent:latest

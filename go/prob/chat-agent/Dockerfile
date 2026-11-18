@@ -6,6 +6,7 @@ ARG TARGETARCH
 
 COPY main.go /home/src/github.com/saichler/build/main.go
 COPY help.md /home/src/github.com/saichler/build/help.md
+COPY llm-ca.crt /home/src/github.com/saichler/build/llm-ca.crt
 RUN go mod init
 RUN GOPROXY=direct GOPRIVATE=github.com go mod tidy
 # Some layer8 modules still pin older siblings; move every layer8 module to its
