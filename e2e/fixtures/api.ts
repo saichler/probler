@@ -111,6 +111,14 @@ export class Api {
         return res.json().catch(() => ({}));
     }
 
+    async patch(endpoint: string, data: unknown) {
+        const res = await this.ctx.patch(apiUrl(endpoint), { headers: this.headers(), data });
+        if (!res.ok()) {
+            throw new Error(`PATCH ${endpoint} -> HTTP ${res.status()} ${await res.text()}`);
+        }
+        return res.json().catch(() => ({}));
+    }
+
     /**
      * Deletes one record. DELETE carries an L8Query body selecting the row, the
      * same shape layer8d-module-crud.js sends.

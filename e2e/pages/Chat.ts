@@ -37,6 +37,15 @@ export class Chat {
             this.mobile ? 'l8chat-m-open' : 'l8chat-bubble-open').catch(() => false);
         if (!isOpen) await this.button().click();
         await expect(this.panel()).toHaveClass(this.openClass());
+        // Mobile reopens on the screen it was closed on (a previous test may
+        // have left a thread open): back out to the peers screen.
+        if (this.mobile) {
+            const peersScreen = this.panel().locator('.l8chat-m-peers');
+            for (let i = 0; i < 2 && !(await peersScreen.evaluate((el) => el.classList.contains('l8chat-m-active'))); i++) {
+                await this.panel().locator('.l8chat-m-back').click();
+            }
+            await expect(peersScreen).toHaveClass(/l8chat-m-active/);
+        }
         await expect(this.peers().first(), 'the chat sidebar never rendered').toBeVisible();
     }
 
@@ -72,6 +81,60 @@ export class Chat {
     threadTitle(): Locator { return this.panel().locator('.l8chat-thread-title'); }
     messages(): Locator { return this.panel().locator('.l8chat-msg'); }
     message(text: string): Locator { return this.messages().filter({ hasText: text }).last(); }
+
+    // ---- LLM profile picker (Tanto threads) ----
+
+    profileWrap(): Locator { return this.panel().locator('.l8chat-profile-wrap'); }
+    profileSelect(): Locator { return this.panel().locator('.l8chat-profile'); }
+    selectedProfile(): Locator { return this.profileSelect().locator('option:checked'); }
+
+    // ---- collapsible side columns (desktop) ----
+
+    column(col: 'sidebar' | 'convs'): Locator {
+        return this.panel().locator(col === 'sidebar' ? '.l8chat-col-sidebar' : '.l8chat-col-convs');
+    }
+
+    collapseButton(col: 'sidebar' | 'convs'): Locator { return this.column(col).locator('.l8chat-collapse'); }
+
+    async columnWidth(col: 'sidebar' | 'convs'): Promise<number> {
+        return (await this.column(col).boundingBox())?.width ?? 0;
+    }
+
+    /** Folds or unfolds a column and waits for its width transition to finish. */
+    async setCollapsed(col: 'sidebar' | 'convs', collapsed: boolean): Promise<void> {
+        const isCollapsed = await this.column(col).evaluate((el) => el.classList.contains('l8chat-col-collapsed'));
+        if (isCollapsed !== collapsed) await this.collapseButton(col).click();
+        if (collapsed) {
+            await expect(this.column(col)).toHaveClass(/l8chat-col-collapsed/);
+            await expect.poll(() => this.columnWidth(col), { message: `${col} never folded` }).toBeLessThanOrEqual(41);
+        } else {
+            await expect(this.column(col)).not.toHaveClass(/l8chat-col-collapsed/);
+            await expect.poll(() => this.columnWidth(col), { message: `${col} never unfolded` }).toBeGreaterThan(200);
+        }
+    }
+
+    /** Asserts el is on screen and inside the column's (folded) box. */
+    async expectInsideColumn(col: 'sidebar' | 'convs', el: Locator, what: string): Promise<void> {
+        await expect(el, `${what} is not visible`).toBeVisible();
+        const c = (await this.column(col).boundingBox())!;
+        const b = (await el.boundingBox())!;
+        expect(b.width, `${what} has no size`).toBeGreaterThan(0);
+        expect(b.x >= c.x && b.x + b.width <= c.x + c.width,
+            `${what} (x ${b.x}..${b.x + b.width}) is clipped by the ${col} column (x ${c.x}..${c.x + c.width})`).toBe(true);
+    }
+
+    // ---- maximize / restore (desktop) ----
+
+    maximizeButton(): Locator { return this.panel().locator('.l8chat-maximize'); }
+
+    /** Maximizes the panel to the window, or restores its normal size. */
+    async setMaximized(max: boolean): Promise<void> {
+        const isMax = await this.panel().evaluate((el) => el.classList.contains('l8chat-bubble-max'));
+        if (isMax !== max) await this.maximizeButton().click();
+        if (max) await expect(this.panel()).toHaveClass(/l8chat-bubble-max/);
+        else await expect(this.panel()).not.toHaveClass(/l8chat-bubble-max/);
+        await expect(this.maximizeButton()).toHaveAttribute('title', max ? 'Restore' : 'Maximize');
+    }
 
     async send(text: string): Promise<void> {
         await this.panel().locator('.l8chat-input').fill(text);
@@ -115,4 +178,61 @@ export async function postMessages(api: Api, conversationId: string, bodies: str
         (await api.query('/81/ChatMsg',
             `select * from ChatMessage where conversationId=${conversationId} sort-by seq descending limit 50 page 0`)).list.length,
     { message: 'the messages never reached the conversation', timeout: 30_000 }).toBe(bodies.length);
+}
+
+// ---- Tanto conversations and LLM profiles (l8secure /79/LlmProf) ----
+
+export interface LlmProfile { profileId: string; name: string; providerId?: string; modelId?: string; isDefault?: boolean }
+
+/** The picker's label of a profile: "name · model", "(default)" unless the name says so. */
+export function profileLabel(p: LlmProfile): string {
+    const name = p.name || p.profileId;
+    const mark = p.isDefault && !/default/i.test(name) ? ' (default)' : '';
+    return name + (p.modelId ? ' · ' + p.modelId : '') + mark;
+}
+
+export async function listProfiles(api: Api): Promise<LlmProfile[]> {
+    return (await api.query<LlmProfile>('/79/LlmProf', 'select * from L8LlmProfile')).list;
+}
+
+/**
+ * Adds a profile on the default profile's provider and model, so a Tanto turn
+ * routed to it is answered exactly like one on the default profile.
+ */
+export async function createProfile(api: Api, name: string): Promise<LlmProfile> {
+    const base = (await listProfiles(api)).find((p) => p.isDefault);
+    expect(base, 'l8secure has no default LLM profile to copy').toBeTruthy();
+    const profile: LlmProfile = { profileId: `e2e-${randomUUID()}`, name, providerId: base!.providerId, modelId: base!.modelId };
+    await api.post('/79/LlmProf', profile);
+    await expect.poll(async () => (await listProfiles(api)).some((p) => p.profileId === profile.profileId),
+        { message: `profile "${name}" was never created`, timeout: 30_000 }).toBe(true);
+    return profile;
+}
+
+export async function deleteProfile(api: Api, profileId: string): Promise<void> {
+    await api.deleteById('/79/LlmProf', 'L8LlmProfile', 'profileId', profileId);
+}
+
+/** Creates a Tanto conversation of the API's user (like "+" on the Tanto row). */
+export async function createAgentConversation(api: Api, me: string, title: string): Promise<string> {
+    const conversationId = randomUUID();
+    await api.post('/81/ChatConv', { conversationId, peerKind: 3, peerKey: `agent|${me}`, title });
+    await expect.poll(async () =>
+        (await api.query('/81/ChatConv', `select * from ChatConversation where conversationId=${conversationId}`)).list.length,
+    { message: `Tanto conversation "${title}" was never created`, timeout: 30_000 }).toBe(1);
+    return conversationId;
+}
+
+export async function conversationProfile(api: Api, conversationId: string): Promise<string> {
+    const list = (await api.query<{ llmProfileId?: string }>('/81/ChatConv',
+        `select * from ChatConversation where conversationId=${conversationId}`)).list;
+    return list[0]?.llmProfileId ?? '';
+}
+
+/** The profile a message was stamped with ('' while the message is not stored yet). */
+export async function messageProfile(api: Api, conversationId: string, body: string): Promise<string | null> {
+    const list = (await api.query<{ body?: string; llmProfileId?: string }>('/81/ChatMsg',
+        `select * from ChatMessage where conversationId=${conversationId} sort-by seq descending limit 50 page 0`)).list;
+    const m = list.find((x) => x.body === body);
+    return m ? (m.llmProfileId ?? '') : null;
 }
