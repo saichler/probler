@@ -151,10 +151,16 @@ test.describe('chat bubble', () => {
 
     test('Tanto answers a question about the datacenter with the real count', async ({ app, api, consoleErrors }) => {
         test.setTimeout(LLM_TIMEOUT + 60_000);
+        // Its own Tanto conversation: the default one collects every run's
+        // answers, and the model reads that history.
+        const title = unique('count');
+        await createAgentConversation(api, ENV.user, title);
         const chat = new Chat(app);
         await chat.open();
         await chat.peer(TANTO).click();
-        await expect(chat.threadTitle(), 'the Tanto conversation did not open').toHaveText('Tanto', { timeout: LIVE_TIMEOUT });
+        await expect(chat.conversation(title)).toBeVisible({ timeout: LIVE_TIMEOUT });
+        await chat.conversation(title).click();
+        await expect(chat.threadTitle(), 'the Tanto conversation did not open').toHaveText(title, { timeout: LIVE_TIMEOUT });
         const answers = chat.panel().locator('.l8chat-msg-agent');
         const before = await answers.count();
         await chat.send('How many network devices are there? Answer with the number.');
