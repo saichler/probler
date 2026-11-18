@@ -123,6 +123,35 @@ export class Chat {
             `${what} (x ${b.x}..${b.x + b.width}) is clipped by the ${col} column (x ${c.x}..${c.x + c.width})`).toBe(true);
     }
 
+    // ---- moving the panel (desktop) ----
+
+    header(): Locator { return this.panel().locator('.l8chat-panel-header'); }
+
+    async box(): Promise<{ x: number; y: number; width: number; height: number }> {
+        const b = (await this.panel().boundingBox())!;
+        return { x: Math.round(b.x), y: Math.round(b.y), width: Math.round(b.width), height: Math.round(b.height) };
+    }
+
+    /** Drags the panel by its header (a spot on the title, away from the buttons). */
+    async dragBy(dx: number, dy: number): Promise<void> {
+        const h = (await this.header().boundingBox())!;
+        const x = h.x + 40, y = h.y + h.height / 2;
+        await this.page.mouse.move(x, y);
+        await this.page.mouse.down();
+        await this.page.mouse.move(x + dx / 2, y + dy / 2, { steps: 4 });
+        await this.page.mouse.move(x + dx, y + dy, { steps: 4 });
+        await this.page.mouse.up();
+    }
+
+    /** Puts the panel back in its default corner (and forgets the saved place). */
+    async resetPosition(): Promise<void> {
+        await this.page.evaluate(() => (window as any).L8ChatBubble.resetPosition());
+    }
+
+    // ---- message copy button ----
+
+    copyButton(message: Locator): Locator { return message.locator('.l8chat-msg-copy'); }
+
     // ---- maximize / restore (desktop) ----
 
     maximizeButton(): Locator { return this.panel().locator('.l8chat-maximize'); }
