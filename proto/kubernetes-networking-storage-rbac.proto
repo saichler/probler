@@ -22,6 +22,7 @@ option java_outer_classname = "KubernetesNetworkingStorageRbac";
 option java_package = "com.inventory.types";
 option go_package = "./types";
 import "kubernetes-common.proto";
+import "aimask.proto";
 
 // Service
 
@@ -352,8 +353,8 @@ message Secret {
   string api_version = 1;
   string kind = 2;
   ObjectMeta metadata = 3;
-  map<string, bytes> data = 4;
-  map<string, string> string_data = 5;
+  map<string, bytes> data = 4 [(l8ai.AIMask) = true];
+  map<string, string> string_data = 5 [(l8ai.AIMask) = true];
   string type = 6;
   bool immutable = 7;
 }

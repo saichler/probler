@@ -170,6 +170,29 @@ test.describe('chat bubble', () => {
         await expect(chat.panel().locator('.l8chat-typing')).toBeHidden();
         assertNoPageErrors(consoleErrors);
     });
+
+    // GpuDevice.deviceInfo is not annotated AIMask, so its gpuCount reaches the
+    // model: the answer is the real total, never a masked placeholder.
+    test('Tanto answers how many GPUs there are with the real total', async ({ app, api, consoleErrors }) => {
+        test.setTimeout(LLM_TIMEOUT + 60_000);
+        const servers = (await api.query<{ deviceInfo?: { gpuCount?: number } }>('/2/GCache',
+            'select * from GpuDevice limit 100 page 0')).list;
+        const gpus = servers.reduce((n, s) => n + (s.deviceInfo?.gpuCount ?? 0), 0);
+        expect(gpus, 'the cluster has no GPUs to count').toBeGreaterThan(0);
+
+        const chat = new Chat(app);
+        await chat.open();
+        await chat.peer(TANTO).click();
+        await expect(chat.threadTitle(), 'the Tanto conversation did not open').toHaveText('Tanto', { timeout: LIVE_TIMEOUT });
+        const answers = chat.panel().locator('.l8chat-msg-agent');
+        const before = await answers.count();
+        await chat.send('How many GPUs do I have? Answer with the number.');
+        await expect(answers, 'Tanto never answered').toHaveCount(before + 1, { timeout: LLM_TIMEOUT });
+        const reply = (await answers.last().locator('.l8chat-msg-body').innerText()).trim();
+        expect(reply, 'the answer shows a masked placeholder').not.toMatch(/\[MASK(ED)?[\]_]/);
+        expect(reply, `Tanto's answer does not state the ${gpus} GPUs: ${reply}`).toMatch(new RegExp(`\\b${gpus}\\b`));
+        assertNoPageErrors(consoleErrors);
+    });
 });
 
 test.describe('chat API', () => {
