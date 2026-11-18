@@ -47,9 +47,11 @@ spec:
                 matchLabels:
                   app: probler-vnet
               topologyKey: kubernetes.io/hostname
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-vnet
-          image: saichler/probler-vnet:latest
+          image: registry.layer-8.dev:44443/probler/probler-vnet:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 25998
@@ -100,9 +102,11 @@ spec:
                 matchLabels:
                   app: probler-logs
               topologyKey: kubernetes.io/hostname
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-logs
-          image: saichler/logs-vnet:latest
+          image: registry.layer-8.dev:44443/probler/logs-vnet:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 12888
@@ -149,9 +153,11 @@ spec:
     spec:
       nodeSelector:
         probler-size: large
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-parser
-          image: saichler/probler-parser:latest
+          image: registry.layer-8.dev:44443/probler/probler-parser:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -196,9 +202,11 @@ spec:
     spec:
       nodeSelector:
         probler-size: medium
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-parser
-          image: saichler/probler-parser:latest
+          image: registry.layer-8.dev:44443/probler/probler-parser:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -243,9 +251,11 @@ spec:
     spec:
       nodeSelector:
         probler-size: small
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-parser
-          image: saichler/probler-parser:latest
+          image: registry.layer-8.dev:44443/probler/probler-parser:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -290,9 +300,11 @@ spec:
     spec:
       nodeSelector:
         probler-size: large
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-collector
-          image: saichler/probler-collector:latest
+          image: registry.layer-8.dev:44443/probler/probler-collector:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -337,9 +349,11 @@ spec:
     spec:
       nodeSelector:
         probler-size: medium
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-collector
-          image: saichler/probler-collector:latest
+          image: registry.layer-8.dev:44443/probler/probler-collector:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -384,9 +398,11 @@ spec:
     spec:
       nodeSelector:
         probler-size: small
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-collector
-          image: saichler/probler-collector:latest
+          image: registry.layer-8.dev:44443/probler/probler-collector:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -434,9 +450,11 @@ spec:
                 matchLabels:
                   app: probler-box
               topologyKey: kubernetes.io/hostname
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-box
-          image: saichler/probler-inv-box:latest
+          image: registry.layer-8.dev:44443/probler/probler-inv-box:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -484,9 +502,11 @@ spec:
                 matchLabels:
                   app: probler-gpu
               topologyKey: kubernetes.io/hostname
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-gpu
-          image: saichler/probler-inv-gpu:latest
+          image: registry.layer-8.dev:44443/probler/probler-inv-gpu:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -534,9 +554,11 @@ spec:
                 matchLabels:
                   app: probler-k8s
               topologyKey: kubernetes.io/hostname
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-k8s
-          image: saichler/probler-inv-k8s:latest
+          image: registry.layer-8.dev:44443/probler/probler-inv-k8s:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -577,9 +599,11 @@ spec:
       labels:
         app: probler-orm
     spec:
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-orm
-          image: saichler/probler-orm:latest
+          image: registry.layer-8.dev:44443/probler/probler-orm:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -620,9 +644,11 @@ spec:
       labels:
         app: probler-chat-orm
     spec:
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-chat-orm
-          image: saichler/probler-chat-orm:latest
+          image: registry.layer-8.dev:44443/probler/probler-chat-orm:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -672,9 +698,11 @@ spec:
                 labelSelector:
                   matchLabels:
                     app: probler-chat
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-chat
-          image: saichler/probler-chat:latest
+          image: registry.layer-8.dev:44443/probler/probler-chat:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -723,9 +751,11 @@ spec:
                 labelSelector:
                   matchLabels:
                     app: probler-chat-router
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-chat-router
-          image: saichler/probler-chat-router:latest
+          image: registry.layer-8.dev:44443/probler/probler-chat-router:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -774,9 +804,11 @@ spec:
                 labelSelector:
                   matchLabels:
                     app: probler-chat-users
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-chat-users
-          image: saichler/probler-chat-users:latest
+          image: registry.layer-8.dev:44443/probler/probler-chat-users:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -825,9 +857,11 @@ spec:
                 labelSelector:
                   matchLabels:
                     app: probler-chat-agent
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-chat-agent
-          image: saichler/probler-chat-agent:latest
+          image: registry.layer-8.dev:44443/probler/probler-chat-agent:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -868,9 +902,11 @@ spec:
       labels:
         app: probler-alarms
     spec:
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-alarms
-          image: saichler/probler-alarms:latest
+          image: registry.layer-8.dev:44443/probler/probler-alarms:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -919,9 +955,11 @@ spec:
                 matchLabels:
                   app: probler-webui2
               topologyKey: kubernetes.io/hostname
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-webui2
-          image: saichler/probler-webui2:latest
+          image: registry.layer-8.dev:44443/probler/probler-webui2:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -969,9 +1007,11 @@ spec:
                 matchLabels:
                   app: probler-log-agent
               topologyKey: kubernetes.io/hostname
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-log-agent
-          image: saichler/probler-logagent:latest
+          image: registry.layer-8.dev:44443/probler/probler-logagent:latest
           imagePullPolicy: Always
           env:
             - name: LOGPATH
@@ -1016,9 +1056,11 @@ spec:
       labels:
         app: probler-topo
     spec:
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-topo
-          image: saichler/probler-topo:latest
+          image: registry.layer-8.dev:44443/probler/probler-topo:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP
@@ -1336,6 +1378,8 @@ spec:
               mountPath: /bootstrap
             - name: work
               mountPath: /work
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: apply-secret-and-cabundle
           image: bitnami/kubectl:latest
@@ -1401,9 +1445,11 @@ spec:
         app: l8collector-admission
     spec:
       serviceAccountName: l8collector-admission
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: admission
-          image: saichler/probler-admission:latest
+          image: registry.layer-8.dev:44443/probler/probler-admission:latest
           imagePullPolicy: Always
           env:
             - name: ClusterName

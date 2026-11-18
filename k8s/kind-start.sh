@@ -71,24 +71,24 @@ echo "Waiting for nodes to be Ready..."
 
 echo "Loading Docker images into KIND cluster..."
 IMAGES=(
-  saichler/probler-vnet:latest
-  saichler/logs-vnet:latest
-  saichler/probler-parser:latest
-  saichler/probler-collector:latest
-  saichler/probler-inv-box:latest
-  saichler/probler-inv-gpu:latest
-  saichler/probler-inv-k8s:latest
-  saichler/probler-orm:latest
-  saichler/probler-alarms:latest
-  saichler/probler-webui2:latest
-  saichler/probler-logagent:latest
-  saichler/probler-topo:latest
-  saichler/probler-admission:latest
-  saichler/probler-chat-orm:latest
-  saichler/probler-chat:latest
-  saichler/probler-chat-router:latest
-  saichler/probler-chat-users:latest
-  saichler/probler-chat-agent:latest
+  registry.layer-8.dev:44443/probler/probler-vnet:latest
+  registry.layer-8.dev:44443/probler/logs-vnet:latest
+  registry.layer-8.dev:44443/probler/probler-parser:latest
+  registry.layer-8.dev:44443/probler/probler-collector:latest
+  registry.layer-8.dev:44443/probler/probler-inv-box:latest
+  registry.layer-8.dev:44443/probler/probler-inv-gpu:latest
+  registry.layer-8.dev:44443/probler/probler-inv-k8s:latest
+  registry.layer-8.dev:44443/probler/probler-orm:latest
+  registry.layer-8.dev:44443/probler/probler-alarms:latest
+  registry.layer-8.dev:44443/probler/probler-webui2:latest
+  registry.layer-8.dev:44443/probler/probler-logagent:latest
+  registry.layer-8.dev:44443/probler/probler-topo:latest
+  registry.layer-8.dev:44443/probler/probler-admission:latest
+  registry.layer-8.dev:44443/probler/probler-chat-orm:latest
+  registry.layer-8.dev:44443/probler/probler-chat:latest
+  registry.layer-8.dev:44443/probler/probler-chat-router:latest
+  registry.layer-8.dev:44443/probler/probler-chat-users:latest
+  registry.layer-8.dev:44443/probler/probler-chat-agent:latest
 )
 
 for img in "${IMAGES[@]}"; do

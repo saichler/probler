@@ -24,9 +24,11 @@ spec:
         app: layer8-webui
     spec:
       hostNetwork: true
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: layer8-webui
-          image: saichler/layer8-webui:latest
+          image: registry.layer-8.dev:44443/probler/layer8-webui:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP

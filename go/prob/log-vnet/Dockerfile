@@ -1,4 +1,4 @@
-FROM saichler/builder:latest AS build
+FROM builder:latest AS build
 
 # Populated automatically by buildx from --platform (blank => host default).
 ARG TARGETOS=linux
@@ -19,7 +19,7 @@ RUN /patch.sh
 WORKDIR /home/src/github.com/saichler/build
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o logvnet
 
-FROM saichler/probler-security:latest AS final
+FROM probler-security:latest AS final
 COPY --from=build /home/src/github.com/saichler/build/logvnet /home/run/logvnet
 
 ENTRYPOINT ["/home/run/logvnet"]

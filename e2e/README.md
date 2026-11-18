@@ -35,7 +35,7 @@ Web assets and binaries are baked into the images:
 
 ```bash
 k8s/build-images.sh newui
-kind load docker-image saichler/probler-webui2:latest --name probler
+kind load docker-image registry.layer-8.dev:44443/probler/probler-webui2:latest --name probler
 kubectl --context kind-probler -n probler delete pod probler-webui2-0
 kubectl --context kind-probler -n probler wait --for=condition=Ready pod/probler-webui2-0 --timeout=120s
 npx playwright test -g "<spec or title>"

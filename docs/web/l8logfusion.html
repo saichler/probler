@@ -878,35 +878,35 @@
                 <div class="card-grid">
                     <div class="card">
                         <h4>Log Agent</h4>
-                        <p><strong>Image:</strong> <code>saichler/probler-logagent:latest</code></p>
+                        <p><strong>Image:</strong> <code>registry.layer-8.dev:44443/probler/probler-logagent:latest</code></p>
                         <div class="code-block">
 docker run -d \
   -e NODE_IP=auto \
   -e LOGPATH=/var/log \
   -e LOGFILE="*" \
   -v /var/log:/var/log:ro \
-  saichler/probler-logagent:latest
+  registry.layer-8.dev:44443/probler/probler-logagent:latest
                         </div>
                     </div>
 
                     <div class="card">
                         <h4>Log Server</h4>
-                        <p><strong>Image:</strong> <code>saichler/probler-logserver:latest</code></p>
+                        <p><strong>Image:</strong> <code>registry.layer-8.dev:44443/probler/probler-logserver:latest</code></p>
                         <div class="code-block">
 docker run -d \
   -v /data/logdb:/data/logdb \
-  saichler/probler-logserver:latest 12443
+  registry.layer-8.dev:44443/probler/probler-logserver:latest 12443
                         </div>
                     </div>
 
                     <div class="card">
                         <h4>Web UI</h4>
-                        <p><strong>Image:</strong> <code>saichler/probler-logsui:latest</code></p>
+                        <p><strong>Image:</strong> <code>registry.layer-8.dev:44443/probler/probler-logsui:latest</code></p>
                         <div class="code-block">
 docker run -d \
   -p 26000:26000 \
   -v /data/probler:/data/probler \
-  saichler/probler-logsui:latest
+  registry.layer-8.dev:44443/probler/probler-logsui:latest
                         </div>
                     </div>
                 </div>
@@ -917,13 +917,13 @@ docker run -d \
 version: '3.8'
 services:
   logserver:
-    image: saichler/probler-logserver:latest
+    image: registry.layer-8.dev:44443/probler/probler-logserver:latest
     command: ["12443"]
     volumes:
       - /data/logdb:/data/logdb
 
   logagent:
-    image: saichler/probler-logagent:latest
+    image: registry.layer-8.dev:44443/probler/probler-logagent:latest
     environment:
       - NODE_IP=auto
       - LOGPATH=/var/log
@@ -932,7 +932,7 @@ services:
       - /var/log:/var/log:ro
 
   logsui:
-    image: saichler/probler-logsui:latest
+    image: registry.layer-8.dev:44443/probler/probler-logsui:latest
     ports:
       - "26000:26000"
     volumes:

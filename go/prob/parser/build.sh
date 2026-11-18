@@ -17,6 +17,6 @@ done
 PLATFORM="linux/amd64,linux/arm64"
 [ -n "$ARCH" ] && PLATFORM="linux/$ARCH"
 
-echo "Building saichler/probler-parser:${TAG} for ${PLATFORM}"
-docker buildx build --no-cache --platform="$PLATFORM" -t saichler/probler-parser:${TAG} .
-docker push saichler/probler-parser:${TAG}
+echo "Building registry.layer-8.dev:44443/probler/probler-parser:${TAG} for ${PLATFORM}"
+docker buildx build --no-cache --platform="$PLATFORM" -t registry.layer-8.dev:44443/probler/probler-parser:${TAG} .
+docker push registry.layer-8.dev:44443/probler/probler-parser:${TAG}

@@ -1,4 +1,4 @@
-FROM saichler/builder:latest AS build
+FROM builder:latest AS build
 
 # Populated automatically by buildx from --platform (blank => host default).
 ARG TARGETOS=linux
@@ -12,7 +12,7 @@ RUN GOPROXY=direct GOPRIVATE=github.com go mod tidy
 RUN GOPROXY=direct GOPRIVATE=github.com go get $(go list -m all | awk '/^github.com\/saichler\// && $1 != "github.com/saichler/build" {print $1"@latest"}')
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o chatrouter
 
-FROM saichler/probler-security:latest AS final
+FROM probler-security:latest AS final
 
 COPY --from=build /home/src/github.com/saichler/build/chatrouter /home/run/chatrouter
 

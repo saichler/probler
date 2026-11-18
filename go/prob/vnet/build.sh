@@ -17,6 +17,6 @@ done
 PLATFORM="linux/amd64,linux/arm64"
 [ -n "$ARCH" ] && PLATFORM="linux/$ARCH"
 
-echo "Building saichler/probler-vnet:${TAG} for ${PLATFORM}"
-docker buildx build --no-cache --platform="$PLATFORM" -t saichler/probler-vnet:${TAG} .
-docker push saichler/probler-vnet:${TAG}
+echo "Building registry.layer-8.dev:44443/probler/probler-vnet:${TAG} for ${PLATFORM}"
+docker buildx build --no-cache --platform="$PLATFORM" -t registry.layer-8.dev:44443/probler/probler-vnet:${TAG} .
+docker push registry.layer-8.dev:44443/probler/probler-vnet:${TAG}

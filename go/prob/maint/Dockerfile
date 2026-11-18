@@ -1,4 +1,4 @@
-FROM saichler/builder:latest AS build
+FROM builder:latest AS build
 
 # Populated automatically by buildx from --platform (blank => host default).
 ARG TARGETOS=linux

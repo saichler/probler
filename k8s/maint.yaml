@@ -24,9 +24,11 @@ spec:
         app: probler-maint
     spec:
       hostNetwork: true
+      imagePullSecrets:
+        - name: harbor-pull
       containers:
         - name: probler-maint
-          image: saichler/probler-maint:latest
+          image: registry.layer-8.dev:44443/probler/probler-maint:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP

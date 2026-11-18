@@ -24,24 +24,24 @@ esac
 
 # dir:image
 ALL=(
-  "vnet:saichler/probler-vnet"
-  "log-vnet:saichler/logs-vnet"
-  "parser:saichler/probler-parser"
-  "collector:saichler/probler-collector"
-  "inv_box:saichler/probler-inv-box"
-  "inv_gpu:saichler/probler-inv-gpu"
-  "inv_k8s:saichler/probler-inv-k8s"
-  "orm:saichler/probler-orm"
-  "alarms:saichler/probler-alarms"
-  "newui:saichler/probler-webui2"
-  "log-agent:saichler/probler-logagent"
-  "topology:saichler/probler-topo"
-  "adcon:saichler/probler-admission"
-  "chat-orm:saichler/probler-chat-orm"
-  "chat:saichler/probler-chat"
-  "chat-router:saichler/probler-chat-router"
-  "chat-users:saichler/probler-chat-users"
-  "chat-agent:saichler/probler-chat-agent"
+  "vnet:registry.layer-8.dev:44443/probler/probler-vnet"
+  "log-vnet:registry.layer-8.dev:44443/probler/logs-vnet"
+  "parser:registry.layer-8.dev:44443/probler/probler-parser"
+  "collector:registry.layer-8.dev:44443/probler/probler-collector"
+  "inv_box:registry.layer-8.dev:44443/probler/probler-inv-box"
+  "inv_gpu:registry.layer-8.dev:44443/probler/probler-inv-gpu"
+  "inv_k8s:registry.layer-8.dev:44443/probler/probler-inv-k8s"
+  "orm:registry.layer-8.dev:44443/probler/probler-orm"
+  "alarms:registry.layer-8.dev:44443/probler/probler-alarms"
+  "newui:registry.layer-8.dev:44443/probler/probler-webui2"
+  "log-agent:registry.layer-8.dev:44443/probler/probler-logagent"
+  "topology:registry.layer-8.dev:44443/probler/probler-topo"
+  "adcon:registry.layer-8.dev:44443/probler/probler-admission"
+  "chat-orm:registry.layer-8.dev:44443/probler/probler-chat-orm"
+  "chat:registry.layer-8.dev:44443/probler/probler-chat"
+  "chat-router:registry.layer-8.dev:44443/probler/probler-chat-router"
+  "chat-users:registry.layer-8.dev:44443/probler/probler-chat-users"
+  "chat-agent:registry.layer-8.dev:44443/probler/probler-chat-agent"
 )
 
 build_security() {
@@ -49,10 +49,10 @@ build_security() {
   # built by the same toolchain, so rebuild it whenever the builder image moves.
   echo "*** Building probler security plugin image (l8secure) ***"
   (cd "${L8SECURE_DIR}/security" && ./build.sh probler "${ARCH}")
-  docker tag probler-security:latest saichler/probler-security:latest
+  docker tag probler-security:latest probler-security:latest
   # orm/alarms run on the postgres variant, built FROM probler-security:latest.
   (cd "${L8SECURE_DIR}/postgres" && ./build.sh probler "${ARCH}")
-  docker tag probler-postgres:latest saichler/probler-postgres:latest
+  docker tag probler-postgres:latest probler-postgres:latest
 }
 
 build_one() {

@@ -17,6 +17,6 @@ done
 PLATFORM="linux/amd64,linux/arm64"
 [ -n "$ARCH" ] && PLATFORM="linux/$ARCH"
 
-echo "Building saichler/probler-chat-router:${TAG} for ${PLATFORM}"
-docker buildx build --no-cache --platform="$PLATFORM" -t saichler/probler-chat-router:${TAG} .
-docker push saichler/probler-chat-router:${TAG}
+echo "Building registry.layer-8.dev:44443/probler/probler-chat-router:${TAG} for ${PLATFORM}"
+docker buildx build --no-cache --platform="$PLATFORM" -t registry.layer-8.dev:44443/probler/probler-chat-router:${TAG} .
+docker push registry.layer-8.dev:44443/probler/probler-chat-router:${TAG}

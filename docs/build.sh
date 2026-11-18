@@ -17,6 +17,6 @@ done
 PLATFORM="linux/amd64,linux/arm64"
 [ -n "$ARCH" ] && PLATFORM="linux/$ARCH"
 
-echo "Building saichler/layer8-webui:${TAG} for ${PLATFORM}"
-docker buildx build --no-cache --platform="$PLATFORM" -t saichler/layer8-webui:${TAG} .
-docker push saichler/layer8-webui:${TAG}
+echo "Building registry.layer-8.dev:44443/probler/layer8-webui:${TAG} for ${PLATFORM}"
+docker buildx build --no-cache --platform="$PLATFORM" -t registry.layer-8.dev:44443/probler/layer8-webui:${TAG} .
+docker push registry.layer-8.dev:44443/probler/layer8-webui:${TAG}

@@ -37,7 +37,7 @@ spec:
       hostNetwork: true
       containers:
         - name: probler-vnet
-          image: saichler/probler-vnet:latest
+          image: registry.layer-8.dev:44443/probler/probler-vnet:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 25998
@@ -83,7 +83,7 @@ spec:
       hostNetwork: true
       containers:
         - name: probler-logs
-          image: saichler/logs-vnet:latest
+          image: registry.layer-8.dev:44443/probler/logs-vnet:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 12888
@@ -128,7 +128,7 @@ spec:
     spec:
       containers:
         - name: probler-parser
-          image: saichler/probler-parser:latest
+          image: registry.layer-8.dev:44443/probler/probler-parser:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -171,7 +171,7 @@ spec:
     spec:
       containers:
         - name: probler-collector
-          image: saichler/probler-collector:latest
+          image: registry.layer-8.dev:44443/probler/probler-collector:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -214,7 +214,7 @@ spec:
     spec:
       containers:
         - name: probler-box
-          image: saichler/probler-inv-box:latest
+          image: registry.layer-8.dev:44443/probler/probler-inv-box:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -257,7 +257,7 @@ spec:
     spec:
       containers:
         - name: probler-gpu
-          image: saichler/probler-inv-gpu:latest
+          image: registry.layer-8.dev:44443/probler/probler-inv-gpu:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -300,7 +300,7 @@ spec:
     spec:
       containers:
         - name: probler-k8s
-          image: saichler/probler-inv-k8s:latest
+          image: registry.layer-8.dev:44443/probler/probler-inv-k8s:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -343,7 +343,7 @@ spec:
     spec:
       containers:
         - name: probler-orm
-          image: saichler/probler-orm:latest
+          image: registry.layer-8.dev:44443/probler/probler-orm:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -386,7 +386,7 @@ spec:
     spec:
       containers:
         - name: probler-chat-orm
-          image: saichler/probler-chat-orm:latest
+          image: registry.layer-8.dev:44443/probler/probler-chat-orm:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -429,7 +429,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: probler-chat
-          image: saichler/probler-chat:latest
+          image: registry.layer-8.dev:44443/probler/probler-chat:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -471,7 +471,7 @@ spec:
     spec:
       containers:
         - name: probler-chat-router
-          image: saichler/probler-chat-router:latest
+          image: registry.layer-8.dev:44443/probler/probler-chat-router:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -513,7 +513,7 @@ spec:
     spec:
       containers:
         - name: probler-chat-users
-          image: saichler/probler-chat-users:latest
+          image: registry.layer-8.dev:44443/probler/probler-chat-users:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -555,7 +555,7 @@ spec:
     spec:
       containers:
         - name: probler-chat-agent
-          image: saichler/probler-chat-agent:latest
+          image: registry.layer-8.dev:44443/probler/probler-chat-agent:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -598,7 +598,7 @@ spec:
     spec:
       containers:
         - name: probler-alarms
-          image: saichler/probler-alarms:latest
+          image: registry.layer-8.dev:44443/probler/probler-alarms:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -642,7 +642,7 @@ spec:
       hostNetwork: true
       containers:
         - name: probler-webui2
-          image: saichler/probler-webui2:latest
+          image: registry.layer-8.dev:44443/probler/probler-webui2:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -685,7 +685,7 @@ spec:
     spec:
       containers:
         - name: probler-log-agent
-          image: saichler/probler-logagent:latest
+          image: registry.layer-8.dev:44443/probler/probler-logagent:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: LOGPATH
@@ -732,7 +732,7 @@ spec:
     spec:
       containers:
         - name: probler-topo
-          image: saichler/probler-topo:latest
+          image: registry.layer-8.dev:44443/probler/probler-topo:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: NODE_IP
@@ -1117,7 +1117,7 @@ spec:
       serviceAccountName: l8collector-admission
       containers:
         - name: admission
-          image: saichler/probler-admission:latest
+          image: registry.layer-8.dev:44443/probler/probler-admission:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: ClusterName
