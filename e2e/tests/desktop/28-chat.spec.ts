@@ -230,6 +230,45 @@ test.describe('chat attachments', () => {
     });
 });
 
+test.describe('chat files from Tanto', () => {
+    // Tanto exports records with export_csv: the agent writes every matching
+    // record to a CSV attached to the answer, instead of the model typing a
+    // few rows into the chat.
+    test('Tanto attaches a CSV of all the network devices for download', async ({ app, api, consoleErrors }) => {
+        test.setTimeout(LLM_TIMEOUT + 60_000);
+        const devices = await api.total('/0/NCache', 'NetworkDevice');
+        expect(devices, 'the cluster has no network devices to export').toBeGreaterThan(0);
+        const title = unique('csv');
+        const conversationId = await createAgentConversation(api, ENV.user, title);
+
+        const chat = new Chat(app);
+        await chat.open();
+        await chat.peer(TANTO).click();
+        await expect(chat.conversation(title)).toBeVisible({ timeout: LIVE_TIMEOUT });
+        await chat.conversation(title).click();
+        await expect(chat.threadTitle()).toHaveText(title, { timeout: LIVE_TIMEOUT });
+        const answers = chat.panel().locator('.l8chat-msg-agent');
+        const before = await answers.count();
+        await chat.send('can you create a csv file, listing the Network Devices in this system and attach it for downloading in this chat?');
+        await expect(answers, 'Tanto never answered').toHaveCount(before + 1, { timeout: LLM_TIMEOUT });
+        const answer = answers.last();
+        const chip = answer.locator('.l8chat-chip').filter({ hasText: /\.csv/ });
+        await expect(chip, `Tanto's answer has no CSV attached: ${await answer.innerText()}`).toBeVisible();
+        await expect(chip.locator('.l8chat-chip-action')).toHaveText('Download');
+
+        // The attached file holds every device, one row each, under a header.
+        const reply = (await api.query<{ kind?: number | string; attachments?: { storagePath: string; fileName: string }[] }>('/81/ChatMsg',
+            `select * from ChatMessage where conversationId=${conversationId} sort-by seq descending limit 10 page 0`)).list
+            .find((m) => (m.attachments || []).length > 0);
+        expect(reply, 'the stored answer has no attachment').toBeTruthy();
+        const file = await api.put('/0/FileStore', { storagePath: reply!.attachments![0].storagePath });
+        const csv = Buffer.from(file.fileData, 'base64').toString('utf8').trim().split('\n');
+        expect(csv.length - 1, `the CSV has ${csv.length - 1} rows, not the ${devices} devices:\n${csv.slice(0, 3).join('\n')}`).toBe(devices);
+        expect(csv[0], 'the CSV has no header row').toMatch(/[A-Za-z]/);
+        assertNoPageErrors(consoleErrors);
+    });
+});
+
 test.describe('chat API', () => {
     test('a non-member can neither read nor post in a conversation', async ({ api }) => {
         const viewer = await Api.login(ENV.readOnlyUser, ENV.readOnlyPass);
