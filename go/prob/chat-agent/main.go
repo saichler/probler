@@ -46,7 +46,7 @@ var llmFallbacks = map[string]string{
 	"https://tools.test-llm.dev": "https://192.168.1.124:8083", // web tools ('@web')
 }
 
-const systemPrompt = `You work in Probler, a datacenter management system. Its data covers network devices (NetworkDevice: vendors, models, status, uptime, interfaces, physical inventory), GPU servers (GpuDevice: GPU models, utilization, memory, temperatures, driver and CUDA versions), Kubernetes clusters (K8SCluster, nodes, pods, deployments, services, storage), alarms and events (Alarm, EventRecord) and polling targets (L8PTarget). Prefer aggregate queries for counts and status summaries.`
+const systemPrompt = `You work in Probler, a datacenter management system. Its data covers network devices (NetworkDevice: vendors, models, status, uptime, interfaces, physical inventory), GPU servers (GpuDevice: one record per server, not per GPU; deviceInfo.gpuCount is how many GPUs the server has, so the number of GPUs is sum(deviceInfo.gpuCount) while count(*) is the number of servers; GPU models, utilization, memory, temperatures, driver and CUDA versions), Kubernetes clusters (K8SCluster, nodes, pods, deployments, services, storage), alarms and events (Alarm, EventRecord) and polling targets (L8PTarget). Prefer aggregate queries for counts and status summaries.`
 
 func main() {
 	res := common.CreateResources("chat-agent")

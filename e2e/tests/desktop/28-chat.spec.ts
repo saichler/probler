@@ -13,7 +13,7 @@ import { ENV } from '../../fixtures/env';
 import { Api } from '../../fixtures/api';
 import { DesktopNav } from '../../pages/DesktopNav';
 import { Popup } from '../../pages/Popup';
-import { Chat, TANTO, createConversation, openUserPage, postMessages } from '../../pages/Chat';
+import { Chat, TANTO, createAgentConversation, createConversation, openUserPage, postMessages } from '../../pages/Chat';
 
 const LLM_TIMEOUT = 240_000;
 const LIVE_TIMEOUT = 30_000;
@@ -179,11 +179,17 @@ test.describe('chat bubble', () => {
             'select * from GpuDevice limit 100 page 0')).list;
         const gpus = servers.reduce((n, s) => n + (s.deviceInfo?.gpuCount ?? 0), 0);
         expect(gpus, 'the cluster has no GPUs to count').toBeGreaterThan(0);
+        // Its own Tanto conversation: the other Tanto test asks in the default
+        // one in parallel, and a turn answers its conversation's last question.
+        const title = unique('gpus');
+        await createAgentConversation(api, ENV.user, title);
 
         const chat = new Chat(app);
         await chat.open();
         await chat.peer(TANTO).click();
-        await expect(chat.threadTitle(), 'the Tanto conversation did not open').toHaveText('Tanto', { timeout: LIVE_TIMEOUT });
+        await expect(chat.conversation(title)).toBeVisible({ timeout: LIVE_TIMEOUT });
+        await chat.conversation(title).click();
+        await expect(chat.threadTitle(), 'the Tanto conversation did not open').toHaveText(title, { timeout: LIVE_TIMEOUT });
         const answers = chat.panel().locator('.l8chat-msg-agent');
         const before = await answers.count();
         await chat.send('How many GPUs do I have? Answer with the number.');
