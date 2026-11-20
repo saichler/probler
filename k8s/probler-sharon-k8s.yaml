@@ -155,6 +155,22 @@ spec:
         probler-size: large
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-parser:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-parser
           image: registry.layer-8.dev:44443/probler/probler-parser:latest
@@ -204,6 +220,22 @@ spec:
         probler-size: medium
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-parser:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-parser
           image: registry.layer-8.dev:44443/probler/probler-parser:latest
@@ -253,6 +285,22 @@ spec:
         probler-size: small
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-parser:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-parser
           image: registry.layer-8.dev:44443/probler/probler-parser:latest
@@ -302,6 +350,22 @@ spec:
         probler-size: large
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-collector:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-collector
           image: registry.layer-8.dev:44443/probler/probler-collector:latest
@@ -351,6 +415,22 @@ spec:
         probler-size: medium
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-collector:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-collector
           image: registry.layer-8.dev:44443/probler/probler-collector:latest
@@ -400,6 +480,22 @@ spec:
         probler-size: small
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-collector:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-collector
           image: registry.layer-8.dev:44443/probler/probler-collector:latest
@@ -452,6 +548,22 @@ spec:
               topologyKey: kubernetes.io/hostname
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-inv-box:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-box
           image: registry.layer-8.dev:44443/probler/probler-inv-box:latest
@@ -504,6 +616,22 @@ spec:
               topologyKey: kubernetes.io/hostname
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-inv-gpu:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-gpu
           image: registry.layer-8.dev:44443/probler/probler-inv-gpu:latest
@@ -556,6 +684,22 @@ spec:
               topologyKey: kubernetes.io/hostname
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-inv-k8s:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-k8s
           image: registry.layer-8.dev:44443/probler/probler-inv-k8s:latest
@@ -601,6 +745,22 @@ spec:
     spec:
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-orm:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-orm
           image: registry.layer-8.dev:44443/probler/probler-orm:latest
@@ -646,6 +806,22 @@ spec:
     spec:
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-chat-orm:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-chat-orm
           image: registry.layer-8.dev:44443/probler/probler-chat-orm:latest
@@ -700,6 +876,22 @@ spec:
                     app: probler-chat
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-chat:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-chat
           image: registry.layer-8.dev:44443/probler/probler-chat:latest
@@ -753,6 +945,22 @@ spec:
                     app: probler-chat-router
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-chat-router:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-chat-router
           image: registry.layer-8.dev:44443/probler/probler-chat-router:latest
@@ -806,6 +1014,22 @@ spec:
                     app: probler-chat-users
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-chat-users:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-chat-users
           image: registry.layer-8.dev:44443/probler/probler-chat-users:latest
@@ -859,6 +1083,22 @@ spec:
                     app: probler-chat-agent
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-chat-agent:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-chat-agent
           image: registry.layer-8.dev:44443/probler/probler-chat-agent:latest
@@ -904,6 +1144,22 @@ spec:
     spec:
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-alarms:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-alarms
           image: registry.layer-8.dev:44443/probler/probler-alarms:latest
@@ -957,6 +1213,22 @@ spec:
               topologyKey: kubernetes.io/hostname
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-webui2:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000 27000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-webui2
           image: registry.layer-8.dev:44443/probler/probler-webui2:latest
@@ -1009,6 +1281,22 @@ spec:
               topologyKey: kubernetes.io/hostname
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-logagent:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000 27000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-log-agent
           image: registry.layer-8.dev:44443/probler/probler-logagent:latest
@@ -1058,6 +1346,22 @@ spec:
     spec:
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-topo:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: probler-topo
           image: registry.layer-8.dev:44443/probler/probler-topo:latest
@@ -1447,6 +1751,22 @@ spec:
       serviceAccountName: l8collector-admission
       imagePullSecrets:
         - name: harbor-pull
+      initContainers:
+        # Wait for the vnet on this node before starting: services connect to
+        # $NODE_IP and panic if the vnet does not answer their first requests.
+        # The extra sleep lets a vnet that just opened its port finish starting.
+        - name: wait-for-vnet
+          image: registry.layer-8.dev:44443/probler/probler-admission:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - for p in 26000; do until nc -z -w 2 "$NODE_IP" "$p"; do echo "waiting for vnet $NODE_IP:$p"; sleep 2; done; done; sleep 10
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
       containers:
         - name: admission
           image: registry.layer-8.dev:44443/probler/probler-admission:latest
