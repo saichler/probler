@@ -161,7 +161,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-parser:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -226,7 +226,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-parser:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -291,7 +291,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-parser:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -356,7 +356,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-collector:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -421,7 +421,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-collector:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -486,7 +486,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-collector:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -554,7 +554,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-inv-box:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -622,7 +622,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-inv-gpu:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -690,7 +690,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-inv-k8s:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -751,7 +751,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-orm:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -812,7 +812,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-chat-orm:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -882,7 +882,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-chat:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -951,7 +951,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-chat-router:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -1020,7 +1020,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-chat-users:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -1089,7 +1089,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-chat-agent:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -1150,7 +1150,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-alarms:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -1219,7 +1219,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-webui2:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -1287,7 +1287,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-logagent:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -1352,7 +1352,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-topo:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -1664,6 +1664,7 @@ spec:
       initContainers:
         - name: generate-cert
           image: alpine:3.22
+          imagePullPolicy: Always
           command:
             - /bin/sh
             - -c
@@ -1687,6 +1688,7 @@ spec:
       containers:
         - name: apply-secret-and-cabundle
           image: bitnami/kubectl:latest
+          imagePullPolicy: Always
           command:
             - /bin/sh
             - -c
@@ -1757,7 +1759,7 @@ spec:
         # The extra sleep lets a vnet that just opened its port finish starting.
         - name: wait-for-vnet
           image: registry.layer-8.dev:44443/probler/probler-admission:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c

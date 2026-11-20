@@ -70,4 +70,4 @@ cd e2e && npm install && npx playwright install chromium && npm test
 k8s/kind-stop.sh
 ```
 
-Kind manifests use `imagePullPolicy: IfNotPresent` (`Always` silently discards images loaded with `kind load`).
+All manifests, Kind included, use `imagePullPolicy: Always` (`IfNotPresent` is forbidden). Kind pods pull from Harbor, so push an image before testing it in Kind; images loaded with `kind load` are not used.
