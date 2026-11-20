@@ -863,7 +863,7 @@ metadata:
     app: probler-topo
 spec:
   serviceName: probler-topo
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: probler-topo

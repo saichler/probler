@@ -17,6 +17,7 @@
     })();
     </script>
     <!-- External CSS Files -->
+    <link rel="stylesheet" href="l8ui/shared/layer8d-theme-tokens.css">
     <link rel="stylesheet" href="css/landing-base.css">
     <link rel="stylesheet" href="css/landing-header.css">
     <link rel="stylesheet" href="css/landing-hero.css">
@@ -37,6 +38,7 @@
                 <div class="logo-subtitle">Built on Layer 8</div>
             </div>
             <ul class="nav-links">
+                <li><a href="#whats-new">What's New</a></li>
                 <li><a href="#architecture">Architecture</a></li>
                 <li><a href="#features">Coverage</a></li>
                 <li><a href="#getting-started">Start</a></li>
@@ -59,6 +61,7 @@
             <div class="container hero-layout">
                 <div id="demoBanner" class="demo-banner">
                     <div class="demo-banner-content">
+                        <span class="demo-banner-pulse"></span>
                         <span class="demo-banner-text">Live demo available</span>
                         <a href="#" onclick="showDemoCredentials(); return false;" class="demo-banner-link">Try it now &rarr;</a>
                     </div>
@@ -66,7 +69,7 @@
                 </div>
                 <p class="hero-eyebrow">Probler / Layer 8 Product</p>
                 <h1>Infrastructure discovery, modeling, and operations in one system.</h1>
-                <p class="hero-summary">Probler is the Layer 8 infrastructure platform for polling, parsing, modeling, caching, and operating complex environments across network, Kubernetes, power, and facility domains.</p>
+                <p class="hero-summary">Probler is the Layer 8 infrastructure platform for polling, parsing, modeling, caching, and operating complex environments across network, GPU, Kubernetes, power, and facility domains &mdash; with a built-in AI agent that answers questions about your live infrastructure.</p>
                 <p class="hero-secondary">Built for teams that need topology, inventory, health, automation, and operational visibility without stitching together a dozen weakly aligned tools.</p>
                 <div class="hero-proof">
                     <div class="proof-item">
@@ -79,7 +82,7 @@
                     </div>
                     <div class="proof-item">
                         <span class="proof-label">Surface area</span>
-                        <strong>Network, K8s, power, environment, automation</strong>
+                        <strong>Network, GPUs, K8s, alarms, AI chat</strong>
                     </div>
                 </div>
                 <div class="hero-buttons">
@@ -87,11 +90,52 @@
                     <a href="https://github.com/saichler/probler" class="btn-secondary">GitHub</a>
                 </div>
                 <div class="hero-badges">
-                    <span class="badge">Go 1.26.1</span>
+                    <span class="badge">Go 1.27.3</span>
+                    <span class="badge">AI Agent</span>
                     <span class="badge">Kubernetes Ready</span>
                     <span class="badge">Apache 2.0</span>
                     <span class="badge">DCIM Solution</span>
                     <span class="badge">Microservices</span>
+                    <span class="badge">E2E Tested</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="whats-new">
+            <div class="container">
+                <p class="section-kicker">What's New</p>
+                <h2 class="section-title">Ask your datacenter. Watch it update live.</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3>Tanto, the AI Agent</h3>
+                        <p>Ask in plain language: "how many GPUs do we have?", "which devices are down?". Tanto queries live Probler models as you, with your permissions, reads attached files, attaches CSV exports, answers <code>@help</code> from the built-in docs and runs live <code>@web</code> searches.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💬</div>
+                        <h3>Built-in Team Chat</h3>
+                        <p>A chat bubble on every desktop and mobile screen: conversations, groups, presence and attachments, with a per-conversation LLM profile picker, markdown rendering, copy buttons, and a movable, maximizable panel.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Secrets Never Reach the LLM</h3>
+                        <p>Sensitive fields such as Kubernetes Secret payloads are annotated in the protobuf models and masked before any data is sent to the model. Nothing is guessed from field names.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Live Detail Views</h3>
+                        <p>Network, GPU, Kubernetes and K8s Explorer popups refresh in place as data streams in, and keep your active tab. The dashboard KPIs update live on desktop and mobile.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🧪</div>
+                        <h3>Real-Browser E2E Suite</h3>
+                        <p>A Playwright suite covers every section, popup, CRUD flow, export and the AI chat, on desktop and the real mobile bundle. It runs against real images on KIND, polling simulated devices from l8opensim.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🚀</div>
+                        <h3>One-Command Local Cluster</h3>
+                        <p><code>k8s/kind-start.sh</code> starts 19 simulated network devices and 3 GPU servers, creates a KIND cluster, deploys every service and seeds the targets. One manifest per environment covers KIND, local, bare metal and GKE.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -143,14 +187,14 @@
                                 <text x="375" y="255" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Persistence)</text>
                                 <rect x="50" y="200" width="150" height="80" rx="8" fill="url(#boxGradient2)" filter="url(#shadow)"/>
                                 <text x="125" y="235" text-anchor="middle" fill="white" font-weight="bold" font-size="14">VNet</text>
-                                <text x="125" y="255" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Web Interface)</text>
+                                <text x="125" y="255" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(L8Bus Overlay)</text>
                                 <rect x="550" y="200" width="150" height="80" rx="8" fill="url(#boxGradient2)" filter="url(#shadow)"/>
                                 <text x="625" y="235" text-anchor="middle" fill="white" font-weight="bold" font-size="14">PostgreSQL</text>
                                 <text x="625" y="255" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Database)</text>
                                 <!-- Bottom Layer Services -->
                                 <rect x="50" y="350" width="150" height="80" rx="8" fill="#64748b" filter="url(#shadow)"/>
-                                <text x="125" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">TE App</text>
-                                <text x="125" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Traffic Eng.)</text>
+                                <text x="125" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">AI Chat</text>
+                                <text x="125" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Tanto Agent)</text>
                                 <rect x="225" y="350" width="150" height="80" rx="8" fill="#64748b" filter="url(#shadow)"/>
                                 <text x="300" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Topology</text>
                                 <text x="300" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(World Cities)</text>
@@ -158,8 +202,8 @@
                                 <text x="475" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Security</text>
                                 <text x="475" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Auth & Authz)</text>
                                 <rect x="575" y="350" width="150" height="80" rx="8" fill="#64748b" filter="url(#shadow)"/>
-                                <text x="650" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Logging</text>
-                                <text x="650" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Enhanced)</text>
+                                <text x="650" y="385" text-anchor="middle" fill="white" font-weight="bold" font-size="14">Alarms</text>
+                                <text x="650" y="405" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="11">(Events &amp; Policies)</text>
                                 <!-- Connection Arrows -->
                                 <path d="M 200 90 L 300 90" stroke="#0ea5e9" stroke-width="2" fill="none" marker-end="url(#arrowhead)">
                                     <animate attributeName="stroke-dasharray" from="0 10" to="10 0" dur="1s" repeatCount="indefinite"/>
@@ -298,6 +342,11 @@
                                 </div>
                             </div>
                             <div class="component-card">
+                                <div class="component-card-name">gpu inventory</div>
+                                <div class="component-card-display">Inventory GPU</div>
+                                <div class="component-card-desc">GPU server inventory with per-GPU models, utilization, memory, temperatures, driver and CUDA versions.</div>
+                            </div>
+                            <div class="component-card">
                                 <div class="component-card-name">k8s inventory</div>
                                 <div class="component-card-display">Inventory K8s</div>
                                 <div class="component-card-desc">Kubernetes cluster inventory and modeled runtime state for pods, services, workloads, and namespaces.</div>
@@ -313,6 +362,22 @@
                             <h3>Operations Apps</h3>
                         </div>
                         <div class="component-grid">
+                            <div class="component-card component-card-clickable" onclick="window.open('https://github.com/saichler/l8ai','_blank');">
+                                <div class="component-card-name">l8ai</div>
+                                <div class="component-card-display">AI Chat &amp; Agent</div>
+                                <div class="component-card-desc">Chat router, instances, presence and persistence, plus Tanto, the LLM agent that answers questions about live infrastructure as the requesting user.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8ai','_blank');">GitHub</span>
+                                </div>
+                            </div>
+                            <div class="component-card component-card-clickable" onclick="window.open('https://github.com/saichler/l8alarms','_blank');">
+                                <div class="component-card-name">l8alarms</div>
+                                <div class="component-card-display">Alarms &amp; Events</div>
+                                <div class="component-card-desc">Alarms, events, archive and correlation policies, with alarm state actions on desktop and mobile.</div>
+                                <div class="component-card-links">
+                                    <span class="component-card-github" onclick="event.stopPropagation(); window.open('https://github.com/saichler/l8alarms','_blank');">GitHub</span>
+                                </div>
+                            </div>
                             <div class="component-card component-card-clickable" onclick="openTopologyDemo()">
                                 <div class="component-card-name">l8topology</div>
                                 <div class="component-card-display">Topology</div>
@@ -433,8 +498,8 @@
                         <p>Ready</p>
                     </div>
                     <div class="stat-item">
-                        <h3>∞</h3>
-                        <p>Scalable</p>
+                        <h3>250+</h3>
+                        <p>E2E Tests</p>
                     </div>
                 </div>
             </div>
@@ -455,17 +520,17 @@
                             <p>Get the latest version of Probler from GitHub</p>
                             <div class="code-block">
 <span class="comment"># Clone the repository</span>
-<span class="command">git clone</span> https://github.com/saichler/probler.git
+<span class="command">git clone</span> --recurse-submodules https://github.com/saichler/probler.git
 <span class="command">cd</span> probler
                             </div>
                         </div>
                         <div class="step-card">
                             <div class="step-number">2</div>
-                            <h3>Build Services</h3>
-                            <p>Build all microservices using the provided script</p>
+                            <h3>Build Images</h3>
+                            <p>Build every service image locally, no push</p>
                             <div class="code-block">
-<span class="comment"># Build all services</span>
-<span class="command">cd</span> go && ./build-all-images.sh
+<span class="comment"># Build all images (or: k8s/build-images.sh newui orm)</span>
+k8s/build-images.sh
                             </div>
                         </div>
                         <div class="step-card">
@@ -473,11 +538,11 @@
                             <h3>Deploy Platform</h3>
                             <p>Choose your deployment method</p>
                             <div class="code-block">
-<span class="comment"># Kubernetes (Production)</span>
-<span class="command">cd</span> k8s && ./deploy.sh
+<span class="comment"># Local: simulators + KIND + deploy + seed</span>
+k8s/kind-start.sh
 
-<span class="comment"># Local Development</span>
-<span class="command">cd</span> go && ./build-demo.sh && ./run-demo.sh
+<span class="comment"># Kubernetes (local / baremetal / gke)</span>
+<span class="command">kubectl apply</span> -f k8s/probler-local.yaml
                             </div>
                         </div>
                         <div class="step-card">
@@ -496,10 +561,11 @@ open https://localhost:2443
                     <div style="margin-top: 3rem; text-align: center;">
                         <h3>Prerequisites</h3>
                         <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-top: 1rem;">
-                            <span class="badge">Go 1.26.1+</span>
-                            <span class="badge">Docker & Docker Compose</span>
+                            <span class="badge">Go 1.27.3+</span>
+                            <span class="badge">Docker</span>
+                            <span class="badge">KIND</span>
+                            <span class="badge">Node.js (e2e)</span>
                             <span class="badge">Kubernetes cluster</span>
-                            <span class="badge">PostgreSQL database</span>
                         </div>
                     </div>
                 </div>
@@ -519,7 +585,7 @@ open https://localhost:2443
                     <div class="feature-card">
                         <div class="feature-icon">🌍</div>
                         <h3>Network Operations Center</h3>
-                        <p>Interactive dashboard with enhanced topology visualization using world-cities database, device management, alarm correlation, real-time monitoring, and traffic engineering.</p>
+                        <p>Interactive dashboard with live KPIs, topology visualization on a world-cities map, device management, alarm correlation, real-time monitoring and an AI agent that answers questions about the data.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">🔧</div>
@@ -559,6 +625,7 @@ open https://localhost:2443
                 </div>
                 <div class="footer-section">
                     <h3>Quick Links</h3>
+                    <a href="#whats-new">What's New</a>
                     <a href="#features">Features</a>
                     <a href="#architecture">Architecture</a>
                     <a href="#getting-started">Getting Started</a>
@@ -566,7 +633,8 @@ open https://localhost:2443
                 </div>
                 <div class="footer-section">
                     <h3>Technology</h3>
-                    <a href="#">Go 1.26.1</a>
+                    <a href="#">Go 1.27.3</a>
+                    <a href="#">AI Agent (l8ai)</a>
                     <a href="#">Kubernetes</a>
                     <a href="#">PostgreSQL</a>
                     <a href="#">gRPC & REST APIs</a>

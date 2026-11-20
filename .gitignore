@@ -27,3 +27,4 @@ go.work.sum
 k8s/.*.log
 k8s/.sim.log
 k8s/kind-cluster.yaml
+go/.build-logs/

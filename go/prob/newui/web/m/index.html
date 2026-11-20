@@ -190,17 +190,27 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
-            padding: 10px 14px;
-            border: 1px solid var(--color-border);
-            border-radius: 999px;
-            background: var(--color-surface);
-            margin-bottom: 16px;
+            gap: 10px;
+            padding: 14px 12px 14px 18px;
+            border: 2px solid var(--color-accent);
+            border-radius: 20px;
+            background: color-mix(in srgb, var(--color-accent) 10%, var(--color-surface));
+            margin-bottom: 20px;
+            animation: demoBannerGlow 2.5s ease-in-out infinite;
         }
-        .demo-banner-content { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .demo-banner-text { color: var(--color-text-secondary); font-size: 13px; font-weight: 500; }
-        .demo-banner-link { font-size: 13px; font-weight: 600; }
-        .demo-banner-close { border: 0; background: transparent; color: var(--color-text-muted); font-size: 18px; cursor: pointer; padding: 4px; }
+        .demo-banner-content { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .demo-banner-pulse { width: 12px; height: 12px; border-radius: 50%; background: #22c55e; flex-shrink: 0; animation: demoLivePulse 1.5s ease-in-out infinite; }
+        .demo-banner-text { color: var(--color-text); font-size: 17px; font-weight: 700; }
+        .demo-banner-link { display: inline-flex; align-items: center; padding: 9px 18px; border-radius: 999px; background: var(--color-accent); color: #fff; font-size: 16px; font-weight: 700; }
+        .demo-banner-close { border: 0; background: transparent; color: var(--color-text-muted); font-size: 24px; line-height: 1; cursor: pointer; padding: 4px; }
+        @keyframes demoBannerGlow {
+            0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 0%, transparent); }
+            50% { box-shadow: 0 0 18px 2px color-mix(in srgb, var(--color-accent) 35%, transparent); }
+        }
+        @keyframes demoLivePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+            50% { transform: scale(1.15); box-shadow: 0 0 0 7px rgba(34, 197, 94, 0); }
+        }
         .demo-banner.hidden { display: none; }
 
         /* ── Hero ── */
@@ -551,6 +561,7 @@
     <div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
     <nav class="nav-drawer" id="navDrawer">
         <button class="nav-drawer-close" onclick="closeNav()">&times;</button>
+        <a href="#whats-new" onclick="closeNav()">What's New</a>
         <a href="#architecture" onclick="closeNav()">Architecture</a>
         <a href="#features" onclick="closeNav()">Coverage</a>
         <a href="#getting-started" onclick="closeNav()">Start</a>
@@ -568,6 +579,7 @@
         <section class="hero">
             <div id="demoBanner" class="demo-banner">
                 <div class="demo-banner-content">
+                    <span class="demo-banner-pulse"></span>
                     <span class="demo-banner-text">Live demo available</span>
                     <a href="#" onclick="showDemoCredentials(); return false;" class="demo-banner-link">Try it now &rarr;</a>
                 </div>
@@ -575,7 +587,7 @@
             </div>
             <p class="hero-eyebrow">Probler / Layer 8 Product</p>
             <h1>Infrastructure discovery, modeling, and operations in one system.</h1>
-            <p class="hero-summary">Probler is the Layer 8 infrastructure platform for polling, parsing, modeling, caching, and operating complex environments across network, Kubernetes, power, and facility domains.</p>
+            <p class="hero-summary">Probler is the Layer 8 infrastructure platform for polling, parsing, modeling, caching, and operating complex environments across network, GPU, Kubernetes, power, and facility domains &mdash; with a built-in AI agent that answers questions about your live infrastructure.</p>
             <p class="hero-secondary">Built for teams that need topology, inventory, health, automation, and operational visibility without stitching together a dozen weakly aligned tools.</p>
             <div class="hero-proof">
                 <div class="proof-item">
@@ -588,7 +600,7 @@
                 </div>
                 <div class="proof-item">
                     <span class="proof-label">Surface area</span>
-                    <strong>Network, K8s, power, environment, automation</strong>
+                    <strong>Network, GPUs, K8s, alarms, AI chat</strong>
                 </div>
             </div>
             <div class="hero-buttons">
@@ -596,11 +608,45 @@
                 <a href="https://github.com/saichler/probler" target="_blank" class="btn-secondary">GitHub</a>
             </div>
             <div class="hero-badges">
-                <span class="badge">Go 1.26.1</span>
+                <span class="badge">Go 1.27.3</span>
+                <span class="badge">AI Agent</span>
                 <span class="badge">Kubernetes Ready</span>
                 <span class="badge">Apache 2.0</span>
                 <span class="badge">DCIM Solution</span>
                 <span class="badge">Microservices</span>
+                <span class="badge">E2E Tested</span>
+            </div>
+        </section>
+
+        <!-- What's New -->
+        <section class="content-section section-white" id="whats-new">
+            <p class="section-kicker">What's New</p>
+            <h2>Ask your datacenter. Watch it update live.</h2>
+            <div class="docs-grid">
+                <div class="doc-card">
+                    <h3>Tanto, the AI Agent</h3>
+                    <p>Ask in plain language: "how many GPUs do we have?". Tanto queries live data as you, reads attached files, attaches CSV exports, and answers <code>@help</code> and <code>@web</code>.</p>
+                </div>
+                <div class="doc-card">
+                    <h3>Built-in Team Chat</h3>
+                    <p>A chat bubble on every screen: conversations, groups, presence, attachments, an LLM profile picker, markdown and copy buttons.</p>
+                </div>
+                <div class="doc-card">
+                    <h3>Secrets Never Reach the LLM</h3>
+                    <p>Sensitive fields such as Kubernetes Secret payloads are annotated in the models and masked before anything is sent to the LLM.</p>
+                </div>
+                <div class="doc-card">
+                    <h3>Live Detail Views</h3>
+                    <p>Network, GPU and Kubernetes details refresh in place as data streams in. Dashboard KPIs update live.</p>
+                </div>
+                <div class="doc-card">
+                    <h3>Real-Browser E2E Suite</h3>
+                    <p>Playwright covers every section, popup, CRUD flow, export and the chat, on desktop and mobile, against KIND and l8opensim.</p>
+                </div>
+                <div class="doc-card">
+                    <h3>One-Command Local Cluster</h3>
+                    <p><code>k8s/kind-start.sh</code> starts simulated network and GPU devices, creates a KIND cluster, deploys and seeds it.</p>
+                </div>
             </div>
         </section>
 
@@ -642,7 +688,7 @@
                         <!-- Middle layer -->
                         <rect x="10" y="100" width="100" height="50" rx="6" fill="url(#g2)"/>
                         <text x="60" y="123" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">VNet</text>
-                        <text x="60" y="137" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="9">Web Interface</text>
+                        <text x="60" y="137" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="9">L8Bus Overlay</text>
                         <rect x="130" y="100" width="100" height="50" rx="6" fill="url(#g2)"/>
                         <text x="180" y="123" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">ORM</text>
                         <text x="180" y="137" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="9">Persistence</text>
@@ -657,8 +703,8 @@
                         <path d="M230 125 L250 125" stroke="#06b6d4" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
                         <!-- Bottom layer -->
                         <rect x="10" y="190" width="78" height="50" rx="6" fill="#64748b"/>
-                        <text x="49" y="213" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">TE App</text>
-                        <text x="49" y="227" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="8">Traffic Eng.</text>
+                        <text x="49" y="213" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">AI Chat</text>
+                        <text x="49" y="227" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="8">Tanto Agent</text>
                         <rect x="98" y="190" width="78" height="50" rx="6" fill="#64748b"/>
                         <text x="137" y="213" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">Topology</text>
                         <text x="137" y="227" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="8">World Cities</text>
@@ -666,8 +712,8 @@
                         <text x="225" y="213" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">Security</text>
                         <text x="225" y="227" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="8">Auth &amp; Authz</text>
                         <rect x="274" y="190" width="78" height="50" rx="6" fill="#64748b"/>
-                        <text x="313" y="213" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">Logging</text>
-                        <text x="313" y="227" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="8">Enhanced</text>
+                        <text x="313" y="213" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">Alarms</text>
+                        <text x="313" y="227" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-size="8">Events</text>
                         <!-- Vertical to bottom -->
                         <path d="M60 150 L49 190" stroke="#64748b" stroke-width="1.5" fill="none" stroke-dasharray="4,4"/>
                         <path d="M180 150 L137 190" stroke="#64748b" stroke-width="1.5" fill="none" stroke-dasharray="4,4"/>
@@ -771,6 +817,18 @@
 
             <div class="category-header"><h3>Operations Apps</h3></div>
             <div class="component-grid">
+                <div class="component-card" onclick="window.open('https://github.com/saichler/l8ai','_blank')">
+                    <div class="component-card-name">l8ai</div>
+                    <div class="component-card-display">AI Chat &amp; Agent</div>
+                    <div class="component-card-desc">Chat services plus Tanto, the LLM agent that answers questions about live infrastructure.</div>
+                    <div class="component-card-links"><span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8ai','_blank')">GitHub</span></div>
+                </div>
+                <div class="component-card" onclick="window.open('https://github.com/saichler/l8alarms','_blank')">
+                    <div class="component-card-name">l8alarms</div>
+                    <div class="component-card-display">Alarms &amp; Events</div>
+                    <div class="component-card-desc">Alarms, events, archive and correlation policies with alarm state actions.</div>
+                    <div class="component-card-links"><span class="component-card-github" onclick="event.stopPropagation();window.open('https://github.com/saichler/l8alarms','_blank')">GitHub</span></div>
+                </div>
                 <div class="component-card" onclick="window.open('../docs/l8topology.html','_blank')">
                     <div class="component-card-name">l8topology</div>
                     <div class="component-card-display">Topology</div>
@@ -864,7 +922,7 @@
                 <div class="stat-item"><h3>20+</h3><p>Microservices</p></div>
                 <div class="stat-item"><h3>100%</h3><p>Go Language</p></div>
                 <div class="stat-item"><h3>K8s</h3><p>Ready</p></div>
-                <div class="stat-item"><h3>&infin;</h3><p>Scalable</p></div>
+                <div class="stat-item"><h3>250+</h3><p>E2E Tests</p></div>
             </div>
         </section>
 
@@ -879,25 +937,25 @@
                     <h3>Clone Repository</h3>
                     <p>Get the latest version of Probler from GitHub</p>
                     <div class="code-block"><span class="comment"># Clone the repository</span>
-<span class="command">git clone</span> https://github.com/saichler/probler.git
+<span class="command">git clone</span> --recurse-submodules https://github.com/saichler/probler.git
 <span class="command">cd</span> probler</div>
                 </div>
                 <div class="step-card">
                     <div class="step-number">2</div>
-                    <h3>Build Services</h3>
-                    <p>Build all microservices using the provided script</p>
-                    <div class="code-block"><span class="comment"># Build all services</span>
-<span class="command">cd</span> go && ./build-all-images.sh</div>
+                    <h3>Build Images</h3>
+                    <p>Build every service image locally, no push</p>
+                    <div class="code-block"><span class="comment"># Build all images</span>
+k8s/build-images.sh</div>
                 </div>
                 <div class="step-card">
                     <div class="step-number">3</div>
                     <h3>Deploy Platform</h3>
                     <p>Choose your deployment method</p>
-                    <div class="code-block"><span class="comment"># Kubernetes (Production)</span>
-<span class="command">cd</span> k8s && ./deploy.sh
+                    <div class="code-block"><span class="comment"># Local: simulators + KIND + deploy + seed</span>
+k8s/kind-start.sh
 
-<span class="comment"># Local Development</span>
-<span class="command">cd</span> go && ./build-demo.sh && ./run-demo.sh</div>
+<span class="comment"># Kubernetes (local / baremetal / gke)</span>
+<span class="command">kubectl apply</span> -f k8s/probler-local.yaml</div>
                 </div>
                 <div class="step-card">
                     <div class="step-number">4</div>
@@ -912,10 +970,11 @@ open https://localhost:2443
             <div class="prereqs">
                 <h3>Prerequisites</h3>
                 <div class="prereqs-badges">
-                    <span class="badge">Go 1.26.1+</span>
-                    <span class="badge">Docker &amp; Docker Compose</span>
+                    <span class="badge">Go 1.27.3+</span>
+                    <span class="badge">Docker</span>
+                    <span class="badge">KIND</span>
+                    <span class="badge">Node.js (e2e)</span>
                     <span class="badge">Kubernetes cluster</span>
-                    <span class="badge">PostgreSQL database</span>
                 </div>
             </div>
         </section>
@@ -931,7 +990,7 @@ open https://localhost:2443
                 </div>
                 <div class="doc-card">
                     <h3>Network Operations Center</h3>
-                    <p>Interactive dashboard with topology visualization, device management, alarm correlation, and real-time monitoring.</p>
+                    <p>Live KPIs, topology visualization, device management, alarm correlation, real-time monitoring and an AI agent for questions about the data.</p>
                 </div>
                 <div class="doc-card">
                     <h3>Configuration Guide</h3>
@@ -975,6 +1034,7 @@ Password: admin</div>
         <div class="footer-grid">
             <div class="footer-section">
                 <h3>Quick Links</h3>
+                <a href="#whats-new">What's New</a>
                 <a href="#features">Features</a>
                 <a href="#architecture">Architecture</a>
                 <a href="#getting-started">Getting Started</a>
@@ -982,7 +1042,8 @@ Password: admin</div>
             </div>
             <div class="footer-section">
                 <h3>Technology</h3>
-                <a href="#">Go 1.26.1</a>
+                <a href="#">Go 1.27.3</a>
+                <a href="#">AI Agent (l8ai)</a>
                 <a href="#">Kubernetes</a>
                 <a href="#">PostgreSQL</a>
                 <a href="#">gRPC &amp; REST APIs</a>
