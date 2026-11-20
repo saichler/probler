@@ -21,16 +21,19 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
 // and detaches it afterwards -- otherwise every test would leave a listener
 // behind on a page that lives for hundreds of tests.
 
-import { Page, expect } from '@playwright/test';
+import { Page, Request, expect } from '@playwright/test';
 
 const byPage = new WeakMap<Page, QueryRecorder>();
 
 export class QueryRecorder {
     private queries: string[] = [];
-    private readonly onRequest: (req: { url(): string }) => void;
+    private readonly onRequest: (req: Request) => void;
 
     private constructor(page: Page) {
         this.onRequest = (req) => {
+            // A redirected query fires a second request event for its target;
+            // count each query the page issues once.
+            if (req.redirectedFrom()) return;
             const url = req.url();
             if (!url.includes('body=')) return;
             try {

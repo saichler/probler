@@ -91,7 +91,7 @@ else
     if [ "$want" = "security" ]; then build_security; continue; fi
     found=""
     for entry in "${ALL[@]}"; do
-      if [ "${entry%%:*}" = "$want" ]; then build_one "$want" "${entry##*:}"; found=1; fi
+      if [ "${entry%%:*}" = "$want" ]; then build_one "$want" "${entry#*:}"; found=1; fi
     done
     [ -n "$found" ] || { echo "unknown service dir: $want"; exit 1; }
   done

@@ -15,7 +15,9 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
 //                                  a second client, the callback fires
 //   3. a screen is live         -- an open table shows a row another client
 //                                  created and drops it when that client
-//                                  deletes it, with no re-fetch
+//                                  deletes it: an add, or a delete of a row on
+//                                  the page, re-fetches the page exactly once
+//                                  (plans/websocket-page-scoped-notifications.md)
 //   4. live slots               -- at most 5 components are live; opening a
 //                                  6th unregisters the oldest, which then
 //                                  stops receiving changes
@@ -139,7 +141,7 @@ test.describe('realtime', () => {
         }
     });
 
-    test('an open table shows another client\'s add and delete without re-fetching', async ({ app, api }) => {
+    test('an open table shows another client\'s add and delete with one page re-fetch each', async ({ app, api }) => {
         const nav = new DesktopNav(app);
         await nav.openSection('alarms');
         await nav.openModule('alarms');
@@ -157,19 +159,19 @@ test.describe('realtime', () => {
             const created = await api.query('/10/AlmFilter', `select * from AlarmFilter where name=${code}`);
             id = String(created.list[0]?.filterId ?? '');
 
-            // A live add lands at the top of page 1, straight from the push.
+            // An add changes which rows the page holds: the table re-fetches
+            // its page once (its position comes from the server's sort).
             await expect(row, 'the row another client created never appeared in the open table')
                 .toHaveCount(1, { timeout: 15000 });
+            expect(queries.forModel('AlarmFilter').length - before,
+                'an add should re-fetch the page exactly once').toBe(1);
 
             await api.deleteById('/10/AlmFilter', 'AlarmFilter', 'filterId', id);
             id = '';
             await expect(row, 'the row another client deleted is still in the open table')
                 .toHaveCount(0, { timeout: 15000 });
-
-            expect(
-                queries.forModel('AlarmFilter').length,
-                'the table re-fetched to show the change -- live updates must apply the pushed record'
-            ).toBe(before);
+            expect(queries.forModel('AlarmFilter').length - before,
+                'a delete of a row on the page should re-fetch the page exactly once').toBe(2);
         } finally {
             if (id) await api.deleteById('/10/AlmFilter', 'AlarmFilter', 'filterId', id).catch(() => undefined);
         }
