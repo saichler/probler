@@ -10,6 +10,8 @@ export interface WsPush {
     action: string;
     modelType: string;
     primaryKey: string;
+    /** The pushed record was included (an update without one makes the view re-fetch). */
+    hasRecord: boolean;
 }
 
 /**
@@ -25,7 +27,7 @@ export function recordWsPushes(page: Page): WsPush[] {
             try {
                 const m = JSON.parse(text);
                 if (m && typeof m.modelType === 'string') {
-                    pushes.push({ action: m.action, modelType: m.modelType, primaryKey: String(m.primaryKey) });
+                    pushes.push({ action: m.action, modelType: m.modelType, primaryKey: String(m.primaryKey), hasRecord: !!m.record });
                 }
             } catch {
                 /* not a change notification */

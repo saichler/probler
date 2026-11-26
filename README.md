@@ -145,8 +145,7 @@ git submodule update --init --recursive
 The recommended local environment is a KIND cluster that runs the real images, polling [l8opensim](https://github.com/saichler/l8opensim) simulated devices. It expects `../l8opensim` and `../l8secure` checked out next to this repository.
 
 ```bash
-k8s/build-images.sh                 # build all images locally, no push (PARALLEL=4)
-                                    # or only some: k8s/build-images.sh newui orm
+go/build-all-images.sh              # build all images (PARALLEL=4)
 k8s/kind-start.sh                   # simulator (sudo) -> cluster -> deploy -> seed targets
 # open https://localhost:2443
 k8s/kind-stop.sh                    # also stops the simulator unless KEEP_SIM=1
@@ -154,10 +153,10 @@ k8s/kind-stop.sh                    # also stops the simulator unless KEEP_SIM=1
 
 | Script | What it does |
 |--------|--------------|
-| `k8s/build-images.sh [dirs...]` | Builds the security plugin images (via `../l8secure`) and every service image for the host arch, loaded locally |
+| `go/build-all-images.sh [tag] [arch]` | Builds every service image |
 | `k8s/sim-start.sh` / `sim-stop.sh` | Runs l8opensim: 19 network devices at `10.20.30.1/24` and 3 GPU servers at `20.20.30.1/24` |
 | `k8s/sim-route-kind.sh` | Lets collector pods reach the simulator from the KIND docker bridge |
-| `k8s/kind-start.sh` | Simulator → cluster → load images → deploy `probler-kind.yaml` in 3 phases → routes → seed. `BUILD=1` builds first, `SKIP_SIM=1` skips the simulator |
+| `k8s/kind-start.sh` | Simulator → cluster → load images → deploy `probler-kind.yaml` in 3 phases → routes → seed. `SKIP_SIM=1` skips the simulator |
 | `k8s/seed-mocks.sh` | Registers the simulator targets (`go run ./tests/seed`) and waits for live NetworkDevice / GpuDevice / K8SCluster data |
 | `k8s/kind-stop.sh` | Stops the simulator and deletes the cluster |
 
@@ -265,7 +264,6 @@ probler/
 ├── k8s/                             # Kubernetes manifests & local env scripts
 │   ├── probler-{kind,local,baremetal,gke,sharon-k8s}.yaml  # One manifest per environment
 │   ├── kind-start.sh / kind-stop.sh # KIND lifecycle
-│   ├── build-images.sh              # Local image build (no push)
 │   ├── sim-*.sh                     # l8opensim simulator control
 │   ├── seed-mocks.sh                # Seed simulator targets
 │   └── deploy-adm.sh                # Admission controller

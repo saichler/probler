@@ -7,8 +7,11 @@ collectors poll l8opensim simulated devices.
 ## Run
 
 ```bash
-# 1. images (local build, no push) -- only when code changed
-k8s/build-images.sh                # or: k8s/build-images.sh newui orm
+# 1. images -- only when code changed
+#    a. the TEST security image (admin without TFA; never push it), from ../l8secure
+(cd ../l8secure && ./build-images.sh probler amd64 test)
+#    b. every probler image, built on top of it
+go/build-all-images.sh
 
 # 2. simulators + cluster + seed (kind-start runs sim-start and seed-mocks)
 k8s/kind-start.sh
@@ -34,8 +37,7 @@ Overrides: `PROBLER_BASE_URL` (default `https://localhost:2443`), `PROBLER_USER`
 Web assets and binaries are baked into the images:
 
 ```bash
-k8s/build-images.sh newui
-kind load docker-image registry.layer-8.dev:44443/probler/probler-webui2:latest --name probler
+go/build-all-images.sh
 kubectl --context kind-probler -n probler delete pod probler-webui2-0
 kubectl --context kind-probler -n probler wait --for=condition=Ready pod/probler-webui2-0 --timeout=120s
 npx playwright test -g "<spec or title>"

@@ -1,6 +1,7 @@
 (function() {
     'use strict';
-    // Endpoints from login.json: /0/Health, /73/users, /74/roles, /75/Creds
+    // Endpoints from login.json: /0/Health, /73/users, /74/roles, /75/Creds, /71/ApiKeys
+    var S = { endpoint: '/71/ApiKeys', label: 'API Keys', model: 'L8ApiKey', idField: 'keyId' };
     window.PROBLER_NAV_CONFIG_SYSTEM = {
         system: {
             subModules: [
@@ -8,7 +9,8 @@
                 { key: 'security', label: 'Security', icon: 'security' },
                 { key: 'modules', label: 'Modules', icon: 'system' },
                 { key: 'logs', label: 'Logs', icon: 'logs' },
-                { key: 'dataimport', label: 'Data Import', icon: 'system' }
+                { key: 'dataimport', label: 'Data Import', icon: 'system' },
+                { key: 'integrations', label: 'Integrations', icon: 'system' }
             ],
             services: {
                 // Health — READ-ONLY monitoring table
@@ -41,6 +43,12 @@
                         onEdit: function(id, item) { if (typeof MobileSecurityCredentialsCRUD !== 'undefined') MobileSecurityCredentialsCRUD.openEdit({ endpoint: '/75/Creds', label: 'Credentials', model: 'L8Credentials', idField: 'id' }, item); },
                         onDelete: function(id) { if (typeof MobileSecurityCredentialsCRUD !== 'undefined') MobileSecurityCredentialsCRUD.confirmDelete({ endpoint: '/75/Creds', label: 'Credentials', model: 'L8Credentials', idField: 'id' }, id); }
                     },
+                    { key: 'apikeys', label: 'API Keys', icon: 'security', endpoint: S.endpoint, model: S.model, idField: S.idField, supportedViews: ['table'],
+                        onRowClick: function(item) { L8SysApiKeysMobile.showDetails(S, item); },
+                        onAdd: function() { L8SysApiKeysMobile.openAdd(S); },
+                        onEdit: function(id, item) { L8SysApiKeysMobile.openEdit(S, item); },
+                        onDelete: function(id) { L8SysApiKeysMobile.confirmDelete(S, id); }
+                    },
                     // Desktop parity (l8sys-config.js security: events, portals)
                     { key: 'events', label: 'Events', icon: 'events', endpoint: '/76/Events', model: 'EventRecord', idField: 'eventId', readOnly: true, supportedViews: ['table'],
                         onRowClick: ProblerMobileDetails.readOnly({ endpoint: '/76/Events', label: 'Events', model: 'EventRecord', idField: 'eventId' }) },
@@ -65,6 +73,10 @@
                 // Features: import template CRUD, data source config, column mapping, import execution
                 'dataimport': [
                     { key: 'data-import', label: 'Data Import', icon: 'system', customInit: 'L8DataImport', customContainer: 'dataimport-container' }
+                ],
+                // Integrations — EDITABLE table (desktop parity: l8sys-config.js integrations, l8notify IntegCfg)
+                'integrations': [
+                    { key: 'IntegCfg', label: 'Integration Configs', icon: 'system', endpoint: '/78/IntegCfg', model: 'IntegrationConfig', idField: 'integrationId', supportedViews: ['table'] }
                 ]
             }
         }

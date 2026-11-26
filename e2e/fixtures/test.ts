@@ -201,14 +201,22 @@ async function lendSession(
     }
 }
 
-/** Desktop reset: nothing left open, and the next openSection() reloads for real. */
+/**
+ * Desktop reset: nothing left open (popups and the chat panel -- a chat spec on
+ * this worker leaves it open over the page, and it intercepts the next test's
+ * clicks), and the next openSection() reloads for real.
+ */
 async function resetDesktop(page: Page): Promise<void> {
     await dismissOpenPopups(page);
+    await page.evaluate(() => {
+        (window as unknown as { L8ChatBubble?: { close(): void } }).L8ChatBubble?.close();
+    });
+    await expect(page.locator('.l8chat-bubble-open')).toHaveCount(0, { timeout: 5000 });
     await markSectionStale(page);
 }
 
 /**
- * Mobile reset: no popup left open, and back to the home grid -- both through
+ * Mobile reset: no popup or chat panel left open, and back to the home grid -- both through
  * the app's own API. A detail popup left by the previous test otherwise sits
  * over the grid and intercepts every tap of this one.
  */
@@ -217,11 +225,14 @@ async function resetMobile(page: Page): Promise<void> {
         const w = window as unknown as {
             Layer8MPopup?: { closeAll(): void };
             Layer8MNav?: { showHome(): void };
+            L8ChatBubbleMobile?: { close(): void };
         };
         w.Layer8MPopup?.closeAll();
+        w.L8ChatBubbleMobile?.close();
         w.Layer8MNav?.showHome();
     });
     await expect(page.locator('.mobile-popup-overlay.open')).toHaveCount(0, { timeout: 5000 });
+    await expect(page.locator('.l8chat-m-open')).toHaveCount(0, { timeout: 5000 });
     await expect(page.locator('.nav-card[data-module]').first()).toBeVisible({ timeout: 15000 });
 }
 
@@ -272,20 +283,38 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
         await lendSession(mobileSession, consoleErrors, testInfo, resetMobile, use);
     },
 
-    freshApp: async ({ page, context, api, consoleErrors }, use) => {
+    // A fresh page logs in on its own: the server keeps one websocket per
+    // login (aaaId), so sharing the worker's token with its still-open shared
+    // pages makes them replace each other's socket -- every reconnect
+    // re-fetches the live tables and loses the pushes in between.
+    freshApp: async ({ page, context, consoleErrors }, use) => {
         new CaptureRouter(page).current = consoleErrors;
-        await seedSession(context, api.token, ENV.user);
-        await page.goto(ENV.desktopShell);
-        await waitForDesktopReady(page);
-        await use(page);
+        const own = await Api.login();
+        try {
+            await seedSession(context, own.token, ENV.user);
+            await page.goto(ENV.desktopShell);
+            await waitForDesktopReady(page);
+            await use(page);
+        } finally {
+            await own.dispose();
+        }
     },
 
-    freshMobile: async ({ page, context, api, consoleErrors }, use) => {
+    // A fresh page logs in on its own: the server keeps one websocket per
+    // login (aaaId), so sharing the worker's token with its still-open shared
+    // pages makes them replace each other's socket -- every reconnect
+    // re-fetches the live tables and loses the pushes in between.
+    freshMobile: async ({ page, context, consoleErrors }, use) => {
         new CaptureRouter(page).current = consoleErrors;
-        await seedSession(context, api.token, ENV.user);
-        await page.goto(ENV.mobileShell);
-        await waitForMobileReady(page);
-        await use(page);
+        const own = await Api.login();
+        try {
+            await seedSession(context, own.token, ENV.user);
+            await page.goto(ENV.mobileShell);
+            await waitForMobileReady(page);
+            await use(page);
+        } finally {
+            await own.dispose();
+        }
     }
 });
 

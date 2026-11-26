@@ -52,6 +52,10 @@
     MobileSystem.primaryKeys.L8Credentials = 'id';
     MobileSystem.primaryKeys.L8Portal = 'portalId';
 
+    // ── API Key columns: the shared l8ui component (L8SysApiKeysMobile) ──
+    MobileSystem.columns.L8ApiKey = L8SysApiKeysMobile.columns;
+    MobileSystem.primaryKeys.L8ApiKey = 'keyId';
+
     // ── Portal columns (desktop: l8security-columns.js L8Portal) ────
     MobileSystem.columns.L8Portal = [
         ...col.col('portalId', 'Portal ID'),
@@ -61,8 +65,42 @@
         })
     ];
 
+    // ── Integration Config (desktop: l8security-columns.js / -forms.js IntegrationConfig) ──
+    var INTEGRATION_TYPES = { 0: 'Unspecified', 1: 'SMTP', 2: 'Webhook', 3: 'Slack', 4: 'PagerDuty', 5: 'Custom' };
+    MobileSystem.primaryKeys.IntegrationConfig = 'integrationId';
+    MobileSystem.columns.IntegrationConfig = [
+        ...col.col('name', 'Name'),
+        ...col.custom('type', 'Type', function(item) {
+            return INTEGRATION_TYPES[item.type] || String(item.type || '');
+        }),
+        ...col.col('host', 'Host'),
+        ...col.col('fromAddress', 'From Address')
+    ];
+
     // ── Forms ───────────────────────────────────────────────────────
     MobileSystem.forms = MobileSystem.forms || {};
+
+    MobileSystem.forms.IntegrationConfig = f.form('Integration Config', [
+        f.section('Identity', [
+            ...f.text('name', 'Name (e.g. "smtp")', true),
+            ...f.select('type', 'Type', INTEGRATION_TYPES)
+        ]),
+        f.section('SMTP Settings', [
+            ...f.text('host', 'SMTP Host'),
+            ...f.number('port', 'SMTP Port'),
+            ...f.checkbox('useTls', 'Use STARTTLS'),
+            ...f.text('fromAddress', 'From Email Address'),
+            ...f.text('fromName', 'From Display Name')
+        ]),
+        f.section('Credentials', [
+            ...f.text('credentialKey', 'Credential Key (security store)')
+        ]),
+        f.section('Webhook / Advanced', [
+            ...f.text('url', 'URL'),
+            ...f.number('retryCount', 'Retry Count'),
+            ...f.number('timeoutMs', 'Timeout (ms)')
+        ])
+    ]);
 
     MobileSystem.forms.L8User = f.form('User', [
         f.section('User Info', [

@@ -24,11 +24,6 @@ if ! command -v kind &>/dev/null; then
   echo "kind installed: $(kind version)"
 fi
 
-# Optional: BUILD=1 builds every image locally first (k8s/build-images.sh).
-if [ -n "${BUILD}" ]; then
-  "${SCRIPT_DIR}/build-images.sh"
-fi
-
 # Simulated devices (l8opensim on the host) feed the network/GPU pipeline.
 # SKIP_SIM=1 deploys without them.
 if [ -z "${SKIP_SIM}" ]; then

@@ -116,11 +116,18 @@ export class Chat {
     /** Asserts el is on screen and inside the column's (folded) box. */
     async expectInsideColumn(col: 'sidebar' | 'convs', el: Locator, what: string): Promise<void> {
         await expect(el, `${what} is not visible`).toBeVisible();
-        const c = (await this.column(col).boundingBox())!;
-        const b = (await el.boundingBox())!;
-        expect(b.width, `${what} has no size`).toBeGreaterThan(0);
-        expect(b.x >= c.x && b.x + b.width <= c.x + c.width,
-            `${what} (x ${b.x}..${b.x + b.width}) is clipped by the ${col} column (x ${c.x}..${c.x + c.width})`).toBe(true);
+        // The sidebar re-renders on every presence change (other sessions log in
+        // and out during a run), so an element can be detached between the
+        // visibility check and the measurement: measure until both boxes exist.
+        let last = '';
+        await expect.poll(async () => {
+            const c = await this.column(col).boundingBox();
+            const b = await el.boundingBox();
+            if (!c || !b || b.width <= 0) { last = `${what} has no size`; return false; }
+            last = `${what} (x ${b.x}..${b.x + b.width}) is clipped by the ${col} column (x ${c.x}..${c.x + c.width})`;
+            return b.x >= c.x && b.x + b.width <= c.x + c.width;
+        }, { message: `${what} is not inside the ${col} column`, timeout: 5000 }).toBe(true)
+            .catch(() => { throw new Error(last); });
     }
 
     // ---- moving the panel (desktop) ----

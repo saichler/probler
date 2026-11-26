@@ -180,15 +180,11 @@ export function desktopServicesWithAlternateViews() {
 export const NO_BACKEND_MODELS = ['Hypervisor', 'VirtualMachine'];
 
 /**
- * Services whose CRUD is broken by a known UPSTREAM l8ui bug and is tracked by
- * a dedicated test.fail() instead of the generic sweeps:
- * l8ui sys/l8sys-init.js falls back to origOpenAdd/Edit/Delete.call(SYS, ...)
- * for every security model other than L8User/L8Role/L8Credentials, and SYS is
- * undefined (should be L8Sys) -- so Add/Edit/Delete throw ReferenceError.
+ * Services whose CRUD is broken by a known UPSTREAM bug and is tracked by a
+ * dedicated test.fail() instead of the generic sweeps. Empty today: the l8ui
+ * l8sys-init.js `.call(SYS, ...)` bug that broke L8Portal is fixed upstream.
  */
-export const KNOWN_BROKEN_CRUD: Record<string, string> = {
-    L8Portal: 'l8ui l8sys-init.js: origOpenAdd.call(SYS, ...) -- SYS is not defined'
-};
+export const KNOWN_BROKEN_CRUD: Record<string, string> = {};
 
 /** Distinct (endpoint, model) pairs over BOTH shells -- the API coverage universe. */
 export function allModels(): { endpoint: string; model: string; label: string }[] {

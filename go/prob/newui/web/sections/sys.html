@@ -105,6 +105,10 @@
             <span class="tab-icon">📥</span>
             <span class="tab-label">Data Import</span>
         </button>
+        <button class="l8-module-tab" data-module="integrations">
+            <span class="tab-icon">🔗</span>
+            <span class="tab-label">Integrations</span>
+        </button>
     </div>
 
     <div class="section-content" style="margin-left: -7px; width: calc(100% + 7px);">
@@ -128,6 +132,10 @@
                     <span class="subnav-icon">🔑</span>
                     <span class="subnav-label">Credentials</span>
                 </a>
+                <a class="l8-subnav-item" data-service="apikeys">
+                    <span class="subnav-icon">🗝️</span>
+                    <span class="subnav-label">API Keys</span>
+                </a>
                 <a class="l8-subnav-item" data-service="events">
                     <span class="subnav-icon">📝</span>
                     <span class="subnav-label">Events</span>
@@ -146,6 +154,9 @@
                 </div>
                 <div class="l8-service-view" data-service="credentials">
                     <div class="l8-table-container" id="security-credentials-table-container"></div>
+                </div>
+                <div class="l8-service-view" data-service="apikeys">
+                    <div class="l8-table-container" id="security-apikeys-table-container"></div>
                 </div>
                 <div class="l8-service-view" data-service="events">
                     <div class="l8-table-container" id="security-events-table-container"></div>
@@ -169,6 +180,19 @@
         <!-- Data Import Module -->
         <div class="l8-module-content" data-module="dataimport">
             <div id="dataimport-container"></div>
+        </div>
+
+        <!-- Integrations Module Content (l8sys-config.js integrations: IntegCfg) -->
+        <div class="l8-module-content" data-module="integrations">
+            <nav class="l8-subnav">
+                <a class="l8-subnav-item active" data-service="IntegCfg">
+                    <span class="subnav-icon">⚙️</span>
+                    <span class="subnav-label">Integration Configs</span>
+                </a>
+            </nav>
+            <div class="l8-service-view active" data-service="IntegCfg">
+                <div class="l8-table-container" id="integrations-IntegCfg-table-container"></div>
+            </div>
         </div>
     </div>
 </div>

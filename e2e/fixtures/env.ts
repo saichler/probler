@@ -50,6 +50,16 @@ export const ENV = {
     chatPeerName: env('PROBLER_CHAT_PEER_NAME', 'Second Operator'),
     userName: env('PROBLER_USER_NAME', 'Default Operator'),
 
+    /**
+     * The key-manager account (role admin) for the admin-backed API-key specs.
+     * admin needs TFA in a normal image, so these only work against a TEST
+     * security image (`../l8secure/build-images.sh probler <arch> test`).
+     * Against a normal image Api.login throws "requires TFA" -- the intended
+     * signal that a non-test image is deployed.
+     */
+    adminUser: env('PROBLER_ADMIN_USER', 'admin'),
+    adminPass: env('PROBLER_ADMIN_PASS', 'abAdmin123!'),
+
     /** Shell paths. Mobile is the real mobile bundle, never a resized desktop. */
     desktopShell: '/app.html',
     mobileShell: '/m/app.html',

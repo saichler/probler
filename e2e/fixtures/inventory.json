@@ -55,6 +55,7 @@
       "l8ui/edit_table/layer8d-table-events.js?v=2",
       "l8ui/edit_table/layer8d-table-filter.js",
       "l8ui/edit_table/layer8d-table.js",
+      "l8ui/shared/layer8-clipboard.js",
       "l8ui/shared/layer8-csv-export.js",
       "l8ui/shared/layer8-excel-export.js",
       "l8ui/shared/layer8-pdf-export.js",
@@ -100,6 +101,8 @@
       "l8ui/sys/security/l8security-users-crud.js",
       "l8ui/sys/security/l8security-roles-crud.js",
       "l8ui/sys/security/l8security-credentials-crud.js",
+      "l8ui/sys/security/l8security-apikeys-crud.js",
+      "l8ui/sys/l8sys-integration-crud.js",
       "l8ui/sys/security/l8security-events-enums.js",
       "l8ui/sys/security/l8security-events-columns.js",
       "l8ui/sys/security/l8security.js",
@@ -3899,6 +3902,237 @@
                 }
               },
               {
+                "key": "apikeys",
+                "label": "API Keys",
+                "endpoint": "/71/ApiKeys",
+                "model": "L8ApiKey",
+                "viewType": "table",
+                "alternateViews": [],
+                "readOnly": false,
+                "customView": false,
+                "realtime": false,
+                "viewConfig": null,
+                "baseWhereClause": null,
+                "containerId": "security-apikeys-table-container",
+                "primaryKey": "keyId",
+                "columns": [
+                  {
+                    "key": "keyId",
+                    "label": "ID",
+                    "type": "id",
+                    "sortKey": "keyId",
+                    "filterKey": "keyId",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "name",
+                    "label": "Name",
+                    "type": null,
+                    "sortKey": "name",
+                    "filterKey": "name",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "userId",
+                    "label": "User ID",
+                    "type": null,
+                    "sortKey": "userId",
+                    "filterKey": "userId",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "status",
+                    "label": "Status",
+                    "type": null,
+                    "sortKey": "status",
+                    "filterKey": null,
+                    "hasRender": true,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "createdAt",
+                    "label": "Created",
+                    "type": "date",
+                    "sortKey": "createdAt",
+                    "filterKey": null,
+                    "hasRender": true,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "expiresAt",
+                    "label": "Expires",
+                    "type": "date",
+                    "sortKey": "expiresAt",
+                    "filterKey": null,
+                    "hasRender": true,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "lastUsedAt",
+                    "label": "Last Used",
+                    "type": "date",
+                    "sortKey": "lastUsedAt",
+                    "filterKey": null,
+                    "hasRender": true,
+                    "hasEnum": false
+                  }
+                ],
+                "form": {
+                  "title": "API Key",
+                  "sections": [
+                    {
+                      "title": "API Key",
+                      "fields": [
+                        {
+                          "key": "name",
+                          "label": "Name",
+                          "type": "text",
+                          "required": true,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "description",
+                          "label": "Description",
+                          "type": "textarea",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "keyId",
+                          "label": "Key ID",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "userId",
+                          "label": "User ID",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "status",
+                          "label": "Status",
+                          "type": "select",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": [
+                            0,
+                            1,
+                            2
+                          ],
+                          "columns": null
+                        }
+                      ]
+                    },
+                    {
+                      "title": "Activity",
+                      "fields": [
+                        {
+                          "key": "createdAt",
+                          "label": "Created",
+                          "type": "date",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "expiresAt",
+                          "label": "Expires",
+                          "type": "date",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "lastUsedAt",
+                          "label": "Last Used",
+                          "type": "date",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "revokedAt",
+                          "label": "Revoked",
+                          "type": "date",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "revokedBy",
+                          "label": "Revoked By",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": true,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    }
+                  ],
+                  "fieldCount": 10,
+                  "fieldTypes": [
+                    "date",
+                    "select",
+                    "text",
+                    "textarea"
+                  ],
+                  "lookupModels": [],
+                  "inlineTables": [],
+                  "requiredKeys": [
+                    "name"
+                  ],
+                  "readOnlyKeys": [
+                    "keyId",
+                    "userId",
+                    "status",
+                    "createdAt",
+                    "expiresAt",
+                    "lastUsedAt",
+                    "revokedAt",
+                    "revokedBy"
+                  ]
+                }
+              },
+              {
                 "key": "events",
                 "label": "Events",
                 "endpoint": "/76/Events",
@@ -4241,6 +4475,289 @@
             "moduleKey": "dataimport",
             "label": "Data Import",
             "services": []
+          },
+          {
+            "moduleKey": "integrations",
+            "label": "Integrations",
+            "services": [
+              {
+                "key": "IntegCfg",
+                "label": "Integration Configs",
+                "endpoint": "/78/IntegCfg",
+                "model": "IntegrationConfig",
+                "viewType": "table",
+                "alternateViews": [],
+                "readOnly": false,
+                "customView": false,
+                "realtime": false,
+                "viewConfig": null,
+                "baseWhereClause": null,
+                "containerId": "integrations-IntegCfg-table-container",
+                "primaryKey": "integrationId",
+                "columns": [
+                  {
+                    "key": "integrationId",
+                    "label": "ID",
+                    "type": "id",
+                    "sortKey": "integrationId",
+                    "filterKey": "integrationId",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "name",
+                    "label": "Name",
+                    "type": null,
+                    "sortKey": "name",
+                    "filterKey": "name",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "type",
+                    "label": "Type",
+                    "type": null,
+                    "sortKey": "type",
+                    "filterKey": null,
+                    "hasRender": true,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "host",
+                    "label": "Host",
+                    "type": null,
+                    "sortKey": "host",
+                    "filterKey": "host",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "port",
+                    "label": "Port",
+                    "type": null,
+                    "sortKey": "port",
+                    "filterKey": null,
+                    "hasRender": true,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "useTls",
+                    "label": "TLS",
+                    "type": null,
+                    "sortKey": "useTls",
+                    "filterKey": null,
+                    "hasRender": true,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "fromAddress",
+                    "label": "From Address",
+                    "type": null,
+                    "sortKey": "fromAddress",
+                    "filterKey": "fromAddress",
+                    "hasRender": false,
+                    "hasEnum": false
+                  },
+                  {
+                    "key": "fromName",
+                    "label": "From Name",
+                    "type": null,
+                    "sortKey": "fromName",
+                    "filterKey": "fromName",
+                    "hasRender": false,
+                    "hasEnum": false
+                  }
+                ],
+                "form": {
+                  "title": "Integration Config",
+                  "sections": [
+                    {
+                      "title": "Identity",
+                      "fields": [
+                        {
+                          "key": "name",
+                          "label": "Name (e.g. \"smtp\")",
+                          "type": "text",
+                          "required": true,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "type",
+                          "label": "Type",
+                          "type": "select",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                          ],
+                          "columns": null
+                        }
+                      ]
+                    },
+                    {
+                      "title": "SMTP Settings",
+                      "fields": [
+                        {
+                          "key": "host",
+                          "label": "SMTP Host",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "port",
+                          "label": "SMTP Port",
+                          "type": "number",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "useTls",
+                          "label": "Use STARTTLS",
+                          "type": "checkbox",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "fromAddress",
+                          "label": "From Email Address",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "fromName",
+                          "label": "From Display Name",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    },
+                    {
+                      "title": "Credentials",
+                      "fields": [
+                        {
+                          "key": "attributes.username",
+                          "label": "SMTP Username",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "attributes.password",
+                          "label": "SMTP Password",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "credentialKey",
+                          "label": "Credential Key (security store)",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    },
+                    {
+                      "title": "Webhook / Advanced",
+                      "fields": [
+                        {
+                          "key": "url",
+                          "label": "URL",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "retryCount",
+                          "label": "Retry Count",
+                          "type": "number",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "timeoutMs",
+                          "label": "Timeout (ms)",
+                          "type": "number",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    }
+                  ],
+                  "fieldCount": 13,
+                  "fieldTypes": [
+                    "checkbox",
+                    "number",
+                    "select",
+                    "text"
+                  ],
+                  "lookupModels": [],
+                  "inlineTables": [],
+                  "requiredKeys": [
+                    "name"
+                  ],
+                  "readOnlyKeys": []
+                }
+              }
+            ]
           }
         ]
       }
@@ -4278,6 +4795,7 @@
       "../l8ui/m/js/layer8m-table-realtime.js",
       "../l8ui/m/js/layer8m-edit-table.js",
       "../l8ui/m/js/layer8m-table-touch.js",
+      "../l8ui/shared/layer8-clipboard.js",
       "../l8ui/shared/layer8-csv-export.js",
       "../l8ui/shared/layer8-excel-export.js",
       "../l8ui/shared/layer8-pdf-export.js",
@@ -4350,6 +4868,8 @@
       "modules/targets-index.js",
       "modules/system/health-columns.js",
       "modules/system/security-enums.js",
+      "../l8ui/sys/security/l8security-enums.js",
+      "../l8ui/sys/security/m/l8security-apikeys-m.js",
       "modules/system/security-columns.js",
       "modules/system/security-users-crud.js",
       "modules/system/security-roles-crud.js",
@@ -9639,6 +10159,48 @@
                 }
               },
               {
+                "key": "apikeys",
+                "label": "API Keys",
+                "endpoint": "/71/ApiKeys",
+                "model": "L8ApiKey",
+                "idField": "keyId",
+                "readOnly": false,
+                "alternateViews": [
+                  "table"
+                ],
+                "columns": [
+                  {
+                    "key": "name",
+                    "label": "Name",
+                    "primary": true,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "status",
+                    "label": "Status",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": true
+                  },
+                  {
+                    "key": "expiresAt",
+                    "label": "Expires",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "lastUsedAt",
+                    "label": "Last Used",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  }
+                ],
+                "form": null
+              },
+              {
                 "key": "events",
                 "label": "Events",
                 "endpoint": "/76/Events",
@@ -10021,6 +10583,219 @@
                 "alternateViews": [],
                 "columns": [],
                 "form": null
+              }
+            ]
+          },
+          {
+            "subModuleKey": "integrations",
+            "subModuleLabel": "Integrations",
+            "services": [
+              {
+                "key": "IntegCfg",
+                "label": "Integration Configs",
+                "endpoint": "/78/IntegCfg",
+                "model": "IntegrationConfig",
+                "idField": "integrationId",
+                "readOnly": false,
+                "alternateViews": [
+                  "table"
+                ],
+                "columns": [
+                  {
+                    "key": "name",
+                    "label": "Name",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "type",
+                    "label": "Type",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "host",
+                    "label": "Host",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  },
+                  {
+                    "key": "fromAddress",
+                    "label": "From Address",
+                    "primary": false,
+                    "secondary": false,
+                    "hidden": false
+                  }
+                ],
+                "form": {
+                  "title": "Integration Config",
+                  "sections": [
+                    {
+                      "title": "Identity",
+                      "fields": [
+                        {
+                          "key": "name",
+                          "label": "Name (e.g. \"smtp\")",
+                          "type": "text",
+                          "required": true,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "type",
+                          "label": "Type",
+                          "type": "select",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                          ],
+                          "columns": null
+                        }
+                      ]
+                    },
+                    {
+                      "title": "SMTP Settings",
+                      "fields": [
+                        {
+                          "key": "host",
+                          "label": "SMTP Host",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "port",
+                          "label": "SMTP Port",
+                          "type": "number",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "useTls",
+                          "label": "Use STARTTLS",
+                          "type": "checkbox",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "fromAddress",
+                          "label": "From Email Address",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "fromName",
+                          "label": "From Display Name",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    },
+                    {
+                      "title": "Credentials",
+                      "fields": [
+                        {
+                          "key": "credentialKey",
+                          "label": "Credential Key (security store)",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    },
+                    {
+                      "title": "Webhook / Advanced",
+                      "fields": [
+                        {
+                          "key": "url",
+                          "label": "URL",
+                          "type": "text",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "retryCount",
+                          "label": "Retry Count",
+                          "type": "number",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        },
+                        {
+                          "key": "timeoutMs",
+                          "label": "Timeout (ms)",
+                          "type": "number",
+                          "required": false,
+                          "readOnly": false,
+                          "hidden": false,
+                          "lookupModel": null,
+                          "options": null,
+                          "columns": null
+                        }
+                      ]
+                    }
+                  ],
+                  "fieldCount": 11,
+                  "fieldTypes": [
+                    "checkbox",
+                    "number",
+                    "select",
+                    "text"
+                  ],
+                  "lookupModels": [],
+                  "inlineTables": [],
+                  "requiredKeys": [
+                    "name"
+                  ],
+                  "readOnlyKeys": []
+                }
               }
             ]
           }

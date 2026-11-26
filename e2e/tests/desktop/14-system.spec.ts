@@ -10,10 +10,13 @@ Layer 8 Ecosystem is licensed under the Apache License, Version 2.0.
 // The ids below are read from sections/system.html.
 
 import { test, expect, assertNoPageErrors } from '../../fixtures/test';
+import { Api, safeCleanup } from '../../fixtures/api';
+import { ENV } from '../../fixtures/env';
+import { openUserPage } from '../../pages/Chat';
+import { runTag } from '../../fixtures/formdata';
 import { DesktopNav } from '../../pages/DesktopNav';
 import { Popup } from '../../pages/Popup';
 import { DesktopTable } from '../../pages/DesktopTable';
-import { KNOWN_BROKEN_CRUD } from '../../fixtures/inventory';
 
 const SYS_MODULES: { moduleKey: string; containerId: string; label: string }[] = [
     { moduleKey: 'health',     containerId: 'health-table-container',     label: 'Health' },
@@ -22,7 +25,7 @@ const SYS_MODULES: { moduleKey: string; containerId: string; label: string }[] =
     { moduleKey: 'dataimport', containerId: 'dataimport-container',       label: 'Data Import' }
 ];
 
-const SECURITY_SERVICES = ['users', 'roles', 'credentials', 'events'];
+const SECURITY_SERVICES = ['users', 'roles', 'credentials', 'apikeys', 'events'];
 
 test.describe('system section', () => {
     test.beforeEach(async ({ app }) => {
@@ -115,12 +118,44 @@ test.describe('system section', () => {
         ).toBeVisible({ timeout: 25000 });
     });
 
+    // #38: the form's inputs are l8sys-cred-*, and the save read #sys-cred-*, so
+    // every save stopped at "Please fill in ID and Name". Managing credentials
+    // needs the admin role (the operator has no Add button and no DELETE), so
+    // this runs on an admin page -- a TEST security image (admin without TFA).
+    test('Security / credentials: Add saves a credential', async ({ browser }) => {
+        const id = `${runTag()}-cred`;
+        const admin = await Api.login(ENV.adminUser, ENV.adminPass);
+        const { page, close } = await openUserPage(browser, ENV.adminUser, ENV.adminPass);
+        const pageErrors: string[] = [];
+        page.on('pageerror', (e) => pageErrors.push(e.message));
+        try {
+            const nav = new DesktopNav(page);
+            await nav.openSection('system');
+            await nav.openModule('security');
+            await nav.openService('security', 'credentials');
+            const table = new DesktopTable(page, 'security', 'credentials');
+            await table.waitForResolved();
+            await table.addButton().click();
+            const popup = new Popup(page);
+            await popup.waitForOpen();
+            await popup.fill('l8sys-cred-id', id);
+            await popup.fill('l8sys-cred-name', `${id} name`);
+            await popup.saveButton().click();
+            await popup.waitForClosed();
+            await expect.poll(async () =>
+                (await admin.query('/75/Creds', `select * from L8Credentials where id='${id}'`)).list.length,
+            { timeout: 15000, message: 'the saved credential is not stored' }).toBe(1);
+            expect(pageErrors, 'uncaught page errors').toEqual([]);
+        } finally {
+            await safeCleanup(`credential ${id}`, () => admin.deleteById('/75/Creds', 'L8Credentials', 'id', id));
+            await close();
+            await admin.dispose();
+        }
+    });
+
     test('Security / portals: Add opens a form', async ({ freshApp: app }) => {
-        // KNOWN UPSTREAM BUG (see KNOWN_BROKEN_CRUD): l8ui l8sys-init.js calls
-        // origOpenAdd.call(SYS, ...) and SYS is undefined. The uncaught error
-        // makes app.js end the session, so this runs on its own page (freshApp),
-        // never the worker's shared one.
-        test.fail(true, KNOWN_BROKEN_CRUD.L8Portal);
+        // Runs on its own page (freshApp): an uncaught error here would make
+        // app.js end the session of the worker's shared page.
         const nav = new DesktopNav(app);
         await nav.openSection('system');
         await nav.openModule('security');

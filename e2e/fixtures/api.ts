@@ -66,6 +66,40 @@ export class Api {
         return new Api(ctx, body.token);
     }
 
+    /**
+     * A client for an existing bearer, with no /auth call -- used to send an
+     * API key (`l8k_...`) exactly as an external client would.
+     */
+    static async fromBearer(token: string): Promise<Api> {
+        const ctx = await request.newContext({
+            baseURL: ENV.baseURL,
+            ignoreHTTPSErrors: true,
+            timeout: ENV.apiTimeoutMs
+        });
+        return new Api(ctx, token);
+    }
+
+    /**
+     * Sends a request and returns its status instead of throwing, for the
+     * 4xx assertions. GET takes an L8Query text in `data` (sent as ?body=).
+     */
+    async send(method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE', endpoint: string, data?: unknown):
+        Promise<{ status: number; text: string; json?: any }> {
+        let url = apiUrl(endpoint);
+        const opts: { headers: Record<string, string>; data?: unknown; method: string } =
+            { headers: this.headers(), method };
+        if (method === 'GET') {
+            if (data !== undefined) url += `?body=${encodeURIComponent(JSON.stringify(data))}`;
+        } else if (data !== undefined) {
+            opts.data = data;
+        }
+        const res = await this.ctx.fetch(url, opts);
+        const text = await res.text();
+        let json: any;
+        try { json = JSON.parse(text); } catch { json = undefined; }
+        return { status: res.status(), text, json };
+    }
+
     private headers() {
         return {
             'Authorization': `Bearer ${this.token}`,

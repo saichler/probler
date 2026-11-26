@@ -34,7 +34,8 @@
         'Layer8FormatDisplay', 'Layer8InlineTableState', 'Layer8ModuleConfigFactory',
         'Layer8ModuleFactoryCore', 'Layer8PdfExport', 'Layer8PeriodSelector',
         'Layer8QueryBuilder', 'Layer8ReferenceConfigResolver', 'Layer8SectionConfigs',
-        'Layer8SvgFactory', 'Layer8ViewSwitcher'
+        'Layer8SvgFactory', 'Layer8ViewSwitcher',
+        'Layer8Clipboard', 'L8SysApiKeysCRUD', 'L8SysIntegrationCRUD'
     ];
 
     var REQUIRED_MOBILE = [
@@ -57,7 +58,8 @@
         'Layer8MReferenceRegistry', 'Layer8MRenderers', 'Layer8MTable', 'Layer8MTimeline',
         'Layer8MTreeGrid', 'Layer8MUtils', 'Layer8MViewFactory', 'Layer8MWizard',
         'Layer8PdfExport', 'Layer8PeriodSelector', 'Layer8QueryBuilder',
-        'Layer8ReferenceConfigResolver', 'Layer8ViewSwitcher'
+        'Layer8ReferenceConfigResolver', 'Layer8ViewSwitcher',
+        'Layer8Clipboard', 'L8Security', 'L8SysApiKeysMobile'
     ];
 
     // Run at DOM-ready rather than synchronously. Some l8ui modules assign their

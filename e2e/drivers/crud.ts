@@ -22,7 +22,7 @@ import { DesktopService } from '../fixtures/inventory';
 import { Api } from '../fixtures/api';
 import { RecordBin, seedRecord } from '../fixtures/record';
 import { runTag } from '../fixtures/formdata';
-import { Problems, dismissTransientOverlays } from './table';
+import { Problems, dismissTransientOverlays, dismissOpenPopups } from './table';
 import { openAddForm, fillTypeableFields } from './forms';
 
 export interface CrudOutcome {
@@ -131,6 +131,9 @@ export async function assertCreateThroughUi(
         return { skipped: null };
     }
     bin.add(service, id);
+    // A create may open a follow-up popup the user closes by hand (API Keys
+    // shows the new key once); close it, as the user would, before the next step.
+    await dismissOpenPopups(popup.body().page());
     return { skipped: null };
 }
 
