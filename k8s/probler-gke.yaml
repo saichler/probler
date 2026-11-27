@@ -531,13 +531,14 @@ spec:
 ---
 # probler-chat: chat instances (l8ai): single writers of their conversations
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   namespace: probler
   name: probler-chat
   labels:
     app: probler-chat
 spec:
+  serviceName: probler-chat
   replicas: 3
   selector:
     matchLabels:
@@ -575,6 +576,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           volumeMounts:
             - name: hdata
               mountPath: /data
@@ -585,7 +590,7 @@ spec:
 
 ---
 # probler-chat-router RBAC: the wait-for-chat init container reads the
-# probler-chat Deployment (get, that one object only).
+# probler-chat StatefulSet (get, that one object only).
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -600,7 +605,7 @@ metadata:
   namespace: probler
 rules:
   - apiGroups: ["apps"]
-    resources: ["deployments"]
+    resources: ["statefulsets"]
     resourceNames: ["probler-chat"]
     verbs: ["get"]
 
@@ -660,7 +665,7 @@ spec:
         # Wait for every chat instance before starting: a router that becomes
         # the leader rebuilds the conversation index from the chat instances
         # (it never reads chat-orm), so an instance that is not up yet would be
-        # left out of the index. Reads the probler-chat Deployment through the
+        # left out of the index. Reads the probler-chat StatefulSet through the
         # API (Role probler-chat-router-wait) until all its replicas are ready;
         # the extra sleep lets the last instance join the vnet.
         - name: wait-for-chat
@@ -671,7 +676,7 @@ spec:
             - -c
             - |
               sa=/var/run/secrets/kubernetes.io/serviceaccount
-              api="https://kubernetes.default.svc/apis/apps/v1/namespaces/$(cat $sa/namespace)/deployments/probler-chat"
+              api="https://kubernetes.default.svc/apis/apps/v1/namespaces/$(cat $sa/namespace)/statefulsets/probler-chat"
               while :; do
                 s=$(wget -q -O - --no-check-certificate --header "Authorization: Bearer $(cat $sa/token)" "$api")
                 want=$(echo "$s" | grep -o '"replicas": *[0-9]*' | head -1 | tr -dc 0-9)
