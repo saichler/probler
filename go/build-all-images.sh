@@ -49,117 +49,191 @@ LOG_DIR="$SCRIPT_DIR/.build-logs"
 
 echo "*** Tag: ${TAG} | Architecture: ${ARCH:-amd64 + arm64} | Parallel: ${PARALLEL} ***"
 
-if [ "$PARALLEL" -le 1 ]; then
-    for entry in "${IMAGES[@]}"; do
-        NAME="${entry%%:*}"
-        DIR="${entry##*:}"
-        echo ""
-        echo "*** Building ${NAME} ***"
-        if (cd "$SCRIPT_DIR/prob/$DIR" && ./build.sh "$TAG" "$ARCH"); then
-            SUCCEEDED+=("$NAME")
-        else
-            echo "FAILED to build ${NAME}"
-            FAILED+=("$NAME")
-        fi
+# Portable to bash 3.2 (macOS): no associative arrays, no `wait -n`.
+# Each job writes its exit code to <dir>.rc; the main loop polls for those.
+# Every build (sequential too) runs in the background with its output in a log,
+# so a watchdog can see it: when a `go mod tidy` step has started but not
+# finished and the log has not grown for STALL_TIMEOUT seconds, the build's
+# whole process tree is killed and the build restarted, up to MAX_RESTARTS times.
+STALL_TIMEOUT="${STALL_TIMEOUT:-30}"
+MAX_RESTARTS="${MAX_RESTARTS:-3}"
+[ "$PARALLEL" -ge 1 ] 2>/dev/null || PARALLEL=1
+[ "$PARALLEL" -eq 1 ] && LIVE=1 || LIVE=0
+
+rm -rf "$LOG_DIR"; mkdir -p "$LOG_DIR" || { echo "cannot create $LOG_DIR"; exit 1; }
+N=${#IMAGES[@]}
+STATE=()      # per image: pending | running | done
+STARTED=()    # per image: start time of the first attempt (SECONDS)
+JOBPID=()     # per image: pid of the background job of the current attempt
+LOGSIZE=()    # per image: log size at the last check
+CHANGED=()    # per image: when the log last grew (SECONDS)
+RESTARTS=()   # per image: watchdog restarts so far
+SHOWN=()      # per image: bytes of the log already echoed (LIVE mode)
+for ((i = 0; i < N; i++)); do STATE[i]=pending; RESTARTS[i]=0; done
+START=$SECONDS
+DONE_COUNT=0
+DRAWN=0
+[ -t 1 ] && IS_TTY=1 || IS_TTY=0
+LAST_PLAIN=0
+
+fmt_time() { printf '%dm%02ds' $(($1 / 60)) $(($1 % 60)); }
+
+# Current docker step of a build, e.g. "linux/arm64 build 5/7", from its log.
+current_step() {
+    local step
+    step=$(grep -oE '^#[0-9]+ \[[^]]+\]' "$1" 2>/dev/null | tail -1 | sed -E 's/^#[0-9]+ \[(.*)\]$/\1/')
+    if [ -z "$step" ] && grep -q '^The push refers to' "$1" 2>/dev/null; then step="pushing"; fi
+    echo "${step:-starting}"
+}
+
+# True if a `go mod tidy` step (one per platform) has started but not finished.
+tidy_pending() {
+    local id
+    for id in $(grep -E '^#[0-9]+ \[[^]]+\] RUN .*go mod tidy' "$1" 2>/dev/null | awk '{print $1}' | sort -u); do
+        grep -qE "^$id (DONE|ERROR|CANCELED)" "$1" || return 0
     done
-else
-    # Portable to bash 3.2 (macOS): no associative arrays, no `wait -n`.
-    # Each job writes its exit code to <dir>.rc; the main loop polls for those.
-    rm -rf "$LOG_DIR"; mkdir -p "$LOG_DIR" || { echo "cannot create $LOG_DIR"; exit 1; }
-    N=${#IMAGES[@]}
-    STATE=()      # per image: pending | running | done
-    STARTED=()    # per image: start time (SECONDS)
-    for ((i = 0; i < N; i++)); do STATE[i]=pending; done
-    START=$SECONDS
-    DONE_COUNT=0
-    DRAWN=0
-    [ -t 1 ] && IS_TTY=1 || IS_TTY=0
-    LAST_PLAIN=0
+    return 1
+}
 
-    fmt_time() { printf '%dm%02ds' $(($1 / 60)) $(($1 % 60)); }
+# A pid and all of its descendants (ps-based, works on Linux and macOS).
+tree_pids() {
+    ps -A -o pid= -o ppid= | awk -v root="$1" '
+        { parent[$1] = $2 }
+        END { for (p in parent) { q = p; while (q != root && (q in parent) && q > 1) q = parent[q]; if (q == root) print p } }'
+}
 
-    # Current docker step of a build, e.g. "linux/arm64 build 5/7", from its log.
-    current_step() {
-        local step
-        step=$(grep -oE '^#[0-9]+ \[[^]]+\]' "$1" 2>/dev/null | tail -1 | sed -E 's/^#[0-9]+ \[(.*)\]$/\1/')
-        if [ -z "$step" ] && grep -q '^The push refers to' "$1" 2>/dev/null; then step="pushing"; fi
-        echo "${step:-starting}"
-    }
+kill_tree() {
+    local pids
+    pids=$(tree_pids "$1")
+    [ -n "$pids" ] || return 0
+    kill -TERM $pids 2>/dev/null   # lets the buildx client cancel the build
+    sleep 2
+    kill -KILL $pids 2>/dev/null
+    wait "$1" 2>/dev/null
+}
 
-    clear_status() {
-        if [ "$IS_TTY" -eq 1 ] && [ "$DRAWN" -gt 0 ]; then
-            printf '\033[%dA\033[J' "$DRAWN"
-            DRAWN=0
-        fi
-    }
+clear_status() {
+    if [ "$IS_TTY" -eq 1 ] && [ "$DRAWN" -gt 0 ]; then
+        printf '\033[%dA\033[J' "$DRAWN"
+        DRAWN=0
+    fi
+}
 
-    draw_status() {
-        local i name lines=0 running=0
-        for ((i = 0; i < N; i++)); do [ "${STATE[i]}" = running ] && running=$((running + 1)); done
-        if [ "$IS_TTY" -eq 1 ]; then
-            clear_status
-            printf '  [%d/%d done, %d running, %s elapsed]\n' "$DONE_COUNT" "$N" "$running" "$(fmt_time $((SECONDS - START)))"
-            lines=1
-            for ((i = 0; i < N; i++)); do
-                [ "${STATE[i]}" = running ] || continue
-                name="${IMAGES[i]%%:*}"
-                printf '    %-12s %8s  %s\n' "$name" "$(fmt_time $((SECONDS - STARTED[i])))" \
-                    "$(current_step "$LOG_DIR/${IMAGES[i]##*:}.log" | cut -c1-60)"
-                lines=$((lines + 1))
-            done
-            DRAWN=$lines
-        elif [ $((SECONDS - LAST_PLAIN)) -ge 30 ]; then
-            # Not a terminal (piped / CI): one summary line every 30s.
-            LAST_PLAIN=$SECONDS
-            echo "  ... ${DONE_COUNT}/${N} done, ${running} running, $(fmt_time $((SECONDS - START))) elapsed"
-        fi
-    }
+# LIVE mode: echo whatever the running build has appended to its log.
+show_new_output() {
+    local i log size
+    for ((i = 0; i < N; i++)); do
+        [ "${STATE[i]}" = running ] || continue
+        log="$LOG_DIR/${IMAGES[i]##*:}.log"
+        size=$(wc -c < "$log" 2>/dev/null | tr -d ' ')
+        [ -n "$size" ] && [ "$size" -gt "${SHOWN[i]}" ] || continue
+        tail -c +$((SHOWN[i] + 1)) "$log" | head -c $((size - SHOWN[i]))
+        SHOWN[i]=$size
+    done
+}
 
-    event() { clear_status; echo "$@"; }
-
-    while [ "$DONE_COUNT" -lt "$N" ]; do
-        RUNNING=0
+draw_status() {
+    local i name lines=0 running=0
+    if [ "$LIVE" -eq 1 ]; then show_new_output; return; fi
+    for ((i = 0; i < N; i++)); do [ "${STATE[i]}" = running ] && running=$((running + 1)); done
+    if [ "$IS_TTY" -eq 1 ]; then
+        clear_status
+        printf '  [%d/%d done, %d running, %s elapsed]\n' "$DONE_COUNT" "$N" "$running" "$(fmt_time $((SECONDS - START)))"
+        lines=1
         for ((i = 0; i < N; i++)); do
             [ "${STATE[i]}" = running ] || continue
-            DIR="${IMAGES[i]##*:}"
-            NAME="${IMAGES[i]%%:*}"
-            if [ -f "$LOG_DIR/$DIR.rc" ]; then
-                STATE[i]=done
-                DONE_COUNT=$((DONE_COUNT + 1))
-                T=$(fmt_time $((SECONDS - STARTED[i])))
-                if [ "$(cat "$LOG_DIR/$DIR.rc")" = 0 ]; then
-                    SUCCEEDED+=("$NAME")
-                    event "  OK      ${NAME}  (${T})"
-                else
-                    FAILED+=("$NAME")
-                    event "  FAILED  ${NAME}  (${T}, see ${LOG_DIR}/${DIR}.log)"
-                fi
+            name="${IMAGES[i]%%:*}"
+            printf '    %-12s %8s  %s\n' "$name" "$(fmt_time $((SECONDS - STARTED[i])))" \
+                "$(current_step "$LOG_DIR/${IMAGES[i]##*:}.log" | cut -c1-60)"
+            lines=$((lines + 1))
+        done
+        DRAWN=$lines
+    elif [ $((SECONDS - LAST_PLAIN)) -ge 30 ]; then
+        # Not a terminal (piped / CI): one summary line every 30s.
+        LAST_PLAIN=$SECONDS
+        echo "  ... ${DONE_COUNT}/${N} done, ${running} running, $(fmt_time $((SECONDS - START))) elapsed"
+    fi
+}
+
+event() { clear_status; echo "$@"; }
+
+# Start (or restart) the build of image $1 in the background.
+launch() {
+    local i=$1 DIR="${IMAGES[$1]##*:}"
+    rm -f "$LOG_DIR/$DIR.rc" "$LOG_DIR/$DIR.rc.tmp"
+    : > "$LOG_DIR/$DIR.log"
+    LOGSIZE[i]=0; CHANGED[i]=$SECONDS; SHOWN[i]=0
+    # rc is written outside the log redirect, so even a log that cannot
+    # be opened still yields a (non-zero) result instead of a hang.
+    (
+        (cd "$SCRIPT_DIR/prob/$DIR" && ./build.sh "$TAG" "$ARCH") > "$LOG_DIR/$DIR.log" 2>&1 < /dev/null
+        echo $? > "$LOG_DIR/$DIR.rc.tmp"; mv "$LOG_DIR/$DIR.rc.tmp" "$LOG_DIR/$DIR.rc"
+    ) &
+    JOBPID[i]=$!
+}
+
+finish() {  # $1 = index, $2 = OK | FAILED, $3 = note
+    local NAME="${IMAGES[$1]%%:*}"
+    STATE[$1]=done
+    DONE_COUNT=$((DONE_COUNT + 1))
+    if [ "$2" = OK ]; then SUCCEEDED+=("$NAME"); else FAILED+=("$NAME"); fi
+    event "  $(printf '%-7s' "$2") ${NAME}  ($(fmt_time $((SECONDS - STARTED[$1])))$3)"
+}
+
+echo "*** Stall watchdog: restart a build whose go mod tidy is silent for ${STALL_TIMEOUT}s (max ${MAX_RESTARTS} restarts) ***"
+
+while [ "$DONE_COUNT" -lt "$N" ]; do
+    RUNNING=0
+    for ((i = 0; i < N; i++)); do
+        [ "${STATE[i]}" = running ] || continue
+        DIR="${IMAGES[i]##*:}"
+        NAME="${IMAGES[i]%%:*}"
+        LOG="$LOG_DIR/$DIR.log"
+        if [ -f "$LOG_DIR/$DIR.rc" ]; then
+            [ "$LIVE" -eq 1 ] && show_new_output
+            wait "${JOBPID[i]}" 2>/dev/null
+            if [ "$(cat "$LOG_DIR/$DIR.rc")" = 0 ]; then
+                finish "$i" OK ""
             else
-                RUNNING=$((RUNNING + 1))
+                finish "$i" FAILED ", see ${LOG}"
             fi
-        done
-        for ((i = 0; i < N && RUNNING < PARALLEL; i++)); do
-            [ "${STATE[i]}" = pending ] || continue
-            DIR="${IMAGES[i]##*:}"
-            STATE[i]=running
-            STARTED[i]=$SECONDS
-            RUNNING=$((RUNNING + 1))
-            event "  START   ${IMAGES[i]%%:*}"
-            # rc is written outside the log redirect, so even a log that cannot
-            # be opened still yields a (non-zero) result instead of a hang.
-            (
-                (cd "$SCRIPT_DIR/prob/$DIR" && ./build.sh "$TAG" "$ARCH") > "$LOG_DIR/$DIR.log" 2>&1 < /dev/null
-                echo $? > "$LOG_DIR/$DIR.rc.tmp"; mv "$LOG_DIR/$DIR.rc.tmp" "$LOG_DIR/$DIR.rc"
-            ) &
-        done
-        [ "$DONE_COUNT" -lt "$N" ] || break
-        draw_status
-        sleep 1
+            continue
+        fi
+        SIZE=$(wc -c < "$LOG" 2>/dev/null | tr -d ' ')
+        if [ "${SIZE:-0}" != "${LOGSIZE[i]}" ]; then
+            LOGSIZE[i]=${SIZE:-0}; CHANGED[i]=$SECONDS
+        elif [ $((SECONDS - CHANGED[i])) -ge "$STALL_TIMEOUT" ] && tidy_pending "$LOG"; then
+            [ "$LIVE" -eq 1 ] && show_new_output
+            kill_tree "${JOBPID[i]}"
+            rm -f "$LOG_DIR/$DIR.rc" "$LOG_DIR/$DIR.rc.tmp"
+            RESTARTS[i]=$((RESTARTS[i] + 1))
+            mv "$LOG" "$LOG_DIR/$DIR.stalled-${RESTARTS[i]}.log"
+            if [ "${RESTARTS[i]}" -le "$MAX_RESTARTS" ]; then
+                event "  STALL   ${NAME}  go mod tidy silent for ${STALL_TIMEOUT}s, killed; restart ${RESTARTS[i]}/${MAX_RESTARTS}"
+                launch "$i"
+                RUNNING=$((RUNNING + 1))
+            else
+                finish "$i" FAILED ", go mod tidy stalled $((RESTARTS[i])) times, see $LOG_DIR/$DIR.stalled-*.log"
+            fi
+            continue
+        fi
+        RUNNING=$((RUNNING + 1))
     done
-    clear_status
-    wait
-    echo "  Total: $(fmt_time $((SECONDS - START)))"
-fi
+    for ((i = 0; i < N && RUNNING < PARALLEL; i++)); do
+        [ "${STATE[i]}" = pending ] || continue
+        STATE[i]=running
+        STARTED[i]=$SECONDS
+        RUNNING=$((RUNNING + 1))
+        if [ "$LIVE" -eq 1 ]; then event ""; event "*** Building ${IMAGES[i]%%:*} ***"; else event "  START   ${IMAGES[i]%%:*}"; fi
+        launch "$i"
+    done
+    [ "$DONE_COUNT" -lt "$N" ] || break
+    draw_status
+    sleep 1
+done
+clear_status
+wait
+echo "  Total: $(fmt_time $((SECONDS - START)))"
 
 echo ""
 echo "======================================================"
