@@ -64,37 +64,6 @@ kind create cluster --name "${CLUSTER_NAME}" --config "${SCRIPT_DIR}/${KIND_CONF
 echo "Waiting for nodes to be Ready..."
 "${KUBECTL[@]}" wait --for=condition=Ready nodes --all --timeout=120s
 
-echo "Loading Docker images into KIND cluster..."
-IMAGES=(
-  registry.layer-8.dev:44443/probler/probler-vnet:latest
-  registry.layer-8.dev:44443/probler/logs-vnet:latest
-  registry.layer-8.dev:44443/probler/probler-parser:latest
-  registry.layer-8.dev:44443/probler/probler-collector:latest
-  registry.layer-8.dev:44443/probler/probler-inv-box:latest
-  registry.layer-8.dev:44443/probler/probler-inv-gpu:latest
-  registry.layer-8.dev:44443/probler/probler-inv-k8s:latest
-  registry.layer-8.dev:44443/probler/probler-orm:latest
-  registry.layer-8.dev:44443/probler/probler-alarms:latest
-  registry.layer-8.dev:44443/probler/probler-webui2:latest
-  registry.layer-8.dev:44443/probler/probler-logagent:latest
-  registry.layer-8.dev:44443/probler/probler-topo:latest
-  registry.layer-8.dev:44443/probler/probler-admission:latest
-  registry.layer-8.dev:44443/probler/probler-chat-orm:latest
-  registry.layer-8.dev:44443/probler/probler-chat:latest
-  registry.layer-8.dev:44443/probler/probler-chat-router:latest
-  registry.layer-8.dev:44443/probler/probler-chat-users:latest
-  registry.layer-8.dev:44443/probler/probler-chat-agent:latest
-)
-
-for img in "${IMAGES[@]}"; do
-  if docker image inspect "$img" &>/dev/null; then
-    echo "  Loading $img..."
-    kind load docker-image "$img" --name "${CLUSTER_NAME}"
-  else
-    echo "  SKIP $img (not found locally — will pull from registry)"
-  fi
-done
-
 # Phase boundaries come from the manifest itself (not fixed line numbers, which
 # break on every edit): phase 1 ends before the parser, phase 2 before the
 # admission controller's ServiceAccount.
