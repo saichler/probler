@@ -66,10 +66,11 @@ echo "Waiting for nodes to be Ready..."
 
 # Phase boundaries come from the manifest itself (not fixed line numbers, which
 # break on every edit): phase 1 ends before the parser, phase 2 before the
-# admission controller's ServiceAccount.
+# admission controller (its "# l8collector-admission" marker). Other
+# ServiceAccounts (e.g. the chat router's) belong to phase 2.
 MANIFEST="${SCRIPT_DIR}/probler-kind.yaml"
 PHASE1_END=$(( $(grep -n '^# probler-parser' "${MANIFEST}" | head -1 | cut -d: -f1) - 1 ))
-PHASE2_END=$(( $(grep -n '^kind: ServiceAccount' "${MANIFEST}" | head -1 | cut -d: -f1) - 2 ))
+PHASE2_END=$(( $(grep -n '^# l8collector-admission' "${MANIFEST}" | head -1 | cut -d: -f1) - 1 ))
 
 echo "Phase 1: Deploying namespace + vnet + logs-vnet..."
 head -n "${PHASE1_END}" "${MANIFEST}" | "${KUBECTL[@]}" apply -f -

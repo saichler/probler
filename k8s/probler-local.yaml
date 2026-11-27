@@ -519,6 +519,42 @@ spec:
             type: DirectoryOrCreate
 
 ---
+# probler-chat-router RBAC: the wait-for-chat init container reads the
+# probler-chat Deployment (get, that one object only).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: probler-chat-router
+  namespace: probler
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: probler-chat-router-wait
+  namespace: probler
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    resourceNames: ["probler-chat"]
+    verbs: ["get"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: probler-chat-router-wait
+  namespace: probler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: probler-chat-router-wait
+subjects:
+  - kind: ServiceAccount
+    name: probler-chat-router
+    namespace: probler
+
+---
 # probler-chat-router: chat router (l8ai): conversation index + public chat services
 apiVersion: apps/v1
 kind: Deployment
@@ -539,6 +575,7 @@ spec:
     spec:
       imagePullSecrets:
         - name: harbor-pull
+      serviceAccountName: probler-chat-router
       initContainers:
         # Wait for the vnet on this node before starting: services connect to
         # $NODE_IP and panic if the vnet does not answer their first requests.
@@ -555,6 +592,30 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
+        # Wait for every chat instance before starting: a router that becomes
+        # the leader rebuilds the conversation index from the chat instances
+        # (it never reads chat-orm), so an instance that is not up yet would be
+        # left out of the index. Reads the probler-chat Deployment through the
+        # API (Role probler-chat-router-wait) until all its replicas are ready;
+        # the extra sleep lets the last instance join the vnet.
+        - name: wait-for-chat
+          image: registry.layer-8.dev:44443/probler/probler-chat-router:latest
+          imagePullPolicy: Always
+          command:
+            - sh
+            - -c
+            - |
+              sa=/var/run/secrets/kubernetes.io/serviceaccount
+              api="https://kubernetes.default.svc/apis/apps/v1/namespaces/$(cat $sa/namespace)/deployments/probler-chat"
+              while :; do
+                s=$(wget -q -O - --no-check-certificate --header "Authorization: Bearer $(cat $sa/token)" "$api")
+                want=$(echo "$s" | grep -o '"replicas": *[0-9]*' | head -1 | tr -dc 0-9)
+                ready=$(echo "$s" | grep -o '"readyReplicas": *[0-9]*' | head -1 | tr -dc 0-9)
+                if [ -n "$want" ] && [ "${ready:-0}" -ge "$want" ]; then break; fi
+                echo "waiting for probler-chat: ${ready:-0}/${want:-?} ready"
+                sleep 2
+              done
+              sleep 10
       containers:
         - name: probler-chat-router
           image: registry.layer-8.dev:44443/probler/probler-chat-router:latest
@@ -901,7 +962,7 @@ spec:
                   fieldPath: status.hostIP
 
 ---
-
+# l8collector-admission: admission controller (applied in kind-start.sh phase 3)
 apiVersion: v1
 kind: ServiceAccount
 metadata:
